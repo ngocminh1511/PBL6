@@ -1,0 +1,70 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vld: <https://example.org/vn-legal/document#> .
+@prefix vlpd: <https://example.org/vn-legal/phapdien#> .
+@prefix vla: <https://example.org/vn-legal/authority#> .
+@prefix vlt: <https://example.org/vn-legal/time#> .
+
+vlpd:CodificationItemShape
+    a sh:NodeShape ;
+    sh:targetClass vlpd:CodificationItem ;
+    sh:property [
+        sh:path vlpd:partOfTopic ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class vlpd:Topic ;
+    ] .
+
+vlpd:CodificationArticleShape
+    a sh:NodeShape ;
+    sh:targetClass vlpd:CodificationArticle ;
+    sh:property [
+        sh:path vlpd:codificationNumber ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path vlpd:heading ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path vlpd:contentText ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path vlpd:belongsToItem ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class vlpd:CodificationItem ;
+    ] .
+
+vld:LegalDocumentShape
+    a sh:NodeShape ;
+    sh:targetClass vld:LegalDocument ;
+    sh:property [
+        sh:path vld:documentNumber ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path vld:title ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path vld:issuedDate ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:date ;
+    ] .
+
+vlt:LegalValidityIntervalShape
+    a sh:NodeShape ;
+    sh:targetClass vlt:LegalValidityInterval ;
+    sh:property [
+        sh:path vlt:validFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:date ;
+    ] .

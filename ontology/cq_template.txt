@@ -1,0 +1,42 @@
+11. Bộ competency questions đề xuất cho ontology mới
+11.1. Nhóm văn bản và cơ quan
+20	Văn bản X thuộc loại nào?
+21	Văn bản X do cơ quan nào ban hành?
+22	Cơ quan Y có thẩm quyền ban hành loại văn bản X không?
+23	Ai ký văn bản X?
+24	Văn bản X được ban hành vào ngày nào?
+
+11.2. Nhóm cấu trúc
+25	Văn bản X có những chương nào?
+26	Điều Y thuộc văn bản nào?
+27	Khoản Z thuộc điều nào?
+28	Điều khoản nào định nghĩa khái niệm X?
+29	Một điều khoản dẫn chiếu tới điều khoản nào khác?
+
+11.3. Nhóm quan hệ liên văn bản
+30	Văn bản X sửa đổi văn bản nào?
+31	Văn bản X bị văn bản nào thay thế?
+32	Văn bản X bãi bỏ văn bản nào?
+33	Văn bản X hướng dẫn thi hành luật nào?
+34	Văn bản X trích dẫn văn bản nào?
+
+11.4. Nhóm hiệu lực
+35	Văn bản X có hiệu lực tại ngày T không?
+36	Điều khoản X có hiệu lực khác với toàn văn bản không?
+37	Văn bản X bị sửa đổi một phần hay toàn bộ?
+38	Văn bản X hiện hành trong phạm vi lãnh thổ nào?
+39	Trạng thái hiệu lực được chứng minh bởi nguồn nào?
+
+11.5. Nhóm quy phạm
+40	Chủ thể nào có nghĩa vụ thực hiện hành vi X?
+41	Hành vi X bị cấm trong điều kiện nào?
+42	Hành vi X được phép trong ngoại lệ nào?
+43	Hậu quả pháp lý của hành vi X là gì?
+44	Mức chế tài nào áp dụng cho chủ thể X?
+
+11.6. Nhóm truy xuất và giải thích
+45	Câu trả lời này dựa trên điều, khoản, điểm nào?
+46	Đoạn trích nguồn là gì?
+47	Quan hệ này do chuyên gia xác nhận hay do NLP trích xuất?
+48	Độ tin cậy và phiên bản mô hình là gì?
+49	Có văn bản mới hơn mâu thuẫn hoặc thay thế căn cứ này không?

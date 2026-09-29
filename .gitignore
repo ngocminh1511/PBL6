@@ -1,0 +1,23 @@
+# Python environments and generated caches
+**/venv/
+**/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Local credentials and environment files
+.env
+**/.env
+!.env.example
+
+# Parsed/raw datasets and runtime indexes
+labor_rag/data/*
+!labor_rag/data/ontology_v4/
+!labor_rag/data/ontology_v4/**
+BoPhapDienDienTu/
+crawl_data/
+paper/
+
+# Local service/runtime state
+*.log
+.qdrant/
+.neo4j/

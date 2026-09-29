@@ -1,0 +1,291 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+
+@prefix vlc: <https://example.org/vn-legal/core#> .
+@prefix vld: <https://example.org/vn-legal/document#> .
+@prefix vla: <https://example.org/vn-legal/authority#> .
+@prefix vle: <https://example.org/vn-legal/entity#> .
+@prefix vln: <https://example.org/vn-legal/norm#> .
+@prefix vlr: <https://example.org/vn-legal/relation#> .
+@prefix vlt: <https://example.org/vn-legal/time#> .
+@prefix vlpd: <https://example.org/vn-legal/phapdien#> .
+@prefix vlp: <https://example.org/vn-legal/provenance#> .
+
+<https://example.org/vn-legal/ontology/v4> a owl:Ontology ;
+    rdfs:label "Vietnamese Legal Ontology for Phap Dien and Legal QA - V4"@en ;
+    rdfs:label "Ontology pháp luật Việt Nam tích hợp Bộ Pháp điển - V4"@vi ;
+    rdfs:comment "Schema ontology phục vụ biểu diễn Bộ Pháp điển, văn bản nguồn, quy phạm pháp luật, hiệu lực, sửa đổi, quan hệ chỉ dẫn và provenance cho legal retrieval/QA."@vi .
+
+#################################################################
+# Core
+#################################################################
+vlc:LegalEntity a owl:Class ; rdfs:label "Thực thể pháp lý"@vi .
+vlc:LegalStatus a owl:Class ; rdfs:label "Trạng thái pháp lý"@vi .
+vlc:CompetenceRule a owl:Class ; rdfs:label "Quy tắc thẩm quyền"@vi .
+vlc:Identifier a owl:Class ; rdfs:label "Định danh"@vi .
+
+#################################################################
+# Source legal documents
+#################################################################
+vld:LegalDocument a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Văn bản pháp luật nguồn"@vi .
+vld:Constitution a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Law a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Resolution a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Ordinance a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Order a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Decree a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Decision a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:Circular a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:JointCircular a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:TechnicalRegulation a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+vld:OtherLegalDocument a owl:Class ; rdfs:subClassOf vld:LegalDocument .
+
+vld:DocumentComponent a owl:Class ; rdfs:label "Thành phần cấu trúc của văn bản nguồn"@vi .
+vld:Part a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Chapter a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Section a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Subsection a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Article a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Clause a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Point a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+vld:Appendix a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
+
+vld:documentNumber a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string .
+vld:title a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string .
+vld:issuedDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
+vld:effectiveDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
+vld:expiryDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
+vld:documentStatus a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string .
+vld:sourceURL a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:anyURI .
+vld:contentText a owl:DatatypeProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range xsd:string .
+vld:itemNumber a owl:DatatypeProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range xsd:string .
+vld:heading a owl:DatatypeProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range xsd:string .
+vld:pageNumber a owl:DatatypeProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range xsd:integer .
+vld:sequenceNumber a owl:DatatypeProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range xsd:integer .
+
+#################################################################
+# Phap Dien: a separate codification structure
+#################################################################
+vlpd:BoPhapDien a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Bộ Pháp điển"@vi .
+vlpd:Topic a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Chủ đề"@vi .
+vlpd:CodificationItem a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Đề mục"@vi .
+vlpd:CodificationComponent a owl:Class ; rdfs:label "Thành phần cấu trúc Bộ Pháp điển"@vi .
+vlpd:CodificationPart a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationChapter a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationSection a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationSubsection a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationArticle a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent ; rdfs:label "Điều trong Bộ Pháp điển"@vi .
+vlpd:CodificationClause a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationPoint a owl:Class ; rdfs:subClassOf vlpd:CodificationComponent .
+vlpd:CodificationNote a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Ghi chú pháp điển"@vi .
+vlpd:CrossReference a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Chỉ dẫn liên quan"@vi .
+vlpd:CodificationStatus a owl:Class ; rdfs:subClassOf vlc:LegalStatus ; rdfs:label "Trạng thái của nội dung pháp điển"@vi .
+vlpd:SourceMapping a owl:Class ; rdfs:subClassOf vlc:LegalEntity ; rdfs:label "Liên kết thành phần pháp điển - nguồn"@vi .
+
+vlpd:active a vlpd:CodificationStatus .
+vlpd:amended a vlpd:CodificationStatus .
+vlpd:partiallyRepealed a vlpd:CodificationStatus .
+vlpd:fullyRepealed a vlpd:CodificationStatus .
+vlpd:removed a vlpd:CodificationStatus .
+
+vlpd:topicNumber a owl:DatatypeProperty ; rdfs:domain vlpd:Topic ; rdfs:range xsd:integer .
+vlpd:topicName a owl:DatatypeProperty ; rdfs:domain vlpd:Topic ; rdfs:range xsd:string .
+vlpd:itemNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationItem ; rdfs:range xsd:integer .
+vlpd:itemName a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationItem ; rdfs:range xsd:string .
+vlpd:codificationNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationArticle ; rdfs:range xsd:string .
+vlpd:contentText a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:string .
+vlpd:heading a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:string .
+vlpd:sequenceNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:integer .
+vlpd:noteText a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationNote ; rdfs:range xsd:string .
+vlpd:noteType a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationNote ; rdfs:range xsd:string .
+vlpd:referenceText a owl:DatatypeProperty ; rdfs:domain vlpd:CrossReference ; rdfs:range xsd:string .
+
+vlpd:hasTopic a owl:ObjectProperty ; rdfs:domain vlpd:BoPhapDien ; rdfs:range vlpd:Topic .
+vlpd:hasItem a owl:ObjectProperty ; rdfs:domain vlpd:Topic ; rdfs:range vlpd:CodificationItem .
+vlpd:hasComponent a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationComponent .
+vlpd:hasParentComponent a owl:ObjectProperty ; owl:inverseOf vlpd:hasComponent .
+vlpd:hasPart a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationPart .
+vlpd:hasChapter a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationChapter .
+vlpd:hasSection a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationSection .
+vlpd:hasSubsection a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationSubsection .
+vlpd:hasArticle a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationArticle .
+vlpd:hasClause a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationClause .
+vlpd:hasPoint a owl:ObjectProperty ; rdfs:subPropertyOf vlpd:hasComponent ; rdfs:range vlpd:CodificationPoint .
+vlpd:partOfTopic a owl:ObjectProperty ; rdfs:domain vlpd:CodificationItem ; rdfs:range vlpd:Topic .
+vlpd:belongsToItem a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationItem .
+vlpd:hasNote a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationNote .
+vlpd:hasCrossReference a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CrossReference .
+vlpd:refersToCodificationComponent a owl:ObjectProperty ; rdfs:domain vlpd:CrossReference ; rdfs:range vlpd:CodificationComponent .
+vlpd:refersToExternalComponent a owl:ObjectProperty ; rdfs:domain vlpd:CrossReference ; rdfs:range vld:DocumentComponent .
+vlpd:hasSourceMapping a owl:ObjectProperty ; rdfs:domain vlpd:CodificationArticle ; rdfs:range vlpd:SourceMapping .
+vlpd:mapsToSourceComponent a owl:ObjectProperty ; rdfs:domain vlpd:SourceMapping ; rdfs:range vld:DocumentComponent .
+vlpd:mapsToSourceDocument a owl:ObjectProperty ; rdfs:domain vlpd:SourceMapping ; rdfs:range vld:LegalDocument .
+vlpd:hasCodificationStatus a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationStatus .
+vlpd:codificationOf a owl:ObjectProperty ; rdfs:domain vlpd:CodificationArticle ; rdfs:range vld:DocumentComponent .
+vlpd:derivedFrom a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vld:DocumentComponent ; owl:inverseOf vlpd:hasCodifiedComponent .
+vlpd:hasCodifiedComponent a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vlpd:CodificationComponent .
+
+#################################################################
+# Authority
+#################################################################
+vla:Authority a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vla:LegislativeBody a owl:Class ; rdfs:subClassOf vla:Authority .
+vla:ExecutiveBody a owl:Class ; rdfs:subClassOf vla:Authority .
+vla:JudicialBody a owl:Class ; rdfs:subClassOf vla:Authority .
+vla:LocalAuthority a owl:Class ; rdfs:subClassOf vla:Authority .
+vla:NationalAssembly a owl:Class ; rdfs:subClassOf vla:LegislativeBody .
+vla:Government a owl:Class ; rdfs:subClassOf vla:ExecutiveBody .
+vla:President a owl:Class ; rdfs:subClassOf vla:ExecutiveBody .
+vla:PrimeMinister a owl:Class ; rdfs:subClassOf vla:ExecutiveBody .
+vla:Ministry a owl:Class ; rdfs:subClassOf vla:ExecutiveBody .
+vla:SupremePeopleCourt a owl:Class ; rdfs:subClassOf vla:JudicialBody .
+vla:SupremePeopleProcuracy a owl:Class ; rdfs:subClassOf vla:JudicialBody .
+vla:ProvincialPeopleCouncil a owl:Class ; rdfs:subClassOf vla:LocalAuthority .
+vla:ProvincialPeopleCommittee a owl:Class ; rdfs:subClassOf vla:LocalAuthority .
+vla:PromulgationCompetence a owl:Class ; rdfs:subClassOf vlc:CompetenceRule .
+vla:AmendmentCompetence a owl:Class ; rdfs:subClassOf vlc:CompetenceRule .
+vla:InterpretationCompetence a owl:Class ; rdfs:subClassOf vlc:CompetenceRule .
+vla:EnforcementCompetence a owl:Class ; rdfs:subClassOf vlc:CompetenceRule .
+vlr:promulgatedBy a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vla:Authority .
+vlr:signedBy a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vle:Person .
+vla:hasCompetenceRule a owl:ObjectProperty ; rdfs:domain vla:Authority ; rdfs:range vlc:CompetenceRule .
+
+#################################################################
+# Legal relations
+#################################################################
+vlr:amends a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
+vlr:partiallyAmends a owl:ObjectProperty ; rdfs:subPropertyOf vlr:amends .
+vlr:repeals a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
+vlr:repealedBy a owl:ObjectProperty ; owl:inverseOf vlr:repeals .
+vlr:replaces a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
+vlr:replacedBy a owl:ObjectProperty ; owl:inverseOf vlr:replaces .
+vlr:consolidates a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
+vlr:implements a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
+vlr:cites a owl:ObjectProperty ; rdfs:domain vld:LegalEntity ; rdfs:range vlc:LegalEntity .
+vlr:amendsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+vlr:repealsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+vlr:replacesComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+vlr:relatedTo a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlc:LegalEntity .
+vlr:precedes a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationComponent .
+vlr:follows a owl:ObjectProperty ; owl:inverseOf vlr:precedes .
+
+#################################################################
+# Temporal / validity
+#################################################################
+vlt:LegalValidityInterval a owl:Class ; rdfs:subClassOf time:Interval .
+vlt:LegalEvent a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vlt:PromulgationEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:SigningEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:EffectiveEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:AmendmentEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:RepealEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:ReplacementEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:SuspensionEvent a owl:Class ; rdfs:subClassOf vlt:LegalEvent .
+vlt:hasValidityInterval a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlt:LegalValidityInterval .
+vlt:validFrom a owl:DatatypeProperty ; rdfs:domain vlt:LegalValidityInterval ; rdfs:range xsd:date .
+vlt:validTo a owl:DatatypeProperty ; rdfs:domain vlt:LegalValidityInterval ; rdfs:range xsd:date .
+vlt:hasLegalEvent a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlt:LegalEvent .
+vlt:eventDate a owl:DatatypeProperty ; rdfs:domain vlt:LegalEvent ; rdfs:range xsd:date .
+vlt:amendsAt a owl:DatatypeProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range xsd:date .
+vlt:repealsAt a owl:DatatypeProperty ; rdfs:domain vlt:RepealEvent ; rdfs:range xsd:date .
+
+#################################################################
+# Legal norms
+#################################################################
+vln:LegalNorm a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vln:Obligation a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Prohibition a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Permission a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Right a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Power a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Liability a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:SanctionNorm a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:DefinitionNorm a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:CompetenceNorm a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:ExceptionNorm a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:ProcedureNorm a owl:Class ; rdfs:subClassOf vln:LegalNorm .
+vln:Action a owl:Class .
+vln:Condition a owl:Class .
+vln:Sanction a owl:Class .
+vln:Exception a owl:Class .
+vln:LegalObject a owl:Class .
+vln:expresses a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vln:LegalNorm .
+vln:expressedIn a owl:ObjectProperty ; owl:inverseOf vln:expresses .
+vln:hasCondition a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vln:Condition .
+vln:hasSubject a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vle:LegalActor .
+vln:hasAction a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vln:Action .
+vln:hasConsequence a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vln:Sanction .
+vln:hasObject a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vln:LegalObject .
+vln:hasException a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vln:Exception .
+vln:hasLegalSource a owl:ObjectProperty ; rdfs:domain vln:LegalNorm ; rdfs:range vld:DocumentComponent .
+vln:hasValidityInterval a owl:ObjectProperty ; rdfs:subPropertyOf vlt:hasValidityInterval ; rdfs:domain vln:LegalNorm ; rdfs:range vlt:LegalValidityInterval .
+
+#################################################################
+# Entities
+#################################################################
+vle:LegalActor a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vle:Organization a owl:Class ; rdfs:subClassOf vle:LegalActor .
+vle:Person a owl:Class ; rdfs:subClassOf vle:LegalActor .
+vle:LegalConcept a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vle:Location a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vle:Vehicle a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vle:ExternalEntity a owl:Class ; rdfs:subClassOf vlc:LegalEntity .
+vle:KeyphraseMention a owl:Class ; rdfs:label "Cụm từ trích xuất NLP"@vi .
+vlr:hasTerritorialScope a owl:ObjectProperty ; rdfs:range vle:Location .
+vlr:hasSubjectScope a owl:ObjectProperty ; rdfs:range vle:LegalActor .
+vlr:mentions a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vle:KeyphraseMention .
+vlr:denotes a owl:ObjectProperty ; rdfs:domain vle:KeyphraseMention ; rdfs:range vle:LegalConcept .
+vlr:defines a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vle:LegalConcept .
+vlr:definedIn a owl:ObjectProperty ; owl:inverseOf vlr:defines .
+
+#################################################################
+# Provenance and extraction
+#################################################################
+vlp:Extraction a owl:Class ; rdfs:subClassOf prov:Activity .
+vlp:Review a owl:Class ; rdfs:subClassOf prov:Activity .
+vlp:SourceArtifact a owl:Class ; rdfs:subClassOf prov:Entity .
+vlp:ExtractedStatement a owl:Class ; rdfs:subClassOf prov:Entity .
+vlp:confidenceScore a owl:DatatypeProperty ; rdfs:domain prov:Entity ; rdfs:range xsd:decimal .
+vlp:extractionMethod a owl:DatatypeProperty ; rdfs:domain vlp:Extraction ; rdfs:range xsd:string .
+vlp:sourceURL a owl:DatatypeProperty ; rdfs:domain vlp:SourceArtifact ; rdfs:range xsd:anyURI .
+vlp:sourceQuote a owl:DatatypeProperty ; rdfs:domain vlp:ExtractedStatement ; rdfs:range xsd:string .
+vlp:checksum a owl:DatatypeProperty ; rdfs:domain vlp:SourceArtifact ; rdfs:range xsd:string .
+vlp:downloadedAt a owl:DatatypeProperty ; rdfs:domain vlp:SourceArtifact ; rdfs:range xsd:dateTime .
+vlp:reviewStatus a owl:DatatypeProperty ; rdfs:domain prov:Entity ; rdfs:range xsd:string .
+vlp:reviewedBy a owl:ObjectProperty ; rdfs:domain prov:Entity ; rdfs:range vle:Person .
+vlp:sourceDocument a owl:ObjectProperty ; rdfs:domain prov:Entity ; rdfs:range vld:LegalDocument .
+vlp:sourceComponent a owl:ObjectProperty ; rdfs:domain prov:Entity ; rdfs:range vld:DocumentComponent .
+vlp:pageNumber a owl:DatatypeProperty ; rdfs:domain prov:Entity ; rdfs:range xsd:integer .
+vlp:hasExtraction a owl:ObjectProperty ; rdfs:domain prov:Entity ; rdfs:range vlp:Extraction ; owl:inverseOf vlp:generatedStatement .
+vlp:generatedStatement a owl:ObjectProperty ; rdfs:domain vlp:Extraction ; rdfs:range vlp:ExtractedStatement .
+
+#################################################################
+# Useful structural properties for both source and codification layers
+#################################################################
+vld:hasComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+vld:hasParentComponent a owl:ObjectProperty ; owl:inverseOf vld:hasComponent .
+vld:hasArticle a owl:ObjectProperty ; rdfs:subPropertyOf vld:hasComponent ; rdfs:domain vld:LegalDocument ; rdfs:range vld:Article .
+vld:hasClause a owl:ObjectProperty ; rdfs:subPropertyOf vld:hasComponent ; rdfs:domain vld:Article ; rdfs:range vld:Clause .
+vld:hasPoint a owl:ObjectProperty ; rdfs:subPropertyOf vld:hasComponent ; rdfs:domain vld:Clause ; rdfs:range vld:Point .
+vld:locatedInDocument a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vld:LegalDocument .
+
+#################################################################
+# Light OWL constraints / semantics
+#################################################################
+vld:Article rdfs:subClassOf [ a owl:Restriction ; owl:onProperty vld:locatedInDocument ; owl:someValuesFrom vld:LegalDocument ] .
+vld:Clause rdfs:subClassOf [ a owl:Restriction ; owl:onProperty vld:locatedInDocument ; owl:someValuesFrom vld:LegalDocument ] .
+vln:LegalNorm rdfs:subClassOf [ a owl:Restriction ; owl:onProperty vln:expressedIn ; owl:someValuesFrom vld:DocumentComponent ] .
+vlpd:CodificationItem rdfs:subClassOf [ a owl:Restriction ; owl:onProperty vlpd:partOfTopic ; owl:someValuesFrom vlpd:Topic ] .
+vlpd:CodificationArticle rdfs:subClassOf [ a owl:Restriction ; owl:onProperty vlpd:codificationOf ; owl:someValuesFrom vld:DocumentComponent ] .
+
+#################################################################
+# Labels / notes
+#################################################################
+vld:LegalDocument rdfs:comment "Văn bản nguồn; không đồng nhất với cấu trúc Bộ Pháp điển."@vi .
+vlpd:CodificationItem rdfs:comment "Đề mục của Bộ Pháp điển, chứa các quy phạm được sắp xếp theo chủ đề và nhóm quan hệ xã hội."@vi .
+vlpd:CodificationArticle rdfs:comment "Điều trong Bộ Pháp điển. Nội dung về nguyên tắc giữ nguyên nội dung của điều tương ứng trong văn bản được pháp điển; ghi chú dùng để truy về nguồn và biến động."@vi .
+vln:LegalNorm rdfs:comment "Mô hình hóa ý nghĩa/quy phạm được biểu đạt bởi một hoặc nhiều thành phần văn bản; không phải mọi LegalNorm đều là một đoạn văn nguyên văn."@vi .
