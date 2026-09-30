@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-09-30T00:14:49.285282+00:00",
+  "dataset": {
+    "chunks_path": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\data\\ontology_v4\\chunks.jsonl",
+    "questions_path": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\benchmark_questions.jsonl",
+    "chunk_count": 348,
+    "question_count": 30,
+    "dataset_id": "an_toan_ve_sinh_lao_dong_v4"
+  },
+  "config": {
+    "qdrant_url": "http://localhost:6333",
+    "top_k": 10,
+    "warmup": 3,
+    "repeats": 3,
+    "batch_size": 64,
+    "rebuild": false,
+    "neo4j_in_primary_metric": false
+  },
+  "models": [
+    {
+      "key": "bkai",
+      "model": "bkai-foundation-models/vietnamese-bi-encoder",
+      "collection": "legal_v4_bkai",
+      "embedding_dimension": 768,
+      "model_load_time_seconds": 6.784821,
+      "index": {
+        "action": "reused",
+        "index_time_seconds": 0.0,
+        "indexed_points": 348,
+        "dimension": 768
+      },
+      "query_config": {
+        "top_k": 10,
+        "warmup": 3,
+        "repeats": 3
+      }
+    },
+    {
+      "key": "bge",
+      "model": "BAAI/bge-m3",
+      "collection": "legal_v4_bge",
+      "embedding_dimension": 1024,
+      "model_load_time_seconds": 8.498563,
+      "index": {
+        "action": "reused",
+        "index_time_seconds": 0.0,
+        "indexed_points": 348,
+        "dimension": 1024
+      },
+      "query_config": {
+        "top_k": 10,
+        "warmup": 3,
+        "repeats": 3
+      }
+    },
+    {
+      "key": "mpnet",
+      "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "collection": "legal_v4_mpnet",
+      "embedding_dimension": 768,
+      "model_load_time_seconds": 8.545347,
+      "index": {
+        "action": "reused",
+        "index_time_seconds": 0.0,
+        "indexed_points": 348,
+        "dimension": 768
+      },
+      "query_config": {
+        "top_k": 10,
+        "warmup": 3,
+        "repeats": 3
+      }
+    }
+  ]
+}

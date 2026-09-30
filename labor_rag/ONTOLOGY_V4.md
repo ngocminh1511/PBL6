@@ -42,3 +42,35 @@ python -m app.chat
 
 The legacy defaults remain `labor_dieu` and the old JSONL directory, so the
 existing pipeline is not overwritten by the ontology pilot.
+
+## Benchmark embeddings
+
+The vector-only benchmark uses the 348 ontology-v4 chunks and 30 manually
+labelled questions. It keeps one Qdrant collection per model:
+
+```powershell
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --validate-only
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --rebuild
+```
+
+The first full run downloads BGE-M3 and multilingual MPNet when they are not
+already cached. The benchmark does not touch `labor_dieu`; `--rebuild` only
+recreates `legal_v4_bkai`, `legal_v4_bge`, and `legal_v4_mpnet`.
+
+Results are written to `labor_rag/evaluation/results/`:
+
+```text
+summary.csv
+per_query_results.jsonl
+model_metadata.json
+```
+
+When an existing collection already contains the expected 348 MAPCs, the
+benchmark reports `index_action=reused` and `index_time_seconds=0` for that
+run. Use `--rebuild` for an explicit fresh indexing-time measurement; the
+flag only affects the selected `legal_v4_*` collection.
+
+Open `labor_rag/notebooks/embedding_benchmark.ipynb` after the CLI run to show
+the metric table, Recall/MRR/nDCG charts, latency charts, per-question heatmap,
+and a top-5 comparison. The notebook does not modify
+`notebooks/dataset_analysis.ipynb`.

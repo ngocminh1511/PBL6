@@ -7,3 +7,6 @@ rdflib>=7.0
 pyshacl>=0.26
 google-genai>=1.0
 python-dotenv>=1.0
+pandas>=2.0
+matplotlib>=3.8
+jupyterlab>=4.0

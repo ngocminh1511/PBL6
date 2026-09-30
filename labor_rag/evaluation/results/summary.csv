@@ -1,0 +1,4 @@
+model,model_id,collection,embedding_dimension,query_count,index_action,indexed_points,Recall@1,Recall@5,Recall@10,MRR@10,nDCG@10,mean_latency_ms,median_latency_ms,mean_encode_latency_ms,mean_search_latency_ms,index_time_seconds
+bkai,bkai-foundation-models/vietnamese-bi-encoder,legal_v4_bkai,768,30,reused,348,0.933333,0.966667,0.966667,0.941667,0.825,48.5055,46.206,37.1783,10.9699,0.0
+bge,BAAI/bge-m3,legal_v4_bge,1024,30,reused,348,0.833333,0.966667,1.0,0.889815,0.820115,111.747,110.3399,96.4823,14.8812,0.0
+mpnet,sentence-transformers/paraphrase-multilingual-mpnet-base-v2,legal_v4_mpnet,768,30,reused,348,0.7,0.833333,0.866667,0.753889,0.623132,45.519,44.3693,35.8443,9.0161,0.0
