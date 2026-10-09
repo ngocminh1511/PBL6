@@ -110,11 +110,11 @@
 {"qid": "ld110", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.LQ.29"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null}
 {"qid": "ld111", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.LQ.66"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null}
 {"qid": "ld112", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.LQ.75"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld113", "de_muc": "20.5", "style": "truc_tiep", "seed_mapcs": ["20.5.TT.58.3"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld114", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.TT.6.3"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld115", "de_muc": "20.5", "style": "tu_khoa", "seed_mapcs": ["20.5.TT.57.3"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld116", "de_muc": "20.5", "style": "truc_tiep", "seed_mapcs": ["20.5.TT.51.26"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld117", "de_muc": "20.5", "style": "doi_thuong", "seed_mapcs": ["20.5.TT.18.3"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
-{"qid": "ld118", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.TT.23.23"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null}
+{"qid": "ld113", "de_muc": "20.5", "style": "truc_tiep", "seed_mapcs": ["20.5.LQ.69"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
+{"qid": "ld114", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.LQ.5"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
+{"qid": "ld115", "de_muc": "20.5", "style": "tu_khoa", "seed_mapcs": ["20.5.LQ.84"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
+{"qid": "ld116", "de_muc": "20.5", "style": "truc_tiep", "seed_mapcs": ["20.5.TT.51.3"], "doc_types": ["TT"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
+{"qid": "ld117", "de_muc": "20.5", "style": "doi_thuong", "seed_mapcs": ["20.5.LQ.20"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
+{"qid": "ld118", "de_muc": "20.5", "style": "tinh_huong", "seed_mapcs": ["20.5.LQ.26"], "doc_types": ["LQ"], "tags": [], "target_khoan": null, "target_khoan_text": null, "replaced": "boilerplate seed replaced"}
 {"qid": "ld119", "de_muc": "20.5", "style": "nhieu_dieu", "seed_mapcs": ["20.5.LQ.59", "20.5.LQ.57"], "doc_types": ["LQ", "LQ"], "tags": ["multi_dieu"], "target_khoan": null, "target_khoan_text": null}
 {"qid": "ld120", "de_muc": "20.5", "style": "nhieu_dieu", "seed_mapcs": ["20.5.LQ.37", "20.5.LQ.81"], "doc_types": ["LQ", "LQ"], "tags": ["multi_dieu"], "target_khoan": null, "target_khoan_text": null}

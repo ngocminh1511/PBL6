@@ -115,6 +115,14 @@ BOILERPLATE_RE = re.compile(
     re.IGNORECASE,
 )
 MIN_BODY_CHARS = 120
+# Closing clauses whose title is only the Dieu code ("Điều 20.5.TT.58.3."), so
+# the title check above misses them; recognise them by their body instead.
+BOILERPLATE_BODY_RE = re.compile(
+    r"chịu trách nhiệm thi hành|có hiệu lực (thi hành )?kể từ ngày|"
+    r"văn bản được dẫn chiếu .{0,60}(thay thế|sửa đổi)",
+    re.IGNORECASE,
+)
+MAX_BOILERPLATE_BODY_CHARS = 400
 # "Chinh phu quy dinh chi tiet ..." Khoan only delegate; nothing to ask about.
 DELEGATION_RE = re.compile(
     r"^\d+\.\s*(Chính phủ|Thủ tướng|Bộ trưởng|Bộ Lao động)[^.:]{0,120}?quy định (chi tiết|cụ thể|mẫu|việc)",
@@ -212,7 +220,10 @@ def is_eligible(chunk: dict[str, Any]) -> bool:
         return False  # duplicate-code Dieu carry a URI as mapc; skip them as seeds
     if BOILERPLATE_RE.match((chunk.get("ten") or "").strip()):
         return False
-    return len(article_body(chunk)) >= MIN_BODY_CHARS
+    body = article_body(chunk)
+    if len(body) <= MAX_BOILERPLATE_BODY_CHARS and BOILERPLATE_BODY_RE.search(body):
+        return False
+    return len(body) >= MIN_BODY_CHARS
 
 
 def normalize(text: str) -> str:
@@ -539,6 +550,7 @@ def cmd_draft(args: argparse.Namespace) -> int:
             record = {
                 "qid": seed["qid"],
                 "status": "ok" if not problem else "failed",
+                "drafted_by": "gemini",
                 "question": question,
                 "answer_hint": str(reply.get("answer_hint", "")).strip(),
                 "category": category,
@@ -611,6 +623,7 @@ def current_questions() -> list[dict[str, Any]]:
                 "answer_hint": "",
                 "category": row.get("category", "khac"),
                 "origin": "manual_v1",
+                "drafted_by": "human",
                 "v1_relevance": {m: int(g) for m, g in row["relevance"].items()},
                 "notes": row.get("notes", ""),
             }
@@ -632,6 +645,7 @@ def current_questions() -> list[dict[str, Any]]:
                 "answer_hint": draft.get("answer_hint", ""),
                 "category": draft.get("category", "khac"),
                 "origin": "llm_draft",
+                "drafted_by": draft.get("drafted_by", "gemini"),
                 "v1_relevance": {},
                 "notes": "",
             }
@@ -770,7 +784,7 @@ def cmd_judge(args: argparse.Namespace) -> int:
 # --------------------------------------------------------------- review.xlsx
 
 Q_COLUMNS = [
-    ("qid", 8), ("de_muc", 7), ("style", 11), ("tags", 12), ("origin", 10), ("seed_mapcs", 18),
+    ("qid", 8), ("de_muc", 7), ("style", 11), ("tags", 12), ("origin", 10), ("drafted_by", 10), ("seed_mapcs", 18),
     ("seed_titles", 40), ("target_khoan", 6), ("answer_hint", 40), ("question_draft", 45),
     ("question", 55), ("category", 22), ("action", 8), ("notes", 30),
 ]
@@ -844,6 +858,7 @@ def cmd_export(args: argparse.Namespace) -> int:
             "style": question["style"],
             "tags": ",".join(question["tags"]),
             "origin": question["origin"],
+            "drafted_by": question["drafted_by"],
             "seed_mapcs": ", ".join(question["seed_mapcs"]),
             "seed_titles": " | ".join(chunks[m]["ten"] for m in question["seed_mapcs"] if m in chunks),
             "target_khoan": question["target_khoan"],
@@ -896,17 +911,24 @@ def cmd_export(args: argparse.Namespace) -> int:
                 for cell in sheet[letter][1:]:
                     cell.alignment = wrap
     q_last, j_last = q_sheet.max_row, j_sheet.max_row
+
+    def column_range(columns: list[tuple[str, int]], name: str, last_row: int) -> str:
+        from openpyxl.utils import get_column_letter
+
+        letter = get_column_letter([c for c, _ in columns].index(name) + 1)
+        return f"{letter}2:{letter}{max(last_row, 2)}"
+
     action_rule = DataValidation(type="list", formula1='"keep,drop"', allow_blank=True)
-    action_rule.add(f"M2:M{max(q_last, 2)}")
+    action_rule.add(column_range(Q_COLUMNS, "action", q_last))
     # Inline list formulas are capped at 255 characters, so categories live on a hidden sheet.
     lists = workbook.create_sheet("lists")
     for category in CATEGORIES:
         lists.append([category])
     lists.sheet_state = "hidden"
     category_rule = DataValidation(type="list", formula1=f"=lists!$A$1:$A${len(CATEGORIES)}", allow_blank=True)
-    category_rule.add(f"L2:L{max(q_last, 2)}")
+    category_rule.add(column_range(Q_COLUMNS, "category", q_last))
     grade_rule = DataValidation(type="list", formula1='"0,1,2,3"', allow_blank=True)
-    grade_rule.add(f"I2:I{max(j_last, 2)}")
+    grade_rule.add(column_range(J_COLUMNS, "grade", j_last))
     q_sheet.add_data_validation(action_rule)
     q_sheet.add_data_validation(category_rule)
     j_sheet.add_data_validation(grade_rule)
@@ -1011,6 +1033,7 @@ def cmd_finalize(args: argparse.Namespace) -> int:
                 "seed_mapcs": info.get("seed_mapcs", []),
                 "target_khoan": info.get("target_khoan"),
                 "origin": origin,
+                "drafted_by": info.get("drafted_by", "unknown"),
                 "grades_from_suggestion": from_suggestion,
                 "notes": row.get("notes") or "",
             }
