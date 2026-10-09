@@ -11,8 +11,13 @@ Run from the repository root:
     python -m labor_rag.evaluation.embedding_benchmark --validate-only
     python -m labor_rag.evaluation.embedding_benchmark --rebuild
 
-The ``--rebuild`` flag only recreates the three ``legal_v4_*`` collections
+The ``--rebuild`` flag only recreates the three ``<prefix>_*`` collections
 declared in ``MODELS``.  It never touches the legacy ``labor_dieu`` collection.
+
+For the whole Lao dong topic (v2 test set), use a separate prefix so the 20.5
+collections are kept:
+
+    python -m labor_rag.evaluation.embedding_benchmark --rebuild         --chunks data/processed/lao_dong_v4/chunks.jsonl         --questions labor_rag/evaluation/benchmark_questions_v2.jsonl         --collection-prefix legal_ld_v4 --results-dir labor_rag/evaluation/results/lao_dong_v2
 """
 from __future__ import annotations
 
@@ -22,6 +27,7 @@ import gc
 import json
 import math
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -60,6 +66,18 @@ MODELS: list[dict[str, str]] = [
         "collection": "legal_v4_mpnet",
     },
 ]
+
+
+COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
+DEFAULT_COLLECTION_PREFIX = "legal_v4"
+
+
+def with_collection_prefix(specs: list[dict[str, str]], prefix: str) -> list[dict[str, str]]:
+    """Give each model its own collection under ``prefix`` (legal_v4_bkai, ...)."""
+
+    if not re.match(r"^legal_[a-z0-9_]+$", prefix):
+        raise ValueError(f"Collection prefix must look like legal_<name>: {prefix!r}")
+    return [{**spec, "collection": f"{prefix}_{spec['key']}"} for spec in specs]
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -249,9 +267,8 @@ def ensure_collection_index(
 ) -> dict[str, Any]:
     """Create/rebuild one isolated legal_v4 collection or safely reuse it."""
 
-    allowed_collections = {spec["collection"] for spec in MODELS}
     collection = model_spec["collection"]
-    if collection not in allowed_collections:
+    if not COLLECTION_RE.match(collection) or collection == "labor_dieu":
         raise ValueError(f"Refusing to index unapproved collection: {collection}")
 
     expected_mapcs = {str(chunk["mapc"]) for chunk in chunks}
@@ -436,6 +453,9 @@ def evaluate_model(
                 "collection": model_spec["collection"],
                 "question_id": question["id"],
                 "question": question["question"],
+                "de_muc": question.get("de_muc"),
+                "style": question.get("style"),
+                "tags": question.get("tags", []),
                 "gold_relevance": question["relevance"],
                 "top_k_results": runs[0]["results"],
                 "first_relevant_rank": metrics["first_relevant_rank"],
@@ -504,11 +524,14 @@ def run_benchmark(
     batch_size: int = BATCH_SIZE,
     rebuild: bool = False,
     model_keys: list[str] | None = None,
+    collection_prefix: str = DEFAULT_COLLECTION_PREFIX,
 ) -> dict[str, Any]:
     """Run the benchmark and write summary/per-query/metadata outputs."""
 
     chunks, questions = load_and_validate_dataset(chunks_path, questions_path)
-    selected = [spec for spec in MODELS if model_keys is None or spec["key"] in model_keys]
+    selected = with_collection_prefix(
+        [spec for spec in MODELS if model_keys is None or spec["key"] in model_keys], collection_prefix
+    )
     if not selected:
         raise ValueError("No model selected")
     unknown = set(model_keys or []) - {spec["key"] for spec in MODELS}
@@ -583,6 +606,7 @@ def run_benchmark(
             "repeats": repeats,
             "batch_size": batch_size,
             "rebuild": rebuild,
+            "collection_prefix": collection_prefix,
             "neo4j_in_primary_metric": False,
         },
         "models": metadata_rows,
@@ -608,7 +632,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--rebuild",
         action="store_true",
-        help="Recreate only legal_v4_bkai/legal_v4_bge/legal_v4_mpnet before indexing",
+        help="Recreate only <prefix>_bkai/<prefix>_bge/<prefix>_mpnet before indexing",
+    )
+    parser.add_argument(
+        "--collection-prefix",
+        default=DEFAULT_COLLECTION_PREFIX,
+        help="Qdrant collection prefix; use a new one per chunk set (e.g. legal_ld_v4 for lao_dong_v4)",
     )
     parser.add_argument(
         "--validate-only",
@@ -638,6 +667,7 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         rebuild=args.rebuild,
         model_keys=args.model_keys,
+        collection_prefix=args.collection_prefix,
     )
     return 0
 

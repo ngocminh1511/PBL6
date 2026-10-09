@@ -59,6 +59,36 @@ python -m labor_rag.ingest.load_neo4j --data-dir data/processed/ontology_v4 --da
 python -m labor_rag.ingest.embed_and_index --chunks data/processed/ontology_v4/chunks.jsonl --collection legal_v4_bkai
 ```
 
+Toàn bộ chủ đề Lao động (20.2–20.5, 1.407 Điều) dùng thư mục riêng, không ghi đè dữ liệu 20.5:
+
+```powershell
+python -m labor_rag.ingest.build_abox --chu-de 20 --output ontology/abox/abox_lao_dong.ttl
+python scripts/validate_abox.py --abox ontology/abox/abox_lao_dong.ttl
+python -m labor_rag.ingest.ontology_to_jsonl --abox ontology/abox/abox_lao_dong.ttl --out-dir data/processed/lao_dong_v4 --dataset-id lao_dong_v4
+```
+
+## Bộ test truy hồi v2 (chủ đề Lao động)
+
+Bộ v1 (`benchmark_questions.jsonl`, 30 câu) chỉ phủ đề mục 20.5. Bộ v2 thêm khoảng 120 câu trên
+20.2–20.5, gồm nhiều kiểu câu hỏi, câu nhắm vào Khoản cuối của Điều dài và câu cần 2 Điều.
+Câu hỏi do LLM soạn nháp, ứng viên được gom từ BM25 và 3 mô hình embedding, **nhãn do người duyệt**.
+Hướng dẫn gán nhãn: [labor_rag/evaluation/annotation/GUIDELINES.md](labor_rag/evaluation/annotation/GUIDELINES.md).
+
+```powershell
+python -m labor_rag.evaluation.build_testset sample     # chọn Điều nguồn  -> annotation/seeds.jsonl
+python -m labor_rag.evaluation.build_testset draft      # LLM soạn câu hỏi (chạy tiếp được nếu bị ngắt)
+python -m labor_rag.evaluation.build_testset pool       # gom ứng viên: BM25 + bkai + bge-m3 + mpnet
+python -m labor_rag.evaluation.build_testset judge      # LLM gợi ý điểm 0-3
+python -m labor_rag.evaluation.build_testset export     # -> annotation/review.xlsx (người duyệt)
+python -m labor_rag.evaluation.build_testset finalize   # -> benchmark_questions_v2.jsonl
+python -m labor_rag.evaluation.build_testset stats
+
+python -m labor_rag.evaluation.embedding_benchmark --rebuild `
+    --chunks data/processed/lao_dong_v4/chunks.jsonl `
+    --questions labor_rag/evaluation/benchmark_questions_v2.jsonl `
+    --collection-prefix legal_ld_v4 --results-dir labor_rag/evaluation/results/lao_dong_v2
+```
+
 ## Pipeline cũ (legacy, collection `labor_dieu`)
 
 ```powershell
