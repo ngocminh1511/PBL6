@@ -1,0 +1,44 @@
+{
+  "dataset_id": "lao_dong_v4",
+  "triples": 33396,
+  "nodes": 7421,
+  "edges": 18413,
+  "chunks": 1407,
+  "edge_types": {
+    "HAS_SOURCE_MAPPING": 1407,
+    "SOURCE_DOCUMENT": 1407,
+    "CONTAINS": 1495,
+    "PART_OF": 2994,
+    "REFERS_TO": 2498,
+    "MAPS_TO_SOURCE_COMPONENT": 1407,
+    "HAS_CROSS_REFERENCE": 1249,
+    "MAPS_TO_SOURCE_DOCUMENT": 1407,
+    "DERIVED_FROM": 1407,
+    "ISSUED_BY": 159,
+    "LOCATED_IN_DOCUMENT": 1407,
+    "SOURCE_COMPONENT": 1407,
+    "HAS_VALIDITY_INTERVAL": 156,
+    "HAS_ITEM": 4,
+    "AMENDS": 9
+  },
+  "node_labels": {
+    "Resource": 127,
+    "Dieu": 1407,
+    "Authority": 11,
+    "PrimeMinister": 1,
+    "CrossReference": 1249,
+    "VanBan": 156,
+    "DeMuc": 4,
+    "SourceComponent": 1407,
+    "SourceMapping": 1407,
+    "ExtractedStatement": 1407,
+    "Chuong": 39,
+    "Muc": 49,
+    "ChuDe": 1,
+    "LegalValidityInterval": 156
+  },
+  "unprojected_literal_triples": 0,
+  "notes": [
+    "rdf:type is represented by label/class_iris rather than a Neo4j edge."
+  ]
+}
