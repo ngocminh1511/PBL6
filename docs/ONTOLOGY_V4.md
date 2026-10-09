@@ -9,7 +9,7 @@ not replace the ABox.
 From the repository root:
 
 ```powershell
-& .\labor_rag\venv\Scripts\python.exe .\scripts\parse_an_toan_ve_sinh_lao_dong_abox.py
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.ingest.build_abox --de-muc 20.5
 & .\labor_rag\venv\Scripts\python.exe .\scripts\validate_abox.py --report .\ontology\reports\validation_report.json
 & .\labor_rag\venv\Scripts\python.exe .\tests\test_cq_v4.py
 & .\labor_rag\venv\Scripts\python.exe -m labor_rag.ingest.ontology_to_jsonl `

@@ -9,7 +9,8 @@ Neo4j (đồ thị) + Qdrant (vector) → truy hồi lai → LLM trả lời kè
 PBL6/
 ├── labor_rag/              # Package Python chính (chạy bằng python -m labor_rag.<...>)
 │   ├── config.py           # Mọi đường dẫn dự án, tính từ vị trí repo
-│   ├── ingest/             # Parse dữ liệu, dựng chunk/KG, nạp Neo4j & Qdrant
+│   ├── ingest/             # parse_demuc_html (bộ đọc HTML chung), build_abox (ABox v4 cho mọi đề mục),
+│   │                       # ontology_to_jsonl, nạp Neo4j & Qdrant, pipeline legacy
 │   ├── retrieval/          # Query rewrite, hybrid retrieval, rerank
 │   ├── generation/         # LLM client, sinh câu trả lời, kiểm tra trích dẫn
 │   ├── app/                # chat.py – REPL end-to-end
@@ -24,7 +25,7 @@ PBL6/
 │   ├── interim/            # chu_de.json, de_muc.json, mapc_index.json, parsed/
 │   ├── legacy/             # chunks + KG của pipeline cũ (collection labor_dieu)
 │   └── processed/ontology_v4/   # JSONL chiếu từ ABox v4 cho Neo4j/Qdrant
-├── scripts/                # Script chạy một lần: parse ABox, validate, sắp xếp dữ liệu thô
+├── scripts/                # Script chạy một lần: validate ABox, sắp xếp dữ liệu thô
 ├── tests/                  # Competency-question tests cho ABox
 ├── notebooks/              # Phân tích dataset, benchmark embedding
 ├── docs/                   # ONTOLOGY_V4.md; references/ (paper, slide – không lên git)
@@ -50,7 +51,7 @@ Mọi lệnh đều chạy từ **thư mục gốc repo**.
 Xem chi tiết trong [docs/ONTOLOGY_V4.md](docs/ONTOLOGY_V4.md).
 
 ```powershell
-python scripts/parse_an_toan_ve_sinh_lao_dong_abox.py
+python -m labor_rag.ingest.build_abox --de-muc 20.5     # hoặc: --chu-de 20 --output ontology/abox/abox_lao_dong.ttl
 python scripts/validate_abox.py --report ontology/reports/validation_report.json
 python tests/test_cq_v4.py
 python -m labor_rag.ingest.ontology_to_jsonl --abox ontology/abox/abox_an_toan_ve_sinh_lao_dong.ttl

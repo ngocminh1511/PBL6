@@ -78,6 +78,8 @@ CLASS_LABELS = {
 SPECIAL_PROPERTY_KEYS = {
     f"{VLPD}codificationNumber": "mapc",
     f"{VLPD}heading": "ten",
+    f"{VLPD}itemName": "ten",
+    f"{VLPD}topicName": "ten",
     f"{VLPD}contentText": "text",
     f"{VLD}title": "ten",
     f"{VLD}documentNumber": "document_number",
