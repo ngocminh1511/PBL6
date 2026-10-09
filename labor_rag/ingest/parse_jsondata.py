@@ -1,4 +1,4 @@
-"""Parse BoPhapDienDienTu/jsonData.js into plain JSON indexes.
+"""Parse data/raw/bophapdien/jsonData.js into plain JSON indexes.
 
 jsonData.js is not valid JSON on its own -- it is three JS assignments
 (`jdChuDe = [...]`, `jdDeMuc = [...]`, `jdAllTree = [...]`) whose right-hand
@@ -6,7 +6,9 @@ sides are each a well-formed JSON array. We locate each assignment and use
 json.JSONDecoder.raw_decode to parse just the array literal that follows,
 ignoring the surrounding JS.
 
-Outputs (under data/):
+Usage: python -m labor_rag.ingest.parse_jsondata
+
+Outputs (under data/interim/):
   chu_de.json        -- {ChuDeID: {"Text":..., "STT":...}}
   de_muc.json         -- {DeMucID: {"Text":..., "STT":..., "ChuDe":...}}
   mapc_index.json     -- {MAPC: {"TEN":..., "ChuDeID":..., "DeMucID":..., "ChiMuc":..., "ID":...}}
@@ -19,10 +21,12 @@ import json
 import sys
 from pathlib import Path
 
+from labor_rag.config import BOPHAPDIEN_DIR, INTERIM_DIR
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-SOURCE = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\BoPhapDienDienTu\jsonData.js")
-OUT_DIR = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data")
+SOURCE = BOPHAPDIEN_DIR / "jsonData.js"
+OUT_DIR = INTERIM_DIR
 
 VARS = ("jdChuDe", "jdDeMuc", "jdAllTree")
 

@@ -1,3 +1,7 @@
+# Keep the project name from when this file lived in labor_rag/, so the
+# existing labor_rag_neo4j_data / labor_rag_qdrant_data volumes are reused.
+name: labor_rag
+
 services:
   neo4j:
     image: neo4j:5-community

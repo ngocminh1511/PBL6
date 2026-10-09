@@ -11,9 +11,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 
 def main() -> int:
-    base_dir = Path(__file__).resolve().parent
+    abox_dir = Path(__file__).resolve().parents[1] / "ontology" / "abox"
     parser = argparse.ArgumentParser()
-    parser.add_argument("--abox", type=Path, default=base_dir / "abox_an_toan_ve_sinh_lao_dong.ttl")
+    parser.add_argument("--abox", type=Path, default=abox_dir / "abox_an_toan_ve_sinh_lao_dong.ttl")
     args = parser.parse_args()
 
     graph = Graph().parse(args.abox, format="turtle")

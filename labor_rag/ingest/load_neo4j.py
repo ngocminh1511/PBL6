@@ -1,10 +1,9 @@
 """Load a JSONL graph projection into Neo4j.
 
-The default data directory remains ``labor_rag/data`` for backward
-compatibility. The ontology projection can be loaded without touching the
-legacy files:
+The default data directory is ``data/legacy`` for backward compatibility.
+The ontology projection can be loaded without touching the legacy files:
 
-    python ingest/load_neo4j.py --data-dir data/ontology_v4
+    python -m labor_rag.ingest.load_neo4j --data-dir data/processed/ontology_v4
 """
 from __future__ import annotations
 
@@ -17,6 +16,8 @@ from collections import defaultdict
 from pathlib import Path
 
 from neo4j import GraphDatabase
+
+from labor_rag.config import LEGACY_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -33,9 +34,8 @@ def read_jsonl(path: Path) -> list[dict]:
 
 
 def main() -> int:
-    project_dir = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=project_dir / "labor_rag" / "data")
+    parser.add_argument("--data-dir", type=Path, default=LEGACY_DIR)
     parser.add_argument("--uri", default=os.getenv("NEO4J_URI", "bolt://localhost:7687"))
     parser.add_argument("--user", default=os.getenv("NEO4J_USER", "neo4j"))
     parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD", "labor_rag_pw"))

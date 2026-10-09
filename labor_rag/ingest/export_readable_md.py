@@ -1,4 +1,4 @@
-"""Export parsed de-muc trees (data/parsed/*.json, from parse_demuc_html.py)
+"""Export parsed de-muc trees (data/interim/parsed/*.json, from parse_demuc_html.py)
 as human-readable Markdown, organized in folders by Chu De (field of law) ->
 De Muc (topic), so the data is easy to browse for a demo -- instead of flat
 UUID-named HTML files with no grouping.
@@ -7,20 +7,19 @@ This reads the ALREADY-PARSED hierarchy (Chuong/Muc/Dieu/Khoan/Diem), so the
 Markdown structure is guaranteed identical to what's loaded into Neo4j/Qdrant
 -- it's a display format, not a re-parse of the raw HTML.
 
-Usage: python ingest/export_readable_md.py
+Usage: python -m labor_rag.ingest.export_readable_md
 """
 from __future__ import annotations
 
 import json
 import re
 import sys
-from pathlib import Path
+
+from labor_rag.config import INTERIM_DIR, PARSED_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DATA_DIR = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data")
-PARSED_DIR = DATA_DIR / "parsed"
-OUT_DIR = DATA_DIR / "readable"
+OUT_DIR = INTERIM_DIR / "readable"
 
 _UNSAFE_FILENAME = re.compile(r'[\\/:*?"<>|]')
 
@@ -67,8 +66,8 @@ def render_tree(tree: dict, de_muc_ten: str) -> str:
 
 
 def main() -> None:
-    chu_de = json.loads((DATA_DIR / "chu_de.json").read_text(encoding="utf-8"))
-    de_muc_meta = json.loads((DATA_DIR / "de_muc.json").read_text(encoding="utf-8"))
+    chu_de = json.loads((INTERIM_DIR / "chu_de.json").read_text(encoding="utf-8"))
+    de_muc_meta = json.loads((INTERIM_DIR / "de_muc.json").read_text(encoding="utf-8"))
 
     n_written = 0
     for path in sorted(PARSED_DIR.glob("*.json")):

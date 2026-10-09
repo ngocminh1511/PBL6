@@ -5,7 +5,7 @@ Standalone Query" stage of the pipeline.
 """
 from __future__ import annotations
 
-from generation.llm_client import complete
+from labor_rag.generation.llm_client import complete
 
 SYSTEM = (
     "Bạn viết lại câu hỏi pháp luật lao động Việt Nam thành một câu hỏi độc lập "

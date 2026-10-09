@@ -5,9 +5,9 @@ The parser produces the semantic vocabulary from
 generated later by ``labor_rag/ingest/ontology_to_jsonl.py``.
 
 Usage:
-    python parse_an_toan_ve_sinh_lao_dong_abox.py \
-        --input ..\BoPhapDienDienTu\linh_vuc\lao_dong\an_toan_ve_sinh_lao_dong.html \
-        --output abox_an_toan_ve_sinh_lao_dong.ttl
+    python scripts/parse_an_toan_ve_sinh_lao_dong_abox.py \
+        --input data/raw/bophapdien/linh_vuc/lao_dong/an_toan_ve_sinh_lao_dong.html \
+        --output ontology/abox/abox_an_toan_ve_sinh_lao_dong.ttl
 """
 from __future__ import annotations
 
@@ -306,12 +306,13 @@ def parse_html_to_abox(html_path: Path, output_ttl: Path, topic_number: int = 20
 
 
 def main() -> None:
-    base_dir = Path(__file__).resolve().parent
-    project_dir = base_dir.parent
-    default_input = project_dir / "BoPhapDienDienTu" / "linh_vuc" / "lao_dong" / "an_toan_ve_sinh_lao_dong.html"
+    project_dir = Path(__file__).resolve().parents[1]
+    default_input = (
+        project_dir / "data" / "raw" / "bophapdien" / "linh_vuc" / "lao_dong" / "an_toan_ve_sinh_lao_dong.html"
+    )
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=default_input)
-    parser.add_argument("--output", type=Path, default=base_dir / "abox_an_toan_ve_sinh_lao_dong.ttl")
+    parser.add_argument("--output", type=Path, default=project_dir / "ontology" / "abox" / "abox_an_toan_ve_sinh_lao_dong.ttl")
     parser.add_argument("--topic-number", type=int, default=20)
     parser.add_argument("--item-number", type=int, default=5)
     args = parser.parse_args()

@@ -3,19 +3,21 @@
 **/.venv/
 **/__pycache__/
 *.py[cod]
+.ipynb_checkpoints/
 
 # Local credentials and environment files
 .env
 **/.env
 !.env.example
 
-# Parsed/raw datasets and runtime indexes
-labor_rag/data/*
-!labor_rag/data/ontology_v4/
-!labor_rag/data/ontology_v4/**
-BoPhapDienDienTu/
-crawl_data/
-paper/
+# Datasets: only the versioned ontology projection is tracked
+data/*
+!data/processed/
+data/processed/*
+!data/processed/ontology_v4/
+
+# Reference papers/slides (large binaries)
+docs/references/
 
 # Local service/runtime state
 *.log

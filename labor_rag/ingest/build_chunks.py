@@ -2,18 +2,20 @@
 retrieval chunks -- one chunk per Dieu, prefixed with a breadcrumb so the
 embedding carries hierarchy context (Chuong/Muc/citation) even though the
 chunk itself is just the Dieu's own text.
+
+Usage: python -m labor_rag.ingest.build_chunks
 """
 from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
+
+from labor_rag.config import INTERIM_DIR, LEGACY_DIR, PARSED_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-PARSED_DIR = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data\parsed")
-DE_MUC_META = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data\de_muc.json")
-OUT_PATH = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data\chunks.jsonl")
+DE_MUC_META = INTERIM_DIR / "de_muc.json"
+OUT_PATH = LEGACY_DIR / "chunks.jsonl"
 
 
 def _dieu_body(dieu: dict) -> str:

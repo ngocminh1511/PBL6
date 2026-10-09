@@ -1,14 +1,14 @@
 """Project a v4 RDF ABox into the JSONL contracts used by labor_rag.
 
 The ABox remains the source of truth. The generated directory is deliberately
-separate from the legacy ``labor_rag/data`` outputs so the current pipeline is
+separate from the legacy ``data/legacy`` outputs so the current pipeline is
 not overwritten.
 
 Usage:
-    python labor_rag/ingest/ontology_to_jsonl.py \
-        --abox ontology/abox_an_toan_ve_sinh_lao_dong.ttl \
-        --schema ontology/vn_legal_ontology_schema_v4.ttl \
-        --out-dir labor_rag/data/ontology_v4
+    python -m labor_rag.ingest.ontology_to_jsonl \
+        --abox ontology/abox/abox_an_toan_ve_sinh_lao_dong.ttl \
+        --schema ontology/schema/vn_legal_ontology_schema_v4.ttl \
+        --out-dir data/processed/ontology_v4
 """
 from __future__ import annotations
 
@@ -21,6 +21,8 @@ from pathlib import Path
 from typing import Iterable
 
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
+
+from labor_rag.config import ONTOLOGY_V4_DIR, SCHEMA_V4_PATH
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -246,11 +248,10 @@ def build_breadcrumb(graph: Graph, article, node_by_uri: dict[str, dict]) -> str
 
 
 def main() -> int:
-    base_dir = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--abox", type=Path, required=True)
-    parser.add_argument("--schema", type=Path, default=base_dir / "ontology" / "vn_legal_ontology_schema_v4.ttl")
-    parser.add_argument("--out-dir", type=Path, default=base_dir / "labor_rag" / "data" / "ontology_v4")
+    parser.add_argument("--schema", type=Path, default=SCHEMA_V4_PATH)
+    parser.add_argument("--out-dir", type=Path, default=ONTOLOGY_V4_DIR)
     parser.add_argument("--dataset-id", default="an_toan_ve_sinh_lao_dong_v4")
     args = parser.parse_args()
 

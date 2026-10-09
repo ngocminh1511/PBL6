@@ -2,8 +2,8 @@
 LLM to cite Dieu/Khoan/Diem for every claim."""
 from __future__ import annotations
 
-from generation.llm_client import complete
-from retrieval.hybrid_retrieve import Evidence
+from labor_rag.generation.llm_client import complete
+from labor_rag.retrieval.hybrid_retrieve import Evidence
 
 SYSTEM = (
     "Bạn là trợ lý tư vấn pháp luật lao động Việt Nam. "

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-from retrieval.hybrid_retrieve import Evidence
+from labor_rag.retrieval.hybrid_retrieve import Evidence
 
 CITE_RE = re.compile(r"Điều\s+\d+(?:[.,]\d+)*")
 

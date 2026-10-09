@@ -1,4 +1,4 @@
-"""Parse one BoPhapDienDienTu/demuc/<id>.html file into a hierarchical tree.
+"""Parse one data/raw/bophapdien/linh_vuc/<chu_de>/<de_muc>.html file into a hierarchical tree.
 
 Key HTML fact (verified with BeautifulSoup+lxml, which follows the same
 auto-close rule real browsers use): the source markup nests <p> inside
@@ -24,6 +24,8 @@ import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
+
+from labor_rag.config import BOPHAPDIEN_DIR, PARSED_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -187,18 +189,18 @@ def _count_dieu(tree: dict) -> int:
 
 
 def main() -> None:
-    bo_phap_dien_dir = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\BoPhapDienDienTu")
-    out_dir = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data\parsed")
+    bo_phap_dien_dir = BOPHAPDIEN_DIR
+    out_dir = PARSED_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # demuc/<id>.html files were reorganized into linh_vuc/<chu_de>/<de_muc>.html
-    # by reorganize_by_linh_vuc.py; this index maps id -> current relative path.
+    # by scripts/reorganize_by_linh_vuc.py; this index maps id -> current relative path.
     index_path = bo_phap_dien_dir / "linh_vuc_index.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
 
     ids = sys.argv[1:]
     if not ids:
-        print("Usage: python parse_demuc_html.py <de_muc_id> [<de_muc_id> ...]")
+        print("Usage: python -m labor_rag.ingest.parse_demuc_html <de_muc_id> [<de_muc_id> ...]")
         raise SystemExit(1)
 
     for de_muc_id in ids:
@@ -217,6 +219,10 @@ def main() -> None:
         # build_kg.py) can still key into de_muc.json/mapc_index.json by id.
         tree["de_muc_id"] = de_muc_id
         n_dieu = _count_dieu(tree)
+        if n_dieu == 0:
+            # De muc chua co noi dung (vd. 20.1): khong ghi file JSON rong.
+            print(f"{de_muc_id}: khong co Dieu nao, bo qua.")
+            continue
         n_chuong = len(tree["chuong"])
         n_muc = sum(len(ch["muc"]) for ch in tree["chuong"])
         n_refs = sum(

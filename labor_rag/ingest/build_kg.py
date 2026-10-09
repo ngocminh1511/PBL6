@@ -9,30 +9,31 @@ Edge types:
 
 REFERS_TO targets that fall outside the set of de-muc files actually parsed
 (cross-domain references -- see analysis in the plan) are resolved via the
-global data/mapc_index.json (built from jdAllTree, which covers the ENTIRE
+global data/interim/mapc_index.json (built from jdAllTree, which covers the ENTIRE
 Bo Phap Dien, not just the ingested domain) and stored as a stub Dieu node
 with content_available=false, so the edge still exists for graph traversal /
 explanation even before that domain is ingested.
 
 Output (JSON Lines, one object per line -- easy to UNWIND/MERGE into Neo4j):
-  data/kg_nodes.jsonl  {"id", "label", **properties}
-  data/kg_edges.jsonl  {"source", "target", "type"}
+  data/legacy/kg_nodes.jsonl  {"id", "label", **properties}
+  data/legacy/kg_edges.jsonl  {"source", "target", "type"}
+
+Usage: python -m labor_rag.ingest.build_kg
 """
 from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
+
+from labor_rag.config import INTERIM_DIR, LEGACY_DIR, PARSED_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DATA_DIR = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data")
-PARSED_DIR = DATA_DIR / "parsed"
 
 
 def main() -> None:
-    mapc_index = json.loads((DATA_DIR / "mapc_index.json").read_text(encoding="utf-8"))
-    de_muc_meta = json.loads((DATA_DIR / "de_muc.json").read_text(encoding="utf-8"))
+    mapc_index = json.loads((INTERIM_DIR / "mapc_index.json").read_text(encoding="utf-8"))
+    de_muc_meta = json.loads((INTERIM_DIR / "de_muc.json").read_text(encoding="utf-8"))
 
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
@@ -129,11 +130,11 @@ def main() -> None:
             add_node(target, "Dieu", ten=edge["display_text"], de_muc_id=None, content_available=False)
             n_stub_from_display += 1
 
-    (DATA_DIR / "kg_nodes.jsonl").write_text(
+    (LEGACY_DIR / "kg_nodes.jsonl").write_text(
         "\n".join(json.dumps(node, ensure_ascii=False) for node in nodes.values()),
         encoding="utf-8",
     )
-    (DATA_DIR / "kg_edges.jsonl").write_text(
+    (LEGACY_DIR / "kg_edges.jsonl").write_text(
         "\n".join(json.dumps(edge, ensure_ascii=False) for edge in edges), encoding="utf-8"
     )
 
@@ -146,7 +147,7 @@ def main() -> None:
     print(f"Edges: {len(edges)} (REFERS_TO: {n_refers_to})")
     print(f"REFERS_TO stub targets resolved via mapc_index: {n_stub_indexed}")
     print(f"REFERS_TO stub targets resolved via pChiDan display_text (not in mapc_index): {n_stub_from_display}")
-    print(f"Wrote {DATA_DIR / 'kg_nodes.jsonl'} and {DATA_DIR / 'kg_edges.jsonl'}")
+    print(f"Wrote {LEGACY_DIR / 'kg_nodes.jsonl'} and {LEGACY_DIR / 'kg_edges.jsonl'}")
 
 
 if __name__ == "__main__":

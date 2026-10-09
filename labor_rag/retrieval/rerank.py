@@ -7,8 +7,8 @@ from __future__ import annotations
 import json
 import re
 
-from generation.llm_client import complete
-from retrieval.hybrid_retrieve import Evidence
+from labor_rag.generation.llm_client import complete
+from labor_rag.retrieval.hybrid_retrieve import Evidence
 
 SYSTEM = (
     "Bạn là chuyên gia pháp luật lao động Việt Nam. Nhiệm vụ: chọn ra các điều luật "

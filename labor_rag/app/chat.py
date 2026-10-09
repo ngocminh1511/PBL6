@@ -3,7 +3,7 @@ Hybrid Retrieval -> Rerank/Prune -> LLM Answer -> Citation Verification ->
 Final Legal Answer + Dieu/Khoan/Diem Citation.
 
 Usage:
-  python -m app.chat                 # interactive REPL
+  python -m labor_rag.app.chat      # interactive REPL, from the repository root
 """
 from __future__ import annotations
 
@@ -11,11 +11,11 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from generation.answer import generate_answer
-from generation.citation_verify import verify_citations
-from retrieval.hybrid_retrieve import HybridRetriever
-from retrieval.query_rewrite import rewrite_query
-from retrieval.rerank import rerank
+from labor_rag.generation.answer import generate_answer
+from labor_rag.generation.citation_verify import verify_citations
+from labor_rag.retrieval.hybrid_retrieve import HybridRetriever
+from labor_rag.retrieval.query_rewrite import rewrite_query
+from labor_rag.retrieval.rerank import rerank
 
 
 class LaborLawChat:

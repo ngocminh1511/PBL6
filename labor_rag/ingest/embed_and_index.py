@@ -1,8 +1,8 @@
-"""Embed data/chunks.jsonl (from build_chunks.py) with a Vietnamese
+"""Embed data/legacy/chunks.jsonl (from build_chunks.py) with a Vietnamese
 sentence-embedding model and upsert into Qdrant. Requires the qdrant
 container from docker-compose.yml to be running.
 
-Usage: python ingest/embed_and_index.py
+Usage: python -m labor_rag.ingest.embed_and_index [--chunks ...] [--collection ...]
 """
 from __future__ import annotations
 
@@ -16,10 +16,11 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
+from labor_rag.config import LEGACY_DIR
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-DATA_DIR = Path(r"D:\Work\Learn\HK7_2026-2027\PBL6\labor_rag\data")
-CHUNKS_PATH = DATA_DIR / "chunks.jsonl"
+CHUNKS_PATH = LEGACY_DIR / "chunks.jsonl"
 
 MODEL_NAME = os.getenv("EMBEDDING_MODEL", "bkai-foundation-models/vietnamese-bi-encoder")
 COLLECTION = os.getenv("QDRANT_COLLECTION", "labor_dieu")

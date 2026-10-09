@@ -33,11 +33,12 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
+from labor_rag.config import EVALUATION_DIR, ONTOLOGY_V4_DIR
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-DEFAULT_CHUNKS = ROOT_DIR / "labor_rag" / "data" / "ontology_v4" / "chunks.jsonl"
-DEFAULT_QUESTIONS = ROOT_DIR / "labor_rag" / "evaluation" / "benchmark_questions.jsonl"
-DEFAULT_RESULTS = ROOT_DIR / "labor_rag" / "evaluation" / "results"
+
+DEFAULT_CHUNKS = ONTOLOGY_V4_DIR / "chunks.jsonl"
+DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
+DEFAULT_RESULTS = EVALUATION_DIR / "results"
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 BATCH_SIZE = 64
 
