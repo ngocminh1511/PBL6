@@ -1,8 +1,8 @@
 """Validate an ABox against schema v4 and SHACL shapes.
 
 Usage:
-    python scripts/validate_abox.py --abox ontology/abox/abox_an_toan_ve_sinh_lao_dong.ttl \
-        --report ontology/reports/validation_report.json
+    python scripts/validate_abox.py --report ontology/reports/validation_report.json
+    (default --abox: ontology/abox/abox_lao_dong.ttl)
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schema", type=Path, default=ontology_dir / "schema" / "vn_legal_ontology_schema_v4.ttl")
     parser.add_argument("--shapes", type=Path, default=ontology_dir / "schema" / "vn_legal_ontology_shapes_v4.ttl")
-    parser.add_argument("--abox", type=Path, default=ontology_dir / "abox" / "abox_an_toan_ve_sinh_lao_dong.ttl")
+    parser.add_argument("--abox", type=Path, default=ontology_dir / "abox" / "abox_lao_dong.ttl")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
 

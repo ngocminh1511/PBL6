@@ -1,9 +1,8 @@
 """Load a JSONL graph projection into Neo4j.
 
-The default data directory is ``data/legacy`` for backward compatibility.
-The ontology projection can be loaded without touching the legacy files:
+The default data directory is the Lao dong projection:
 
-    python -m labor_rag.ingest.load_neo4j --data-dir data/processed/ontology_v4
+    python -m labor_rag.ingest.load_neo4j --replace-dataset
 """
 from __future__ import annotations
 
@@ -17,7 +16,7 @@ from pathlib import Path
 
 from neo4j import GraphDatabase
 
-from labor_rag.config import LEGACY_DIR
+from labor_rag.config import LAO_DONG_V4_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -35,7 +34,7 @@ def read_jsonl(path: Path) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=LEGACY_DIR)
+    parser.add_argument("--data-dir", type=Path, default=LAO_DONG_V4_DIR)
     parser.add_argument("--uri", default=os.getenv("NEO4J_URI", "bolt://localhost:7687"))
     parser.add_argument("--user", default=os.getenv("NEO4J_USER", "neo4j"))
     parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD", "labor_rag_pw"))
@@ -53,7 +52,9 @@ def main() -> int:
     if not nodes:
         raise ValueError(f"No graph nodes found in {args.data_dir}")
 
-    dataset_id = args.dataset_id or nodes[0].get("dataset_id") or "legacy"
+    dataset_id = args.dataset_id or nodes[0].get("dataset_id")
+    if not dataset_id:
+        raise ValueError("Nodes carry no dataset_id; pass --dataset-id")
     for node in nodes:
         node.setdefault("dataset_id", dataset_id)
     for edge in edges:
@@ -96,7 +97,7 @@ def main() -> int:
         for edge in edges:
             edge = dict(edge)
             edge["type"] = safe_identifier(str(edge.get("type")), "RELATED_TO")
-            edge["predicate_iri"] = edge.get("predicate_iri") or f"legacy:{edge['type']}"
+            edge["predicate_iri"] = edge.get("predicate_iri") or f"local:{edge['type']}"
             by_type[edge["type"]].append(edge)
         for edge_type, items in by_type.items():
             session.run(

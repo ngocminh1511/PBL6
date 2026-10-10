@@ -14,7 +14,6 @@
 data/*
 !data/processed/
 data/processed/*
-!data/processed/ontology_v4/
 !data/processed/lao_dong_v4/
 
 # Reference papers/slides (large binaries)

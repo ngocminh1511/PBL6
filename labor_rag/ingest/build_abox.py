@@ -1,16 +1,15 @@
 r"""Build a v4 ABox (Turtle) for any de muc of the Bo Phap Dien.
 
-The HTML is read by parse_demuc_html.parse_demuc_nodes() -- the same reader
-the legacy pipeline uses -- so every de muc in data/raw/bophapdien goes
-through one code path. Topic/item numbers and names come from
+The HTML is read in memory by parse_demuc_html.parse_demuc_nodes(), so every
+de muc in data/raw/bophapdien goes through one code path. Topic/item numbers and names come from
 data/interim/chu_de.json and de_muc.json (run parse_jsondata first); source
 documents, their issuing authorities and validity dates are derived from the
 pGhiChu citation of each Dieu, and amending documents from its
 "... được sửa đổi ... bởi Điều X <văn bản>" tail.
 
 Usage (from the repository root):
-    python -m labor_rag.ingest.build_abox --de-muc 20.5
     python -m labor_rag.ingest.build_abox --chu-de 20 --output ontology/abox/abox_lao_dong.ttl
+    python -m labor_rag.ingest.build_abox --de-muc 20.5     # one de muc -> abox_<de muc>.ttl
 """
 from __future__ import annotations
 

@@ -1,14 +1,10 @@
 """Project a v4 RDF ABox into the JSONL contracts used by labor_rag.
 
-The ABox remains the source of truth. The generated directory is deliberately
-separate from the legacy ``data/legacy`` outputs so the current pipeline is
-not overwritten.
+The ABox remains the source of truth; chunks.jsonl is what gets embedded and
+kg_nodes/kg_edges.jsonl what gets loaded into Neo4j.
 
-Usage:
-    python -m labor_rag.ingest.ontology_to_jsonl \
-        --abox ontology/abox/abox_an_toan_ve_sinh_lao_dong.ttl \
-        --schema ontology/schema/vn_legal_ontology_schema_v4.ttl \
-        --out-dir data/processed/ontology_v4
+Usage (defaults: the Lao dong ABox -> data/processed/lao_dong_v4):
+    python -m labor_rag.ingest.ontology_to_jsonl
 """
 from __future__ import annotations
 
@@ -22,7 +18,7 @@ from typing import Iterable
 
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
 
-from labor_rag.config import ONTOLOGY_V4_DIR, SCHEMA_V4_PATH
+from labor_rag.config import LAO_DONG_ABOX_PATH, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR, ROOT_DIR, SCHEMA_V4_PATH
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -249,12 +245,20 @@ def build_breadcrumb(graph: Graph, article, node_by_uri: dict[str, dict]) -> str
     return " > ".join(parts)
 
 
+def repo_relative(path: Path) -> str:
+    """Keep machine-specific prefixes out of the tracked manifest."""
+    try:
+        return path.resolve().relative_to(ROOT_DIR).as_posix()
+    except ValueError:
+        return str(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--abox", type=Path, required=True)
+    parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH)
     parser.add_argument("--schema", type=Path, default=SCHEMA_V4_PATH)
-    parser.add_argument("--out-dir", type=Path, default=ONTOLOGY_V4_DIR)
-    parser.add_argument("--dataset-id", default="an_toan_ve_sinh_lao_dong_v4")
+    parser.add_argument("--out-dir", type=Path, default=LAO_DONG_V4_DIR)
+    parser.add_argument("--dataset-id", default=LAO_DONG_DATASET_ID)
     args = parser.parse_args()
 
     graph = Graph().parse(args.abox, format="turtle")
@@ -264,7 +268,9 @@ def main() -> int:
     all_terms = graph_subjects(graph)
     mapc_by_subject: dict[str, str] = {}
     used_mapcs: set[str] = set()
-    for subject in all_terms:
+    # Sorted so a repeated code always goes to the first Dieu (Article_X sorts
+    # before Article_X_dup2); set order would swap them between runs.
+    for subject in sorted(all_terms, key=str):
         mapc = mapc_for(graph, subject)
         if mapc and mapc not in used_mapcs:
             mapc_by_subject[str(subject)] = mapc
@@ -373,6 +379,7 @@ def main() -> int:
             if inverse_key not in seen_edges:
                 seen_edges.add(inverse_key)
                 edges.append(inverse)
+    edges.sort(key=lambda e: (e["source"], e["type"], e["target"], e["predicate_iri"]))
 
     node_by_uri = nodes
     chunks = []
@@ -409,8 +416,8 @@ def main() -> int:
     used_classes = sorted({class_uri for node in nodes.values() for class_uri in node["class_iris"]})
     used_predicates = sorted({edge["predicate_iri"] for edge in edges})
     manifest = {
-        "schema": str(args.schema),
-        "abox": str(args.abox),
+        "schema": repo_relative(args.schema),
+        "abox": repo_relative(args.abox),
         "dataset_id": args.dataset_id,
         "schema_counts": {
             "classes": len(schema_classes),

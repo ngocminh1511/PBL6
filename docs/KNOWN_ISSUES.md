@@ -1,28 +1,19 @@
 # Thiếu sót đã biết
 
-Cập nhật: 2026-10-09, sau commit `d1e9257` (bộ đọc HTML chung + `build_abox`).
+Cập nhật: 2026-10-10. Đã bỏ pipeline legacy và bộ dữ liệu chỉ có 20.5, chỉ còn bộ `lao_dong_v4`.
 Các con số dưới đây lấy từ lần dựng ABox cho toàn bộ 45 chủ đề có dữ liệu
 (`python -m labor_rag.ingest.build_abox --chu-de 1 ... 45`): 65.997 Điều, 1,44 triệu triple, SHACL 0 vi phạm.
 
 ---
 
-## 1. Kết quả benchmark embedding đã cũ
+## 1. Chưa có kết quả benchmark embedding trên dữ liệu Lao động
 
-**Trạng thái:** cần chạy lại.
+**Trạng thái:** cần chạy.
 
-`data/processed/ontology_v4/` đã được sinh lại bằng parser mới, nhưng
-`labor_rag/evaluation/results/` (`summary.csv`, `per_query_results.jsonl`,
-`model_metadata.json`) vẫn là kết quả của lần chạy ngày 2026-09-30 trên dữ liệu cũ.
-
-Dữ liệu đã thay đổi:
-
-| | Trước | Sau |
-|---|---|---|
-| Số chunk đề mục 20.5 | 348 | 350 (tách đúng 2 Điều trùng mã `20.5.TT.74.1`, `20.5.TT.74.2`) |
-| Breadcrumb | `DeMuc > Chương I` | `An toàn, vệ sinh lao động > Chương I. QUY ĐỊNH CHUNG` |
-| Nội dung Điều | `20.5.TT.48.1`, `20.5.TT.93.5` thiếu một phần (bảng, đoạn dán từ Word) | đủ nội dung |
-
-`model_metadata.json` cũng còn ghi đường dẫn cũ (`labor_rag\data\ontology_v4\...`).
+Ngày 2026-10-10 đã xóa bộ dữ liệu thử nghiệm chỉ gồm 20.5 (`data/processed/ontology_v4/`) cùng kết quả benchmark
+cũ của nó (ngày 2026-09-30, 348 chunk, parser cũ). Hiện chỉ còn một bộ dữ liệu:
+`data/processed/lao_dong_v4/` (1.407 chunk). Benchmark mặc định chạy trên bộ này,
+với các collection `legal_ld_v4_*`.
 
 **Cách xử lý** (cần bật Docker):
 
@@ -33,7 +24,8 @@ docker compose up -d
 
 Phải dùng `--rebuild`: bộ benchmark chỉ so tập MAPC để quyết định dùng lại
 collection, nên nếu tập MAPC trùng mà text đã đổi, nó sẽ dùng lại vector cũ.
-Sau đó chạy lại `notebooks/embedding_benchmark.ipynb` để cập nhật biểu đồ.
+Sau đó chạy lại `notebooks/embedding_benchmark.ipynb` để cập nhật biểu đồ. Output đang lưu trong notebook
+vẫn là kết quả cũ trên 20.5.
 
 ---
 
@@ -108,3 +100,19 @@ Các điểm này không còn gây lỗi, nhưng cần biết khi đọc số li
 - **Mã Điều trùng trong dữ liệu gốc**: 171 Điều thừa ở 28 đề mục, ví dụ `20.5.TT.74.1`, `20.4.TT.5.2`. ABox giữ cả hai Điều; Điều xuất hiện sau có URI hậu tố `_dup2` nhưng cùng `codificationNumber`.
 - **429 Điều không có đoạn nội dung riêng**: toàn bộ quy định nằm trong dòng tiêu đề. `contentText` của các Điều này lấy bằng chính tiêu đề.
 - **8 Điều không có ghi chú nguồn**, ví dụ `41a` (Công nghiệp), `35.8.LQ.68a`.
+
+---
+
+## 5. Kiểm tra parse chủ đề Lao động (2026-10-10)
+
+Đã đối chiếu parser với HTML gốc trên 20.2–20.5. Kết quả: số Điều, thứ tự MAPC, vị trí Chương/Mục,
+ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có token nội dung nào bị sót, ngoài tiêu đề trang.
+`chunks.jsonl` chứa đủ các đoạn của mọi Điều. Những điểm còn lại:
+
+- **Chunk của Điều trùng mã có id dạng URI.** Bản thứ hai của `20.4.TT.5.2`, `20.5.TT.74.1` và `20.5.TT.74.2`
+  có `chunk_id`/`mapc` là `https://example.org/vn-legal/instance#Article_..._dup2`, không phải mã Điều.
+  Lý do: `ontology_to_jsonl` lấy id của node, và id này chuyển sang URI khi mã bị trùng. Nội dung chunk vẫn đúng.
+- **48 Điều không có tiêu đề trong nguồn** (47 ở 20.5, ví dụ `20.5.QĐ.1.2`, và 1 ở 20.4). Trường `ten` của chunk
+  được thay bằng "Điều <mã>.".
+- **Số khoản không liên tục** ở `20.2.NĐ.4.13`, `20.4.NĐ.3.18`, `20.4.NĐ.3.22`, `20.4.NĐ.3.30`.
+  Các khoản này thiếu ngay trong HTML gốc, không phải do lỗi parse.

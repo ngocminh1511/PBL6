@@ -1,8 +1,8 @@
 """Parse one data/raw/bophapdien/linh_vuc/<chu_de>/<de_muc>.html file into a hierarchical tree.
 
-This module is the single HTML reader for the Bo Phap Dien dump. Both
-pipelines use it: the legacy JSON trees (parse_demuc) and the ontology v4
-ABox (build_abox.py, via parse_demuc_nodes).
+This module is the single HTML reader for the Bo Phap Dien dump. It writes
+no files: build_abox.py calls parse_demuc_nodes() and turns the tree into the
+ontology v4 ABox directly.
 
 Key HTML facts (verified on all 306 de muc files):
 
@@ -30,14 +30,11 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
-from labor_rag.config import BOPHAPDIEN_DIR, PARSED_DIR
-
-sys.stdout.reconfigure(encoding="utf-8")
+from labor_rag.config import BOPHAPDIEN_DIR
 
 # Checked in order: "Tiểu mục" must win over "Mục".
 HEADING_LEVELS = [
@@ -48,8 +45,6 @@ HEADING_LEVELS = [
 ]
 LEVEL_RANK = {"phan": 0, "chuong": 1, "muc": 2, "tieu_muc": 3}
 DIEU_RE = re.compile(r"^Điều\s+(\S+?)\.?(?:\s+(.*))?$", re.IGNORECASE)
-KHOAN_RE = re.compile(r"^(\d{1,3})\s*\.\s*")
-DIEM_RE = re.compile(r"^([a-zđ]{1,2})\s*\)\s*", re.IGNORECASE)
 CHIDAN_LINK_RE = re.compile(r"ViewNoiDungPhapDien\('([^']+)'\)")
 DE_MUC_HEADER_RE = re.compile(r"Đề mục\s+([\d.]+)")
 STRUCTURAL_CLASSES = {"pChuong", "pDieu", "pGhiChu", "pNoiDung", "pChiDan"}
@@ -153,29 +148,6 @@ def split_dieu_heading(ten: str) -> tuple[str | None, str]:
     return m.group(1).rstrip("."), (m.group(2) or "").strip()
 
 
-def split_khoan_diem(paragraphs: list[str]) -> list[dict]:
-    """Group a flat list of content paragraphs into Khoan -> Diem."""
-    khoan_list: list[dict] = []
-    current_khoan: dict | None = None
-    for text in paragraphs:
-        m_khoan = KHOAN_RE.match(text)
-        if m_khoan:
-            current_khoan = {"so": m_khoan.group(1), "text": text, "diem": []}
-            khoan_list.append(current_khoan)
-            continue
-        m_diem = DIEM_RE.match(text)
-        if m_diem and current_khoan is not None:
-            current_khoan["diem"].append({"so": m_diem.group(1), "text": text})
-            continue
-        if current_khoan is not None:
-            # Wrapped continuation line of the current Khoan/Diem (no new marker).
-            current_khoan["text"] += " " + text
-        else:
-            # Dieu has no Khoan numbering at all -- plain paragraph(s).
-            khoan_list.append({"so": None, "text": text, "diem": []})
-    return khoan_list
-
-
 def parse_demuc_nodes(html_path: Path) -> dict:
     """Parse a de muc into a generic tree.
 
@@ -264,118 +236,6 @@ def iter_dieu(node: dict, ancestors: tuple[dict, ...] = ()):
             yield from iter_dieu(child, ancestors + (child,))
 
 
-def _legacy_dieu(dieu: dict) -> dict:
-    return {
-        "mapc": dieu["mapc"],
-        "ten": dieu["ten"],
-        "citation": dieu["citation"],
-        "khoan": split_khoan_diem(dieu["paragraphs"]),
-        "references": dieu["references"],
-    }
-
-
-def to_legacy_tree(tree: dict) -> dict:
-    """Project the generic tree onto the Chuong -> Muc -> Dieu JSON shape that
-    build_chunks.py / build_kg.py / export_readable_md.py read. Phan is
-    flattened away and Tieu muc is folded into its Muc (or treated as a Muc
-    when it sits directly under a Chuong)."""
-    chuong_list: list[dict] = []
-    top_level_dieu: list[dict] = []
-
-    def heading(node: dict) -> dict:
-        return {"so_hieu": node["so_hieu"], "ten": node["ten"], "mapc": node["mapc"], "muc": [], "dieu": []}
-
-    for dieu, ancestors in iter_dieu(tree):
-        chuong_node = next((a for a in ancestors if a["kind"] == "chuong"), None)
-        muc_node = next((a for a in ancestors if a["kind"] in {"muc", "tieu_muc"}), None)
-        if chuong_node is None:
-            top_level_dieu.append(_legacy_dieu(dieu))
-            continue
-        if not chuong_list or chuong_list[-1]["mapc"] != chuong_node["mapc"]:
-            chuong_list.append(heading(chuong_node))
-        chuong = chuong_list[-1]
-        if muc_node is None:
-            chuong["dieu"].append(_legacy_dieu(dieu))
-            continue
-        if not chuong["muc"] or chuong["muc"][-1]["mapc"] != muc_node["mapc"]:
-            chuong["muc"].append(heading(muc_node))
-        chuong["muc"][-1]["dieu"].append(_legacy_dieu(dieu))
-
-    return {
-        "de_muc_id": tree["de_muc_id"],
-        "de_muc_so": tree["de_muc_so"],
-        "chuong": chuong_list,
-        "top_level_dieu": top_level_dieu,
-    }
-
-
-def parse_demuc(html_path: Path) -> dict:
-    """Legacy JSON tree (data/interim/parsed/<id>.json)."""
-    return to_legacy_tree(parse_demuc_nodes(html_path))
-
-
 def load_linh_vuc_index() -> dict:
     """{de_muc_id: {"path", "chu_de", "de_muc"}}, paths relative to BOPHAPDIEN_DIR."""
     return json.loads((BOPHAPDIEN_DIR / "linh_vuc_index.json").read_text(encoding="utf-8"))
-
-
-def _count_dieu(tree: dict) -> int:
-    total = len(tree["top_level_dieu"])
-    for ch in tree["chuong"]:
-        total += len(ch["dieu"])
-        for mc in ch["muc"]:
-            total += len(mc["dieu"])
-    return total
-
-
-def main() -> None:
-    bo_phap_dien_dir = BOPHAPDIEN_DIR
-    out_dir = PARSED_DIR
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # demuc/<id>.html files were reorganized into linh_vuc/<chu_de>/<de_muc>.html
-    # by scripts/reorganize_by_linh_vuc.py; this index maps id -> current relative path.
-    index = load_linh_vuc_index()
-
-    ids = sys.argv[1:]
-    if not ids:
-        print("Usage: python -m labor_rag.ingest.parse_demuc_html <de_muc_id> [<de_muc_id> ...]")
-        raise SystemExit(1)
-
-    for de_muc_id in ids:
-        entry = index.get(de_muc_id)
-        if entry is None:
-            raise SystemExit(
-                f"{de_muc_id}: khong tim thay trong linh_vuc_index.json "
-                "(chay reorganize_by_linh_vuc.py truoc, hoac kiem tra lai id)."
-            )
-        html_path = bo_phap_dien_dir / entry["path"]
-        tree = parse_demuc(html_path)
-        # parse_demuc() derives de_muc_id from the HTML filename stem, which
-        # used to be the UUID itself (flat demuc/<uuid>.html layout). Files
-        # now live under linh_vuc/<chu_de>/<slug>.html, so the stem is a slug
-        # -- restore the real UUID here so downstream (build_chunks.py,
-        # build_kg.py) can still key into de_muc.json/mapc_index.json by id.
-        tree["de_muc_id"] = de_muc_id
-        n_dieu = _count_dieu(tree)
-        if n_dieu == 0:
-            # De muc chua co noi dung (vd. 20.1): khong ghi file JSON rong.
-            print(f"{de_muc_id}: khong co Dieu nao, bo qua.")
-            continue
-        n_chuong = len(tree["chuong"])
-        n_muc = sum(len(ch["muc"]) for ch in tree["chuong"])
-        n_refs = sum(
-            len(d["references"])
-            for ch in tree["chuong"]
-            for d in (ch["dieu"] + [x for mc in ch["muc"] for x in mc["dieu"]])
-        )
-        out_path = out_dir / f"{de_muc_id}.json"
-        out_path.write_text(json.dumps(tree, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(
-            f"{de_muc_id}: {n_chuong} Chuong, {n_muc} Muc, {n_dieu} Dieu, "
-            f"{n_refs} cross-references -> {out_path}"
-        )
-
-
-if __name__ == "__main__":
-    main()

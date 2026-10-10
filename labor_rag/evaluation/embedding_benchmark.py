@@ -1,7 +1,7 @@
-"""Benchmark three sentence-embedding models on the ontology v4 pilot.
+"""Benchmark three sentence-embedding models on the Lao dong ontology v4 chunks.
 
-The benchmark deliberately measures vector retrieval only.  It uses one fixed
-set of 348 ontology-v4 chunks, three isolated Qdrant collections, and a
+The benchmark deliberately measures vector retrieval only.  It uses the 1,407
+chunks of data/processed/lao_dong_v4, three isolated Qdrant collections, and a
 manually labelled question set.  Neo4j and the LLM generation stage are kept
 out of the primary metric so that the effect of the embedding model can be
 measured directly.
@@ -9,15 +9,13 @@ measured directly.
 Run from the repository root:
 
     python -m labor_rag.evaluation.embedding_benchmark --validate-only
-    python -m labor_rag.evaluation.embedding_benchmark --rebuild
+    python -m labor_rag.evaluation.embedding_benchmark --rebuild \
+        --questions labor_rag/evaluation/benchmark_questions_v2.jsonl \
+        --results-dir labor_rag/evaluation/results/lao_dong_v2
 
-The ``--rebuild`` flag only recreates the three ``<prefix>_*`` collections
-declared in ``MODELS``.  It never touches the legacy ``labor_dieu`` collection.
-
-For the whole Lao dong topic (v2 test set), use a separate prefix so the 20.5
-collections are kept:
-
-    python -m labor_rag.evaluation.embedding_benchmark --rebuild         --chunks data/processed/lao_dong_v4/chunks.jsonl         --questions labor_rag/evaluation/benchmark_questions_v2.jsonl         --collection-prefix legal_ld_v4 --results-dir labor_rag/evaluation/results/lao_dong_v2
+The default question set is v1 (30 questions on 20.5) until the v2 set is
+finalized.  The ``--rebuild`` flag only recreates the three ``<prefix>_*``
+collections declared in ``MODELS``.
 """
 from __future__ import annotations
 
@@ -39,10 +37,10 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import EVALUATION_DIR, ONTOLOGY_V4_DIR
+from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR
 
 
-DEFAULT_CHUNKS = ONTOLOGY_V4_DIR / "chunks.jsonl"
+DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
 DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
 DEFAULT_RESULTS = EVALUATION_DIR / "results"
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
@@ -53,27 +51,27 @@ MODELS: list[dict[str, str]] = [
     {
         "key": "bkai",
         "model": "bkai-foundation-models/vietnamese-bi-encoder",
-        "collection": "legal_v4_bkai",
+        "collection": "legal_ld_v4_bkai",
     },
     {
         "key": "bge",
         "model": "BAAI/bge-m3",
-        "collection": "legal_v4_bge",
+        "collection": "legal_ld_v4_bge",
     },
     {
         "key": "mpnet",
         "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
-        "collection": "legal_v4_mpnet",
+        "collection": "legal_ld_v4_mpnet",
     },
 ]
 
 
 COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
-DEFAULT_COLLECTION_PREFIX = "legal_v4"
+DEFAULT_COLLECTION_PREFIX = "legal_ld_v4"
 
 
 def with_collection_prefix(specs: list[dict[str, str]], prefix: str) -> list[dict[str, str]]:
-    """Give each model its own collection under ``prefix`` (legal_v4_bkai, ...)."""
+    """Give each model its own collection under ``prefix`` (legal_ld_v4_bkai, ...)."""
 
     if not re.match(r"^legal_[a-z0-9_]+$", prefix):
         raise ValueError(f"Collection prefix must look like legal_<name>: {prefix!r}")
@@ -171,7 +169,7 @@ def _payload_for_chunk(chunk: dict[str, Any], model_key: str, model_id: str) -> 
         "text": chunk.get("text", ""),
         "document_uri": chunk.get("document_uri"),
         "source": chunk.get("source", "ontology_v4"),
-        "dataset_id": chunk.get("dataset_id", "an_toan_ve_sinh_lao_dong_v4"),
+        "dataset_id": chunk.get("dataset_id", LAO_DONG_DATASET_ID),
         "embedding_model_key": model_key,
         "embedding_model": model_id,
     }
@@ -265,7 +263,7 @@ def ensure_collection_index(
     batch_size: int = BATCH_SIZE,
     rebuild: bool = False,
 ) -> dict[str, Any]:
-    """Create/rebuild one isolated legal_v4 collection or safely reuse it."""
+    """Create/rebuild one isolated legal_* collection or safely reuse it."""
 
     collection = model_spec["collection"]
     if not COLLECTION_RE.match(collection) or collection == "labor_dieu":
@@ -597,7 +595,7 @@ def run_benchmark(
             "questions_path": str(questions_path),
             "chunk_count": len(chunks),
             "question_count": len(questions),
-            "dataset_id": chunks[0].get("dataset_id", "ontology_v4"),
+            "dataset_id": chunks[0].get("dataset_id", LAO_DONG_DATASET_ID),
         },
         "config": {
             "qdrant_url": qdrant_url,

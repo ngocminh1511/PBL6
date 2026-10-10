@@ -16,12 +16,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MODEL_NAME = os.getenv("EMBEDDING_MODEL", "bkai-foundation-models/vietnamese-bi-encoder")
-COLLECTION = os.getenv("QDRANT_COLLECTION", "labor_dieu")
+COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v4_bkai")
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_AUTH = (os.getenv("NEO4J_USER", "neo4j"), os.getenv("NEO4J_PASSWORD", "labor_rag_pw"))
 NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
-DATASET_ID = os.getenv("DATASET_ID")
+DATASET_ID = os.getenv("DATASET_ID", "lao_dong_v4")
 
 
 @dataclass

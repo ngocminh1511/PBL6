@@ -1,6 +1,6 @@
 {
-  "schema": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\ontology\\schema\\vn_legal_ontology_schema_v4.ttl",
-  "abox": "ontology\\abox\\abox_lao_dong.ttl",
+  "schema": "ontology/schema/vn_legal_ontology_schema_v4.ttl",
+  "abox": "ontology/abox/abox_lao_dong.ttl",
   "dataset_id": "lao_dong_v4",
   "schema_counts": {
     "classes": 96,
