@@ -3,7 +3,7 @@ the repository is cloned or which directory a script is launched from.
 
 Layout:
   data/raw/bophapdien/        raw Bo Phap Dien dump (jsonData.js, linh_vuc/*.html)
-  data/interim/               chu_de.json, de_muc.json, mapc_index.json, testset_cache/
+  data/interim/               chu_de.json, de_muc.json, testset_cache/
   data/processed/lao_dong_v4/ JSONL projection of the Lao dong ABox (tracked in git)
   ontology/                   schema/, abox/, reports/
 """

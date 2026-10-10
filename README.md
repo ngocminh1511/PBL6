@@ -22,7 +22,7 @@ PBL6/
 │   └── cq_template.txt
 ├── data/                   # Chỉ data/processed/ được đưa lên git
 │   ├── raw/bophapdien/     # Bộ Pháp điển gốc: jsonData.js, linh_vuc/*.html, linh_vuc_index.json
-│   ├── interim/            # chu_de.json, de_muc.json, mapc_index.json, testset_cache/
+│   ├── interim/            # chu_de.json, de_muc.json, testset_cache/
 │   └── processed/lao_dong_v4/   # JSONL chiếu từ ABox Lao động: chunks (Qdrant) + KG (Neo4j)
 ├── scripts/                # Script chạy một lần: validate ABox, sắp xếp dữ liệu thô
 ├── tests/                  # Competency-question tests cho ABox
