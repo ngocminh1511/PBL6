@@ -3,7 +3,8 @@ the repository is cloned or which directory a script is launched from.
 
 Layout:
   data/raw/bophapdien/        raw Bo Phap Dien dump (jsonData.js, linh_vuc/*.html)
-  data/interim/               chu_de.json, de_muc.json, testset_cache/
+  data/interim/               chu_de.json, de_muc.json, testset_cache/, ocr/ (OCR output)
+  data/models/vietocr/        VietOCR config + weights, downloaded on first OCR run
   data/processed/lao_dong_v4/ JSONL projection of the Lao dong ABox (tracked in git)
   ontology/                   schema/, abox/, reports/
 """
@@ -26,6 +27,9 @@ SCHEMA_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_schema_v4.ttl"
 SHAPES_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_shapes_v4.ttl"
 ABOX_DIR = ONTOLOGY_DIR / "abox"
 LAO_DONG_ABOX_PATH = ABOX_DIR / "abox_lao_dong.ttl"
+
+OCR_OUTPUT_DIR = INTERIM_DIR / "ocr"
+VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
