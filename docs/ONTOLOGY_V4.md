@@ -50,7 +50,13 @@ collection per model (`legal_ld_v4_bkai`, `legal_ld_v4_bge`, `legal_ld_v4_mpnet`
     --results-dir .\labor_rag\evaluation\results\lao_dong_v2
 ```
 
-Without `--questions` it uses the v1 set (30 questions on 20.5). The first full
+Without `--questions` it uses the v1 set (30 questions on 20.5).
+
+Chunks are embedded in length-sorted batches capped by `--max-batch-tokens`
+(default 8192 = batch size x longest chunk), so one long Dieu no longer pads a
+whole batch. The default fits a 4 GB GPU (bge-m3 fp32 peaks at ~2.5 GB); on a
+large GPU such as an A100 raise it, e.g. `--max-batch-tokens 131072`. The same
+flag exists on `embed_and_index`. The first full
 run downloads BGE-M3 and multilingual MPNet when they are not already cached.
 
 Results are written to the results directory:

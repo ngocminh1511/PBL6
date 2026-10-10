@@ -17,6 +17,7 @@ from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
 from labor_rag.config import LAO_DONG_V4_DIR
+from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -34,6 +35,13 @@ def main() -> None:
     parser.add_argument("--model", default=MODEL_NAME)
     parser.add_argument("--collection", default=COLLECTION)
     parser.add_argument("--qdrant-url", default=QDRANT_URL)
+    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Max chunks per batch")
+    parser.add_argument(
+        "--max-batch-tokens",
+        type=int,
+        default=DEFAULT_MAX_BATCH_TOKENS,
+        help="Token budget per batch (batch size x longest chunk); raise it on a large GPU",
+    )
     args = parser.parse_args()
 
     chunks = [json.loads(line) for line in args.chunks.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -50,10 +58,18 @@ def main() -> None:
         vectors_config=VectorParams(size=dim, distance=Distance.COSINE),
     )
 
-    for start in range(0, len(chunks), BATCH_SIZE):
-        batch = chunks[start : start + BATCH_SIZE]
-        texts = [c["text"] for c in batch]
-        vectors = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
+    texts = [c["text"] for c in chunks]
+    batches = length_batches(texts, model.tokenizer, model.max_seq_length, args.max_batch_tokens, args.batch_size)
+    done = 0
+    for batch_ids in batches:
+        batch = [chunks[idx] for idx in batch_ids]
+        vectors = model.encode(
+            [texts[idx] for idx in batch_ids],
+            batch_size=len(batch_ids),
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        # Point ids stay the chunk's position in the file, whatever the batch order.
         points = [
             PointStruct(
                 id=idx,
@@ -74,10 +90,11 @@ def main() -> None:
                     "dataset_id": c.get("dataset_id"),
                 },
             )
-            for idx, (c, vector) in enumerate(zip(batch, vectors), start=start)
+            for idx, c, vector in zip(batch_ids, batch, vectors)
         ]
         client.upsert(collection_name=args.collection, points=points)
-        print(f"  upserted {start + len(batch)}/{len(chunks)}")
+        done += len(batch_ids)
+        print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
 
     print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}")
 

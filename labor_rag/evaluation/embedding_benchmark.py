@@ -38,6 +38,7 @@ from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
 from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR
+from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 
 
 DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
@@ -231,26 +232,31 @@ def _index_chunks(
     model_key: str,
     model_id: str,
     batch_size: int,
+    max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
 ) -> tuple[float, int]:
     started = time.perf_counter()
-    for start in range(0, len(chunks), batch_size):
-        batch = chunks[start : start + batch_size]
+    texts = [str(chunk.get("text", "")) for chunk in chunks]
+    batches = length_batches(texts, model.tokenizer, model.max_seq_length, max_batch_tokens, batch_size)
+    done = 0
+    for batch in batches:
         vectors = model.encode(
-            [str(chunk.get("text", "")) for chunk in batch],
-            batch_size=batch_size,
+            [texts[index] for index in batch],
+            batch_size=len(batch),
             normalize_embeddings=True,
             show_progress_bar=False,
         )
+        # Point ids stay the chunk's position in the file, whatever the batch order.
         points = [
             PointStruct(
                 id=index,
                 vector=_as_vector_list(vector),
-                payload=_payload_for_chunk(chunk, model_key, model_id),
+                payload=_payload_for_chunk(chunks[index], model_key, model_id),
             )
-            for index, (chunk, vector) in enumerate(zip(batch, vectors), start=start)
+            for index, vector in zip(batch, vectors)
         ]
         client.upsert(collection_name=collection, points=points, wait=True)
-        print(f"  indexed {start + len(batch)}/{len(chunks)} into {collection}")
+        done += len(batch)
+        print(f"  indexed {done}/{len(chunks)} into {collection} (batch of {len(batch)})")
     return time.perf_counter() - started, len(chunks)
 
 
@@ -262,6 +268,7 @@ def ensure_collection_index(
     dimension: int,
     batch_size: int = BATCH_SIZE,
     rebuild: bool = False,
+    max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
 ) -> dict[str, Any]:
     """Create/rebuild one isolated legal_* collection or safely reuse it."""
 
@@ -303,6 +310,7 @@ def ensure_collection_index(
         model_key=model_spec["key"],
         model_id=model_spec["model"],
         batch_size=batch_size,
+        max_batch_tokens=max_batch_tokens,
     )
     return {
         "action": "rebuilt",
@@ -409,6 +417,7 @@ def evaluate_model(
     repeats: int,
     batch_size: int,
     rebuild: bool,
+    max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
     if repeats < 1:
         raise ValueError("repeats must be at least 1")
@@ -425,6 +434,7 @@ def evaluate_model(
         dimension=dimension,
         batch_size=batch_size,
         rebuild=rebuild,
+        max_batch_tokens=max_batch_tokens,
     )
 
     for question in questions[:warmup]:
@@ -523,6 +533,7 @@ def run_benchmark(
     rebuild: bool = False,
     model_keys: list[str] | None = None,
     collection_prefix: str = DEFAULT_COLLECTION_PREFIX,
+    max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
 ) -> dict[str, Any]:
     """Run the benchmark and write summary/per-query/metadata outputs."""
 
@@ -551,6 +562,7 @@ def run_benchmark(
             repeats=repeats,
             batch_size=batch_size,
             rebuild=rebuild,
+            max_batch_tokens=max_batch_tokens,
         )
         summaries.append(summary)
         per_query_rows.extend(rows)
@@ -603,6 +615,7 @@ def run_benchmark(
             "warmup": warmup,
             "repeats": repeats,
             "batch_size": batch_size,
+            "max_batch_tokens": max_batch_tokens,
             "rebuild": rebuild,
             "collection_prefix": collection_prefix,
             "neo4j_in_primary_metric": False,
@@ -625,7 +638,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--top-k", type=int, default=10)
     parser.add_argument("--warmup", type=int, default=3)
     parser.add_argument("--repeats", type=int, default=3)
-    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
+    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Max chunks per indexing batch")
+    parser.add_argument(
+        "--max-batch-tokens",
+        type=int,
+        default=DEFAULT_MAX_BATCH_TOKENS,
+        help="Token budget per indexing batch (batch size x longest chunk); raise it on a large GPU",
+    )
     parser.add_argument("--model", dest="model_keys", action="append", choices=[spec["key"] for spec in MODELS])
     parser.add_argument(
         "--rebuild",
@@ -666,6 +685,7 @@ def main(argv: list[str] | None = None) -> int:
         rebuild=args.rebuild,
         model_keys=args.model_keys,
         collection_prefix=args.collection_prefix,
+        max_batch_tokens=args.max_batch_tokens,
     )
     return 0
 
