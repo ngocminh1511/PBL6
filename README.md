@@ -77,6 +77,21 @@ python -m labor_rag.ingest.load_neo4j --replace-dataset
 python -m labor_rag.ingest.embed_and_index
 ```
 
+## Nạp PDF / văn bản hợp nhất (tùy chọn)
+
+PDF (văn bản gốc hoặc VBHN, kể cả bản scan) được OCR rồi chuyển thành chunk v5 cùng định danh với Pháp điển,
+sau đó gộp vào collection đang có: với mỗi Điều, bản có `version_date` mới hơn được giữ
+(chi tiết: [docs/structural_jsonl.md](docs/structural_jsonl.md), mục 7–8). Cần `requirements-ocr.txt` và
+`data/processed/lao_dong_v5` đã sinh (để tra `mapc`).
+
+```powershell
+python -m labor_rag.ingest.pdf_to_chunks --input docs/Luat_lao_dong.pdf          # OCR, ghi data/interim/pdf_chunks/
+python -m labor_rag.ingest.pdf_to_chunks --from-json data/interim/pdf_chunks/45-2019-qh14_hierarchical.jsonl  # dựng lại chunk, không OCR lại
+python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/45-2019-qh14_chunks.jsonl --upsert
+```
+
+Dựng lại collection Pháp điển (`embed_and_index` không kèm `--upsert`) sẽ xóa chunk PDF; chạy lại lệnh `--upsert`.
+
 ## Chạy embedding trên Modal, dùng Qdrant/Neo4j trên cloud (tùy chọn)
 
 Không bắt buộc chạy GPU, Qdrant hay Neo4j trên máy:

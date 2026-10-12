@@ -27,6 +27,7 @@ Lấy từ Pháp điển (Điều 10 của NĐ 145/2020, xếp vào Chương III
   "meta_khoan": null,
   "effective_from_date": "2021-02-01",
   "effective_to_date": null,
+  "version_date": "2022-07-15",
   "still_valid": true,
   "content_hash": "3f1c0a9e7b2d4c51",
   "amends": [],
@@ -53,6 +54,7 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
   "meta_khoan": "4-5",
   "effective_from_date": "2026-12-01",
   "effective_to_date": null,
+  "version_date": "2026-12-01",
   "still_valid": true,
   "content_hash": "9a0b7c3d2e1f4a5b",
   "amends": [],
@@ -79,6 +81,7 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
 | `meta_khoan` | string / null | Trích dẫn | Khoảng khoản `"đầu-cuối"` của chunk khi Điều bị cắt (`"1-8"`, `"9-14"`); chỉ một khoản thì `"3"`; `null` nếu chunk là cả Điều |
 | `effective_from_date` | `YYYY-MM-DD` / null | Lọc hiệu lực | Mục 6 |
 | `effective_to_date` | `YYYY-MM-DD` / null | Lịch sử | Mục 6 |
+| `version_date` | `YYYY-MM-DD` / null | Chọn bản khi trùng | Ngày hiệu lực mới nhất mà nội dung đã phản ánh. Mục 7 |
 | `still_valid` | bool | Lọc hiệu lực | Mục 6 |
 | `content_hash` | string | Phát hiện Điều thay đổi | sha1 (16 ký tự hex) của **nội dung** Điều (không gồm phần đầu), sau khi chuẩn hóa NFC và gộp khoảng trắng. Mọi phần của một Điều có cùng giá trị |
 | `amends` | list `chunk_id` | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi, bổ sung. Mục 10 |
@@ -230,20 +233,51 @@ Khi `still_valid` thay đổi thì cập nhật payload (Qdrant `set_payload` th
 
 ## 7. Quy tắc nạp
 
-- Trùng `chunk_id` giữa Pháp điển và PDF thì **giữ bản Pháp điển**, vì bản này đã cập nhật các lần sửa đổi.
-- PDF nạp lại: xóa mọi chunk có cùng `document_id` rồi nạp lại.
+Code: `labor_rag/ingest/merge.py::plan_upsert`, chạy bởi `embed_and_index --upsert`.
+
+- Quyết định **theo từng Điều** (`chunk_id` bỏ `:p{k}`), không theo từng phần, để một Điều không bao giờ
+  lẫn phần của hai nguồn.
+- Điều có ở cả hai bên: bên có **`version_date` lớn hơn thắng**. Bằng nhau thì Pháp điển thắng PDF; cùng nguồn
+  (nạp lại) thì bản mới thay bản cũ. Nội dung và `version_date` y hệt thì bỏ qua, không embedding lại.
+- Bên mới thắng: **xóa mọi phần cũ** của Điều rồi mới ghi, vì hai bên có thể cắt Điều thành số phần khác nhau.
+- Điều chỉ có ở bản đang index: giữ nguyên, in cảnh báo (thường do OCR bỏ sót Điều).
+- Dựng lại collection Pháp điển (`embed_and_index` không có `--upsert`) sẽ xóa luôn chunk PDF: chạy lại `--upsert`.
 - Văn bản sửa đổi, bổ sung có số hiệu riêng, nên là văn bản riêng.
 
-## 8. Ánh xạ từ OCR (`labor_rag/ocr/schemas.py::FlatRecord`)
+`version_date` (`YYYY-MM-DD`): ngày hiệu lực mới nhất mà nội dung đã phản ánh.
 
-| Chunk v5 | FlatRecord |
+| Nguồn | Cách tính |
 |---|---|
-| `document_id` | `make_document_id(số hiệu)`. Hiện đang là tên file, cần đổi |
-| `meta_de_muc` | `document_title` |
-| `meta_chuong` / `meta_muc` / `meta_dieu` | `chapter_number` / `section_number` / `article_number` |
-| `ten` | `article_title` |
+| Pháp điển | max(`effective_date` của văn bản, `effective_date` của các văn bản `vlr:amends`/`partiallyAmends` nó). Pháp điển chỉ ghi sửa đổi ở mức văn bản nên đây là xấp xỉ |
+| PDF văn bản gốc | Ngày hiệu lực ("… này có hiệu lực (thi hành) từ ngày …") |
+| PDF VBHN | max(ngày hiệu lực văn bản gốc, ngày hiệu lực từng văn bản sửa đổi trong câu dẫn "…, được sửa đổi, bổ sung bởi: 1. … 2. …") |
 
-Các bản ghi mức khoản/điểm (`level = clause/point`) phải gộp về mức Điều trước, rồi cắt theo mục 5.
+Ví dụ: Pháp điển trong repo có Bộ luật Lao động với `version_date = 2021-01-01`; VBHN `docs/Luat_lao_dong.pdf`
+(sửa đổi bởi 3 luật năm 2025) có `2026-07-01`, nên các Điều của VBHN thay bản Pháp điển.
+
+## 8. Từ OCR sang chunk (`labor_rag/ingest/pdf_to_chunks.py`)
+
+Đầu vào là cây `LegalDocument` của OCR (không dùng `FlatRecord`/`chunk_long_records`).
+
+| Chunk v5 | Lấy từ |
+|---|---|
+| `document_id` | `make_document_id(metadata.so_hieu)`; không có thì `doc-<sha1>` |
+| `meta_de_muc` | Tên văn bản trong KG nếu văn bản đã có trong Pháp điển (để trùng với chunk Pháp điển); không thì `"{loai_van_ban} số {so_hieu}"` |
+| `meta_chuong` / `meta_muc` | `heading_number(chapter_number / section_number)`: `"Chương I"` -> `"I"` |
+| `meta_dieu` | `article_number` bỏ `"Điều "`: `"Điều 35a"` -> `"35a"` |
+| `ten` | `article_title` |
+| `mapc` | KG: `(document_id, article_number)` của node Dieu -> `mapc`; Điều không có trong Pháp điển thì `null` |
+| `effective_from_date` | KG nếu có, không thì `metadata.ngay_hieu_luc` |
+| `version_date` | `metadata.version_date` (mục 7) |
+
+- Thân Điều dựng lại thành từng dòng: câu dẫn, `"1. …"`, `"a) …"` (cây OCR bỏ các ký hiệu này), rồi cắt theo mục 5.
+- Phụ lục: OCR gộp mọi phụ lục thành một khối -> chunk `{document_id}:pl1` (cắt nếu dài). Phần mở đầu không thành chunk.
+- Hai Điều cùng số (thường do OCR đọc sai số) -> giữ Điều đầu, in cảnh báo.
+- **VBHN**: nhận ra qua số `xx/VBHN-…` hoặc câu "được sửa đổi, bổ sung bởi:". Số hiệu dùng làm `document_id` là
+  số của văn bản gốc (VBHN mang số hiệu gốc trong câu dẫn), không phải số VBHN.
+- **Chú thích cuối trang** (`cleaner.split_footnotes`): khối dòng cuối trang bắt đầu bằng số chú thích, các số tăng
+  liên tiếp và có từ khóa sửa đổi/căn cứ ban hành, được cắt khỏi nội dung và ghi ra `{document_id}_footnotes.jsonl`
+  (`{page, number, text}`) để sau này điền `amended_by`.
 
 ## 9. Prompt cho LLM
 

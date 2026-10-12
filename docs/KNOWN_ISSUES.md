@@ -130,8 +130,13 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
   (`pd_chuong` / `pd_muc`), không có chương của văn bản gốc.
 - `effective_to_date` luôn `null`: ABox chưa có `vlt:validTo`.
 - `amends` / `amended_by` luôn rỗng với Pháp điển (nội dung đã hợp nhất). Phần parse văn bản sửa đổi từ PDF chưa làm.
-- PDF/OCR mới chỉ có `document_id` theo số hiệu; bộ chuyển `FlatRecord` -> chunk v5 và quy tắc nạp
-  Pháp điển/PDF (docs/structural_jsonl.md, mục 7, 8, 10) làm ở đợt sau.
+- PDF: `pdf_to_chunks` + `embed_and_index --upsert` đã có, nhưng chưa chạy thử trên OCR thật của
+  `docs/Luat_lao_dong.pdf`. Cần xem: số Điều nhận được (~220), Điều sai số do OCR, chú thích tách đúng chưa.
+- Dấu chú thích nằm trong câu ("Bộ luật Lao động1", "động¹") chưa bị xóa: OCR đọc số mũ không ổn định.
+- Chú thích chỉ được tách khi nằm trọn trong một trang; chú thích tràn sang trang sau còn lẫn vào nội dung.
+  Chưa parse chú thích thành `amended_by`.
+- OCR gộp mọi phụ lục thành một chunk `:pl1`, chưa tách theo từng phụ lục.
+- `version_date` của Pháp điển tính ở mức văn bản (Pháp điển không ghi sửa đổi theo Điều).
 - Điều 14 NĐ 97/2022 (`20.2.NĐ.6.14`) gần như toàn phụ lục dạng bảng, bị cắt theo câu thành 16 phần; khi ghép
   lại cả Điều (`join_parts`) còn lặp vài dòng gối đầu.
 
