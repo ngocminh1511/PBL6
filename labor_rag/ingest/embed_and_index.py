@@ -1,5 +1,9 @@
-"""Embed data/processed/lao_dong_v4/chunks.jsonl (from ontology_to_jsonl.py)
-with a Vietnamese sentence-embedding model and upsert into Qdrant.
+"""Embed data/processed/lao_dong_v5/chunks.jsonl (from ontology_to_jsonl.py)
+with a sentence-embedding model (bge-m3 by default) and upsert into Qdrant.
+
+Point ids are uuid5(chunk_id), so re-indexing a document overwrites its own
+points; the whole chunk is the payload, with indexes on the fields that
+retrieval filters on (docs/structural_jsonl.md, sections 5.3 and 6).
 
 Qdrant is QDRANT_URL (+ QDRANT_API_KEY for Qdrant Cloud), read from .env;
 the default is the local qdrant container from docker-compose.yml.
@@ -16,22 +20,24 @@ import json
 import argparse
 import os
 import sys
+from collections import Counter
 from pathlib import Path
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import Distance, PayloadSchemaType, PointStruct, VectorParams
 
-from labor_rag.config import LAO_DONG_V4_DIR
+from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
+from labor_rag.ingest.chunk_schema import point_id
 
 sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
 
-CHUNKS_PATH = LAO_DONG_V4_DIR / "chunks.jsonl"
+CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
 
-MODEL_NAME = os.getenv("EMBEDDING_MODEL", "bkai-foundation-models/vietnamese-bi-encoder")
-COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v4_bkai")
+MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v5_bge")
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
 BACKEND = os.getenv("EMBEDDING_BACKEND", "local")
@@ -42,22 +48,17 @@ MODAL_MAX_BATCH_TOKENS = 32768
 MODAL_APP = "labor-rag-embed"
 
 
+PAYLOAD_INDEXES = {
+    "document_id": PayloadSchemaType.KEYWORD,
+    "mapc": PayloadSchemaType.KEYWORD,
+    "meta_dieu": PayloadSchemaType.KEYWORD,
+    "still_valid": PayloadSchemaType.BOOL,
+    "effective_from_date": PayloadSchemaType.DATETIME,
+}
+
+
 def chunk_payload(c: dict) -> dict:
-    return {
-        "mapc": c["mapc"],
-        "uri": c.get("uri"),
-        "de_muc_id": c.get("de_muc_id"),
-        "de_muc_so": c.get("de_muc_so"),
-        "chuong": c.get("chuong"),
-        "muc": c.get("muc"),
-        "ten": c.get("ten"),
-        "citation": c.get("citation"),
-        "breadcrumb": c.get("breadcrumb", ""),
-        "text": c.get("text", ""),
-        "document_uri": c.get("document_uri"),
-        "source": c.get("source", "labor_rag"),
-        "dataset_id": c.get("dataset_id"),
-    }
+    return {**c, "dataset_id": c.get("dataset_id", LAO_DONG_DATASET_ID)}
 
 
 def embed_local(texts: list[str], model_name: str, max_batch_tokens: int, batch_size: int):
@@ -113,6 +114,9 @@ def main() -> None:
 
     chunks = [json.loads(line) for line in args.chunks.read_text(encoding="utf-8").splitlines() if line.strip()]
     print(f"Loaded {len(chunks)} chunks from {args.chunks}")
+    duplicates = [key for key, n in Counter(c["chunk_id"] for c in chunks).items() if n > 1]
+    if duplicates:
+        raise SystemExit(f"Repeated chunk_id would overwrite points: {duplicates[:5]}")
     texts = [c["text"] for c in chunks]
 
     # Fail on a wrong URL/key before spending GPU time.
@@ -131,9 +135,10 @@ def main() -> None:
                 collection_name=args.collection,
                 vectors_config=VectorParams(size=dim, distance=Distance.COSINE),
             )
-        # Point ids stay the chunk's position in the file, whatever the batch order.
+            for field, schema in PAYLOAD_INDEXES.items():
+                client.create_payload_index(args.collection, field_name=field, field_schema=schema)
         points = [
-            PointStruct(id=idx, vector=vector.tolist(), payload=chunk_payload(chunks[idx]))
+            PointStruct(id=point_id(chunks[idx]["chunk_id"]), vector=vector.tolist(), payload=chunk_payload(chunks[idx]))
             for idx, vector in zip(batch_ids, vectors)
         ]
         client.upsert(collection_name=args.collection, points=points)

@@ -21,7 +21,7 @@ def rerank(query: str, evidences: list[Evidence], top_n: int = 5) -> list[Eviden
         return evidences
 
     listing = "\n\n".join(
-        f"{i}. [{e.mapc}] {e.ten}\n{e.text[:400]}" for i, e in enumerate(evidences)
+        f"{i}. [{e.citation}] {e.ten}\n{e.text[:400]}" for i, e in enumerate(evidences)
     )
     user = (
         f"Câu hỏi: {query}\n\n"
