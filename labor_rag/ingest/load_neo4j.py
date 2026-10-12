@@ -17,7 +17,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
-from labor_rag.config import LAO_DONG_V4_DIR
+from labor_rag.config import LAO_DONG_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
@@ -36,7 +36,7 @@ def read_jsonl(path: Path) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=LAO_DONG_V4_DIR)
+    parser.add_argument("--data-dir", type=Path, default=LAO_DONG_DIR)
     parser.add_argument("--uri", default=os.getenv("NEO4J_URI", "bolt://localhost:7687"))
     parser.add_argument("--user", default=os.getenv("NEO4J_USER", "neo4j"))
     parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD", "labor_rag_pw"))

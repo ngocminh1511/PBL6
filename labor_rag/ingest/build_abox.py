@@ -268,6 +268,9 @@ class AboxBuilder:
         source_uri = INST[f"SourceArticle_{slug(source_article.replace('đ', 'dd'))}_{slug(str(doc_uri))}"]
         self.add(source_uri, RDF.type, VLD.Article)
         self.add(source_uri, VLD.locatedInDocument, doc_uri)
+        # The article number in the source document ("35", "4a"): with the
+        # document number it identifies the Dieu across Phap dien and PDF.
+        self.add(source_uri, VLD.itemNumber, Literal(source_article, datatype=XSD.string))
         self.add(article_uri, VLPD.codificationOf, source_uri)
 
         key = f"{slug(str(article_uri))}_{slug(str(doc_uri))}"
