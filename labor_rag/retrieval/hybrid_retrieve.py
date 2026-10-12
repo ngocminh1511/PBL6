@@ -87,7 +87,9 @@ def in_force(today: date | None = None) -> Filter:
 class HybridRetriever:
     def __init__(self) -> None:
         self.model = SentenceTransformer(MODEL_NAME)
-        self.qdrant = QdrantClient(url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None)
+        self.qdrant = QdrantClient(
+            url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
+        )
         self.neo4j = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 
     def close(self) -> None:

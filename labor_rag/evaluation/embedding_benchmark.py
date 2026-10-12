@@ -432,7 +432,7 @@ def evaluate_model(
     model = SentenceTransformer(model_spec["model"])
     model_load_seconds = time.perf_counter() - model_started
     dimension = _embedding_dimension(model)
-    client = QdrantClient(url=qdrant_url, api_key=os.getenv("QDRANT_API_KEY") or None)
+    client = QdrantClient(url=qdrant_url, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60")))
     index_info = ensure_collection_index(
         client=client,
         model_spec=model_spec,

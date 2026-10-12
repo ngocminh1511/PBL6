@@ -26,11 +26,13 @@ import json
 import argparse
 import os
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
+from qdrant_client.http.exceptions import ResponseHandlingException
 from qdrant_client.models import (
     Distance,
     FieldCondition,
@@ -56,6 +58,9 @@ MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v5_bge")
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
+# Seconds per request; the 5 s client default is too short for a far-away Qdrant Cloud region.
+QDRANT_TIMEOUT = int(os.getenv("QDRANT_TIMEOUT", "60"))
+UPSERT_RETRIES = 3
 BACKEND = os.getenv("EMBEDDING_BACKEND", "local")
 BATCH_SIZE = 64
 UPSERT_BATCH = 128
@@ -106,6 +111,19 @@ def embed_modal(texts: list[str], model_name: str, max_batch_tokens: int, batch_
     for start in range(0, len(texts), UPSERT_BATCH):
         ids = list(range(start, min(start + UPSERT_BATCH, len(texts))))
         yield ids, vectors[ids]
+
+
+def upsert_with_retry(client: QdrantClient, collection: str, points: list[PointStruct]) -> None:
+    """Upsert one batch, retrying a timed-out request; point ids are stable, so a retry is idempotent."""
+    for attempt in range(1, UPSERT_RETRIES + 1):
+        try:
+            client.upsert(collection_name=collection, points=points)
+            return
+        except ResponseHandlingException as exc:
+            if attempt == UPSERT_RETRIES:
+                raise
+            print(f"  upsert failed ({exc}); retry {attempt}/{UPSERT_RETRIES - 1}")
+            time.sleep(5 * attempt)
 
 
 MERGE_FIELDS = ["chunk_id", "document_id", "meta_dieu", "source", "version_date", "text"]
@@ -180,7 +198,7 @@ def main() -> None:
         raise SystemExit(f"Repeated chunk_id would overwrite points: {duplicates[:5]}")
 
     # Fail on a wrong URL/key before spending GPU time.
-    client = QdrantClient(url=args.qdrant_url, api_key=QDRANT_API_KEY)
+    client = QdrantClient(url=args.qdrant_url, api_key=QDRANT_API_KEY, timeout=QDRANT_TIMEOUT)
     client.get_collections()
 
     recreate = not args.upsert or not client.collection_exists(args.collection)
@@ -209,7 +227,7 @@ def main() -> None:
             PointStruct(id=point_id(chunks[idx]["chunk_id"]), vector=vector.tolist(), payload=chunk_payload(chunks[idx]))
             for idx, vector in zip(batch_ids, vectors)
         ]
-        client.upsert(collection_name=args.collection, points=points)
+        upsert_with_retry(client, args.collection, points)
         done += len(batch_ids)
         print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
 
