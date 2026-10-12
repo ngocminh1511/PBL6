@@ -309,8 +309,8 @@ def extract_metadata(text: str, title: str = "", source_file: str = "", total_pa
     metadata = DocumentMetadata(source_file=source_file, total_pages=total_pages)
     head = text[:3000]
 
-    # "Số: 45/2019/QH14", "Số: 145/2020/NĐ-CP"
-    m = re.search(r"(?:Số|số)[:\s]+(\d+/\d{4}/[A-ZĐ\-]+\d*)", head)
+    # "Số: 45/2019/QH14", "Luật số: 84/2015/QH13", "Số : 40/2021/QĐ-TTg"
+    m = re.search(r"\bsố\s*:?\s*(\d+[a-z]?/\d{4}/[\wĐđÐ-]+)", head, re.IGNORECASE)
     if m:
         metadata.so_hieu = m.group(1)
 

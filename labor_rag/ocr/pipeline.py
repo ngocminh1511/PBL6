@@ -10,6 +10,7 @@ Output goes to data/interim/ocr/ unless --output is given.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import sys
@@ -18,6 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from labor_rag.config import OCR_OUTPUT_DIR
+from labor_rag.ingest.chunk_schema import is_so_hieu, make_document_id
 from labor_rag.ocr.chunking import chunk_long_records, flatten_document
 from labor_rag.ocr.export import EXPORT_FORMATS, export_document
 from labor_rag.ocr.extract import IMAGE_SUFFIXES, ExtractionResult, ProgressFn, extract_text
@@ -53,8 +55,13 @@ class ProcessedDocument:
         }
 
 
-def _document_id(name: str) -> str:
-    return Path(name).stem.lower().replace(" ", "_")
+def _document_id(so_hieu: str, text: str) -> str:
+    """The id chunk schema v5 uses for this document (docs/structural_jsonl.md,
+    section 3.1): from the document number when the first page has one, so a
+    PDF and Phap dien agree on it; otherwise from a hash of the extracted text."""
+    if so_hieu and is_so_hieu(so_hieu):
+        return make_document_id(so_hieu)
+    return f"doc-{hashlib.sha1(text.encode('utf-8')).hexdigest()[:12]}"
 
 
 def process_document(
@@ -76,11 +83,12 @@ def process_document(
     if not text:
         raise ValueError(f"{extraction.source_name}: no text could be extracted")
 
-    document = parse_structure(text, document_id=_document_id(extraction.source_name))
+    document = parse_structure(text)
     metadata = extract_metadata(text, document.title, extraction.source_name, extraction.total_pages)
     metadata.extraction_method = extraction.method
     metadata.scanned_pages = extraction.scanned_pages
     document.metadata = metadata
+    document.document_id = _document_id(metadata.so_hieu, text)
 
     records = chunk_long_records(flatten_document(document))
     result = ProcessedDocument(extraction, document, records, ocr_quality=extraction.ocr_quality())

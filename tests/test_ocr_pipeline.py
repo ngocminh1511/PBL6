@@ -244,6 +244,18 @@ def test_quality_report():
     assert quality_report("abc", ground_truth="abc")["cer"] == 0.0
 
 
+def test_document_id_from_so_hieu():
+    from labor_rag.ocr.pipeline import _document_id
+
+    head = "QUỐC HỘI\nLuật số: 45/2019/QH14\nBỘ LUẬT LAO ĐỘNG"
+    metadata = extract_metadata(head, "BỘ LUẬT LAO ĐỘNG")
+    assert metadata.so_hieu == "45/2019/QH14"
+    assert _document_id(metadata.so_hieu, head) == "45-2019-qh14"
+    assert extract_metadata("Số : 40/2021/QĐ-TTg\n").so_hieu == "40/2021/QĐ-TTg"
+    no_number = _document_id("", "nội dung không có số hiệu")
+    assert no_number.startswith("doc-") and no_number == _document_id("", "nội dung không có số hiệu")
+
+
 if __name__ == "__main__":
     tests = [(name, fn) for name, fn in list(globals().items()) if name.startswith("test_") and callable(fn)]
     failed = 0
