@@ -24,6 +24,7 @@ from labor_rag.ocr.cleaner import (
     fix_line_breaks,
     normalize_whitespace,
     remove_page_numbers,
+    split_footnotes,
 )
 from labor_rag.ocr.engine import _cut_wide, _find_lines, _line_pieces
 from labor_rag.ocr.export import export_document
@@ -254,6 +255,95 @@ def test_document_id_from_so_hieu():
     assert extract_metadata("Số : 40/2021/QĐ-TTg\n").so_hieu == "40/2021/QĐ-TTg"
     no_number = _document_id("", "nội dung không có số hiệu")
     assert no_number.startswith("doc-") and no_number == _document_id("", "nội dung không có số hiệu")
+
+
+# --- inserted Dieu/Khoan, Dieu headings, footnotes, van ban hop nhat ---
+
+def test_inserted_article_and_clause_numbers():
+    assert parse_line("Điều 35a. Trợ cấp bổ sung").number == "35a"
+    assert parse_line("Điều 35đ. Khác").number == "35đ"
+    assert parse_line("Điều 35 của Bộ luật này").number == "35"
+    clause = parse_line("1a. Người học nghề.")
+    assert clause.level == StructureLevel.CLAUSE and clause.number == "1a"
+    doc = parse_structure("Điều 35. A\n1. B.\nĐiều 35a. C\n1a. D.")
+    assert [a.article_number for a in doc.iter_articles()] == ["Điều 35", "Điều 35a"]
+
+
+def test_article_heading_not_joined_to_first_sentence():
+    text = fix_line_breaks(
+        "Điều 1. Phạm vi điều chỉnh\nBộ luật Lao động quy định tiêu chuẩn lao động.\n"
+        "Điều 5. Quyền và nghĩa vụ của người\nlao động"
+    )
+    assert text.split("\n") == [
+        "Điều 1. Phạm vi điều chỉnh",
+        "Bộ luật Lao động quy định tiêu chuẩn lao động.",
+        "Điều 5. Quyền và nghĩa vụ của người lao động",  # a title wrapped onto two lines is still joined
+    ]
+
+
+VBHN_PAGE = """BỘ LUẬT
+LAO ĐỘNG
+Bộ luật Lao động số 45/2019/QH14 ngày 20 tháng 11 năm 2019 của Quốc hội, có hiệu lực kể từ ngày 01 tháng 01 năm 2021, được sửa đổi, bổ sung bởi:
+1. Luật Công nghiệp công nghệ số số 71/2025/QH15 ngày 14 tháng 6 năm 2025 của Quốc hội, có hiệu lực kể từ ngày 01 tháng 01 năm 2026;
+2. Luật Dân số số 113/2025/QH15 ngày 10 tháng 12 năm 2025 của Quốc hội, có hiệu lực kể từ ngày 01 tháng 7 năm 2026;
+3. Luật Giáo dục nghề nghiệp số 124/2025/QH15 ngày 10 tháng 12 năm 2025 của Quốc hội, có hiệu lực kể từ ngày 01 tháng 01 năm 2026.
+Căn cứ Hiến pháp nước Cộng hòa xã hội chủ nghĩa Việt Nam;
+Quốc hội ban hành Bộ luật Lao động1.
+Chương I
+NHỮNG QUY ĐỊNH CHUNG
+Điều 1. Phạm vi điều chỉnh
+Bộ luật Lao động quy định tiêu chuẩn lao động.
+1 Luật Công nghiệp công nghệ số số 71/2025/QH15 có căn cứ ban hành như sau:
+"Căn cứ Hiến pháp nước Cộng hòa xã hội chủ nghĩa Việt Nam;
+Quốc hội ban hành Luật Công nghiệp công nghệ số.".
+2 Khoản này được sửa đổi, bổ sung theo quy định tại khoản 2 Điều 63 của Luật Giáo dục nghề nghiệp số 124/2025/QH15, có hiệu lực kể từ ngày 01 tháng 01 năm 2026."""
+
+
+def test_split_footnotes():
+    body, notes = split_footnotes(VBHN_PAGE)
+    assert body.endswith("Bộ luật Lao động quy định tiêu chuẩn lao động.")
+    assert [note["number"] for note in notes] == [1, 2]
+    assert notes[0]["text"].startswith("Luật Công nghiệp công nghệ số số 71/2025/QH15 có căn cứ ban hành")
+    assert "Quốc hội ban hành Luật Công nghiệp công nghệ số." in notes[0]["text"]
+    assert notes[1]["text"].startswith("Khoản này được sửa đổi, bổ sung theo quy định tại khoản 2 Điều 63")
+    # A page whose last lines are numbered khoan has no footnotes.
+    page = "Điều 2. Đối tượng áp dụng\n1. Người lao động.\n2. Người sử dụng lao động."
+    assert split_footnotes(page) == (page, [])
+    # Numbered lines without amendment wording stay in the body.
+    page = "Bảng\n1 Hà Nội 200\n2 Huế 100"
+    assert split_footnotes(page) == (page, [])
+    # Body text after the numbered lines: not a footnote block.
+    page = VBHN_PAGE + "\nĐiều 5. Quyền của người lao động\n1. Làm việc."
+    assert split_footnotes(page) == (page, [])
+
+
+def test_footnotes_collected_with_page_numbers():
+    footnotes: list[dict] = []
+    text = clean_and_merge(["Trang một.", VBHN_PAGE], footnotes, [4, 5])
+    assert "Khoản này được sửa đổi" not in text
+    assert [(note["page"], note["number"]) for note in footnotes] == [(5, 1), (5, 2)]
+
+
+def test_van_ban_hop_nhat_metadata():
+    metadata = extract_metadata(VBHN_PAGE, "BỘ LUẬT LAO ĐỘNG")
+    assert metadata.so_hieu == "45/2019/QH14"
+    assert metadata.hop_nhat
+    assert metadata.ngay_hieu_luc == "2021-01-01"
+    assert metadata.van_ban_sua_doi == [
+        {"so_hieu": "71/2025/QH15", "ngay_hieu_luc": "2026-01-01"},
+        {"so_hieu": "113/2025/QH15", "ngay_hieu_luc": "2026-07-01"},
+        {"so_hieu": "124/2025/QH15", "ngay_hieu_luc": "2026-01-01"},
+    ]
+    assert metadata.version_date == "2026-07-01"
+    numbered = extract_metadata("Số: 05/VBHN-VPQH\nLUẬT VIỆC LÀM\n" + VBHN_PAGE)
+    assert numbered.so_hieu_vbhn == "05/VBHN-VPQH" and numbered.so_hieu == "45/2019/QH14"
+
+
+def test_effective_date_of_original_document():
+    metadata = extract_metadata(SAMPLE_LAW + "Điều 220. Hiệu lực thi hành\nBộ luật này có hiệu lực thi hành từ ngày 01 tháng 01 năm 2021.")
+    assert not metadata.hop_nhat
+    assert metadata.ngay_hieu_luc == "2021-01-01" and metadata.version_date == "2021-01-01"
+    assert extract_metadata("Nghị định này có hiệu lực từ ngày 1/2/2021.").ngay_hieu_luc == "2021-02-01"
 
 
 if __name__ == "__main__":

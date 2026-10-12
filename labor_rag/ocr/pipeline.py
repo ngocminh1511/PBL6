@@ -79,7 +79,7 @@ def process_document(
     otherwise everything stays in memory (the usual case for an app upload).
     """
     extraction = extract_text(source, filename=filename, use_ocr=use_ocr, progress=progress)
-    text = extraction.clean_text()
+    text, footnotes = extraction.clean_text_and_footnotes()
     if not text:
         raise ValueError(f"{extraction.source_name}: no text could be extracted")
 
@@ -89,6 +89,7 @@ def process_document(
     metadata.scanned_pages = extraction.scanned_pages
     document.metadata = metadata
     document.document_id = _document_id(metadata.so_hieu, text)
+    document.footnotes = footnotes
 
     records = chunk_long_records(flatten_document(document))
     result = ProcessedDocument(extraction, document, records, ocr_quality=extraction.ocr_quality())

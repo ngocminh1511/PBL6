@@ -98,13 +98,17 @@ def detect_duplicate_pages(pages_text: list[str]) -> set[int]:
 _STRUCTURE_START = re.compile(
     r"^("
     r"Phần\s+|Chương\s+|Mục\s+|Tiểu mục\s+|[ĐD]i[eêèéềếểễệ]u\s+\d+"  # incl. OCR variants of Điều
-    r"|\d+[.,]\s+"  # Khoan
+    r"|\d+[a-zđ]?[.,]\s+"  # Khoan, incl. an inserted "1a."
     r"|[a-zđ]\)\s+"  # Diem
     r"|PHỤ LỤC|CỘNG HÒA|Căn cứ"
     r")",
     re.IGNORECASE | re.UNICODE,
 )
 _NATURAL_LINE_END = re.compile(r'[.;:!?"]$')
+# "Điều 1. Phạm vi điều chỉnh" has no closing punctuation; the line after it
+# is the Dieu's first sentence unless it continues the title in lower case.
+_ARTICLE_HEADING = re.compile(r"^(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+\d+[a-zđ]?[.,]?\s", re.UNICODE)
+_STARTS_UPPER = re.compile(r"^[A-ZĐÀ-Ỹ0-9\"“(]")
 
 
 def fix_line_breaks(text: str) -> str:
@@ -126,6 +130,7 @@ def fix_line_breaks(text: str) -> str:
                 or _NATURAL_LINE_END.search(current)
                 or _STRUCTURE_START.match(next_line)
                 or (current.isupper() and len(current) > 5)
+                or (_ARTICLE_HEADING.match(current) and _STARTS_UPPER.match(next_line))
             ):
                 break
             current = current + " " + next_line
@@ -151,10 +156,71 @@ def normalize_punctuation(text: str) -> str:
 
 
 # ============================================================
+# Footnotes
+# ============================================================
+
+# "5 Khoản này được ..." / "12 Luật ..." -- a superscript read as a plain number.
+_FOOTNOTE_START = re.compile(r"^(\d{1,3})\s+(?=\S)")
+_CLAUSE_LIKE = re.compile(r"^\d+[a-zđ]?[.,]\s")
+_FOOTNOTE_KEYWORDS = re.compile(
+    r"sửa đổi|bổ sung|bãi bỏ|thay thế|hợp nhất|căn cứ ban hành|có hiệu lực",
+    re.IGNORECASE | re.UNICODE,
+)
+_MAX_FOOTNOTE_LINES = 30
+_BODY_START = re.compile(
+    r"^(?:(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+\d|(?:CHƯƠNG|Chương|MỤC|Mục|PHẦN|Phần)\s|\d+[a-zđ]?[.,]\s|[a-zđ]\)\s)",
+    re.UNICODE,
+)
+
+
+# ============================================================
 # Pipeline
 # ============================================================
 
-def clean_pages(pages_text: list[str]) -> list[str]:
+def split_footnotes(page_text: str) -> tuple[str, list[dict]]:
+    """(page body, [{number, text}]): the footnote block at the bottom of a
+    page, as in a van ban hop nhat ("5 Khoản này được sửa đổi, bổ sung theo
+    quy định tại ..."). The block is the longest run of lines at the end of
+    the page whose numbered lines count up by one and that mentions an
+    amendment or a legal basis; anything else is left in the body."""
+    lines = page_text.split("\n")
+    starts = [
+        i for i, line in enumerate(lines)
+        if _FOOTNOTE_START.match(line.strip()) and not _CLAUSE_LIKE.match(line.strip())
+    ]
+    block_start = None
+    for start in reversed(starts):
+        if len(lines) - start > _MAX_FOOTNOTE_LINES:
+            break
+        # Body text (a Dieu/Chuong heading, a khoan, a diem) never follows the
+        # footnotes on a page; if it does, these numbered lines are not footnotes.
+        if any(_BODY_START.match(line.strip()) for line in lines[start:]):
+            break
+        numbers = [int(_FOOTNOTE_START.match(lines[i].strip()).group(1)) for i in starts if i >= start]
+        if numbers != list(range(numbers[0], numbers[0] + len(numbers))):
+            break
+        if _FOOTNOTE_KEYWORDS.search("\n".join(lines[start:])):
+            block_start = start
+    if block_start is None:
+        return page_text, []
+
+    notes: list[dict] = []
+    for line in lines[block_start:]:
+        match = _FOOTNOTE_START.match(line.strip())
+        if match and not _CLAUSE_LIKE.match(line.strip()):
+            notes.append({"number": int(match.group(1)), "text": line.strip()[match.end():].strip()})
+        elif line.strip():
+            notes[-1]["text"] = f"{notes[-1]['text']} {line.strip()}"
+    return "\n".join(lines[:block_start]), notes
+
+
+def clean_pages(
+    pages_text: list[str],
+    footnotes: list[dict] | None = None,
+    page_numbers: list[int] | None = None,
+) -> list[str]:
+    """Cleaned page texts. Footnotes cut from the page bottoms are appended
+    to ``footnotes`` (with the page number) when a list is given."""
     headers, footers = detect_headers_footers(pages_text)
     duplicates = detect_duplicate_pages(pages_text)
 
@@ -164,6 +230,10 @@ def clean_pages(pages_text: list[str]) -> list[str]:
             continue
         text = remove_lines(page_text, headers | footers)
         text = remove_page_numbers(text)
+        text, notes = split_footnotes(text)
+        if footnotes is not None:
+            page = page_numbers[i] if page_numbers else i
+            footnotes += [{"page": page, **note} for note in notes]
         text = full_normalize(text)
         text = normalize_whitespace(text)
         text = normalize_punctuation(text)
@@ -172,7 +242,11 @@ def clean_pages(pages_text: list[str]) -> list[str]:
     return cleaned
 
 
-def clean_and_merge(pages_text: list[str]) -> str:
-    full_text = "\n".join(clean_pages(pages_text))
+def clean_and_merge(
+    pages_text: list[str],
+    footnotes: list[dict] | None = None,
+    page_numbers: list[int] | None = None,
+) -> str:
+    full_text = "\n".join(clean_pages(pages_text, footnotes, page_numbers))
     full_text = fix_line_breaks(full_text)
     return normalize_whitespace(full_text)

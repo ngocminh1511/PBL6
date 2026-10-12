@@ -63,6 +63,15 @@ class DocumentMetadata(BaseModel):
     total_pages: int = 0
     extraction_method: str = Field(default="", description="text / ocr / mixed")
     scanned_pages: list[int] = Field(default_factory=list, description="Trang đã OCR (0-based)")
+    hop_nhat: bool = Field(default=False, description="Văn bản hợp nhất (VBHN)")
+    so_hieu_vbhn: str = Field(default="", description="Số của chính VBHN, vd: 01/VBHN-VPQH")
+    van_ban_sua_doi: list[dict] = Field(
+        default_factory=list, description="Văn bản sửa đổi được hợp nhất: [{so_hieu, ngay_hieu_luc}]"
+    )
+    ngay_hieu_luc: str = Field(default="", description="Ngày văn bản gốc có hiệu lực, YYYY-MM-DD")
+    version_date: str = Field(
+        default="", description="Ngày hiệu lực mới nhất của nội dung (văn bản gốc hoặc lần sửa đổi được hợp nhất)"
+    )
 
 
 class LegalDocument(BaseModel):
@@ -73,6 +82,9 @@ class LegalDocument(BaseModel):
     parts: list[Part] = Field(default_factory=list)
     chapters: list[Chapter] = Field(default_factory=list, description="Chương không thuộc Phần")
     articles: list[Article] = Field(default_factory=list, description="Điều không thuộc Chương")
+    footnotes: list[dict] = Field(
+        default_factory=list, description="Chú thích cuối trang đã tách khỏi nội dung: [{page, number, text}]"
+    )
     appendices: list[str] = Field(default_factory=list)
     full_text: str = Field(default="", description="Toàn văn đã làm sạch")
 
