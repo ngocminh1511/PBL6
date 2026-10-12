@@ -73,6 +73,32 @@ python -m labor_rag.ingest.load_neo4j --replace-dataset
 python -m labor_rag.ingest.embed_and_index
 ```
 
+## Chạy embedding trên Modal, dùng Qdrant/Neo4j trên cloud (tùy chọn)
+
+Không bắt buộc chạy GPU, Qdrant hay Neo4j trên máy:
+
+- **Embedding trên Modal** (GPU T4): Modal chỉ tính vector rồi trả về; máy local upsert vào Qdrant mà
+  `QDRANT_URL` trỏ tới (docker local hoặc Qdrant Cloud). Không có credential Qdrant/Neo4j nào gửi lên Modal.
+- **Qdrant Cloud** (free 1 GB) thay container `qdrant`: đặt `QDRANT_URL` + `QDRANT_API_KEY` trong `.env`.
+- **Neo4j AuraDB Free** thay container `neo4j`: đặt `NEO4J_URI=neo4j+s://...`, `NEO4J_USER`, `NEO4J_PASSWORD`.
+  Dữ liệu Lao động (~7.400 node, ~18.400 cạnh) nằm trong giới hạn gói Free.
+
+Khi đã dùng cả hai cloud thì không cần `docker compose up`. Vector của câu hỏi lúc chat vẫn tính ở máy (CPU đủ nhanh cho một câu).
+
+```powershell
+pip install modal
+modal setup                                   # đăng nhập Modal (một lần)
+modal deploy scripts/modal_embed.py           # deploy app (một lần, và sau mỗi lần sửa file này)
+modal run scripts/modal_embed.py              # (tùy chọn) thử embed 2 câu trên GPU
+
+python -m labor_rag.ingest.embed_and_index --backend modal
+python -m labor_rag.ingest.embed_and_index --backend modal --model BAAI/bge-m3 --collection legal_ld_v4_bge
+python -m labor_rag.ingest.load_neo4j --replace-dataset   # ghi vào NEO4J_URI (local hoặc Aura)
+```
+
+Benchmark embedding dùng lại collection đã có nếu đủ 1.407 `mapc` và đúng số chiều, nên có thể index
+ba collection `legal_ld_v4_{bkai,bge,mpnet}` bằng Modal như trên rồi chạy `embedding_benchmark` **không** kèm `--rebuild`.
+
 ## Bộ test truy hồi v2 (chủ đề Lao động)
 
 Bộ v1 (`benchmark_questions.jsonl`, 30 câu) chỉ phủ đề mục 20.5 và được chuyển nguyên vào bộ v2 (q01–q30). Bộ v2 thêm khoảng 120 câu trên

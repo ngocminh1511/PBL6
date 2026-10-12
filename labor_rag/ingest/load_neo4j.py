@@ -14,11 +14,13 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
 from labor_rag.config import LAO_DONG_V4_DIR
 
 sys.stdout.reconfigure(encoding="utf-8")
+load_dotenv()
 
 
 def safe_identifier(value: str, fallback: str) -> str:

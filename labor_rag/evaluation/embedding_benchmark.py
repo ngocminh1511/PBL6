@@ -33,6 +33,7 @@ from pathlib import Path
 from statistics import mean, median
 from typing import Any, Iterable
 
+from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
@@ -40,6 +41,7 @@ from sentence_transformers import SentenceTransformer
 from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 
+load_dotenv()
 
 DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
 DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
@@ -425,7 +427,7 @@ def evaluate_model(
     model = SentenceTransformer(model_spec["model"])
     model_load_seconds = time.perf_counter() - model_started
     dimension = _embedding_dimension(model)
-    client = QdrantClient(url=qdrant_url)
+    client = QdrantClient(url=qdrant_url, api_key=os.getenv("QDRANT_API_KEY") or None)
     index_info = ensure_collection_index(
         client=client,
         model_spec=model_spec,
