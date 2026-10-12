@@ -1,7 +1,8 @@
-"""Benchmark three sentence-embedding models on the Lao dong ontology v4 chunks.
+"""Benchmark three sentence-embedding models on the Lao dong chunks (schema v5).
 
-The benchmark deliberately measures vector retrieval only.  It uses the 1,407
-chunks of data/processed/lao_dong_v4, three isolated Qdrant collections, and a
+The benchmark deliberately measures vector retrieval only.  It uses the chunks
+of data/processed/lao_dong_v5 (one per Dieu, long Dieu split into parts that
+share a mapc), three isolated Qdrant collections, and a
 manually labelled question set.  Neo4j and the LLM generation stage are kept
 out of the primary metric so that the effect of the embedding model can be
 measured directly.
@@ -16,6 +17,9 @@ Run from the repository root:
 The default question set is v1 (30 questions on 20.5) until the v2 set is
 finalized.  The ``--rebuild`` flag only recreates the three ``<prefix>_*``
 collections declared in ``MODELS``.
+
+Gold labels stay ``relevance: {mapc: grade}``: search results are grouped by
+mapc (best part wins) before recall/nDCG, so a split Dieu counts once.
 """
 from __future__ import annotations
 
@@ -38,43 +42,46 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR
+from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
+from labor_rag.ingest.chunk_schema import point_id
 
 load_dotenv()
 
-DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
+DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
 DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
 DEFAULT_RESULTS = EVALUATION_DIR / "results"
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 BATCH_SIZE = 64
+# Parts of one Dieu collapse into one result, so fetch extra hits.
+OVERFETCH = 2
 
 
 MODELS: list[dict[str, str]] = [
     {
         "key": "bkai",
         "model": "bkai-foundation-models/vietnamese-bi-encoder",
-        "collection": "legal_ld_v4_bkai",
+        "collection": "legal_ld_v5_bkai",
     },
     {
         "key": "bge",
         "model": "BAAI/bge-m3",
-        "collection": "legal_ld_v4_bge",
+        "collection": "legal_ld_v5_bge",
     },
     {
         "key": "mpnet",
         "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
-        "collection": "legal_ld_v4_mpnet",
+        "collection": "legal_ld_v5_mpnet",
     },
 ]
 
 
 COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
-DEFAULT_COLLECTION_PREFIX = "legal_ld_v4"
+DEFAULT_COLLECTION_PREFIX = "legal_ld_v5"
 
 
 def with_collection_prefix(specs: list[dict[str, str]], prefix: str) -> list[dict[str, str]]:
-    """Give each model its own collection under ``prefix`` (legal_ld_v4_bkai, ...)."""
+    """Give each model its own collection under ``prefix`` (legal_ld_v5_bkai, ...)."""
 
     if not re.match(r"^legal_[a-z0-9_]+$", prefix):
         raise ValueError(f"Collection prefix must look like legal_<name>: {prefix!r}")
@@ -106,12 +113,13 @@ def load_and_validate_dataset(
 
     chunks = read_jsonl(chunks_path)
     questions = read_jsonl(questions_path)
-    mapcs = [str(chunk.get("mapc", "")) for chunk in chunks]
     if not chunks:
         raise ValueError(f"No chunks found in {chunks_path}")
-    if len(set(mapcs)) != len(mapcs) or any(not mapc for mapc in mapcs):
-        raise ValueError("Chunks must have unique, non-empty mapc values")
-    mapc_set = set(mapcs)
+    chunk_ids = [str(chunk.get("chunk_id") or "") for chunk in chunks]
+    if len(set(chunk_ids)) != len(chunk_ids) or any(not chunk_id for chunk_id in chunk_ids):
+        raise ValueError("Chunks must have unique, non-empty chunk_id values")
+    # Gold labels are mapc; every part of a split Dieu carries the same one.
+    mapc_set = {str(chunk["mapc"]) for chunk in chunks if chunk.get("mapc")}
 
     errors: list[str] = []
     for question in questions:
@@ -163,15 +171,7 @@ def _as_vector_list(vector: Any) -> list[float]:
 
 def _payload_for_chunk(chunk: dict[str, Any], model_key: str, model_id: str) -> dict[str, Any]:
     return {
-        "chunk_id": chunk.get("chunk_id", chunk.get("mapc")),
-        "mapc": chunk["mapc"],
-        "uri": chunk.get("uri"),
-        "ten": chunk.get("ten", ""),
-        "citation": chunk.get("citation", ""),
-        "breadcrumb": chunk.get("breadcrumb", ""),
-        "text": chunk.get("text", ""),
-        "document_uri": chunk.get("document_uri"),
-        "source": chunk.get("source", "ontology_v4"),
+        **chunk,
         "dataset_id": chunk.get("dataset_id", LAO_DONG_DATASET_ID),
         "embedding_model_key": model_key,
         "embedding_model": model_id,
@@ -199,10 +199,10 @@ def _get_collection_info(client: QdrantClient, collection: str) -> Any | None:
         raise
 
 
-def _collection_has_expected_mapcs(
+def _collection_has_expected_chunks(
     client: QdrantClient,
     collection: str,
-    expected_mapcs: set[str],
+    expected_chunk_ids: set[str],
 ) -> bool:
     """Check payload identity so an old same-sized collection is not reused."""
 
@@ -213,17 +213,17 @@ def _collection_has_expected_mapcs(
             collection_name=collection,
             offset=offset,
             limit=256,
-            with_payload=["mapc"],
+            with_payload=["chunk_id"],
             with_vectors=False,
         )
         found.update(
-            str(point.payload.get("mapc"))
+            str(point.payload.get("chunk_id"))
             for point in points
-            if point.payload and point.payload.get("mapc") is not None
+            if point.payload and point.payload.get("chunk_id") is not None
         )
         if offset is None:
             break
-    return found == expected_mapcs
+    return found == expected_chunk_ids
 
 
 def _index_chunks(
@@ -247,10 +247,9 @@ def _index_chunks(
             normalize_embeddings=True,
             show_progress_bar=False,
         )
-        # Point ids stay the chunk's position in the file, whatever the batch order.
         points = [
             PointStruct(
-                id=index,
+                id=point_id(chunks[index]["chunk_id"]),
                 vector=_as_vector_list(vector),
                 payload=_payload_for_chunk(chunks[index], model_key, model_id),
             )
@@ -278,7 +277,7 @@ def ensure_collection_index(
     if not COLLECTION_RE.match(collection) or collection == "labor_dieu":
         raise ValueError(f"Refusing to index unapproved collection: {collection}")
 
-    expected_mapcs = {str(chunk["mapc"]) for chunk in chunks}
+    expected_chunk_ids = {str(chunk["chunk_id"]) for chunk in chunks}
     info = _get_collection_info(client, collection)
     points_count = int(getattr(info, "points_count", 0) or 0) if info else 0
     reusable = (
@@ -286,7 +285,7 @@ def ensure_collection_index(
         and info is not None
         and points_count == len(chunks)
         and _collection_dimension(info) == dimension
-        and _collection_has_expected_mapcs(client, collection, expected_mapcs)
+        and _collection_has_expected_chunks(client, collection, expected_chunk_ids)
     )
     if reusable:
         return {
@@ -296,7 +295,7 @@ def ensure_collection_index(
             "dimension": dimension,
         }
 
-    # Delete/create only the approved ontology-v4 collection.  Using the
+    # Delete/create only the approved legal_* collection.  Using the
     # explicit API avoids Qdrant's deprecated recreate_collection wrapper.
     if info is not None:
         client.delete_collection(collection_name=collection)
@@ -346,24 +345,30 @@ def retrieve_once(
     encode_ms = (time.perf_counter() - encode_started) * 1000
 
     search_started = time.perf_counter()
-    hits = _query_points(client, collection, vector, top_k)
+    hits = _query_points(client, collection, vector, top_k * OVERFETCH)
     search_ms = (time.perf_counter() - search_started) * 1000
 
+    # One result per Dieu (mapc): hits come best first, so the first part seen
+    # carries the Dieu's score and later parts are dropped.
     results: list[dict[str, Any]] = []
-    for rank, hit in enumerate(hits, start=1):
+    seen: set[str] = set()
+    for hit in hits:
         payload = hit.payload or {}
         mapc = payload.get("mapc")
-        if mapc is None:
+        if mapc is None or str(mapc) in seen:
             continue
+        seen.add(str(mapc))
         results.append(
             {
-                "rank": rank,
+                "rank": len(results) + 1,
                 "mapc": str(mapc),
+                "chunk_id": payload.get("chunk_id"),
                 "score": round(float(hit.score), 8),
                 "ten": payload.get("ten", ""),
-                "citation": payload.get("citation", ""),
             }
         )
+        if len(results) == top_k:
+            break
     return {
         "results": results,
         "encode_latency_ms": encode_ms,
@@ -656,7 +661,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--collection-prefix",
         default=DEFAULT_COLLECTION_PREFIX,
-        help="Qdrant collection prefix; use a new one per chunk set (e.g. legal_ld_v4 for lao_dong_v4)",
+        help="Qdrant collection prefix; use a new one per chunk set (e.g. legal_ld_v5 for lao_dong_v5)",
     )
     parser.add_argument(
         "--validate-only",

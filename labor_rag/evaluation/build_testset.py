@@ -46,10 +46,11 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
-from labor_rag.config import ANNOTATION_DIR, EVALUATION_DIR, LAO_DONG_V4_DIR, TESTSET_CACHE_DIR
+from labor_rag.config import ANNOTATION_DIR, EVALUATION_DIR, LAO_DONG_DIR, TESTSET_CACHE_DIR
+from labor_rag.ingest.chunk_schema import article_id, join_parts, part_number
 
-DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
-DEFAULT_EDGES = LAO_DONG_V4_DIR / "kg_edges.jsonl"
+DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
+DEFAULT_EDGES = LAO_DONG_DIR / "kg_edges.jsonl"
 V1_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
 OUTPUT_QUESTIONS = EVALUATION_DIR / "benchmark_questions_v2.jsonl"
 
@@ -180,12 +181,12 @@ def doc_type_of(mapc: str) -> str:
 
 
 def article_body(chunk: dict[str, Any]) -> str:
-    """Chunk text is 'breadcrumb / title / citation / body'; return the body."""
+    """Chunk text is 'context / Điều n. Tên / body' (schema v5); return the body."""
 
     lines = chunk.get("text", "").split("\n")
-    citation = (chunk.get("citation") or "").strip()
+    title = f"Điều {chunk.get('meta_dieu')}. {chunk.get('ten') or ''}".strip()
     for index, line in enumerate(lines):
-        if citation and line.strip() == citation:
+        if chunk.get("meta_dieu") and line.strip() == title:
             return "\n".join(lines[index + 1 :]).strip()
     return chunk.get("text", "").strip()
 
@@ -248,10 +249,25 @@ class TokenCounter:
 
 
 def load_chunks(path: Path) -> dict[str, dict[str, Any]]:
+    """One whole Dieu per mapc: the parts of a split Dieu are joined back."""
+
     chunks = read_jsonl(path)
     if not chunks:
         raise SystemExit(f"No chunks at {path}. Build them first (see docs in this module).")
-    return {str(chunk["mapc"]): chunk for chunk in chunks}
+    parts: dict[str, list[dict[str, Any]]] = {}
+    for chunk in chunks:
+        if chunk.get("mapc"):
+            parts.setdefault(str(chunk["mapc"]), []).append(chunk)
+    articles = {}
+    for mapc, group in parts.items():
+        group.sort(key=lambda chunk: part_number(chunk["chunk_id"]))
+        articles[mapc] = {
+            **group[0],
+            "chunk_id": article_id(group[0]["chunk_id"]),
+            "meta_khoan": None,
+            "text": join_parts([chunk["text"] for chunk in group]),
+        }
+    return articles
 
 
 # ------------------------------------------------------------------------ llm
