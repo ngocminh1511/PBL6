@@ -12,9 +12,12 @@
 
 # Datasets: only the versioned ontology projection is tracked
 data/*
+!data/raw/
 !data/processed/
 data/processed/*
 !data/processed/lao_dong_v4/
+!data/processed/lao_dong_v5/
+data/processed/lao_dong_v5/finetune/
 
 # Reference papers/slides (large binaries)
 docs/references/

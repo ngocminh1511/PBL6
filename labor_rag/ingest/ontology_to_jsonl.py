@@ -3,8 +3,13 @@
 The ABox remains the source of truth; chunks.jsonl is what gets embedded and
 kg_nodes/kg_edges.jsonl what gets loaded into Neo4j.
 
-Usage (defaults: the Lao dong ABox -> data/processed/lao_dong_v4):
+chunks.jsonl follows chunk schema v5 (docs/structural_jsonl.md): one chunk
+per Dieu, identified by the source document number + the article number in
+that document, with long Dieu split at MAX_TOKENS bge-m3 tokens.
+
+Usage (defaults: the Lao dong ABox -> data/processed/lao_dong_v5):
     python -m labor_rag.ingest.ontology_to_jsonl
+    python -m labor_rag.ingest.ontology_to_jsonl --max-tokens 0   # no splitting, no tokenizer
 """
 from __future__ import annotations
 
@@ -18,7 +23,19 @@ from typing import Iterable
 
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
 
-from labor_rag.config import LAO_DONG_ABOX_PATH, LAO_DONG_DATASET_ID, LAO_DONG_V4_DIR, ROOT_DIR, SCHEMA_V4_PATH
+from labor_rag.config import LAO_DONG_ABOX_PATH, LAO_DONG_DATASET_ID, LAO_DONG_DIR, ROOT_DIR, SCHEMA_V4_PATH
+from labor_rag.ingest.chunk_schema import (
+    MAX_TOKENS,
+    TokenCounter,
+    build_header,
+    content_hash,
+    heading_number,
+    is_so_hieu,
+    make_chunk_id,
+    make_document_id,
+    nfc,
+    split_article,
+)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -79,6 +96,7 @@ SPECIAL_PROPERTY_KEYS = {
     f"{VLPD}contentText": "text",
     f"{VLD}title": "ten",
     f"{VLD}documentNumber": "document_number",
+    f"{VLD}itemNumber": "article_number",
     f"{VLD}issuedDate": "issued_date",
     f"{VLD}effectiveDate": "effective_date",
     f"{VLT}validFrom": "valid_from",
@@ -223,8 +241,10 @@ def find_document_uri(graph: Graph, article) -> str | None:
     return str(document) if document else None
 
 
-def build_breadcrumb(graph: Graph, article, node_by_uri: dict[str, dict]) -> str:
-    parts = []
+def ancestors(graph: Graph, article, node_by_uri: dict[str, dict]) -> list[dict]:
+    """Containing nodes of a Phap dien Dieu, outermost first:
+    [DeMuc, (Phan,) Chuong, (Muc, TieuMuc)]."""
+    found = []
     current = article
     seen = set()
     parent_predicates = {URIRef(f"{VLPD}{name}") for name in CONTAINS_LOCALS}
@@ -237,12 +257,37 @@ def build_breadcrumb(graph: Graph, article, node_by_uri: dict[str, dict]) -> str
         parent = parents[0]
         parent_node = node_by_uri.get(str(parent))
         if parent_node:
-            label = parent_node.get("ten") or parent_node.get("label")
-            if label:
-                parts.append(str(label))
+            found.append(parent_node)
         current = parent
-    parts.reverse()
-    return " > ".join(parts)
+    found.reverse()
+    return found
+
+
+def source_of(graph: Graph, article, node_by_uri: dict[str, dict]) -> tuple[str | None, dict | None]:
+    """(article number in the source document, source document node), via
+    vlpd:codificationOf -> vld:Article (vld:itemNumber) -> vld:locatedInDocument."""
+    for source_component in graph.objects(article, URIRef(f"{VLPD}codificationOf")):
+        number = first_literal(graph, source_component, [URIRef(f"{VLD}itemNumber")])
+        document = next(graph.objects(source_component, URIRef(f"{VLD}locatedInDocument")), None)
+        return number, node_by_uri.get(str(document)) if document else None
+    return None, None
+
+
+def version_date(graph: Graph, document: dict, node_by_uri: dict[str, dict]) -> str | None:
+    """Latest effective date among the document and the documents that amend
+    it (vlr:amends / vlr:partiallyAmends). Phap dien only records amendments
+    per document, so this dates the whole document's consolidated text."""
+    dates = [document.get("effective_date")]
+    for predicate in ("amends", "partiallyAmends"):
+        for amending in graph.subjects(URIRef(f"{VLR}{predicate}"), URIRef(document["uri"])):
+            dates.append((node_by_uri.get(str(amending)) or {}).get("effective_date"))
+    return max((str(d) for d in dates if d), default=None)
+
+
+def article_sort_key(chunk: dict) -> tuple:
+    number = re.match(r"\d+", chunk["meta_dieu"] or "")
+    part = re.search(r":p(\d+)$", chunk["chunk_id"])
+    return (chunk["document_id"], int(number.group()) if number else 0, chunk["meta_dieu"] or "", int(part.group(1)) if part else 0)
 
 
 def repo_relative(path: Path) -> str:
@@ -257,8 +302,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH)
     parser.add_argument("--schema", type=Path, default=SCHEMA_V4_PATH)
-    parser.add_argument("--out-dir", type=Path, default=LAO_DONG_V4_DIR)
+    parser.add_argument("--out-dir", type=Path, default=LAO_DONG_DIR)
     parser.add_argument("--dataset-id", default=LAO_DONG_DATASET_ID)
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=MAX_TOKENS,
+        help="split Dieu longer than this many bge-m3 tokens (0: never split, no tokenizer download)",
+    )
     args = parser.parse_args()
 
     graph = Graph().parse(args.abox, format="turtle")
@@ -382,33 +433,83 @@ def main() -> int:
     edges.sort(key=lambda e: (e["source"], e["type"], e["target"], e["predicate_iri"]))
 
     node_by_uri = nodes
+    count = TokenCounter() if args.max_tokens > 0 else None
     chunks = []
+    seen_articles: dict[str, str] = {}
     for subject_key, node in sorted(nodes.items()):
         if not any(class_uri in ARTICLE_CLASSES for class_uri in node["class_iris"]):
             continue
         if not node.get("mapc"):
             continue
-        breadcrumb = build_breadcrumb(graph, URIRef(subject_key), node_by_uri)
-        citation = f"Điều {node['mapc']}"
-        body = node.get("text") or node.get("source_quote") or ""
-        text = "\n".join(part for part in [breadcrumb, node.get("ten"), citation, body] if part).strip()
-        reference_count = sum(1 for edge in edges if edge["source"] == node["id"] and edge["type"] == "REFERS_TO")
-        chunks.append(
-            {
-                "chunk_id": node["id"],
-                "mapc": node["id"],
-                "uri": node["uri"],
-                "ten": node.get("ten"),
-                "citation": citation,
-                "breadcrumb": breadcrumb,
-                "text": text,
-                "document_uri": node.get("document_uri"),
-                "source": "ontology_v4",
-                "dataset_id": args.dataset_id,
-                "n_khoan": None,
-                "n_refs": reference_count,
-            }
-        )
+        meta_dieu, document = source_of(graph, URIRef(subject_key), node_by_uri)
+        if not meta_dieu or not document or not document.get("document_number"):
+            raise SystemExit(
+                f"{node['id']}: no source article number or document number. Rebuild the ABox "
+                "(python -m labor_rag.ingest.build_abox) so each SourceArticle carries vld:itemNumber."
+            )
+        so_hieu = str(document["document_number"])
+        if not is_so_hieu(so_hieu):
+            print(f"WARNING: unusual document number {so_hieu!r} for {node['id']}", file=sys.stderr)
+        document_id = make_document_id(so_hieu)
+        article = make_chunk_id(document_id, meta_dieu)
+        if article in seen_articles:
+            raise SystemExit(f"{node['id']} and {seen_articles[article]} are both Dieu {meta_dieu} of {so_hieu}")
+        seen_articles[article] = node["id"]
+        node["article_number"] = meta_dieu
+        node["document_id"] = document_id
+
+        parents = ancestors(graph, URIRef(subject_key), node_by_uri)
+        de_muc = next((parent.get("ten") for parent in parents if parent["label"] == "DeMuc"), None)
+        headings = [parent.get("ten") for parent in parents if parent["label"] != "DeMuc" and parent.get("ten")]
+        chuong = next((parent.get("ten") for parent in parents if parent["label"] == "Chuong"), None)
+        muc = next((parent.get("ten") for parent in parents if parent["label"] == "Muc"), None)
+        meta_de_muc = nfc(str(document.get("ten") or so_hieu))
+        context = " > ".join(part for part in [de_muc, meta_de_muc, *headings] if part)
+
+        ten = nfc(node.get("ten") or "")
+        # A Dieu without a title of its own has the bare code as heading
+        # ("Điều 20.5.TT.4.2."); the codification number stays out of the text.
+        if re.fullmatch(rf"Điều\s+{re.escape(str(node.get('mapc')))}\.?", ten):
+            ten = ""
+        body = nfc(node.get("text") or node.get("source_quote") or "")
+        header = build_header(context, meta_dieu, ten)
+        if count:
+            parts = split_article(header, body, count, args.max_tokens)
+        else:
+            parts = [("\n".join(part for part in [header, body] if part), None)]
+        for index, (text, meta_khoan) in enumerate(parts, start=1):
+            chunks.append(
+                {
+                    "chunk_id": make_chunk_id(document_id, meta_dieu, index if len(parts) > 1 else None),
+                    "document_id": document_id,
+                    # The Dieu node id in kg_nodes: the codification number, or
+                    # the URI for the few repeated codes (KNOWN_ISSUES), so it
+                    # stays unique and joins the chunk to Neo4j.
+                    "mapc": node["id"],
+                    "source": "phap_dien",
+                    "ten": ten,
+                    "text": text,
+                    "meta_de_muc": meta_de_muc,
+                    # Chapter/section of the source document: not in the ontology.
+                    "meta_chuong": None,
+                    "meta_muc": None,
+                    # Chapter/section of the Phap dien de muc the Dieu is filed under.
+                    "pd_chuong": heading_number(chuong),
+                    "pd_muc": heading_number(muc),
+                    "meta_dieu": meta_dieu,
+                    "meta_khoan": meta_khoan,
+                    "effective_from_date": document.get("effective_date"),
+                    "effective_to_date": document.get("valid_to"),
+                    "version_date": version_date(graph, document, node_by_uri),
+                    # Phap dien drops repealed provisions when it is updated.
+                    "still_valid": True,
+                    "content_hash": content_hash(body),
+                    # Phap dien text already consolidates the amendments.
+                    "amends": [],
+                    "amended_by": [],
+                }
+            )
+    chunks.sort(key=article_sort_key)
 
     schema_classes = {str(value) for value in schema.subjects(RDF.type, OWL.Class)}
     schema_object_properties = {str(value) for value in schema.subjects(RDF.type, OWL.ObjectProperty)}
@@ -441,6 +542,8 @@ def main() -> int:
         "nodes": len(nodes),
         "edges": len(edges),
         "chunks": len(chunks),
+        "articles": len(seen_articles),
+        "split_articles": sum(1 for chunk in chunks if chunk["chunk_id"].endswith(":p1")),
         "edge_types": dict(Counter(edge["type"] for edge in edges)),
         "node_labels": dict(Counter(node["label"] for node in nodes.values())),
         "unprojected_literal_triples": 0,
