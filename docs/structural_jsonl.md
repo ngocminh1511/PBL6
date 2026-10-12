@@ -8,21 +8,29 @@ Cùng một Điều của cùng một văn bản luôn có cùng `chunk_id`, dù
 
 ## 1. Bản ghi mẫu
 
+Lấy từ Pháp điển (Điều 10 của NĐ 145/2020, xếp vào Chương III, Mục 4 của đề mục "Lao động"):
+
 ```json
 {
-  "chunk_id": "45-2019-qh14:d1",
-  "document_id": "45-2019-qh14",
-  "mapc": "20.2.LQ.1",
+  "chunk_id": "145-2020-nd-cp:d10",
+  "document_id": "145-2020-nd-cp",
+  "mapc": "20.2.NĐ.3.10",
   "source": "phap_dien",
-  "ten": "Phạm vi điều chỉnh",
-  "text": "Lao động > Bộ luật Lao động số 45/2019/QH14 > Chương I. NHỮNG QUY ĐỊNH CHUNG\nĐiều 1. Phạm vi điều chỉnh\nBộ luật Lao động quy định tiêu chuẩn lao động; ...",
-  "meta_de_muc": "Bộ luật Lao động số 45/2019/QH14",
-  "meta_chuong": "I",
+  "ten": "...",
+  "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương III. HỢP ĐỒNG LAO ĐỘNG > Mục 4. HỢP ĐỒNG LAO ĐỘNG VÔ HIỆU\nĐiều 10. ...\n...",
+  "meta_de_muc": "Nghị định số 145/2020/NĐ-CP",
+  "meta_chuong": null,
   "meta_muc": null,
-  "meta_dieu": "1",
+  "pd_chuong": "III",
+  "pd_muc": "4",
+  "meta_dieu": "10",
   "meta_khoan": null,
-  "effective_from_date": "2021-01-01",
-  "still_valid": true
+  "effective_from_date": "2021-02-01",
+  "effective_to_date": null,
+  "still_valid": true,
+  "content_hash": "3f1c0a9e7b2d4c51",
+  "amends": [],
+  "amended_by": []
 }
 ```
 
@@ -39,10 +47,16 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
   "meta_de_muc": "Nghị định số 12/2026/NĐ-CP",
   "meta_chuong": "III",
   "meta_muc": null,
+  "pd_chuong": null,
+  "pd_muc": null,
   "meta_dieu": "35",
   "meta_khoan": "4-5",
   "effective_from_date": "2026-12-01",
-  "still_valid": true
+  "effective_to_date": null,
+  "still_valid": true,
+  "content_hash": "9a0b7c3d2e1f4a5b",
+  "amends": [],
+  "amended_by": []
 }
 ```
 
@@ -56,13 +70,24 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
 | `source` | `phap_dien` / `pdf` | Quy tắc nạp | Mục 7 |
 | `ten` | string | LLM, UI | Tên Điều |
 | `text` | string | Embedding, LLM | Mục 4 |
-| `meta_de_muc` | string | Trích dẫn, lọc | Tên văn bản: loại + tên + số hiệu. Pháp điển: tiêu đề node văn bản trong KG. PDF: `FlatRecord.document_title` |
-| `meta_chuong` | string / null | Lọc | Chỉ số hiệu (`"I"`). Pháp điển: `pChuong`. OCR: `chapter_number` |
-| `meta_muc` | string / null | Lọc | Chỉ số hiệu (`"1"`). Pháp điển: `pMuc`. OCR: `section_number` |
+| `meta_de_muc` | string | Trích dẫn, lọc | Tên văn bản (loại + số hiệu, kèm tên nếu có). Pháp điển: `vld:title` của văn bản trong KG. PDF: `FlatRecord.document_title` |
+| `meta_chuong` | string / null | Lọc | Chương của **văn bản gốc**, chỉ số hiệu (`"I"`). OCR: `chapter_number`. Pháp điển: `null` (KG không có chương của văn bản gốc) |
+| `meta_muc` | string / null | Lọc | Mục của **văn bản gốc** (`"1"`). OCR: `section_number`. Pháp điển: `null` |
+| `pd_chuong` | string / null | Ngữ cảnh, UI | Chương của **đề mục Pháp điển** chứa Điều (`"III"`), lấy từ heading trong KG. PDF: `null` |
+| `pd_muc` | string / null | Ngữ cảnh, UI | Mục của đề mục Pháp điển (`"4"`). PDF: `null` |
 | `meta_dieu` | string / null | Trích dẫn, gom phần, tra `mapc` | Số Điều trong **văn bản gốc**. `null` với phần mở đầu / phụ lục |
 | `meta_khoan` | string / null | Trích dẫn | Khoảng khoản `"đầu-cuối"` của chunk khi Điều bị cắt (`"1-8"`, `"9-14"`); chỉ một khoản thì `"3"`; `null` nếu chunk là cả Điều |
 | `effective_from_date` | `YYYY-MM-DD` / null | Lọc hiệu lực | Mục 6 |
+| `effective_to_date` | `YYYY-MM-DD` / null | Lịch sử | Mục 6 |
 | `still_valid` | bool | Lọc hiệu lực | Mục 6 |
+| `content_hash` | string | Phát hiện Điều thay đổi | sha1 (16 ký tự hex) của **nội dung** Điều (không gồm phần đầu), sau khi chuẩn hóa NFC và gộp khoảng trắng. Mọi phần của một Điều có cùng giá trị |
+| `amends` | list `chunk_id` | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi, bổ sung. Mục 10 |
+| `amended_by` | list `chunk_id` | Văn bản sửa đổi | Các Điều đã sửa đổi Điều này. Mục 10 |
+
+**Chương của văn bản gốc và chương Pháp điển là hai thứ khác nhau.** Pháp điển xếp Điều của
+nghị định, thông tư vào khung chương của đề mục (lấy theo Bộ luật), nên Điều 10 NĐ 145/2020 nằm ở
+"Chương III. HỢP ĐỒNG LAO ĐỘNG" của đề mục, còn trong chính Nghị định thì ở chương khác.
+Không dùng chương để so khớp hay cập nhật; định danh luôn là `(document_id, meta_dieu)`.
 
 Trích dẫn ghép lúc dựng prompt:
 `Điều {meta_dieu}[ khoản {meta_khoan}] {meta_de_muc}` -> `Điều 35 khoản 4-5 Nghị định số 12/2026/NĐ-CP`.
@@ -82,7 +107,9 @@ def make_document_id(so_hieu: str) -> str:
 ```
 
 - Pháp điển: `document_number` của văn bản trong KG.
-- PDF: regex `Số:\s*([\w/.-]+)` ở trang đầu. Nếu không đọc được thì dùng `doc-<sha1 file>[:12]`.
+- PDF: regex `số\s*:?\s*(\d+/\d{4}/[\w-]+)` (không phân biệt hoa thường, bắt cả "Luật số: ...") ở trang đầu,
+  kiểm tra khuôn `số/năm/ký hiệu`. Nếu không đọc được thì dùng `doc-<sha1 của text trích được>[:12]`.
+- OCR hay đọc `Đ` thành `Ð` (chữ Iceland); `make_document_id` đổi về `Đ` trước khi chuẩn hóa.
 
 ### 3.2. `chunk_id`
 
@@ -98,7 +125,8 @@ def make_document_id(so_hieu: str) -> str:
 | Phụ lục | `10-2020-tt-bldtbxh:pl2` |
 | Phần thứ k của Điều bị cắt | `45-2019-qh14:d35:p2` |
 
-- Số Điều lấy từ ghi chú nguồn (`codificationOf` trong KG), **không** lấy phần cuối của mã pháp điển.
+- Số Điều lấy từ ghi chú nguồn: `codificationOf` -> `vld:Article` có `vld:itemNumber` (do `build_abox` ghi),
+  **không** lấy phần cuối của mã pháp điển.
 - Qdrant point id: `uuid5(NAMESPACE_URL, chunk_id)`.
 
 ### 3.3. `mapc`
@@ -121,7 +149,7 @@ Mọi phần `:p{k}` của một Điều dùng chung một `mapc`.
 
 | Nguồn | Ngữ cảnh |
 |---|---|
-| Pháp điển | `{đề mục} > {meta_de_muc} > Chương {số}. {tên chương}[ > Mục {số}. {tên mục}]` |
+| Pháp điển | `{đề mục} > {meta_de_muc} > {các heading Pháp điển: Phần / Chương / Mục ...}` (chương, mục của đề mục, tức `pd_chuong`, `pd_muc`) |
 | PDF | `{meta_de_muc} > Chương {số}. {tên chương}[ > Mục {số}. {tên mục}]` |
 
 Quy tắc:
@@ -192,6 +220,7 @@ def split_article(header, lead, clauses, count, max_tokens=1024):
 | Trường | Ý nghĩa | Pháp điển | PDF |
 |---|---|---|---|
 | `effective_from_date` | Ngày bắt đầu có hiệu lực | `effective_date` của văn bản trong KG | Regex `có hiệu lực (?:thi hành )?(?:kể )?từ ngày (\d{1,2}/\d{1,2}/\d{4})`; không thấy thì `null` |
+| `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` nếu có (hiện ABox chưa có, nên `null`) | `null` lúc nạp; điền khi nạp văn bản bãi bỏ/thay thế nó |
 | `still_valid` | Đã bị bãi bỏ/thay thế chưa | Luôn `true` | `true` lúc nạp; đổi thành `false` khi nạp văn bản bãi bỏ/thay thế nó |
 
 Filter lúc truy vấn:
@@ -222,3 +251,18 @@ Các bản ghi mức khoản/điểm (`level = clause/point`) phải gộp về 
 [Điều {meta_dieu}[ khoản {meta_khoan}] {meta_de_muc}] {ten}
 Nội dung: {text}
 ```
+
+## 10. Cập nhật văn bản
+
+So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, không theo chương hay `mapc`.
+
+| Trường hợp | Ví dụ | Cách làm |
+|---|---|---|
+| Nạp lại cùng văn bản | PDF NĐ 145/2020 OCR lại | Cùng `document_id` nên `chunk_id` khớp 1-1. `chunk_id` chỉ có ở bản mới: Điều mới. Chỉ có ở bản cũ: Điều bị mất (thường do OCR, cần cảnh báo). Có ở cả hai: so `content_hash`, chỉ embedding lại Điều đổi hash |
+| Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Parse văn bản và Điều đích -> `145-2020-nd-cp:d35`. Chunk sửa đổi có `amends: ["145-2020-nd-cp:d35"]`, chunk cũ thêm vào `amended_by` (Qdrant `set_payload`). Retrieval trúng Điều cũ thì kéo theo chunk sửa đổi, prompt ghi rõ quy định sửa đổi được ưu tiên |
+| Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). Đặt mọi chunk của văn bản cũ `still_valid = false`, `effective_to_date` = ngày văn bản mới có hiệu lực. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine, lưu thành cạnh `REPLACES` có điểm trong Neo4j |
+
+- **Không xóa bản cũ**, chỉ đặt `still_valid = false`: vẫn trả lời được "trước đây quy định thế nào" và so được phiên bản.
+  Filter mặc định ở mục 6 đã loại bản cũ khỏi truy vấn thường.
+- Pháp điển đã hợp nhất các lần sửa đổi vào nội dung Điều, nên chunk Pháp điển có `amends = amended_by = []`.
+  Hai trường này dành cho văn bản sửa đổi mới, ra sau lần cập nhật Pháp điển gần nhất.

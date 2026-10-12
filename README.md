@@ -25,7 +25,7 @@ PBL6/
 │   ├── raw/bophapdien/     # Bộ Pháp điển gốc: jsonData.js, linh_vuc/*.html, linh_vuc_index.json
 │   ├── interim/            # chu_de.json, de_muc.json, testset_cache/, ocr/ (output OCR)
 │   ├── models/vietocr/     # config + weights VietOCR, tự tải ở lần OCR đầu tiên
-│   └── processed/lao_dong_v4/   # JSONL chiếu từ ABox Lao động: chunks (Qdrant) + KG (Neo4j)
+│   └── processed/lao_dong_v5/   # JSONL chiếu từ ABox Lao động: chunks v5 (Qdrant) + KG (Neo4j); lao_dong_v4/ là bản cũ
 ├── scripts/                # Script chạy một lần: validate ABox, sắp xếp dữ liệu thô
 ├── tests/                  # Competency-question tests cho ABox, unit test OCR
 ├── notebooks/              # Phân tích dataset, benchmark embedding
@@ -56,12 +56,16 @@ Dữ liệu là toàn bộ chủ đề 20 "Lao động" của Bộ pháp điển
 ```
 jsonData.js ─ parse_jsondata ─► data/interim/chu_de.json, de_muc.json
 linh_vuc/lao_dong/*.html ─ build_abox ─► ontology/abox/abox_lao_dong.ttl   (HTML được parse trong bộ nhớ)
-abox_lao_dong.ttl ─ ontology_to_jsonl ─► data/processed/lao_dong_v4/
-    ├── chunks.jsonl            ─ embed_and_index ─► Qdrant (legal_ld_v4_bkai)
-    └── kg_nodes/kg_edges.jsonl ─ load_neo4j      ─► Neo4j  (dataset lao_dong_v4)
+abox_lao_dong.ttl ─ ontology_to_jsonl ─► data/processed/lao_dong_v5/
+    ├── chunks.jsonl            ─ embed_and_index ─► Qdrant (legal_ld_v5_bge)
+    └── kg_nodes/kg_edges.jsonl ─ load_neo4j      ─► Neo4j  (dataset lao_dong_v5)
 ```
 
-Mọi script đều mặc định dùng `abox_lao_dong.ttl` và `data/processed/lao_dong_v4`:
+`chunks.jsonl` theo cấu trúc v5 ([docs/structural_jsonl.md](docs/structural_jsonl.md)): `chunk_id` là
+`{số hiệu văn bản}:d{số Điều trong văn bản gốc}` (vd `45-2019-qh14:d35`), Điều dài hơn 1024 token bge-m3
+được cắt theo khoản thành `...:p1`, `...:p2`. `mapc` vẫn giữ để nối Neo4j và chấm bộ test.
+
+Mọi script đều mặc định dùng `abox_lao_dong.ttl` và `data/processed/lao_dong_v5`:
 
 ```powershell
 python -m labor_rag.ingest.parse_jsondata                                 # chỉ cần chạy một lần
@@ -92,12 +96,13 @@ modal deploy scripts/modal_embed.py           # deploy app (một lần, và sau
 modal run scripts/modal_embed.py              # (tùy chọn) thử embed 2 câu trên GPU
 
 python -m labor_rag.ingest.embed_and_index --backend modal
-python -m labor_rag.ingest.embed_and_index --backend modal --model BAAI/bge-m3 --collection legal_ld_v4_bge
+python -m labor_rag.ingest.embed_and_index --backend modal --model bkai-foundation-models/vietnamese-bi-encoder --collection legal_ld_v5_bkai
 python -m labor_rag.ingest.load_neo4j --replace-dataset   # ghi vào NEO4J_URI (local hoặc Aura)
 ```
 
-Benchmark embedding dùng lại collection đã có nếu đủ 1.407 `mapc` và đúng số chiều, nên có thể index
-ba collection `legal_ld_v4_{bkai,bge,mpnet}` bằng Modal như trên rồi chạy `embedding_benchmark` **không** kèm `--rebuild`.
+Benchmark embedding dùng lại collection đã có nếu đủ các `chunk_id` và đúng số chiều, nên có thể index
+ba collection `legal_ld_v5_{bkai,bge,mpnet}` bằng Modal như trên rồi chạy `embedding_benchmark` **không** kèm `--rebuild`.
+Kết quả được gom theo `mapc` trước khi tính điểm, nên một Điều bị cắt thành nhiều phần chỉ tính một lần.
 
 ## Bộ test truy hồi v2 (chủ đề Lao động)
 
@@ -168,7 +173,7 @@ python tests/test_ocr_pipeline.py                                    # unit test
 
 ## Chạy chatbot
 
-Chatbot mặc định dùng collection `legal_ld_v4_bkai` và dataset `lao_dong_v4`. Có thể đổi qua `.env`.
+Chatbot mặc định dùng collection `legal_ld_v5_bge` (bge-m3) và dataset `lao_dong_v5`. Có thể đổi qua `.env`.
 
 ```powershell
 python -m labor_rag.app.chat
