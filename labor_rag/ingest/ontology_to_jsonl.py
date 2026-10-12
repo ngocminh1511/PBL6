@@ -273,6 +273,17 @@ def source_of(graph: Graph, article, node_by_uri: dict[str, dict]) -> tuple[str 
     return None, None
 
 
+def version_date(graph: Graph, document: dict, node_by_uri: dict[str, dict]) -> str | None:
+    """Latest effective date among the document and the documents that amend
+    it (vlr:amends / vlr:partiallyAmends). Phap dien only records amendments
+    per document, so this dates the whole document's consolidated text."""
+    dates = [document.get("effective_date")]
+    for predicate in ("amends", "partiallyAmends"):
+        for amending in graph.subjects(URIRef(f"{VLR}{predicate}"), URIRef(document["uri"])):
+            dates.append((node_by_uri.get(str(amending)) or {}).get("effective_date"))
+    return max((str(d) for d in dates if d), default=None)
+
+
 def article_sort_key(chunk: dict) -> tuple:
     number = re.match(r"\d+", chunk["meta_dieu"] or "")
     part = re.search(r":p(\d+)$", chunk["chunk_id"])
@@ -489,6 +500,7 @@ def main() -> int:
                     "meta_khoan": meta_khoan,
                     "effective_from_date": document.get("effective_date"),
                     "effective_to_date": document.get("valid_to"),
+                    "version_date": version_date(graph, document, node_by_uri),
                     # Phap dien drops repealed provisions when it is updated.
                     "still_valid": True,
                     "content_hash": content_hash(body),

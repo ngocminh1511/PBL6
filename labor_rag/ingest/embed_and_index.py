@@ -12,7 +12,13 @@ Embedding runs on the local GPU/CPU by default. With --backend modal it runs
 on a Modal GPU (deploy scripts/modal_embed.py once first); only the vectors
 come back, the upsert still happens from this machine.
 
+By default the collection is rebuilt from --chunks. With --upsert it is kept
+and the chunks are merged in per Dieu (labor_rag/ingest/merge.py): the newer
+version_date wins and the losing Dieu's old parts are deleted. Rebuilding the
+Phap dien collection drops PDF chunks loaded with --upsert; load them again.
+
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
+       python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
 """
 from __future__ import annotations
 
@@ -25,11 +31,21 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PayloadSchemaType, PointStruct, VectorParams
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchAny,
+    PayloadSchemaType,
+    PointIdsList,
+    PointStruct,
+    VectorParams,
+)
 
 from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
+from labor_rag.ingest.merge import plan_upsert
 
 sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
@@ -92,6 +108,45 @@ def embed_modal(texts: list[str], model_name: str, max_batch_tokens: int, batch_
         yield ids, vectors[ids]
 
 
+MERGE_FIELDS = ["chunk_id", "document_id", "meta_dieu", "source", "version_date", "text"]
+
+
+def indexed_chunks(client: QdrantClient, collection: str, document_ids: list[str]) -> list[dict]:
+    """Payloads already in the collection for these documents."""
+    found: list[dict] = []
+    offset = None
+    while True:
+        points, offset = client.scroll(
+            collection_name=collection,
+            scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids))]),
+            with_payload=MERGE_FIELDS,
+            with_vectors=False,
+            limit=256,
+            offset=offset,
+        )
+        found += [point.payload for point in points if point.payload]
+        if offset is None:
+            return found
+
+
+def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict]) -> list[dict]:
+    """Delete the old parts of every Dieu the new chunks win, and return the
+    chunks still to embed and write."""
+    document_ids = sorted({c["document_id"] for c in chunks})
+    plan = plan_upsert(indexed_chunks(client, collection, document_ids), chunks)
+    for warning in plan.warnings:
+        print(f"WARNING: {warning}")
+    print(
+        f"Upsert into {collection}: write {len(plan.upsert)} chunks, delete {len(plan.delete)} old parts, "
+        f"keep {len(plan.kept)} newer indexed Dieu, {len(plan.unchanged)} unchanged"
+    )
+    for key in plan.kept:
+        print(f"  kept indexed version of {key}")
+    if plan.delete:
+        client.delete(collection, points_selector=PointIdsList(points=[point_id(c) for c in plan.delete]))
+    return plan.upsert
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
@@ -107,6 +162,12 @@ def main() -> None:
         help=f"Token budget per batch (batch size x longest chunk); default {DEFAULT_MAX_BATCH_TOKENS} "
         f"local, {MODAL_MAX_BATCH_TOKENS} on Modal",
     )
+    parser.add_argument(
+        "--upsert",
+        action="store_true",
+        help="add to the collection instead of rebuilding it: per Dieu, the newer version_date wins "
+        "(labor_rag/ingest/merge.py); used for PDF chunks from pdf_to_chunks",
+    )
     args = parser.parse_args()
     max_batch_tokens = args.max_batch_tokens or (
         MODAL_MAX_BATCH_TOKENS if args.backend == "modal" else DEFAULT_MAX_BATCH_TOKENS
@@ -117,16 +178,23 @@ def main() -> None:
     duplicates = [key for key, n in Counter(c["chunk_id"] for c in chunks).items() if n > 1]
     if duplicates:
         raise SystemExit(f"Repeated chunk_id would overwrite points: {duplicates[:5]}")
-    texts = [c["text"] for c in chunks]
 
     # Fail on a wrong URL/key before spending GPU time.
     client = QdrantClient(url=args.qdrant_url, api_key=QDRANT_API_KEY)
     client.get_collections()
 
+    recreate = not args.upsert or not client.collection_exists(args.collection)
+    if not recreate:
+        chunks = apply_upsert_plan(client, args.collection, chunks)
+        if not chunks:
+            print("Nothing to embed.")
+            return
+    texts = [c["text"] for c in chunks]
+
     embed = embed_modal if args.backend == "modal" else embed_local
     done = 0
     for batch_ids, vectors in embed(texts, args.model, max_batch_tokens, args.batch_size):
-        if done == 0:
+        if done == 0 and recreate:
             dim = len(vectors[0])
             print(f"Embedding dimension: {dim}")
             if client.collection_exists(args.collection):
