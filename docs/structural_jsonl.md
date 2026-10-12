@@ -164,7 +164,8 @@ Quy tắc:
 ## 5. Cắt Điều dài
 
 `MAX_TOKENS = 1024`, đếm bằng tokenizer bge-m3 và tính cả phần đầu.
-Với dữ liệu hiện tại có khoảng 38/1407 Điều bị cắt; trung vị là 225 token.
+Với dữ liệu Lao động hiện tại (`lao_dong_v5`): 38/1407 Điều bị cắt, ra 1481 chunk; chunk dài nhất 1017 token,
+trung vị 242 token.
 
 ### 5.1. Thuật toán
 
@@ -222,7 +223,7 @@ def split_article(header, lead, clauses, count, max_tokens=1024):
 
 | Trường | Ý nghĩa | Pháp điển | PDF |
 |---|---|---|---|
-| `effective_from_date` | Ngày bắt đầu có hiệu lực | `effective_date` của văn bản trong KG | Regex `có hiệu lực (?:thi hành )?(?:kể )?từ ngày (\d{1,2}/\d{1,2}/\d{4})`; không thấy thì `null` |
+| `effective_from_date` | Ngày bắt đầu có hiệu lực | `effective_date` của văn bản trong KG | `effective_date` trong KG nếu văn bản đã có trong Pháp điển; không thì `metadata.ngay_hieu_luc` (`ocr/structure.py`): câu dẫn VBHN, hoặc câu "… này có hiệu lực (thi hành) (kể) từ ngày …" dạng `dd/mm/yyyy` hay `ngày dd tháng mm năm yyyy`; không thấy thì `null` |
 | `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` nếu có (hiện ABox chưa có, nên `null`) | `null` lúc nạp; điền khi nạp văn bản bãi bỏ/thay thế nó |
 | `still_valid` | Đã bị bãi bỏ/thay thế chưa | Luôn `true` | `true` lúc nạp; đổi thành `false` khi nạp văn bản bãi bỏ/thay thế nó |
 
