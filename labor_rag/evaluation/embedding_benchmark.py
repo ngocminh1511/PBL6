@@ -42,7 +42,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR
+from labor_rag.config import EVALUATION_DIR, FINETUNE_MODELS_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 
@@ -69,6 +69,11 @@ MODELS: list[dict[str, str]] = [
         "collection": "legal_ld_v5_bge",
     },
     {
+        "key": "bge_ft",
+        "model": str(FINETUNE_MODELS_DIR),
+        "collection": "legal_ld_v5_bge_ft",
+    },
+    {
         "key": "mpnet",
         "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
         "collection": "legal_ld_v5_mpnet",
@@ -76,7 +81,7 @@ MODELS: list[dict[str, str]] = [
 ]
 
 
-COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
+COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|bge_ft|mpnet)$")
 DEFAULT_COLLECTION_PREFIX = "legal_ld_v5"
 
 

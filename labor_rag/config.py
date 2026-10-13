@@ -40,3 +40,6 @@ VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"
+
+FINETUNE_DIR = LAO_DONG_DIR / "finetune"
+FINETUNE_MODELS_DIR = DATA_DIR / "models" / "bge-m3-legal"

@@ -192,6 +192,7 @@ python -m labor_rag.ingest.ontology_to_jsonl --text-variant minimal --out-dir da
 ```
 
 Quy tắc chung cho cả 2 biến thể:
+
 - **Không** đưa mã pháp điển (`Điều 20.2.LQ.1`) vào `text`.
 - Chuẩn hóa `unicodedata.normalize("NFC", text)`. OCR có thể trả về dấu tổ hợp, làm tokenizer tách khác với Pháp điển.
 - bge-m3 không cần prefix `query:` / `passage:` và không cần tách từ (pyvi).
