@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-10-13T14:38:43.035637+00:00",
+  "total_train_samples": 1774,
+  "synthetic_query_samples": 172,
+  "kg_pair_samples": 1602,
+  "samples_with_hard_negatives": 172,
+  "validation_queries": 30,
+  "corpus_chunks_count": 1481
+}
