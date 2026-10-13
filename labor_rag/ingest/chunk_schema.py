@@ -121,8 +121,21 @@ def citation(chunk: dict) -> str:
 # ---------------------------------------------------------------------- text
 
 
-def build_header(context: str | None, meta_dieu: str | None, ten: str | None) -> str:
+def build_header(
+    context: str | None,
+    meta_dieu: str | None,
+    ten: str | None,
+    variant: str = "full",
+) -> str:
+    """Build the chunk header.
+
+    Variants:
+      - "full" / "B" (default): {context}\\nĐiều {meta_dieu}. {ten} (TH2: Đầy đủ ngữ cảnh)
+      - "minimal" / "A": Điều {meta_dieu}. {ten} (TH1: Chỉ Điều n. Tên + nội dung)
+    """
     title = f"Điều {meta_dieu}. {ten}" if meta_dieu else (ten or "")
+    if variant in ("minimal", "A", "th1", "TH1"):
+        return nfc(title)
     return nfc("\n".join(part for part in [context, title] if part))
 
 
