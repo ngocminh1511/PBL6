@@ -54,3 +54,31 @@ python -m labor_rag.ingest.ontology_to_jsonl --text-variant full --out-dir data/
 ### chạy modal cho cả 2 modal 
 - modal deploy scripts/modal_embed.py
 - python scripts/auto_chain_embeddings.py --backend modal
+
+### Chạy bench mark cho 2 biến thể
+python scripts/benchmark_retrieval_th1_vs_th2.py
+
+### Giải thích 1 số định nghĩa 
+- Hit@1, Hit@5, Hit@10 (Tỷ lệ trúng đích): Đo lường xem tài liệu chính xác có xuất hiện trong top K kết quả trả về hay không. Chỉ cần có xuất hiện là được tính điểm, không phân biệt vị trí cụ thể bên trong top đó.
+
+Hit@1 (83.3%): Trong 100 câu hỏi, có khoảng 83 câu mà hệ thống lấy được tài liệu đúng ngay ở vị trí đầu tiên. Đây là chỉ số khắt khe nhất.
+
+Hit@5 và Hit@10 (93.3% - 96.7%): Nếu tìm rộng ra 5 hoặc 10 kết quả, tỷ lệ "trúng" lên tới 96.7%. Trong hệ thống RAG, nếu bạn định cắt 5 chunk đưa vào prompt cho mô hình ngôn ngữ đọc, chỉ số Hit@5 ở mức 93.3% là rất an toàn.
+
+- Recall@5, Recall@10 (Tỷ lệ thu hồi): Đo lường mức độ "gom đủ" dữ liệu. Trong toàn bộ các đoạn tài liệu có liên quan đến câu hỏi đang nằm rải rác trong cơ sở dữ liệu, hệ thống lấy ra được bao nhiêu phần trăm khi quét top 5 hoặc top 10.
+
+Ví dụ: Một truy vấn về một điều luật có tổng cộng 4 đoạn (chunks) liên quan nằm trong cơ sở dữ liệu. Nếu top 5 kết quả tìm kiếm chỉ chứa 2 đoạn trong số đó, thì Recall@5 của câu hỏi đó là 2/4 = 50%.
+
+Chỉ số này ở mức 60-69% cho thấy hệ thống tìm được tài liệu đúng (Hit cao) nhưng có thể bị bỏ sót một số tài liệu phụ trợ khác cùng chủ đề.
+
+- MRR@10 (Mean Reciprocal Rank - Điểm xếp hạng nghịch đảo trung bình): Đo lường việc kết quả đúng xuất hiện "sớm" hay "muộn" trên bảng xếp hạng.
+
+Điểm được tính bằng nghịch đảo thứ hạng của kết quả đúng đầu tiên: 1 / thứ_hạng.
+
+Nếu tài liệu đúng nằm ở Top 1 -> Điểm là 1.
+
+Nếu nằm ở Top 3 -> Điểm là 1/3 (0.33).
+
+Nếu nằm ở Top 10 -> Điểm là 1/10 (0.1).
+
+Mức điểm 0.8833 cho thấy trung bình các tài liệu đúng luôn xuất hiện ở vị trí thứ 1 hoặc thứ 2.

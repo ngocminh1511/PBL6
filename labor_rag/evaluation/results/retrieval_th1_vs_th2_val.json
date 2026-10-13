@@ -1,0 +1,3949 @@
+{
+  "timestamp": "2026-10-13T16:47:04.209507+00:00",
+  "model": "BAAI/bge-m3",
+  "test_dataset": "data\\processed\\lao_dong_v5\\finetune\\val.jsonl",
+  "results": {
+    "TH1_minimal": {
+      "summary": {
+        "case": "TH1_minimal",
+        "collection": "legal_ld_v6_bge",
+        "description": "TH1: Minimal Header (Chỉ Điều n. Tên + nội dung)",
+        "points": 1473,
+        "total_queries": 30,
+        "Hit@1": 0.8333,
+        "Hit@5": 0.9333,
+        "Hit@10": 0.9333,
+        "Recall@5": 0.6278,
+        "Recall@10": 0.6611,
+        "MRR@10": 0.8833,
+        "NDCG@5": 0.7886,
+        "NDCG@10": 0.7943,
+        "MAP@10": 0.567,
+        "avg_search_latency_ms": 436.64,
+        "median_search_latency_ms": 387.74,
+        "avg_encode_latency_ms": 336.38
+      },
+      "per_query": [
+        {
+          "id": "q01",
+          "question": "Người lao động có những quyền cơ bản nào về an toàn, vệ sinh lao động?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.6": 3,
+            "20.5.LQ.23": 2,
+            "20.5.LQ.21": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.5,
+            "ndcg_at_5": 0.42495889834839423,
+            "ndcg_at_10": 0.42495889834839423,
+            "map_at_10": 0.16666666666666666,
+            "first_rank": 2
+          },
+          "search_ms": 1975.3,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.741656,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.731091,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.5",
+              "chunk_id": "84-2015-qh13:d5",
+              "score": 0.720752,
+              "ten": "Nguyên tắc bảo đảm an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.9",
+              "chunk_id": "84-2015-qh13:d9",
+              "score": 0.703321,
+              "ten": "Quyền, trách nhiệm của tổ chức công đoàn trong công tác an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.689845,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q02",
+          "question": "Người lao động phải thực hiện những nghĩa vụ gì để bảo đảm an toàn tại nơi làm việc?",
+          "category": "nghia_vu_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.17": 3,
+            "20.5.LQ.14": 2,
+            "20.5.LQ.18": 1
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.5,
+            "ndcg_at_5": 0.47020199776783905,
+            "ndcg_at_10": 0.47020199776783905,
+            "map_at_10": 0.16666666666666666,
+            "first_rank": 2
+          },
+          "search_ms": 379.77,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.73677,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.17",
+              "chunk_id": "84-2015-qh13:d17",
+              "score": 0.724784,
+              "ten": "Trách nhiệm của người lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.714301,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.702157,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.687358,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q03",
+          "question": "Người sử dụng lao động có những quyền và nghĩa vụ gì về an toàn, vệ sinh lao động?",
+          "category": "quyen_nghia_vu_nguoi_su_dung_lao_dong",
+          "relevance": {
+            "20.5.LQ.7": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.18": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8178747578506881,
+            "ndcg_at_10": 0.8178747578506881,
+            "map_at_10": 0.5555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 393.97,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.812214,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.760555,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.7482,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.17",
+              "chunk_id": "84-2015-qh13:d17",
+              "score": 0.741388,
+              "ten": "Trách nhiệm của người lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.73433,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            }
+          ]
+        },
+        {
+          "id": "q04",
+          "question": "Doanh nghiệp phải làm gì để bảo đảm an toàn, vệ sinh lao động tại nơi làm việc?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.16": 3,
+            "20.5.LQ.18": 2,
+            "20.5.LQ.19": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.5,
+            "ndcg_at_5": 0.42495889834839423,
+            "ndcg_at_10": 0.42495889834839423,
+            "map_at_10": 0.16666666666666666,
+            "first_rank": 2
+          },
+          "search_ms": 375.94,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.711962,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.693653,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.13",
+              "chunk_id": "84-2015-qh13:d13",
+              "score": 0.684586,
+              "ten": "Thông tin, tuyên truyền, giáo dục về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.673827,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.17",
+              "chunk_id": "84-2015-qh13:d17",
+              "score": 0.668804,
+              "ten": "Trách nhiệm của người lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q05",
+          "question": "Những hành vi nào bị nghiêm cấm trong lĩnh vực an toàn, vệ sinh lao động?",
+          "category": "dieu_cam",
+          "relevance": {
+            "20.5.LQ.12": 3,
+            "20.5.LQ.30": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.5,
+            "recall_at_10": 0.5,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9173194127129571,
+            "ndcg_at_10": 0.9173194127129571,
+            "map_at_10": 0.5,
+            "first_rank": 1
+          },
+          "search_ms": 404.16,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.12",
+              "chunk_id": "84-2015-qh13:d12",
+              "score": 0.720554,
+              "ten": "Các hành vi bị nghiêm cấm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.LQ.8",
+              "chunk_id": "45-2019-qh14:d8",
+              "score": 0.657899,
+              "ten": "Các hành vi bị nghiêm cấm trong lĩnh vực lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.4.LQ.9",
+              "chunk_id": "38-2013-qh13:d9",
+              "score": 0.63448,
+              "ten": "Những hành vi bị nghiêm cấm",
+              "meta_de_muc": "Luật số 38/2013/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.632504,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.621707,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q06",
+          "question": "Khi nào người lao động phải được huấn luyện trước khi làm công việc có yêu cầu nghiêm ngặt?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.14": 3,
+            "20.5.LQ.17": 2,
+            "20.5.LQ.30": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 361.77,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.14",
+              "chunk_id": "84-2015-qh13:d14",
+              "score": 0.63772,
+              "ten": "Huấn luyện an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.LQ.61",
+              "chunk_id": "45-2019-qh14:d61",
+              "score": 0.59557,
+              "ten": "Học nghề, tập nghề để làm việc cho người sử dụng lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.NĐ.2.3",
+              "chunk_id": "44-2016-nd-cp:d3",
+              "score": 0.587789,
+              "ten": "Giải thích từ ngữ",
+              "meta_de_muc": "Nghị định số 44/2016/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.64",
+              "chunk_id": "84-2015-qh13:d64",
+              "score": 0.584359,
+              "ten": "Điều kiện sử dụng người lao động cao tuổi làm nghề, công việc nặng nhọc, độc hại, nguy hiểm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.577249,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q07",
+          "question": "Người sử dụng lao động phải kiểm soát các yếu tố nguy hiểm và yếu tố có hại tại nơi làm việc như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.18": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.19": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9049495058460971,
+            "ndcg_at_10": 0.9049495058460971,
+            "map_at_10": 0.5555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 401.22,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.18",
+              "chunk_id": "84-2015-qh13:d18",
+              "score": 0.798055,
+              "ten": "Kiểm soát các yếu tố nguy hiểm, yếu tố có hại tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.101.5",
+              "chunk_id": "03-2025-tt-bldtbxh:d5",
+              "score": 0.731459,
+              "ten": "Trách nhiệm của bộ quản lý ngành, lĩnh vực, người sử dụng lao động và các cơ quan liên quan",
+              "meta_de_muc": "Thông tư số 03/2025/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.719918,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.25",
+              "chunk_id": "84-2015-qh13:d25",
+              "score": 0.687856,
+              "ten": "Thời giờ làm việc trong điều kiện có yếu tố nguy hiểm, yếu tố có hại",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.3",
+              "chunk_id": "84-2015-qh13:d3",
+              "score": 0.646938,
+              "ten": "Giải thích từ ngữ",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q08",
+          "question": "Khi xảy ra sự cố kỹ thuật nguy hiểm, doanh nghiệp phải thực hiện những biện pháp ứng cứu nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.19": 3,
+            "20.5.LQ.17": 2,
+            "20.5.LQ.34": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8124242481930318,
+            "ndcg_at_10": 0.8124242481930318,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 388.19,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.19",
+              "chunk_id": "84-2015-qh13:d19",
+              "score": 0.737658,
+              "ten": "Biện pháp xử lý sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng và ứng cứu khẩn cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.614028,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.78",
+              "chunk_id": "84-2015-qh13:d78",
+              "score": 0.589466,
+              "ten": "Kế hoạch ứng cứu khẩn cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.589321,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p4",
+              "score": 0.584426,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q09",
+          "question": "Người lao động được khám sức khỏe định kỳ với tần suất như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.21": 3,
+            "20.5.LQ.27": 2,
+            "20.5.LQ.38": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.882808018370203,
+            "ndcg_at_10": 0.882808018370203,
+            "map_at_10": 0.5,
+            "first_rank": 1
+          },
+          "search_ms": 370.26,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.21",
+              "chunk_id": "84-2015-qh13:d21",
+              "score": 0.707111,
+              "ten": "Khám sức khỏe và điều trị bệnh nghề nghiệp cho người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.NĐ.3.80",
+              "chunk_id": "145-2020-nd-cp:d80",
+              "score": 0.600976,
+              "ten": "Chăm sóc sức khỏe đối với lao động nữ",
+              "meta_de_muc": "Nghị định số 145/2020/NĐ-CP"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.37",
+              "chunk_id": "84-2015-qh13:d37",
+              "score": 0.570569,
+              "ten": "Thống kê, báo cáo về bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.27",
+              "chunk_id": "84-2015-qh13:d27",
+              "score": 0.568952,
+              "ten": "Quản lý sức khỏe người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.81",
+              "chunk_id": "84-2015-qh13:d81",
+              "score": 0.566298,
+              "ten": "Thống kê, báo cáo về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q10",
+          "question": "Người lao động làm việc trong môi trường nguy hiểm được cấp phương tiện bảo vệ cá nhân ra sao?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.23": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.24": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8688109777822237,
+            "ndcg_at_10": 0.8688109777822237,
+            "map_at_10": 0.4666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 398.54,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.23",
+              "chunk_id": "84-2015-qh13:d23",
+              "score": 0.706377,
+              "ten": "Phương tiện bảo vệ cá nhân trong lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.98.2",
+              "chunk_id": "25-2022-tt-bldtbxh:d2",
+              "score": 0.617087,
+              "ten": "Đối tượng áp dụng",
+              "meta_de_muc": "Thông tư số 25/2022/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.TT.98.1",
+              "chunk_id": "25-2022-tt-bldtbxh:d1",
+              "score": 0.610097,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Thông tư số 25/2022/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.51",
+              "chunk_id": "84-2015-qh13:d51",
+              "score": 0.593847,
+              "ten": "Phương tiện trợ giúp sinh hoạt, dụng cụ chỉnh hình",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.586845,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q11",
+          "question": "Điều kiện và nguyên tắc bồi dưỡng bằng hiện vật cho người lao động là gì?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.24": 3,
+            "20.5.LQ.23": 2,
+            "20.5.LQ.25": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 428.25,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.24",
+              "chunk_id": "84-2015-qh13:d24",
+              "score": 0.774849,
+              "ten": "Bồi dưỡng bằng hiện vật",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.97.8",
+              "chunk_id": "24-2022-tt-bldtbxh:d8",
+              "score": 0.637209,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 24/2022/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.4.NĐ.3.3",
+              "chunk_id": "28-2015-nd-cp:d3",
+              "score": 0.572616,
+              "ten": "Điều kiện được hỗ trợ",
+              "meta_de_muc": "Nghị định số 28/2015/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.LQ.129",
+              "chunk_id": "45-2019-qh14:d129",
+              "score": 0.569338,
+              "ten": "Bồi thường thiệt hại",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.2.NĐ.3.96",
+              "chunk_id": "145-2020-nd-cp:d96",
+              "score": 0.566602,
+              "ten": "Chế độ, điều kiện hoạt động của hòa giải viên lao động",
+              "meta_de_muc": "Nghị định số 145/2020/NĐ-CP"
+            }
+          ]
+        },
+        {
+          "id": "q12",
+          "question": "Thời gian người lao động tiếp xúc với yếu tố nguy hiểm, có hại phải được giới hạn như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.25": 3,
+            "20.5.LQ.18": 2,
+            "20.5.LQ.16": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9822558920422333,
+            "map_at_10": 0.8095238095238094,
+            "first_rank": 1
+          },
+          "search_ms": 367.77,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.25",
+              "chunk_id": "84-2015-qh13:d25",
+              "score": 0.730087,
+              "ten": "Thời giờ làm việc trong điều kiện có yếu tố nguy hiểm, yếu tố có hại",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.18",
+              "chunk_id": "84-2015-qh13:d18",
+              "score": 0.700117,
+              "ten": "Kiểm soát các yếu tố nguy hiểm, yếu tố có hại tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.TT.21.2",
+              "chunk_id": "15-2016-tt-byt:d2",
+              "score": 0.686237,
+              "ten": "Giải thích từ ngữ",
+              "meta_de_muc": "Thông tư số 15/2016/TT-BYT"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.101.5",
+              "chunk_id": "03-2025-tt-bldtbxh:d5",
+              "score": 0.634605,
+              "ten": "Trách nhiệm của bộ quản lý ngành, lĩnh vực, người sử dụng lao động và các cơ quan liên quan",
+              "meta_de_muc": "Thông tư số 03/2025/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.64",
+              "chunk_id": "84-2015-qh13:d64",
+              "score": 0.617926,
+              "ten": "Điều kiện sử dụng người lao động cao tuổi làm nghề, công việc nặng nhọc, độc hại, nguy hiểm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q13",
+          "question": "Máy móc, thiết bị, vật tư hoặc chất nào được xem là có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động?",
+          "category": "dinh_nghia",
+          "relevance": {
+            "20.5.LQ.28": 3,
+            "20.5.LQ.30": 2,
+            "20.5.LQ.31": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 1.0,
+            "ndcg_at_10": 1.0,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 367.48,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.784449,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.720683,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.673231,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.655529,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.81.2",
+              "chunk_id": "36-2019-tt-bldtbxh:d2",
+              "score": 0.626791,
+              "ten": "Tổ chức thực hiện",
+              "meta_de_muc": "Thông tư số 36/2019/TT-BLĐTBXH"
+            }
+          ]
+        },
+        {
+          "id": "q14",
+          "question": "Máy, thiết bị và vật tư có yêu cầu nghiêm ngặt phải được kiểm định vào thời điểm nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.31": 3,
+            "20.5.LQ.30": 2,
+            "20.5.LQ.28": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 1.0,
+            "ndcg_at_10": 1.0,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 366.39,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.711095,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.669652,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.638634,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.55.2",
+              "chunk_id": "10-2017-tt-bct:d2",
+              "score": 0.624524,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 10/2017/TT-BCT"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.608407,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q15",
+          "question": "Tai nạn lao động và sự cố kỹ thuật phải được khai báo, báo cáo như thế nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.34": 3,
+            "20.5.LQ.35": 2,
+            "20.5.LQ.36": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 1.0,
+            "ndcg_at_10": 1.0,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 378.66,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.785937,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.737438,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p3",
+              "score": 0.707671,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.19",
+              "chunk_id": "84-2015-qh13:d19",
+              "score": 0.661575,
+              "ten": "Biện pháp xử lý sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng và ứng cứu khẩn cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.81",
+              "chunk_id": "84-2015-qh13:d81",
+              "score": 0.653997,
+              "ten": "Thống kê, báo cáo về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q16",
+          "question": "Việc điều tra vụ tai nạn lao động được thực hiện theo nguyên tắc và trách nhiệm nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.35": 3,
+            "20.5.LQ.34": 2,
+            "20.5.LQ.36": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9421945763140684,
+            "ndcg_at_10": 0.9421945763140684,
+            "map_at_10": 0.8055555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 370.42,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p1",
+              "score": 0.707814,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.614088,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.601477,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.595435,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.21.5",
+              "chunk_id": "15-2016-tt-byt:d5",
+              "score": 0.583981,
+              "ten": "Tổ chức thực hiện",
+              "meta_de_muc": "Thông tư số 15/2016/TT-BYT"
+            }
+          ]
+        },
+        {
+          "id": "q17",
+          "question": "Người sử dụng lao động phải chi trả và hỗ trợ gì cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.38": 3,
+            "20.5.LQ.39": 2,
+            "20.5.LQ.40": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8556691603792903,
+            "ndcg_at_10": 0.8556691603792903,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 399.64,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.790195,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.39",
+              "chunk_id": "84-2015-qh13:d39",
+              "score": 0.739568,
+              "ten": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.42",
+              "chunk_id": "84-2015-qh13:d42",
+              "score": 0.707676,
+              "ten": "Sử dụng Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.690805,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.56",
+              "chunk_id": "84-2015-qh13:d56",
+              "score": 0.683703,
+              "ten": "Hỗ trợ các hoạt động phòng ngừa, chia sẻ rủi ro về tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q18",
+          "question": "Nếu người lao động bị tai nạn trên tuyến đường hợp lý từ nhà đến nơi làm việc thì trách nhiệm bồi thường, trợ cấp được xác định thế nào?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.39": 3,
+            "20.5.LQ.38": 2,
+            "20.5.LQ.45": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9926195041747018,
+            "ndcg_at_10": 0.9926195041747018,
+            "map_at_10": 0.9166666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 387.94,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.39",
+              "chunk_id": "84-2015-qh13:d39",
+              "score": 0.690506,
+              "ten": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.68524,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.69",
+              "chunk_id": "84-2015-qh13:d69",
+              "score": 0.657727,
+              "ten": "An toàn, vệ sinh lao động đối với người lao động nhận công việc về làm tại nhà",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.640979,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.41",
+              "chunk_id": "84-2015-qh13:d41",
+              "score": 0.636779,
+              "ten": "Nguyên tắc thực hiện chế độ đối với người bị tai nạn lao động, bệnh nghề nghiệp từ Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q19",
+          "question": "Người lao động cần đáp ứng những điều kiện nào để được hưởng chế độ tai nạn lao động?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.45": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.48": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 391.04,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.810887,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.40",
+              "chunk_id": "84-2015-qh13:d40",
+              "score": 0.739597,
+              "ten": "Trường hợp người lao động không được hưởng chế độ từ người sử dụng lao động khi bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.731772,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.57",
+              "chunk_id": "84-2015-qh13:d57",
+              "score": 0.721665,
+              "ten": "Hồ sơ hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.701791,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q20",
+          "question": "Điều kiện để được hưởng chế độ bệnh nghề nghiệp gồm những gì?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.46": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.45": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7984848580994974,
+            "ndcg_at_10": 0.7984848580994974,
+            "map_at_10": 0.5555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 370.09,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.789777,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.58",
+              "chunk_id": "84-2015-qh13:d58",
+              "score": 0.72888,
+              "ten": "Hồ sơ hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.700417,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.31.2",
+              "chunk_id": "28-2016-tt-byt:d2",
+              "score": 0.691713,
+              "ten": "Đối tượng áp dụng",
+              "meta_de_muc": "Thông tư số 28/2016/TT-BYT"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.21.5",
+              "chunk_id": "15-2016-tt-byt:d5",
+              "score": 0.677223,
+              "ten": "Tổ chức thực hiện",
+              "meta_de_muc": "Thông tư số 15/2016/TT-BYT"
+            }
+          ]
+        },
+        {
+          "id": "q21",
+          "question": "Khi suy giảm khả năng lao động ở mức nào thì được hưởng trợ cấp một lần?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.48": 3,
+            "20.5.LQ.49": 2,
+            "20.5.LQ.47": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9803535331101171,
+            "map_at_10": 0.7916666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 390.37,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.48",
+              "chunk_id": "84-2015-qh13:d48",
+              "score": 0.805306,
+              "ten": "Trợ cấp một lần",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.49",
+              "chunk_id": "84-2015-qh13:d49",
+              "score": 0.732764,
+              "ten": "Trợ cấp hằng tháng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.52",
+              "chunk_id": "84-2015-qh13:d52",
+              "score": 0.690886,
+              "ten": "Trợ cấp phục vụ",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.50",
+              "chunk_id": "84-2015-qh13:d50",
+              "score": 0.690127,
+              "ten": "Thời điểm hưởng trợ cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.4.LQ.50",
+              "chunk_id": "38-2013-qh13:d50",
+              "score": 0.667878,
+              "ten": "Mức, thời gian, thời điểm hưởng trợ cấp thất nghiệp",
+              "meta_de_muc": "Luật số 38/2013/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q22",
+          "question": "Khi suy giảm khả năng lao động từ bao nhiêu phần trăm thì được hưởng trợ cấp hằng tháng?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.49": 3,
+            "20.5.LQ.48": 2,
+            "20.5.LQ.50": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9926195041747018,
+            "ndcg_at_10": 0.9926195041747018,
+            "map_at_10": 0.9166666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 364.45,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.49",
+              "chunk_id": "84-2015-qh13:d49",
+              "score": 0.789467,
+              "ten": "Trợ cấp hằng tháng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.48",
+              "chunk_id": "84-2015-qh13:d48",
+              "score": 0.75771,
+              "ten": "Trợ cấp một lần",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.52",
+              "chunk_id": "84-2015-qh13:d52",
+              "score": 0.718013,
+              "ten": "Trợ cấp phục vụ",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.50",
+              "chunk_id": "84-2015-qh13:d50",
+              "score": 0.677013,
+              "ten": "Thời điểm hưởng trợ cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.4.TT.3.8",
+              "chunk_id": "28-2015-tt-bldtbxh:d8:p2",
+              "score": 0.675305,
+              "ten": "Mức hưởng và tháng hưởng trợ cấp thất nghiệp",
+              "meta_de_muc": "Thông tư số 28/2015/TT-BLĐTBXH"
+            }
+          ]
+        },
+        {
+          "id": "q23",
+          "question": "Thân nhân được hưởng chế độ gì khi người lao động chết do tai nạn lao động hoặc bệnh nghề nghiệp?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.53": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.38": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7984848580994974,
+            "ndcg_at_10": 0.8992424290497487,
+            "map_at_10": 0.6805555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 394.13,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.53",
+              "chunk_id": "84-2015-qh13:d53",
+              "score": 0.764977,
+              "ten": "Trợ cấp khi người lao động chết do tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.682748,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.666161,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.659375,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.650445,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q24",
+          "question": "An toàn, vệ sinh lao động đối với lao động nữ, người chưa thành niên và người khuyết tật được áp dụng theo quy định nào?",
+          "category": "lao_dong_dac_thu",
+          "relevance": {
+            "20.5.LQ.63": 3,
+            "20.5.LQ.14": 1,
+            "20.5.LQ.21": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8609101556836468,
+            "ndcg_at_10": 0.8609101556836468,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 369.75,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.63",
+              "chunk_id": "84-2015-qh13:d63",
+              "score": 0.816292,
+              "ten": "An toàn, vệ sinh lao động đối với lao động nữ, lao động chưa thành niên, lao động là người khuyết tật",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.NĐ.1.1",
+              "chunk_id": "39-2016-nd-cp:d1",
+              "score": 0.658407,
+              "ten": "Phạm vi Điều chỉnh",
+              "meta_de_muc": "Nghị định số 39/2016/NĐ-CP"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.657551,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.1",
+              "chunk_id": "84-2015-qh13:d1",
+              "score": 0.65539,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.4.TT.10.6",
+              "chunk_id": "11-2017-tt-bldtbxh:d6",
+              "score": 0.654853,
+              "ten": "An toàn, vệ sinh lao động của người lao động làm việc theo hình thức cộng đồng",
+              "meta_de_muc": "Thông tư số 11/2017/TT-BLĐTBXH"
+            }
+          ]
+        },
+        {
+          "id": "q25",
+          "question": "Học sinh, sinh viên, người học nghề, tập nghề và thử việc được bảo đảm an toàn lao động như thế nào?",
+          "category": "lao_dong_dac_thu",
+          "relevance": {
+            "20.5.LQ.70": 3,
+            "20.5.LQ.14": 2,
+            "20.5.LQ.17": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9049495058460971,
+            "ndcg_at_10": 0.9049495058460971,
+            "map_at_10": 0.5555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 406.54,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.70",
+              "chunk_id": "84-2015-qh13:d70",
+              "score": 0.742189,
+              "ten": "An toàn, vệ sinh lao động đối với học sinh, sinh viên, người học nghề, tập nghề, thử việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.4.TT.10.6",
+              "chunk_id": "11-2017-tt-bldtbxh:d6",
+              "score": 0.628115,
+              "ten": "An toàn, vệ sinh lao động của người lao động làm việc theo hình thức cộng đồng",
+              "meta_de_muc": "Thông tư số 11/2017/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.14",
+              "chunk_id": "84-2015-qh13:d14",
+              "score": 0.625663,
+              "ten": "Huấn luyện an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.5",
+              "chunk_id": "84-2015-qh13:d5",
+              "score": 0.62455,
+              "ten": "Nguyên tắc bảo đảm an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.4",
+              "chunk_id": "84-2015-qh13:d4",
+              "score": 0.624178,
+              "ten": "Chính sách của Nhà nước về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q26",
+          "question": "Cơ sở sản xuất, kinh doanh phải tổ chức công tác an toàn, vệ sinh lao động theo những yêu cầu nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.71": 3,
+            "20.5.LQ.72": 2,
+            "20.5.LQ.76": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.882808018370203,
+            "ndcg_at_10": 0.882808018370203,
+            "map_at_10": 0.5,
+            "first_rank": 1
+          },
+          "search_ms": 390.25,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.775563,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.696329,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.29",
+              "chunk_id": "84-2015-qh13:d29",
+              "score": 0.688741,
+              "ten": "Lập phương án bảo đảm an toàn, vệ sinh lao động khi xây dựng mới, mở rộng hoặc cải tạo công trình, cơ sở để sản xuất, sử dụng, bảo quản, lưu giữ máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.684786,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.2.LQ.132",
+              "chunk_id": "45-2019-qh14:d132",
+              "score": 0.676808,
+              "ten": "Tuân thủ pháp luật về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            }
+          ]
+        },
+        {
+          "id": "q27",
+          "question": "Bộ phận an toàn, vệ sinh lao động trong doanh nghiệp có nhiệm vụ gì?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.72": 3,
+            "20.5.LQ.71": 2,
+            "20.5.LQ.74": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9879538239787087,
+            "ndcg_at_10": 0.9879538239787087,
+            "map_at_10": 0.8666666666666667,
+            "first_rank": 1
+          },
+          "search_ms": 364.41,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.739397,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.711804,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.85",
+              "chunk_id": "84-2015-qh13:d85",
+              "score": 0.70322,
+              "ten": "Trách nhiệm quản lý nhà nước về an toàn, vệ sinh lao động của Bộ trưởng Bộ Y tế",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.84",
+              "chunk_id": "84-2015-qh13:d84",
+              "score": 0.695162,
+              "ten": "Trách nhiệm quản lý nhà nước về an toàn, vệ sinh lao động của Bộ trưởng Bộ Lao động - Thương binh và Xã hội",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.692776,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q28",
+          "question": "Cơ quan nào có thẩm quyền ban hành danh mục máy, thiết bị, vật tư và chất có yêu cầu nghiêm ngặt về an toàn?",
+          "category": "co_quan_tham_quyen",
+          "relevance": {
+            "20.5.LQ.28": 3,
+            "20.5.LQ.33": 2,
+            "20.5.LQ.31": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9879538239787087,
+            "ndcg_at_10": 0.9879538239787087,
+            "map_at_10": 0.8666666666666667,
+            "first_rank": 1
+          },
+          "search_ms": 387.54,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.699289,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.689643,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.665006,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.81.2",
+              "chunk_id": "36-2019-tt-bldtbxh:d2",
+              "score": 0.662271,
+              "ten": "Tổ chức thực hiện",
+              "meta_de_muc": "Thông tư số 36/2019/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.653106,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q29",
+          "question": "Một quy định về hiệu lực có thể xác định thời điểm văn bản có hiệu lực sau ngày ký như thế nào?",
+          "category": "hieu_luc",
+          "relevance": {
+            "20.5.TT.1.2": 3,
+            "20.5.TT.2.2": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 0.0,
+            "hit_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "recall_at_10": 0.0,
+            "mrr_at_10": 0.0,
+            "ndcg_at_5": 0.0,
+            "ndcg_at_10": 0.0,
+            "map_at_10": 0.0,
+            "first_rank": null
+          },
+          "search_ms": 390.99,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.2.LQ.121",
+              "chunk_id": "45-2019-qh14:d121",
+              "score": 0.671918,
+              "ten": "Hiệu lực của nội quy lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.3.TT.1.18",
+              "chunk_id": "20-2021-tt-bldtbxh:d18",
+              "score": 0.654923,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 20/2021/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.3.NĐ.1.45",
+              "chunk_id": "112-2021-nd-cp:d45",
+              "score": 0.645593,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Nghị định số 112/2021/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.NĐ.2.8",
+              "chunk_id": "135-2020-nd-cp:d8",
+              "score": 0.63517,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Nghị định số 135/2020/NĐ-CP"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.NĐ.2.47",
+              "chunk_id": "44-2016-nd-cp:d47",
+              "score": 0.632927,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Nghị định số 44/2016/NĐ-CP"
+            }
+          ]
+        },
+        {
+          "id": "q30",
+          "question": "Những cơ quan, tổ chức và cá nhân nào có trách nhiệm thi hành văn bản?",
+          "category": "co_quan_tham_quyen",
+          "relevance": {
+            "20.5.TT.1.3": 3,
+            "20.5.TT.3.3": 2,
+            "20.5.TT.2.3": 1
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 0.0,
+            "hit_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "recall_at_10": 0.0,
+            "mrr_at_10": 0.0,
+            "ndcg_at_5": 0.0,
+            "ndcg_at_10": 0.0,
+            "map_at_10": 0.0,
+            "first_rank": null
+          },
+          "search_ms": 363.99,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.TT.6.3",
+              "chunk_id": "25-2012-tt-bldtbxh:d3",
+              "score": 0.732215,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 25/2012/TT-BLĐTBXH"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.18.3",
+              "chunk_id": "48-2015-tt-bldtbxh:d3",
+              "score": 0.72294,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 48/2015/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.TT.10.3",
+              "chunk_id": "37-2013-tt-bldtbxh:d3",
+              "score": 0.72294,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 37/2013/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.5.3",
+              "chunk_id": "07-2012-tt-bldtbxh:d3",
+              "score": 0.72294,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 07/2012/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.17.3",
+              "chunk_id": "37-2014-tt-bldtbxh:d3",
+              "score": 0.72294,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 37/2014/TT-BLĐTBXH"
+            }
+          ]
+        }
+      ]
+    },
+    "TH2_full": {
+      "summary": {
+        "case": "TH2_full",
+        "collection": "legal_ld_v5_bge",
+        "description": "TH2: Full Context Header (Đầy đủ ngữ cảnh Đề mục > Chương > Mục > Điều)",
+        "points": 1481,
+        "total_queries": 30,
+        "Hit@1": 0.8333,
+        "Hit@5": 0.9333,
+        "Hit@10": 0.9667,
+        "Recall@5": 0.6167,
+        "Recall@10": 0.6944,
+        "MRR@10": 0.8783,
+        "NDCG@5": 0.7701,
+        "NDCG@10": 0.7918,
+        "MAP@10": 0.5766,
+        "avg_search_latency_ms": 368.78,
+        "median_search_latency_ms": 364.33,
+        "avg_encode_latency_ms": 336.38
+      },
+      "per_query": [
+        {
+          "id": "q01",
+          "question": "Người lao động có những quyền cơ bản nào về an toàn, vệ sinh lao động?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.6": 3,
+            "20.5.LQ.23": 2,
+            "20.5.LQ.21": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.5,
+            "ndcg_at_5": 0.42495889834839423,
+            "ndcg_at_10": 0.42495889834839423,
+            "map_at_10": 0.16666666666666666,
+            "first_rank": 2
+          },
+          "search_ms": 370.3,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.748872,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.743809,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.5",
+              "chunk_id": "84-2015-qh13:d5",
+              "score": 0.71975,
+              "ten": "Nguyên tắc bảo đảm an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.9",
+              "chunk_id": "84-2015-qh13:d9",
+              "score": 0.706614,
+              "ten": "Quyền, trách nhiệm của tổ chức công đoàn trong công tác an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.704256,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q02",
+          "question": "Người lao động phải thực hiện những nghĩa vụ gì để bảo đảm an toàn tại nơi làm việc?",
+          "category": "nghia_vu_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.17": 3,
+            "20.5.LQ.14": 2,
+            "20.5.LQ.18": 1
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.25,
+            "ndcg_at_5": 0.3209627963360124,
+            "ndcg_at_10": 0.3209627963360124,
+            "map_at_10": 0.08333333333333333,
+            "first_rank": 4
+          },
+          "search_ms": 362.74,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.71493,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.71289,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.71275,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.17",
+              "chunk_id": "84-2015-qh13:d17",
+              "score": 0.710605,
+              "ten": "Trách nhiệm của người lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.687174,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q03",
+          "question": "Người sử dụng lao động có những quyền và nghĩa vụ gì về an toàn, vệ sinh lao động?",
+          "category": "quyen_nghia_vu_nguoi_su_dung_lao_dong",
+          "relevance": {
+            "20.5.LQ.7": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.18": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8178747578506881,
+            "ndcg_at_10": 0.8178747578506881,
+            "map_at_10": 0.5555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 364.56,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.7",
+              "chunk_id": "84-2015-qh13:d7",
+              "score": 0.804969,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người sử dụng lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.6",
+              "chunk_id": "84-2015-qh13:d6:p1",
+              "score": 0.77206,
+              "ten": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.741972,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.740837,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.739744,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            }
+          ]
+        },
+        {
+          "id": "q04",
+          "question": "Doanh nghiệp phải làm gì để bảo đảm an toàn, vệ sinh lao động tại nơi làm việc?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.16": 3,
+            "20.5.LQ.18": 2,
+            "20.5.LQ.19": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.5,
+            "ndcg_at_5": 0.42495889834839423,
+            "ndcg_at_10": 0.42495889834839423,
+            "map_at_10": 0.16666666666666666,
+            "first_rank": 2
+          },
+          "search_ms": 384.1,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.718284,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.705631,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.2.LQ.134",
+              "chunk_id": "45-2019-qh14:d134",
+              "score": 0.700184,
+              "ten": "Bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.691354,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.17",
+              "chunk_id": "84-2015-qh13:d17",
+              "score": 0.688734,
+              "ten": "Trách nhiệm của người lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q05",
+          "question": "Những hành vi nào bị nghiêm cấm trong lĩnh vực an toàn, vệ sinh lao động?",
+          "category": "dieu_cam",
+          "relevance": {
+            "20.5.LQ.12": 3,
+            "20.5.LQ.30": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.5,
+            "recall_at_10": 0.5,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9173194127129571,
+            "ndcg_at_10": 0.9173194127129571,
+            "map_at_10": 0.5,
+            "first_rank": 1
+          },
+          "search_ms": 360.73,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.12",
+              "chunk_id": "84-2015-qh13:d12",
+              "score": 0.736102,
+              "ten": "Các hành vi bị nghiêm cấm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.LQ.8",
+              "chunk_id": "45-2019-qh14:d8",
+              "score": 0.666326,
+              "ten": "Các hành vi bị nghiêm cấm trong lĩnh vực lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.646962,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.638619,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.633826,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q06",
+          "question": "Khi nào người lao động phải được huấn luyện trước khi làm công việc có yêu cầu nghiêm ngặt?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.14": 3,
+            "20.5.LQ.17": 2,
+            "20.5.LQ.30": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 362.17,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.14",
+              "chunk_id": "84-2015-qh13:d14",
+              "score": 0.622336,
+              "ten": "Huấn luyện an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.LQ.61",
+              "chunk_id": "45-2019-qh14:d61",
+              "score": 0.604164,
+              "ten": "Học nghề, tập nghề để làm việc cho người sử dụng lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.64",
+              "chunk_id": "84-2015-qh13:d64",
+              "score": 0.587865,
+              "ten": "Điều kiện sử dụng người lao động cao tuổi làm nghề, công việc nặng nhọc, độc hại, nguy hiểm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.4.NĐ.5.15",
+              "chunk_id": "61-2015-nd-cp:d15",
+              "score": 0.583708,
+              "ten": "Điều kiện hỗ trợ đào tạo nghề",
+              "meta_de_muc": "Nghị định số 61/2015/NĐ-CP"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.NĐ.2.3",
+              "chunk_id": "44-2016-nd-cp:d3",
+              "score": 0.576207,
+              "ten": "Giải thích từ ngữ",
+              "meta_de_muc": "Nghị định số 44/2016/NĐ-CP"
+            }
+          ]
+        },
+        {
+          "id": "q07",
+          "question": "Người sử dụng lao động phải kiểm soát các yếu tố nguy hiểm và yếu tố có hại tại nơi làm việc như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.18": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.19": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9467676761267002,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 362.26,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.18",
+              "chunk_id": "84-2015-qh13:d18",
+              "score": 0.772467,
+              "ten": "Kiểm soát các yếu tố nguy hiểm, yếu tố có hại tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.16",
+              "chunk_id": "84-2015-qh13:d16",
+              "score": 0.702233,
+              "ten": "Trách nhiệm của người sử dụng lao động trong việc bảo đảm an toàn, vệ sinh lao động tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.TT.101.5",
+              "chunk_id": "03-2025-tt-bldtbxh:d5",
+              "score": 0.700604,
+              "ten": "Trách nhiệm của bộ quản lý ngành, lĩnh vực, người sử dụng lao động và các cơ quan liên quan",
+              "meta_de_muc": "Thông tư số 03/2025/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.25",
+              "chunk_id": "84-2015-qh13:d25",
+              "score": 0.695611,
+              "ten": "Thời giờ làm việc trong điều kiện có yếu tố nguy hiểm, yếu tố có hại",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.23",
+              "chunk_id": "84-2015-qh13:d23",
+              "score": 0.657378,
+              "ten": "Phương tiện bảo vệ cá nhân trong lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q08",
+          "question": "Khi xảy ra sự cố kỹ thuật nguy hiểm, doanh nghiệp phải thực hiện những biện pháp ứng cứu nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.19": 3,
+            "20.5.LQ.17": 2,
+            "20.5.LQ.34": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8124242481930318,
+            "ndcg_at_10": 0.8124242481930318,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 363.03,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.19",
+              "chunk_id": "84-2015-qh13:d19",
+              "score": 0.713388,
+              "ten": "Biện pháp xử lý sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng và ứng cứu khẩn cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.631904,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p4",
+              "score": 0.619756,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.78",
+              "chunk_id": "84-2015-qh13:d78",
+              "score": 0.619389,
+              "ten": "Kế hoạch ứng cứu khẩn cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.616157,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q09",
+          "question": "Người lao động được khám sức khỏe định kỳ với tần suất như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.21": 3,
+            "20.5.LQ.27": 2,
+            "20.5.LQ.38": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9467676761267002,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 378.08,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.21",
+              "chunk_id": "84-2015-qh13:d21",
+              "score": 0.697264,
+              "ten": "Khám sức khỏe và điều trị bệnh nghề nghiệp cho người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.27",
+              "chunk_id": "84-2015-qh13:d27",
+              "score": 0.589412,
+              "ten": "Quản lý sức khỏe người lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.2.NĐ.3.80",
+              "chunk_id": "145-2020-nd-cp:d80",
+              "score": 0.587958,
+              "ten": "Chăm sóc sức khỏe đối với lao động nữ",
+              "meta_de_muc": "Nghị định số 145/2020/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.31.1",
+              "chunk_id": "28-2016-tt-byt:d1",
+              "score": 0.584614,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Thông tư số 28/2016/TT-BYT"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.81",
+              "chunk_id": "84-2015-qh13:d81",
+              "score": 0.560695,
+              "ten": "Thống kê, báo cáo về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q10",
+          "question": "Người lao động làm việc trong môi trường nguy hiểm được cấp phương tiện bảo vệ cá nhân ra sao?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.23": 3,
+            "20.5.LQ.16": 2,
+            "20.5.LQ.24": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7864386820782063,
+            "ndcg_at_10": 0.7864386820782063,
+            "map_at_10": 0.4666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 372.42,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.23",
+              "chunk_id": "84-2015-qh13:d23",
+              "score": 0.721297,
+              "ten": "Phương tiện bảo vệ cá nhân trong lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.51",
+              "chunk_id": "84-2015-qh13:d51",
+              "score": 0.637963,
+              "ten": "Phương tiện trợ giúp sinh hoạt, dụng cụ chỉnh hình",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.TT.98.1",
+              "chunk_id": "25-2022-tt-bldtbxh:d1",
+              "score": 0.624326,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Thông tư số 25/2022/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.22.2",
+              "chunk_id": "20-2016-tt-bldtbxh:d2",
+              "score": 0.608131,
+              "ten": "Tổ chức thực hiện",
+              "meta_de_muc": "Thông tư số 20/2016/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.24",
+              "chunk_id": "84-2015-qh13:d24",
+              "score": 0.60692,
+              "ten": "Bồi dưỡng bằng hiện vật",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q11",
+          "question": "Điều kiện và nguyên tắc bồi dưỡng bằng hiện vật cho người lao động là gì?",
+          "category": "quyen_nguoi_lao_dong",
+          "relevance": {
+            "20.5.LQ.24": 3,
+            "20.5.LQ.23": 2,
+            "20.5.LQ.25": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 381.82,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.24",
+              "chunk_id": "84-2015-qh13:d24",
+              "score": 0.777632,
+              "ten": "Bồi dưỡng bằng hiện vật",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.97.8",
+              "chunk_id": "24-2022-tt-bldtbxh:d8",
+              "score": 0.630156,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 24/2022/TT-BLĐTBXH"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.4.NĐ.3.3",
+              "chunk_id": "28-2015-nd-cp:d3",
+              "score": 0.590635,
+              "ten": "Điều kiện được hỗ trợ",
+              "meta_de_muc": "Nghị định số 28/2015/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.LQ.129",
+              "chunk_id": "45-2019-qh14:d129",
+              "score": 0.58891,
+              "ten": "Bồi thường thiệt hại",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.2.NĐ.3.96",
+              "chunk_id": "145-2020-nd-cp:d96",
+              "score": 0.579901,
+              "ten": "Chế độ, điều kiện hoạt động của hòa giải viên lao động",
+              "meta_de_muc": "Nghị định số 145/2020/NĐ-CP"
+            }
+          ]
+        },
+        {
+          "id": "q12",
+          "question": "Thời gian người lao động tiếp xúc với yếu tố nguy hiểm, có hại phải được giới hạn như thế nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.25": 3,
+            "20.5.LQ.18": 2,
+            "20.5.LQ.16": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9049495058460971,
+            "ndcg_at_10": 0.9428729785463599,
+            "map_at_10": 0.7222222222222222,
+            "first_rank": 1
+          },
+          "search_ms": 364.61,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.25",
+              "chunk_id": "84-2015-qh13:d25",
+              "score": 0.711412,
+              "ten": "Thời giờ làm việc trong điều kiện có yếu tố nguy hiểm, yếu tố có hại",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.TT.21.2",
+              "chunk_id": "15-2016-tt-byt:d2",
+              "score": 0.684114,
+              "ten": "Giải thích từ ngữ",
+              "meta_de_muc": "Thông tư số 15/2016/TT-BYT"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.18",
+              "chunk_id": "84-2015-qh13:d18",
+              "score": 0.673113,
+              "ten": "Kiểm soát các yếu tố nguy hiểm, yếu tố có hại tại nơi làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.101.5",
+              "chunk_id": "03-2025-tt-bldtbxh:d5",
+              "score": 0.618448,
+              "ten": "Trách nhiệm của bộ quản lý ngành, lĩnh vực, người sử dụng lao động và các cơ quan liên quan",
+              "meta_de_muc": "Thông tư số 03/2025/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.64",
+              "chunk_id": "84-2015-qh13:d64",
+              "score": 0.615307,
+              "ten": "Điều kiện sử dụng người lao động cao tuổi làm nghề, công việc nặng nhọc, độc hại, nguy hiểm",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q13",
+          "question": "Máy móc, thiết bị, vật tư hoặc chất nào được xem là có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động?",
+          "category": "dinh_nghia",
+          "relevance": {
+            "20.5.LQ.28": 3,
+            "20.5.LQ.30": 2,
+            "20.5.LQ.31": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 1.0,
+            "ndcg_at_10": 1.0,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 361.09,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.765468,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.727685,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.697592,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.669316,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.29",
+              "chunk_id": "84-2015-qh13:d29",
+              "score": 0.643881,
+              "ten": "Lập phương án bảo đảm an toàn, vệ sinh lao động khi xây dựng mới, mở rộng hoặc cải tạo công trình, cơ sở để sản xuất, sử dụng, bảo quản, lưu giữ máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q14",
+          "question": "Máy, thiết bị và vật tư có yêu cầu nghiêm ngặt phải được kiểm định vào thời điểm nào?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.31": 3,
+            "20.5.LQ.30": 2,
+            "20.5.LQ.28": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9499797323370371,
+            "ndcg_at_10": 0.9499797323370371,
+            "map_at_10": 0.9166666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 361.62,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.704268,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.632499,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.62557,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.624417,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.54.1",
+              "chunk_id": "09-2017-tt-bct:d1",
+              "score": 0.616575,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Thông tư số 09/2017/TT-BCT"
+            }
+          ]
+        },
+        {
+          "id": "q15",
+          "question": "Tai nạn lao động và sự cố kỹ thuật phải được khai báo, báo cáo như thế nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.34": 3,
+            "20.5.LQ.35": 2,
+            "20.5.LQ.36": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 1.0,
+            "ndcg_at_10": 1.0,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 362.46,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.77677,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.741751,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p3",
+              "score": 0.72789,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.37",
+              "chunk_id": "84-2015-qh13:d37",
+              "score": 0.696708,
+              "ten": "Thống kê, báo cáo về bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.636837,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q16",
+          "question": "Việc điều tra vụ tai nạn lao động được thực hiện theo nguyên tắc và trách nhiệm nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.35": 3,
+            "20.5.LQ.34": 2,
+            "20.5.LQ.36": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9421945763140684,
+            "ndcg_at_10": 0.9421945763140684,
+            "map_at_10": 0.8055555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 384.49,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.35",
+              "chunk_id": "84-2015-qh13:d35:p1",
+              "score": 0.694265,
+              "ten": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.615638,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.34",
+              "chunk_id": "84-2015-qh13:d34",
+              "score": 0.605258,
+              "ten": "Khai báo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.36",
+              "chunk_id": "84-2015-qh13:d36",
+              "score": 0.601017,
+              "ten": "Thống kê, báo cáo tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.39",
+              "chunk_id": "84-2015-qh13:d39",
+              "score": 0.596688,
+              "ten": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q17",
+          "question": "Người sử dụng lao động phải chi trả và hỗ trợ gì cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.38": 3,
+            "20.5.LQ.39": 2,
+            "20.5.LQ.40": 2
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8556691603792903,
+            "ndcg_at_10": 0.8556691603792903,
+            "map_at_10": 0.6666666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 367.82,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.782701,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.39",
+              "chunk_id": "84-2015-qh13:d39",
+              "score": 0.750676,
+              "ten": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.42",
+              "chunk_id": "84-2015-qh13:d42",
+              "score": 0.720718,
+              "ten": "Sử dụng Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.56",
+              "chunk_id": "84-2015-qh13:d56",
+              "score": 0.692761,
+              "ten": "Hỗ trợ các hoạt động phòng ngừa, chia sẻ rủi ro về tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.69275,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q18",
+          "question": "Nếu người lao động bị tai nạn trên tuyến đường hợp lý từ nhà đến nơi làm việc thì trách nhiệm bồi thường, trợ cấp được xác định thế nào?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.39": 3,
+            "20.5.LQ.38": 2,
+            "20.5.LQ.45": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9926195041747018,
+            "ndcg_at_10": 0.9926195041747018,
+            "map_at_10": 0.9166666666666666,
+            "first_rank": 1
+          },
+          "search_ms": 361.85,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.39",
+              "chunk_id": "84-2015-qh13:d39",
+              "score": 0.700747,
+              "ten": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.683624,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.41",
+              "chunk_id": "84-2015-qh13:d41",
+              "score": 0.645539,
+              "ten": "Nguyên tắc thực hiện chế độ đối với người bị tai nạn lao động, bệnh nghề nghiệp từ Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.641568,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.49",
+              "chunk_id": "84-2015-qh13:d49",
+              "score": 0.641201,
+              "ten": "Trợ cấp hằng tháng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q19",
+          "question": "Người lao động cần đáp ứng những điều kiện nào để được hưởng chế độ tai nạn lao động?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.45": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.48": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.7452525342261976,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 361.12,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.798926,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.57",
+              "chunk_id": "84-2015-qh13:d57",
+              "score": 0.747287,
+              "ten": "Hồ sơ hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.40",
+              "chunk_id": "84-2015-qh13:d40",
+              "score": 0.725108,
+              "ten": "Trường hợp người lao động không được hưởng chế độ từ người sử dụng lao động khi bị tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.721624,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.710514,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q20",
+          "question": "Điều kiện để được hưởng chế độ bệnh nghề nghiệp gồm những gì?",
+          "category": "dieu_kien",
+          "relevance": {
+            "20.5.LQ.46": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.45": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7984848580994974,
+            "ndcg_at_10": 0.9049495058460971,
+            "map_at_10": 0.6984126984126983,
+            "first_rank": 1
+          },
+          "search_ms": 385.9,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.782453,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.58",
+              "chunk_id": "84-2015-qh13:d58",
+              "score": 0.739233,
+              "ten": "Hồ sơ hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.69,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.TT.31.2",
+              "chunk_id": "28-2016-tt-byt:d2",
+              "score": 0.681712,
+              "ten": "Đối tượng áp dụng",
+              "meta_de_muc": "Thông tư số 28/2016/TT-BYT"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.675764,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q21",
+          "question": "Khi suy giảm khả năng lao động ở mức nào thì được hưởng trợ cấp một lần?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.48": 3,
+            "20.5.LQ.49": 2,
+            "20.5.LQ.47": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9846911488269627,
+            "map_at_10": 0.8333333333333334,
+            "first_rank": 1
+          },
+          "search_ms": 364.37,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.48",
+              "chunk_id": "84-2015-qh13:d48",
+              "score": 0.792147,
+              "ten": "Trợ cấp một lần",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.49",
+              "chunk_id": "84-2015-qh13:d49",
+              "score": 0.723172,
+              "ten": "Trợ cấp hằng tháng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.52",
+              "chunk_id": "84-2015-qh13:d52",
+              "score": 0.678237,
+              "ten": "Trợ cấp phục vụ",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.4.LQ.50",
+              "chunk_id": "38-2013-qh13:d50",
+              "score": 0.661281,
+              "ten": "Mức, thời gian, thời điểm hưởng trợ cấp thất nghiệp",
+              "meta_de_muc": "Luật số 38/2013/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.50",
+              "chunk_id": "84-2015-qh13:d50",
+              "score": 0.653744,
+              "ten": "Thời điểm hưởng trợ cấp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q22",
+          "question": "Khi suy giảm khả năng lao động từ bao nhiêu phần trăm thì được hưởng trợ cấp hằng tháng?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.49": 3,
+            "20.5.LQ.48": 2,
+            "20.5.LQ.50": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9467676761267002,
+            "ndcg_at_10": 0.9846911488269627,
+            "map_at_10": 0.8333333333333334,
+            "first_rank": 1
+          },
+          "search_ms": 386.44,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.49",
+              "chunk_id": "84-2015-qh13:d49",
+              "score": 0.779962,
+              "ten": "Trợ cấp hằng tháng",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.48",
+              "chunk_id": "84-2015-qh13:d48",
+              "score": 0.740811,
+              "ten": "Trợ cấp một lần",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.52",
+              "chunk_id": "84-2015-qh13:d52",
+              "score": 0.697319,
+              "ten": "Trợ cấp phục vụ",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.4.LQ.50",
+              "chunk_id": "38-2013-qh13:d50",
+              "score": 0.665636,
+              "ten": "Mức, thời gian, thời điểm hưởng trợ cấp thất nghiệp",
+              "meta_de_muc": "Luật số 38/2013/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.4.TT.3.8",
+              "chunk_id": "28-2015-tt-bldtbxh:d8:p2",
+              "score": 0.662533,
+              "ten": "Mức hưởng và tháng hưởng trợ cấp thất nghiệp",
+              "meta_de_muc": "Thông tư số 28/2015/TT-BLĐTBXH"
+            }
+          ]
+        },
+        {
+          "id": "q23",
+          "question": "Thân nhân được hưởng chế độ gì khi người lao động chết do tai nạn lao động hoặc bệnh nghề nghiệp?",
+          "category": "che_do",
+          "relevance": {
+            "20.5.LQ.53": 3,
+            "20.5.LQ.41": 2,
+            "20.5.LQ.38": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.6666666666666666,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7864386820782063,
+            "ndcg_at_10": 0.892903329824806,
+            "map_at_10": 0.6095238095238095,
+            "first_rank": 1
+          },
+          "search_ms": 379.26,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.53",
+              "chunk_id": "84-2015-qh13:d53",
+              "score": 0.757333,
+              "ten": "Trợ cấp khi người lao động chết do tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.45",
+              "chunk_id": "84-2015-qh13:d45",
+              "score": 0.680079,
+              "ten": "Điều kiện hưởng chế độ tai nạn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.43",
+              "chunk_id": "84-2015-qh13:d43",
+              "score": 0.660799,
+              "ten": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.46",
+              "chunk_id": "84-2015-qh13:d46",
+              "score": 0.659433,
+              "ten": "Điều kiện hưởng chế độ bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.38",
+              "chunk_id": "84-2015-qh13:d38",
+              "score": 0.658238,
+              "ten": "Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q24",
+          "question": "An toàn, vệ sinh lao động đối với lao động nữ, người chưa thành niên và người khuyết tật được áp dụng theo quy định nào?",
+          "category": "lao_dong_dac_thu",
+          "relevance": {
+            "20.5.LQ.63": 3,
+            "20.5.LQ.14": 1,
+            "20.5.LQ.21": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8609101556836468,
+            "ndcg_at_10": 0.8609101556836468,
+            "map_at_10": 0.3333333333333333,
+            "first_rank": 1
+          },
+          "search_ms": 359.78,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.63",
+              "chunk_id": "84-2015-qh13:d63",
+              "score": 0.824658,
+              "ten": "An toàn, vệ sinh lao động đối với lao động nữ, lao động chưa thành niên, lao động là người khuyết tật",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.68",
+              "chunk_id": "84-2015-qh13:d68",
+              "score": 0.678777,
+              "ten": "An toàn, vệ sinh lao động đối với lao động là người giúp việc gia đình",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.4.TT.10.6",
+              "chunk_id": "11-2017-tt-bldtbxh:d6",
+              "score": 0.677107,
+              "ten": "An toàn, vệ sinh lao động của người lao động làm việc theo hình thức cộng đồng",
+              "meta_de_muc": "Thông tư số 11/2017/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.67459,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.NĐ.4.1",
+              "chunk_id": "88-2020-nd-cp:d1",
+              "score": 0.672084,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Nghị định số 88/2020/NĐ-CP"
+            }
+          ]
+        },
+        {
+          "id": "q25",
+          "question": "Học sinh, sinh viên, người học nghề, tập nghề và thử việc được bảo đảm an toàn lao động như thế nào?",
+          "category": "lao_dong_dac_thu",
+          "relevance": {
+            "20.5.LQ.70": 3,
+            "20.5.LQ.14": 2,
+            "20.5.LQ.17": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.3333333333333333,
+            "recall_at_10": 0.6666666666666666,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.7452525342261976,
+            "ndcg_at_10": 0.8517171819727973,
+            "map_at_10": 0.42857142857142855,
+            "first_rank": 1
+          },
+          "search_ms": 382.24,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.70",
+              "chunk_id": "84-2015-qh13:d70",
+              "score": 0.750398,
+              "ten": "An toàn, vệ sinh lao động đối với học sinh, sinh viên, người học nghề, tập nghề, thử việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.68",
+              "chunk_id": "84-2015-qh13:d68",
+              "score": 0.632722,
+              "ten": "An toàn, vệ sinh lao động đối với lao động là người giúp việc gia đình",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.4.TT.10.6",
+              "chunk_id": "11-2017-tt-bldtbxh:d6",
+              "score": 0.632701,
+              "ten": "An toàn, vệ sinh lao động của người lao động làm việc theo hình thức cộng đồng",
+              "meta_de_muc": "Thông tư số 11/2017/TT-BLĐTBXH"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.56",
+              "chunk_id": "84-2015-qh13:d56",
+              "score": 0.632187,
+              "ten": "Hỗ trợ các hoạt động phòng ngừa, chia sẻ rủi ro về tai nạn lao động, bệnh nghề nghiệp",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.55",
+              "chunk_id": "84-2015-qh13:d55",
+              "score": 0.631413,
+              "ten": "Hỗ trợ chuyển đổi nghề nghiệp cho người bị tai nạn lao động, bệnh nghề nghiệp khi trở lại làm việc",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q26",
+          "question": "Cơ sở sản xuất, kinh doanh phải tổ chức công tác an toàn, vệ sinh lao động theo những yêu cầu nào?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.71": 3,
+            "20.5.LQ.72": 2,
+            "20.5.LQ.76": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9508013338940989,
+            "ndcg_at_10": 0.9508013338940989,
+            "map_at_10": 0.8055555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 365.69,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.766793,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.709482,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.709121,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.76",
+              "chunk_id": "84-2015-qh13:d76",
+              "score": 0.693935,
+              "ten": "Kế hoạch an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.29",
+              "chunk_id": "84-2015-qh13:d29",
+              "score": 0.689062,
+              "ten": "Lập phương án bảo đảm an toàn, vệ sinh lao động khi xây dựng mới, mở rộng hoặc cải tạo công trình, cơ sở để sản xuất, sử dụng, bảo quản, lưu giữ máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q27",
+          "question": "Bộ phận an toàn, vệ sinh lao động trong doanh nghiệp có nhiệm vụ gì?",
+          "category": "trach_nhiem",
+          "relevance": {
+            "20.5.LQ.72": 3,
+            "20.5.LQ.71": 2,
+            "20.5.LQ.74": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.9461356536981058,
+            "ndcg_at_10": 0.9461356536981058,
+            "map_at_10": 0.7555555555555555,
+            "first_rank": 1
+          },
+          "search_ms": 362.81,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.72",
+              "chunk_id": "84-2015-qh13:d72",
+              "score": 0.743868,
+              "ten": "Bộ phận an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.73",
+              "chunk_id": "84-2015-qh13:d73",
+              "score": 0.730135,
+              "ten": "Bộ phận y tế",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.71",
+              "chunk_id": "84-2015-qh13:d71",
+              "score": 0.719349,
+              "ten": "Thực hiện công tác an toàn, vệ sinh lao động trong các cơ sở sản xuất, kinh doanh",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.85",
+              "chunk_id": "84-2015-qh13:d85",
+              "score": 0.713698,
+              "ten": "Trách nhiệm quản lý nhà nước về an toàn, vệ sinh lao động của Bộ trưởng Bộ Y tế",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.LQ.74",
+              "chunk_id": "84-2015-qh13:d74",
+              "score": 0.708253,
+              "ten": "An toàn, vệ sinh viên",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            }
+          ]
+        },
+        {
+          "id": "q28",
+          "question": "Cơ quan nào có thẩm quyền ban hành danh mục máy, thiết bị, vật tư và chất có yêu cầu nghiêm ngặt về an toàn?",
+          "category": "co_quan_tham_quyen",
+          "relevance": {
+            "20.5.LQ.28": 3,
+            "20.5.LQ.33": 2,
+            "20.5.LQ.31": 1
+          },
+          "metrics": {
+            "hit_at_1": 1.0,
+            "hit_at_5": 1.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 1.0,
+            "recall_at_10": 1.0,
+            "mrr_at_10": 1.0,
+            "ndcg_at_5": 0.8428282648809379,
+            "ndcg_at_10": 0.8428282648809379,
+            "map_at_10": 1.0,
+            "first_rank": 1
+          },
+          "search_ms": 363.66,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.5.LQ.33",
+              "chunk_id": "84-2015-qh13:d33:p2",
+              "score": 0.697012,
+              "ten": "Trách nhiệm của các bộ trong việc quản lý nhà nước đối với máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.5.LQ.28",
+              "chunk_id": "84-2015-qh13:d28",
+              "score": 0.689154,
+              "ten": "Máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.5.LQ.31",
+              "chunk_id": "84-2015-qh13:d31",
+              "score": 0.653037,
+              "ten": "Kiểm định máy, thiết bị, vật tư có yêu cầu nghiêm ngặt về an toàn lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.5.LQ.30",
+              "chunk_id": "84-2015-qh13:d30",
+              "score": 0.645548,
+              "ten": "Sử dụng máy, thiết bị, vật tư, chất có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động",
+              "meta_de_muc": "Luật số 84/2015/QH13"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.54.1",
+              "chunk_id": "09-2017-tt-bct:d1",
+              "score": 0.640908,
+              "ten": "Phạm vi điều chỉnh",
+              "meta_de_muc": "Thông tư số 09/2017/TT-BCT"
+            }
+          ]
+        },
+        {
+          "id": "q29",
+          "question": "Một quy định về hiệu lực có thể xác định thời điểm văn bản có hiệu lực sau ngày ký như thế nào?",
+          "category": "hieu_luc",
+          "relevance": {
+            "20.5.TT.1.2": 3,
+            "20.5.TT.2.2": 2
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 0.0,
+            "hit_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "recall_at_10": 0.0,
+            "mrr_at_10": 0.0,
+            "ndcg_at_5": 0.0,
+            "ndcg_at_10": 0.0,
+            "map_at_10": 0.0,
+            "first_rank": null
+          },
+          "search_ms": 364.3,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.2.LQ.121",
+              "chunk_id": "45-2019-qh14:d121",
+              "score": 0.692312,
+              "ten": "Hiệu lực của nội quy lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.2.LQ.23",
+              "chunk_id": "45-2019-qh14:d23",
+              "score": 0.646144,
+              "ten": "Hiệu lực của hợp đồng lao động",
+              "meta_de_muc": "Bộ luật số 45/2019/QH14"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.2.NĐ.2.8",
+              "chunk_id": "135-2020-nd-cp:d8",
+              "score": 0.636229,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Nghị định số 135/2020/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.2.TT.4.10",
+              "chunk_id": "18-2021-tt-bldtbxh:d10",
+              "score": 0.634235,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 18/2021/TT-BLĐTBXH"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.4.TT.12.24",
+              "chunk_id": "01-2022-tt-bldtbxh:d24",
+              "score": 0.633925,
+              "ten": "Hiệu lực thi hành",
+              "meta_de_muc": "Thông tư số 01/2022/TT-BLĐTBXH"
+            }
+          ]
+        },
+        {
+          "id": "q30",
+          "question": "Những cơ quan, tổ chức và cá nhân nào có trách nhiệm thi hành văn bản?",
+          "category": "co_quan_tham_quyen",
+          "relevance": {
+            "20.5.TT.1.3": 3,
+            "20.5.TT.3.3": 2,
+            "20.5.TT.2.3": 1
+          },
+          "metrics": {
+            "hit_at_1": 0.0,
+            "hit_at_5": 0.0,
+            "hit_at_10": 1.0,
+            "recall_at_5": 0.0,
+            "recall_at_10": 0.3333333333333333,
+            "mrr_at_10": 0.1,
+            "ndcg_at_5": 0.0,
+            "ndcg_at_10": 0.21542629436906158,
+            "map_at_10": 0.03333333333333333,
+            "first_rank": 10
+          },
+          "search_ms": 361.6,
+          "retrieved_results": [
+            {
+              "rank": 1,
+              "mapc": "20.4.NĐ.6.38",
+              "chunk_id": "23-2021-nd-cp:d38",
+              "score": 0.710639,
+              "ten": "Trách nhiệm thi hành",
+              "meta_de_muc": "Nghị định số 23/2021/NĐ-CP"
+            },
+            {
+              "rank": 2,
+              "mapc": "20.4.NĐ.3.42",
+              "chunk_id": "28-2015-nd-cp:d42",
+              "score": 0.707561,
+              "ten": "Trách nhiệm thi hành",
+              "meta_de_muc": "Nghị định số 28/2015/NĐ-CP"
+            },
+            {
+              "rank": 3,
+              "mapc": "20.2.NĐ.3.115",
+              "chunk_id": "145-2020-nd-cp:d115",
+              "score": 0.705058,
+              "ten": "Trách nhiệm thi hành",
+              "meta_de_muc": "Nghị định số 145/2020/NĐ-CP"
+            },
+            {
+              "rank": 4,
+              "mapc": "20.4.NĐ.5.47",
+              "chunk_id": "74-2019-nd-cp:d3",
+              "score": 0.705053,
+              "ten": "Trách nhiệm thi hành",
+              "meta_de_muc": "Nghị định số 74/2019/NĐ-CP"
+            },
+            {
+              "rank": 5,
+              "mapc": "20.5.TT.6.3",
+              "chunk_id": "25-2012-tt-bldtbxh:d3",
+              "score": 0.697879,
+              "ten": "",
+              "meta_de_muc": "Thông tư số 25/2012/TT-BLĐTBXH"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
