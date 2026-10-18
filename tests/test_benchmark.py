@@ -162,6 +162,40 @@ def test_carry_over_excludes_changed_gold():
         assert bv.load_manifest("lao_dong_v6", benchmarks)["collection_prefix"] == "legal_ld_v6"
 
 
+def located(mapc: str, body: str, document_id: str, meta_dieu: str) -> dict:
+    return {**chunk(mapc, body), "document_id": document_id, "meta_dieu": meta_dieu}
+
+
+def test_carry_over_follows_renumbered_mapc():
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        processed, benchmarks = root / "processed", root / "benchmarks"
+        make_version(
+            root,
+            "lao_dong_v5",
+            [located("20.2.ND.3.5", "a", "145-2020-nd-cp", "5"), located("20.2.ND.4.3", "b", "152-2020-nd-cp", "3")],
+        )
+        write_jsonl(root / "q.jsonl", [question("q1", {"20.2.ND.3.5": 3, "20.2.ND.4.3": 2})])
+        bv.freeze("lao_dong_v5", "v1", root / "q.jsonl", processed_dir=processed, benchmarks_dir=benchmarks)
+        # v6: Phap dien renumbers NĐ 145 from .3 to .4, and gives the old code .4.3 to another Dieu.
+        make_version(
+            root,
+            "lao_dong_v6",
+            [
+                located("20.2.ND.4.5", "a", "145-2020-nd-cp", "5"),
+                located("20.2.ND.5.3", "b", "152-2020-nd-cp", "3"),
+                located("20.2.ND.4.3", "c", "145-2020-nd-cp", "3"),
+            ],
+        )
+        entry = bv.freeze("lao_dong_v6", "v1", from_dataset="lao_dong_v5", processed_dir=processed, benchmarks_dir=benchmarks)
+        assert entry["questions"] == 1 and entry["excluded"] == []
+        (kept,) = bv.read_jsonl(benchmarks / "lao_dong_v6" / "v1.jsonl")
+        assert kept["relevance"] == {"20.2.ND.4.5": 3, "20.2.ND.5.3": 2}
+        migration = json.loads((benchmarks / "lao_dong_v6" / "v1.migration.json").read_text(encoding="utf-8"))
+        assert migration["renumbered"] == {"20.2.ND.3.5": "20.2.ND.4.5", "20.2.ND.4.3": "20.2.ND.5.3"}
+        assert migration["new_articles"] == ["20.2.ND.4.3"]
+
+
 if __name__ == "__main__":
     tests = [(name, fn) for name, fn in list(globals().items()) if name.startswith("test_") and callable(fn)]
     failed = 0

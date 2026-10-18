@@ -13,7 +13,10 @@ results across versions (docs/BENCHMARK.md, section 3).
 
 Carrying a test set to a new version (--from) compares each gold Dieu's
 content_hash: a question whose gold Dieu changed or disappeared is excluded
-and listed for re-labelling, never kept silently.
+and listed for re-labelling, never kept silently.  A gold Dieu is found by
+(document_id, meta_dieu), not by mapc: mapc is Phap dien's own code and can be
+renumbered when Phap dien is updated.  A Dieu whose mapc changed but whose
+content did not keeps its questions, relabelled with the new mapc.
 
 Run from the repository root:
 
@@ -128,6 +131,14 @@ def article_snapshot(chunks: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return articles
 
 
+def article_identity(record: dict[str, Any]) -> tuple[str, str]:
+    """(document_id, meta_dieu), the Dieu across versions; mapc only for
+    records without them (chunk schema v4)."""
+    if record.get("document_id") and record.get("meta_dieu"):
+        return str(record["document_id"]), str(record["meta_dieu"])
+    return "mapc", str(record.get("mapc"))
+
+
 def gold_mapcs(questions: list[dict[str, Any]]) -> list[str]:
     return sorted({str(mapc) for question in questions for mapc in question.get("relevance", {})})
 
@@ -148,26 +159,34 @@ def carry_over(
     source_gold: dict[str, dict[str, Any]],
     target_articles: dict[str, dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Keep the questions whose every gold Dieu is unchanged in the target version."""
+    """Keep the questions whose every gold Dieu is unchanged in the target
+    version, with relevance keyed by the target mapc."""
+    target_by_identity = {article_identity(record): mapc for mapc, record in target_articles.items()}
     status: dict[str, str] = {}
+    renumbered: dict[str, str] = {}
     for mapc, old in source_gold.items():
-        new = target_articles.get(mapc)
+        new_mapc = target_by_identity.get(article_identity({"mapc": mapc, **old}))
+        new = target_articles.get(new_mapc) if new_mapc else None
         if new is None:
             status[mapc] = "missing"
         elif new["content_hash"] != old.get("content_hash"):
             status[mapc] = "changed"
         else:
             status[mapc] = "unchanged"
+            if new_mapc != mapc:
+                renumbered[mapc] = new_mapc
     kept, excluded = [], []
     for question in questions:
         bad = {mapc: status.get(mapc, "missing") for mapc in question["relevance"] if status.get(mapc) != "unchanged"}
         if bad:
             excluded.append({"id": question["id"], "gold": bad})
         else:
-            kept.append(question)
+            relevance = {renumbered.get(mapc, mapc): grade for mapc, grade in question["relevance"].items()}
+            kept.append({**question, "relevance": relevance})
     report = {
         "gold_status": {key: sum(1 for value in status.values() if value == key) for key in ("unchanged", "changed", "missing")},
         "changed_or_missing": {mapc: value for mapc, value in sorted(status.items()) if value != "unchanged"},
+        "renumbered": dict(sorted(renumbered.items())),
         "excluded_questions": excluded,
     }
     return kept, report
@@ -228,10 +247,12 @@ def freeze(
         questions, migration = carry_over(questions, source_gold, articles)
         source_chunks = processed_dir / from_dataset / DATA_FILES["chunks"]
         if source_chunks.exists():
-            old_mapcs = {str(chunk.get("mapc")) for chunk in read_jsonl(source_chunks)}
+            old_articles = {article_identity(chunk) for chunk in read_jsonl(source_chunks)}
             # Dieu that were never in the pools: a carried-over question may now
             # have an unlabelled relevant Dieu among them.
-            migration["new_articles"] = sorted(set(articles) - old_mapcs)
+            migration["new_articles"] = sorted(
+                mapc for mapc, record in articles.items() if article_identity(record) not in old_articles
+            )
         entry["source"] = f"{from_dataset}/{testset}"
         entry["migration_file"] = f"{testset}.migration.json"
         entry["excluded"] = [row["id"] for row in migration["excluded_questions"]]

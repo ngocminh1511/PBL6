@@ -83,10 +83,12 @@ labor_rag/evaluation/results/<dataset_id>/<testset>/<run_id>/
    `abox_lao_dong.ttl` bị ghi đè mỗi lần dựng lại nên chỉ dùng để phát hiện, không chặn).
 4. **Gold khóa theo ID ổn định**: `mapc` (mã pháp điển) và kèm `document_id:dN[:kM]` (số hiệu văn bản + Điều + Khoản).
    Không dùng `chunk_id` vì v5 cắt Điều thành `:p1`, `:p2`.
-5. **Chuyển gold sang version mới** (`freeze --dataset <mới> --testset <tên> --from <cũ>`): với mỗi Điều gold, so `content_hash`
-   (hash phần thân Điều, không gồm phần đầu chunk) giữa hai version:
-   - `unchanged` → giữ nhãn;
-   - `changed` (nội dung sửa đổi) hoặc `missing` (bị bãi bỏ / đổi mã) → câu hỏi đó **bị loại** khỏi version mới,
+5. **Chuyển gold sang version mới** (`freeze --dataset <mới> --testset <tên> --from <cũ>`): mỗi Điều gold được tìm ở
+   version mới theo **`(document_id, meta_dieu)`**, không theo `mapc`, vì STT văn bản trong `mapc` do Pháp điển tự gán và
+   có thể bị đánh lại. Sau đó so `content_hash` (hash phần thân Điều, không gồm phần đầu chunk) giữa hai version:
+   - `unchanged` → giữ nhãn; nếu `mapc` đổi thì `relevance` của câu hỏi được đổi sang `mapc` mới, ghi trong `renumbered`
+     của `<testset>.migration.json`;
+   - `changed` (nội dung sửa đổi) hoặc `missing` (bị bãi bỏ) → câu hỏi đó **bị loại** khỏi version mới,
      ghi trong `excluded` và `<testset>.migration.json` để người chấm lại rồi đóng băng lại bằng `--questions`;
    - `new_articles`: Điều mới xuất hiện ở version mới, chưa từng nằm trong pool → nên chạy lại `pool` cho các câu liên quan.
    Chunk v4 không có `content_hash` nên chuyển từ v4 sẽ coi mọi Điều là đổi. Không cần: bộ câu hỏi được đóng băng thẳng vào v5.
