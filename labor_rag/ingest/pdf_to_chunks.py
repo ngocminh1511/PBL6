@@ -110,6 +110,7 @@ def document_to_chunks(
     kg: KgIndex | None = None,
     count: Counter | None = None,
     max_tokens: int = MAX_TOKENS,
+    text_variant: str = "full",
 ) -> tuple[list[dict], list[str]]:
     """(chunks, warnings) for one document. Without a token counter a Dieu is
     never split."""
@@ -163,7 +164,7 @@ def document_to_chunks(
         context = " > ".join(p for p in [meta_de_muc, part, chapter_heading, section_heading] if p)
         body = nfc(article_body(article))
         mapc = kg.mapc(document_id, meta_dieu) if kg else None
-        parts = split(build_header(context, meta_dieu, ten), body)
+        parts = split(build_header(context, meta_dieu, ten, variant=text_variant), body)
         for index, (text, meta_khoan) in enumerate(parts, start=1):
             chunks.append(
                 {
@@ -230,6 +231,12 @@ def main() -> int:
     parser.add_argument(
         "--max-tokens", type=int, default=MAX_TOKENS, help="split longer Dieu (0: never split, no tokenizer)"
     )
+    parser.add_argument(
+        "--text-variant",
+        choices=["full", "minimal", "B", "A"],
+        default="full",
+        help="TH2/B: 'full' (đầy đủ ngữ cảnh, mặc định) | TH1/A: 'minimal' (chỉ Điều n. Tên)",
+    )
     args = parser.parse_args()
 
     if args.from_json:
@@ -247,7 +254,7 @@ def main() -> int:
     if kg is None:
         print(f"WARNING: {args.kg_dir}/kg_nodes.jsonl not found; chunks get no mapc.", file=sys.stderr)
     count = TokenCounter() if args.max_tokens > 0 else None
-    chunks, warnings = document_to_chunks(doc, kg, count, args.max_tokens)
+    chunks, warnings = document_to_chunks(doc, kg, count, args.max_tokens, text_variant=args.text_variant)
 
     chunks_path = args.out_dir / f"{doc.document_id}_chunks.jsonl"
     footnotes_path = args.out_dir / f"{doc.document_id}_footnotes.jsonl"
