@@ -55,8 +55,11 @@ python -m labor_rag.ingest.ontology_to_jsonl --text-variant full --out-dir data/
 - modal deploy scripts/modal_embed.py
 - python scripts/auto_chain_embeddings.py --backend modal
 
-### Chạy bench mark cho 2 biến thể
+### Chạy benchmark cho 2 biến thể (Chỉ Vector Database)
 python scripts/benchmark_retrieval_th1_vs_th2.py
+
+### Chạy benchmark kết hợp Vector Database + Knowledge Graph (Hybrid RAG)
+python scripts/benchmark_retrieval_with_graph.py
 
 ### Giải thích 1 số định nghĩa 
 - Hit@1, Hit@5, Hit@10 (Tỷ lệ trúng đích): Đo lường xem tài liệu chính xác có xuất hiện trong top K kết quả trả về hay không. Chỉ cần có xuất hiện là được tính điểm, không phân biệt vị trí cụ thể bên trong top đó.
