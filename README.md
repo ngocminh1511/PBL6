@@ -85,10 +85,16 @@ sau đó gộp vào collection đang có: với mỗi Điều, bản có `versio
 `data/processed/lao_dong_v5` đã sinh (để tra `mapc`).
 
 ```powershell
-python -m labor_rag.ingest.pdf_to_chunks --input docs/Luat_lao_dong.pdf          # OCR, ghi data/interim/pdf_chunks/
+python -m labor_rag.ingest.pdf_to_chunks --input docs/Luat_lao_dong.pdf          # OCR, ghi data/interim/pdf_chunks/ + ontology/abox/pdf/
 python -m labor_rag.ingest.pdf_to_chunks --from-json data/interim/pdf_chunks/45-2019-qh14_hierarchical.jsonl  # dựng lại chunk, không OCR lại
+python -m labor_rag.ingest.ontology_to_jsonl                                       # ghép ABox của PDF vào đồ thị
+python -m labor_rag.ingest.load_neo4j --replace-dataset
+python -m labor_rag.ingest.embed_and_index --upsert                                # chunk Pháp điển: chỉ cập nhật metadata
 python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/45-2019-qh14_chunks.jsonl --upsert
 ```
+
+Sửa đổi và thay thế mà PDF nêu được ghi vào ABox của PDF (`ontology/abox/pdf/<document_id>.ttl`), nên có trong Neo4j;
+Qdrant chỉ nhận ngày hết hiệu lực suy ra từ đó. `--upsert` không embedding lại Điều có nội dung không đổi, chỉ cập nhật metadata.
 
 Dựng lại collection (`embed_and_index` không kèm `--upsert`) sẽ xóa chunk PDF, nên lệnh dừng lại nếu collection đang có chunk
 không phải Pháp điển. Muốn dựng lại thật (ví dụ đổi model) thì thêm `--recreate`, sau đó chạy lại các lệnh `--upsert`.

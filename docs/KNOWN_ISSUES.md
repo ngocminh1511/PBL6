@@ -133,9 +133,8 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
 
 - `meta_chuong` / `meta_muc` của chunk Pháp điển luôn `null`: ABox chỉ có chương, mục của đề mục Pháp điển
   (`pd_chuong` / `pd_muc`), không có chương của văn bản gốc.
-- `effective_to_date` của chunk Pháp điển luôn `null`: ABox chưa có `vlt:validTo`. Chỉ được điền khi nạp một văn bản
-  PDF có `replaces` (structural_jsonl.md mục 6).
-- Văn bản sửa đổi từ PDF chỉ có trong Qdrant (`amends` / `amended_by`), chưa có cạnh trong Neo4j.
+- `effective_to_date` của chunk Pháp điển luôn `null` với dữ liệu hiện có: Pháp điển không ghi quan hệ thay thế.
+  Chỉ có khi nạp một PDF thay thế văn bản (ABox của PDF ghi `vlt:validTo`, structural_jsonl.md mục 6, 10).
 - Parser văn bản sửa đổi (`labor_rag/ingest/amending.py`) mới thử trên văn bản mẫu, chưa chạy trên PDF thật.
   Nếu OCR tách sai phần nội dung mới trong ngoặc kép thành khoản riêng, phần sửa đổi sẽ bị cắt sai.
 - PDF: `pdf_to_chunks` + `embed_and_index --upsert` đã có, nhưng chưa chạy thử trên OCR thật của
