@@ -1,5 +1,10 @@
 """Load a JSONL graph projection into Neo4j.
 
+Every node also gets the label :Entity, unique on (id, dataset_id), so edges
+are matched through that constraint instead of a scan of all nodes. Source
+Dieu / khoan (:SourceComponent) and documents (:VanBan) are indexed on
+document_id (+ article_number), the key retrieval looks them up by.
+
 The default data directory is the Lao dong projection:
 
     python -m labor_rag.ingest.load_neo4j --replace-dataset
@@ -75,11 +80,16 @@ def main() -> int:
                 dataset_id=dataset_id,
             ).single()["deleted"]
             print(f"  replaced dataset {dataset_id}: deleted {deleted} existing nodes")
-        for label in node_labels:
+        for label in ["Entity", *node_labels]:
             session.run(
                 f"CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) "
                 "REQUIRE (n.id, n.dataset_id) IS UNIQUE"
             )
+        session.run(
+            "CREATE INDEX source_component_article IF NOT EXISTS "
+            "FOR (n:SourceComponent) ON (n.dataset_id, n.document_id, n.article_number)"
+        )
+        session.run("CREATE INDEX van_ban_document IF NOT EXISTS FOR (n:VanBan) ON (n.dataset_id, n.document_id)")
 
         by_label: dict[str, list[dict]] = defaultdict(list)
         for node in nodes:
@@ -89,7 +99,8 @@ def main() -> int:
         for label, items in by_label.items():
             session.run(
                 f"UNWIND $items AS item "
-                f"MERGE (n:{label} {{id: item.id, dataset_id: item.dataset_id}}) "
+                f"MERGE (n:Entity {{id: item.id, dataset_id: item.dataset_id}}) "
+                f"SET n:{label} "
                 "SET n += item",
                 items=items,
             )
@@ -105,8 +116,8 @@ def main() -> int:
             session.run(
                 f"""
                 UNWIND $items AS item
-                MATCH (a {{id: item.source, dataset_id: item.dataset_id}}),
-                      (b {{id: item.target, dataset_id: item.dataset_id}})
+                MATCH (a:Entity {{id: item.source, dataset_id: item.dataset_id}}),
+                      (b:Entity {{id: item.target, dataset_id: item.dataset_id}})
                 MERGE (a)-[r:{edge_type} {{predicate_iri: item.predicate_iri, dataset_id: item.dataset_id}}]->(b)
                 SET r += item
                 """,

@@ -7,7 +7,12 @@ chunks.jsonl follows chunk schema v5 (docs/structural_jsonl.md): one chunk
 per Dieu, identified by the source document number + the article number in
 that document, with long Dieu split at MAX_TOKENS bge-m3 tokens.
 
-Usage (defaults: the Lao dong ABox -> data/processed/lao_dong_v5):
+The graph is the Phap dien ABox plus the ABox of every loaded PDF
+(ontology/abox/pdf/*.ttl, written by pdf_to_chunks): a PDF adds its documents,
+Dieu, amendments and replacements, so Neo4j holds them too. Chunks are
+projected for the Phap dien Dieu only; PDF chunks come from pdf_to_chunks.
+
+Usage (defaults: the Lao dong ABox + PDF ABoxes -> data/processed/lao_dong_v5):
     python -m labor_rag.ingest.ontology_to_jsonl
     python -m labor_rag.ingest.ontology_to_jsonl --max-tokens 0   # no splitting, no tokenizer
 """
@@ -23,7 +28,14 @@ from typing import Iterable
 
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
 
-from labor_rag.config import LAO_DONG_ABOX_PATH, LAO_DONG_DATASET_ID, LAO_DONG_DIR, ROOT_DIR, SCHEMA_V4_PATH
+from labor_rag.config import (
+    LAO_DONG_ABOX_PATH,
+    LAO_DONG_DATASET_ID,
+    LAO_DONG_DIR,
+    PDF_ABOX_DIR,
+    ROOT_DIR,
+    SCHEMA_V4_PATH,
+)
 from labor_rag.ingest.amending import ACTION_ORDER
 from labor_rag.ingest.chunk_schema import (
     MAX_TOKENS,
@@ -45,6 +57,7 @@ VLPD = "https://example.org/vn-legal/phapdien#"
 VLR = "https://example.org/vn-legal/relation#"
 VLT = "https://example.org/vn-legal/time#"
 VLP = "https://example.org/vn-legal/provenance#"
+VLA = "https://example.org/vn-legal/authority#"
 RDFS_URI = str(RDFS)
 
 PREFIXES = {
@@ -104,6 +117,10 @@ SPECIAL_PROPERTY_KEYS = {
     f"{VLT}validFrom": "valid_from",
     f"{VLT}validTo": "valid_to",
     f"{VLP}sourceQuote": "source_quote",
+    f"{VLR}amendmentAction": "actions",
+    f"{VLR}amendmentScope": "scope",
+    f"{VLT}amendsAt": "date",
+    f"{VLPD}consolidatedInCodification": "consolidated",
 }
 
 CONTAINS_LOCALS = {
@@ -169,10 +186,15 @@ def class_uris(graph: Graph, subject) -> list[str]:
 
 
 def choose_label(type_uris: list[str]) -> str:
+    if f"{VLD}Article" in type_uris or f"{VLD}Clause" in type_uris:
+        if f"{VLPD}CodificationArticle" not in type_uris:
+            return "SourceComponent"  # a Dieu / khoan of a source document
     for uri in type_uris:
         label = CLASS_LABELS.get(local_name(URIRef(uri)))
         if label:
             return label
+    if any(uri.startswith(VLA) for uri in type_uris):
+        return "Authority"  # vla:PrimeMinister, vla:President, ...
     return local_name(URIRef(type_uris[0])) if type_uris else "Resource"
 
 
@@ -190,6 +212,8 @@ def term_id(term, ids: dict[str, str]) -> str:
 
 
 def value_for_property(value: Literal) -> str | int | float | bool:
+    if value.datatype and str(value.datatype).endswith("#boolean"):
+        return str(value).lower() == "true"
     if value.datatype and str(value.datatype).endswith("#integer"):
         try:
             return int(value)
@@ -265,54 +289,54 @@ def ancestors(graph: Graph, article, node_by_uri: dict[str, dict]) -> list[dict]
     return found
 
 
-def source_of(graph: Graph, article, node_by_uri: dict[str, dict]) -> tuple[str | None, dict | None]:
-    """(article number in the source document, source document node), via
-    vlpd:codificationOf -> vld:Article (vld:itemNumber) -> vld:locatedInDocument."""
+def source_of(graph: Graph, article, node_by_uri: dict[str, dict]) -> tuple[URIRef | None, str | None, dict | None]:
+    """(source vld:Article, its number in the source document, source document
+    node), via vlpd:codificationOf -> vld:Article (vld:itemNumber) -> vld:locatedInDocument."""
     for source_component in graph.objects(article, URIRef(f"{VLPD}codificationOf")):
         number = first_literal(graph, source_component, [URIRef(f"{VLD}itemNumber")])
         document = next(graph.objects(source_component, URIRef(f"{VLD}locatedInDocument")), None)
-        return number, node_by_uri.get(str(document)) if document else None
-    return None, None
+        return source_component, number, node_by_uri.get(str(document)) if document else None
+    return None, None, None
 
 
-def source_article_id(graph: Graph, component, node_by_uri: dict[str, dict]) -> str | None:
-    """'<document_id>:d<N>' of a vld:Article in a source document."""
-    number = first_literal(graph, component, [URIRef(f"{VLD}itemNumber")])
-    document = next(graph.objects(component, URIRef(f"{VLD}locatedInDocument")), None)
-    so_hieu = (node_by_uri.get(str(document)) or {}).get("document_number") if document else None
-    return make_chunk_id(make_document_id(str(so_hieu)), number) if number and so_hieu else None
-
-
-def amendments(graph: Graph, node_by_uri: dict[str, dict]) -> tuple[dict[str, list[dict]], dict[str, list[dict]]]:
-    """(amended_by, amends) keyed by '<document_id>:d<N>', from the
-    article-level vlr:hasAmendment events: one entry per action. scope (the
-    khoan) is null: the Phap dien citation names only the Dieu."""
-    amended_by: dict[str, list[dict]] = defaultdict(list)
-    amends: dict[str, list[dict]] = defaultdict(list)
-    for amended, event in sorted(graph.subject_objects(URIRef(f"{VLR}hasAmendment")), key=lambda pair: str(pair[1])):
-        target = source_article_id(graph, amended, node_by_uri)
-        by = next(
-            (
-                source_article_id(graph, component, node_by_uri)
-                for component in graph.objects(event, URIRef(f"{VLR}amendingComponent"))
-            ),
-            None,
-        )
-        if not target or not by:
-            print(f"WARNING: incomplete amendment {event}", file=sys.stderr)
+def describe_documents(graph: Graph, nodes: dict[str, dict]) -> None:
+    """Put document_id and the validity dates on each document node, and
+    document_id / article_number / clause_number on each source Dieu and
+    khoan, so Neo4j can look them up by (document_id, article_number) like the
+    chunks do."""
+    for node in nodes.values():
+        if node["label"] == "VanBan" and node.get("document_number"):
+            node["document_id"] = make_document_id(str(node["document_number"]))
+            interval = next(graph.objects(URIRef(node["uri"]), URIRef(f"{VLT}hasValidityInterval")), None)
+            if interval is not None:
+                node["valid_from"] = first_literal(graph, interval, [URIRef(f"{VLT}validFrom")])
+                node["valid_to"] = first_literal(graph, interval, [URIRef(f"{VLT}validTo")])
+    for node in nodes.values():
+        if node["label"] != "SourceComponent":
             continue
-        date = first_literal(graph, event, [URIRef(f"{VLT}amendsAt")])
-        actions = sorted(literal_strings(graph, event, URIRef(f"{VLR}amendmentAction")), key=ACTION_ORDER.index) or [None]
-        for action in actions:
-            amended_by[target].append({"by": by, "scope": None, "action": action, "date": date})
-            amends[by].append({"target": target, "scope": None, "action": action, "date": date})
-    return amended_by, amends
+        subject = URIRef(node["uri"])
+        document = nodes.get(str(next(graph.objects(subject, URIRef(f"{VLD}locatedInDocument")), "")))
+        if document and document.get("document_id"):
+            node["document_id"] = document["document_id"]
+        if f"{VLD}Clause" in node["class_iris"]:
+            node["clause_number"] = node.pop("article_number", None)
+            article = next(graph.subjects(URIRef(f"{VLD}hasClause"), subject), None)
+            node["article_number"] = first_literal(graph, article, [URIRef(f"{VLD}itemNumber")]) if article else None
+    for node in nodes.values():
+        if node["label"] == "AmendmentEvent":
+            actions = node.get("actions") or []
+            node["actions"] = sorted([actions] if isinstance(actions, str) else actions, key=ACTION_ORDER.index)
 
 
-def version_date(document: dict, amended_by: list[dict]) -> str | None:
-    """Latest effective date among the document and the amendments of this
-    Dieu: an amendment elsewhere in the document does not date it."""
-    dates = [document.get("effective_date"), *(entry["date"] for entry in amended_by)]
+def version_date(graph: Graph, source_component, document: dict) -> str | None:
+    """Latest effective date the Phap dien text of a Dieu reflects: its
+    document, and the amendments of this Dieu that Phap dien consolidated
+    (vlpd:consolidatedInCodification). An amendment elsewhere in the
+    document, or one loaded later from a PDF, does not date it."""
+    dates = [document.get("effective_date")]
+    for event in graph.objects(source_component, URIRef(f"{VLR}hasAmendment")):
+        if first_literal(graph, event, [URIRef(f"{VLPD}consolidatedInCodification")]) == "true":
+            dates.append(first_literal(graph, event, [URIRef(f"{VLT}amendsAt")]))
     return max((str(d) for d in dates if d), default=None)
 
 
@@ -332,7 +356,10 @@ def repo_relative(path: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH)
+    parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH, help="the Phap dien ABox")
+    parser.add_argument(
+        "--pdf-abox-dir", type=Path, default=PDF_ABOX_DIR, help="ABoxes of loaded PDFs (*.ttl), merged into the graph"
+    )
     parser.add_argument("--schema", type=Path, default=SCHEMA_V4_PATH)
     parser.add_argument("--out-dir", type=Path, default=LAO_DONG_DIR)
     parser.add_argument("--dataset-id", default=LAO_DONG_DATASET_ID)
@@ -344,7 +371,10 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    graph = Graph().parse(args.abox, format="turtle")
+    pdf_aboxes = sorted(args.pdf_abox_dir.glob("*.ttl")) if args.pdf_abox_dir.exists() else []
+    graph = Graph()
+    for path in [args.abox, *pdf_aboxes]:
+        graph.parse(path, format="turtle")
     schema = Graph().parse(args.schema, format="turtle")
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -375,8 +405,6 @@ def main() -> int:
         subject_key = str(subject)
         types = class_uris(graph, subject)
         label = choose_label(types)
-        if f"{VLD}Article" in types and f"{VLPD}CodificationArticle" not in types:
-            label = "SourceComponent"
         generic: dict = {}
         aliases: dict[str, list] = defaultdict(list)
         for predicate, value in graph.predicate_objects(subject):
@@ -465,7 +493,7 @@ def main() -> int:
     edges.sort(key=lambda e: (e["source"], e["type"], e["target"], e["predicate_iri"]))
 
     node_by_uri = nodes
-    amended_by_article, amends_article = amendments(graph, node_by_uri)
+    describe_documents(graph, nodes)
     count = TokenCounter() if args.max_tokens > 0 else None
     chunks = []
     seen_articles: dict[str, str] = {}
@@ -474,7 +502,7 @@ def main() -> int:
             continue
         if not node.get("mapc"):
             continue
-        meta_dieu, document = source_of(graph, URIRef(subject_key), node_by_uri)
+        source_component, meta_dieu, document = source_of(graph, URIRef(subject_key), node_by_uri)
         if not meta_dieu or not document or not document.get("document_number"):
             raise SystemExit(
                 f"{node['id']}: no source article number or document number. Rebuild the ABox "
@@ -533,15 +561,11 @@ def main() -> int:
                     "meta_khoan": meta_khoan,
                     "effective_from_date": document.get("effective_date"),
                     "effective_to_date": document.get("valid_to"),
-                    "version_date": version_date(document, amended_by_article.get(article, [])),
-                    # Phap dien drops repealed provisions when it is updated.
+                    "version_date": version_date(graph, source_component, document),
+                    # Phap dien drops repealed provisions when it is updated; a
+                    # replaced document ends through effective_to_date.
                     "still_valid": True,
                     "content_hash": content_hash(body),
-                    # Phap dien text already consolidates these amendments; each
-                    # one is dated on or before version_date (structural_jsonl.md, section 10).
-                    "amends": amends_article.get(article, []),
-                    "amended_by": amended_by_article.get(article, []),
-                    "replaces": [],
                 }
             )
     chunks.sort(key=article_sort_key)
@@ -554,6 +578,7 @@ def main() -> int:
     manifest = {
         "schema": repo_relative(args.schema),
         "abox": repo_relative(args.abox),
+        "pdf_aboxes": [repo_relative(path) for path in pdf_aboxes],
         "dataset_id": args.dataset_id,
         "schema_counts": {
             "classes": len(schema_classes),

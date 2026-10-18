@@ -5,6 +5,7 @@
 @prefix vlpd: <https://example.org/vn-legal/phapdien#> .
 @prefix vla: <https://example.org/vn-legal/authority#> .
 @prefix vlt: <https://example.org/vn-legal/time#> .
+@prefix vlr: <https://example.org/vn-legal/relation#> .
 
 vlpd:CodificationItemShape
     a sh:NodeShape ;
@@ -59,12 +60,53 @@ vld:LegalDocumentShape
         sh:datatype xsd:date ;
     ] .
 
+# validFrom may be unknown for a document that is only cited as replaced.
 vlt:LegalValidityIntervalShape
     a sh:NodeShape ;
     sh:targetClass vlt:LegalValidityInterval ;
     sh:property [
         sh:path vlt:validFrom ;
-        sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:datatype xsd:date ;
+    ] ;
+    sh:property [
+        sh:path vlt:validTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:date ;
+    ] .
+
+vlt:AmendmentEventShape
+    a sh:NodeShape ;
+    sh:targetClass vlt:AmendmentEvent ;
+    sh:property [
+        sh:path [ sh:inversePath vlr:hasAmendment ] ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class vld:DocumentComponent ;
+    ] ;
+    sh:property [
+        sh:path vlr:amendingComponent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class vld:DocumentComponent ;
+    ] ;
+    sh:property [
+        sh:path vlr:amendmentAction ;
+        sh:minCount 1 ;
+        sh:in ( "sua_doi"^^xsd:string "bo_sung"^^xsd:string "bai_bo"^^xsd:string "thay_cum_tu"^^xsd:string ) ;
+    ] ;
+    sh:property [
+        sh:path vlt:amendsAt ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:date ;
+    ] ;
+    sh:property [
+        sh:path vlr:amendmentScope ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path vlpd:consolidatedInCodification ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
     ] .

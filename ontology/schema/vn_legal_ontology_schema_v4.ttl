@@ -97,6 +97,8 @@ vlpd:topicName a owl:DatatypeProperty ; rdfs:domain vlpd:Topic ; rdfs:range xsd:
 vlpd:itemNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationItem ; rdfs:range xsd:integer .
 vlpd:itemName a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationItem ; rdfs:range xsd:string .
 vlpd:codificationNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationArticle ; rdfs:range xsd:string .
+vlpd:consolidatedInCodification a owl:DatatypeProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range xsd:boolean ;
+    rdfs:comment "true: nội dung Điều trong Pháp điển đã hợp nhất sửa đổi này (lấy từ ghi chú nguồn); không có: sửa đổi từ văn bản nạp sau"@vi .
 vlpd:contentText a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:string .
 vlpd:heading a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:string .
 vlpd:sequenceNumber a owl:DatatypeProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range xsd:integer .
@@ -169,11 +171,15 @@ vlr:cites a owl:ObjectProperty ; rdfs:domain vld:LegalEntity ; rdfs:range vlc:Le
 vlr:amendsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:repealsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:replacesComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
-# Article-level amendment: amended article -> event -> amending article.
+# Article-level amendment: amended vld:Article -> vlt:AmendmentEvent -> the
+# vld:Article (or vld:Clause, when the amending document says which khoan)
+# that makes the change. Dated by vlt:amendsAt (when the amendment takes effect).
 vlr:hasAmendment a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vlt:AmendmentEvent .
 vlr:amendingComponent a owl:ObjectProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range vld:DocumentComponent .
 vlr:amendmentAction a owl:DatatypeProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range xsd:string ;
     rdfs:comment "sua_doi | bo_sung | bai_bo | thay_cum_tu"@vi .
+vlr:amendmentScope a owl:DatatypeProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range xsd:string ;
+    rdfs:comment "Phần bị sửa của Điều: \"khoản 2\", \"điểm b khoản 3\"; không có khi sửa cả Điều hoặc nguồn không nêu"@vi .
 vlr:relatedTo a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlc:LegalEntity .
 vlr:precedes a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationComponent .
 vlr:follows a owl:ObjectProperty ; owl:inverseOf vlr:precedes .

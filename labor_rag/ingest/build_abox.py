@@ -159,6 +159,16 @@ def slug(value: str) -> str:
     return value or "unknown"
 
 
+def local_name(uri: URIRef) -> str:
+    """'https://example.org/vn-legal/instance#Doc_Decree_145_2020_ND_CP' -> 'Doc_Decree_145_2020_ND_CP'."""
+    return str(uri).rsplit("#", 1)[-1]
+
+
+def number_slug(number: str) -> str:
+    """Article/clause number for a local name; 'đ' stays distinct from 'd' ('35đ' follows '35d')."""
+    return slug(number.replace("đ", "dd"))
+
+
 def article_local(code: str) -> str:
     """Local name for a Dieu code. A lowercase 'đ' suffix is a distinct
     article ('3.3.NĐ.4.35đ' follows '...35d'), so it must not fold to 'd'."""
@@ -205,6 +215,7 @@ class AboxBuilder:
         }.items():
             self.graph.bind(prefix, namespace)
         self.effective_dates: dict[URIRef, set[str]] = {}
+        self.valid_to: dict[URIRef, str] = {}
         self.article_uris: Counter[str] = Counter()
         self.unparsed_citations: list[str] = []
         self.unknown_issuers: Counter[str] = Counter()
@@ -248,17 +259,25 @@ class AboxBuilder:
             self.add(uri, VLD.issuedDate, Literal(issued, datatype=XSD.date))
         return uri
 
+    def validity_interval(self, doc_uri: URIRef) -> URIRef:
+        # One interval per document, so an ABox that only ends a document
+        # (a replacing PDF) adds validTo to the same node as the Phap dien ABox.
+        interval = INST[f"Validity_{local_name(doc_uri).removeprefix('Doc_')}"]
+        self.add(interval, RDF.type, VLT.LegalValidityInterval)
+        self.add(doc_uri, VLT.hasValidityInterval, interval)
+        return interval
+
     def finish_documents(self) -> None:
         """One validity interval per document, starting at the earliest
         effective date cited for it (articles of one law can take effect on
-        different dates; vlt:validFrom is single-valued)."""
+        different dates; vlt:validFrom is single-valued), and ending when a
+        replacing document takes effect."""
         for doc_uri, dates in self.effective_dates.items():
             valid_from = min(dates)
-            interval = INST[f"Validity_{slug(str(doc_uri))}"]
-            self.add(interval, RDF.type, VLT.LegalValidityInterval)
-            self.add(interval, VLT.validFrom, Literal(valid_from, datatype=XSD.date))
-            self.add(doc_uri, VLT.hasValidityInterval, interval)
+            self.add(self.validity_interval(doc_uri), VLT.validFrom, Literal(valid_from, datatype=XSD.date))
             self.add(doc_uri, VLD.effectiveDate, Literal(valid_from, datatype=XSD.date))
+        for doc_uri, valid_to in self.valid_to.items():
+            self.add(self.validity_interval(doc_uri), VLT.validTo, Literal(valid_to, datatype=XSD.date))
 
     def sources(self, citation: str | None) -> list[Source]:
         """The codified source first, then the articles that amended it, each
@@ -283,7 +302,8 @@ class AboxBuilder:
     # --- codification structure ------------------------------------------
 
     def source_article(self, doc_uri: URIRef, number: str) -> URIRef:
-        source_uri = INST[f"SourceArticle_{slug(number.replace('đ', 'dd'))}_{slug(str(doc_uri))}"]
+        """Dieu `number` of a source document: SourceArticle_Decree_145_2020_ND_CP_D35."""
+        source_uri = INST[f"SourceArticle_{local_name(doc_uri).removeprefix('Doc_')}_D{number_slug(number)}"]
         self.add(source_uri, RDF.type, VLD.Article)
         self.add(source_uri, VLD.locatedInDocument, doc_uri)
         # The article number in the source document ("35", "4a"): with the
@@ -295,8 +315,7 @@ class AboxBuilder:
         source_uri = self.source_article(doc_uri, source_article)
         self.add(article_uri, VLPD.codificationOf, source_uri)
 
-        key = f"{slug(str(article_uri))}_{slug(str(doc_uri))}"
-        mapping_uri = INST[f"SourceMapping_{key}"]
+        mapping_uri = INST[f"SourceMapping_{local_name(article_uri).removeprefix('Article_')}"]
         self.add(mapping_uri, RDF.type, VLPD.SourceMapping)
         self.add(article_uri, VLPD.hasSourceMapping, mapping_uri)
         self.add(mapping_uri, VLPD.mapsToSourceComponent, source_uri)
@@ -309,21 +328,55 @@ class AboxBuilder:
         self.add(statement_uri, VLP.sourceQuote, Literal(quote, lang="vi"))
         return source_uri
 
-    def add_amendment(self, amended_uri: URIRef, amended_doc: URIRef, amending: Source) -> None:
-        """Article-level amendment from the citation tail "được sửa đổi ...
-        bởi Điều X <văn bản>": which article of which document, what it did
-        and from when, so version_date and amended_by are per Dieu."""
-        amending_uri = self.source_article(amending.document, amending.article)
-        event_uri = INST[f"Amendment_{slug(str(amended_uri))}_{slug(str(amending_uri))}"]
+    def source_clause(self, article_uri: URIRef, doc_uri: URIRef, number: str) -> URIRef:
+        """Khoan `number` of a source Dieu: SourceClause_Decree_70_2023_ND_CP_D1_K2."""
+        clause_uri = INST[f"SourceClause_{local_name(article_uri).removeprefix('SourceArticle_')}_K{number_slug(number)}"]
+        self.add(clause_uri, RDF.type, VLD.Clause)
+        self.add(clause_uri, VLD.locatedInDocument, doc_uri)
+        self.add(clause_uri, VLD.itemNumber, Literal(number, datatype=XSD.string))
+        self.add(article_uri, VLD.hasClause, clause_uri)
+        return clause_uri
+
+    def add_amendment(
+        self,
+        amended_uri: URIRef,
+        amended_doc: URIRef,
+        amending_uri: URIRef,
+        amending_doc: URIRef,
+        actions: list[str],
+        effective: str | None,
+        scope: str | None = None,
+        consolidated: bool = False,
+    ) -> None:
+        """Article-level amendment: amended_uri (a source Dieu) is changed by
+        amending_uri (a Dieu or khoan of amending_doc) from `effective`.
+        Phap dien gives it in the citation tail "được sửa đổi ... bởi Điều X
+        <văn bản>"; an amending PDF in each khoan ("Sửa đổi khoản 2 Điều 3 ...")."""
+        event_uri = INST[
+            f"Amendment_{local_name(amended_uri).removeprefix('SourceArticle_')}"
+            f"_by_{local_name(amending_uri).split('_', 1)[1]}"
+        ]
         self.add(event_uri, RDF.type, VLT.AmendmentEvent)
         self.add(amended_uri, VLR.hasAmendment, event_uri)
         self.add(event_uri, VLR.amendingComponent, amending_uri)
-        for action in amending.actions:
+        for action in actions:
             self.add(event_uri, VLR.amendmentAction, Literal(action, datatype=XSD.string))
-        if amending.effective:
-            self.add(event_uri, VLT.amendsAt, Literal(amending.effective, datatype=XSD.date))
-        self.add(amending.document, VLR.partiallyAmends, amended_doc)
-        self.add(amending.document, VLR.amendsComponent, amended_uri)
+        if effective:
+            self.add(event_uri, VLT.amendsAt, Literal(effective, datatype=XSD.date))
+        if scope:
+            self.add(event_uri, VLR.amendmentScope, Literal(scope, datatype=XSD.string))
+        if consolidated:
+            # The Phap dien text of the amended Dieu already includes it.
+            self.add(event_uri, VLPD.consolidatedInCodification, Literal(True))
+        self.add(amending_doc, VLR.partiallyAmends, amended_doc)
+        self.add(amending_doc, VLR.amendsComponent, amended_uri)
+
+    def add_replacement(self, new_doc: URIRef, old_doc: URIRef, effective: str | None) -> None:
+        """new_doc replaces old_doc, which stays in force until new_doc takes effect."""
+        self.add(new_doc, VLR.replaces, old_doc)
+        self.add(old_doc, VLR.replacedBy, new_doc)
+        if effective:
+            self.valid_to[old_doc] = min(effective, self.valid_to.get(old_doc, effective))
 
     def add_references(self, owner_uri: URIRef, owner_code: str | None, references: list[dict]) -> None:
         for ref in references:
@@ -410,7 +463,16 @@ class AboxBuilder:
                 codified = sources[0]
                 source_uri = self.add_source_mapping(uri, codified.document, codified.article, body)
                 for amending in sources[1:]:
-                    self.add_amendment(source_uri, codified.document, amending)
+                    amending_uri = self.source_article(amending.document, amending.article)
+                    self.add_amendment(
+                        source_uri,
+                        codified.document,
+                        amending_uri,
+                        amending.document,
+                        amending.actions,
+                        amending.effective,
+                        consolidated=True,
+                    )
                     stats["amendments"] += 1
             self.add_references(uri, code, dieu["references"])
             stats["articles"] += 1

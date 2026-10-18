@@ -22,8 +22,8 @@ from labor_rag.ingest.amending import (
     replaced_by,
     replaced_documents,
 )
-from labor_rag.ingest.build_abox import INST, VLD, AboxBuilder
-from labor_rag.ingest.ontology_to_jsonl import amendments, version_date
+from labor_rag.ingest.build_abox import INST, VLR, VLT, AboxBuilder
+from labor_rag.ingest.ontology_to_jsonl import version_date
 from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
 from labor_rag.ocr.structure import extract_metadata, parse_structure
 from labor_rag.retrieval.hybrid_retrieve import Evidence, amending_parts, in_force, pending_amendments
@@ -46,32 +46,44 @@ def test_sources_keep_amending_article_and_actions():
     assert (amending.article, amending.effective, amending.actions) == ("1", "2023-09-18", ["sua_doi", "bo_sung"])
 
 
-def projection(citation: str):
+def phap_dien_graph(citation: str):
+    """The ABox build_abox writes for one Phap dien Dieu with this citation."""
     builder = AboxBuilder()
     sources = builder.sources(citation)
     source_uri = builder.add_source_mapping(INST["Article_x"], sources[0].document, sources[0].article, "body")
     for amending in sources[1:]:
-        builder.add_amendment(source_uri, sources[0].document, amending)
-    # The document nodes ontology_to_jsonl would build: only document_number is read.
-    nodes = {
-        str(doc): {"uri": str(doc), "document_number": str(so_hieu)}
-        for doc, so_hieu in builder.graph.subject_objects(VLD.documentNumber)
-    }
-    return amendments(builder.graph, nodes)
+        amending_uri = builder.source_article(amending.document, amending.article)
+        builder.add_amendment(
+            source_uri, sources[0].document, amending_uri, amending.document, amending.actions, amending.effective,
+            consolidated=True,
+        )
+    return builder, source_uri
 
 
-def test_amended_by_per_article():
-    amended_by, amends = projection(CITATION)
-    entries = amended_by["152-2020-nd-cp:d3"]
-    assert [entry["action"] for entry in entries] == ["sua_doi", "bo_sung"]
-    assert {(entry["by"], entry["scope"], entry["date"]) for entry in entries} == {("70-2023-nd-cp:d1", None, "2023-09-18")}
-    assert [entry["target"] for entry in amends["70-2023-nd-cp:d1"]] == ["152-2020-nd-cp:d3", "152-2020-nd-cp:d3"]
+def test_amendment_event_per_article():
+    builder, source_uri = phap_dien_graph(CITATION)
+    graph = builder.graph
+    (event,) = graph.objects(source_uri, VLR.hasAmendment)
+    assert str(source_uri).endswith("SourceArticle_Decree_152_2020_ND_CP_D3")
+    assert str(event).endswith("Amendment_Decree_152_2020_ND_CP_D3_by_Decree_70_2023_ND_CP_D1")
+    assert str(graph.value(event, VLR.amendingComponent)).endswith("SourceArticle_Decree_70_2023_ND_CP_D1")
+    assert sorted(str(action) for action in graph.objects(event, VLR.amendmentAction)) == ["bo_sung", "sua_doi"]
+    assert str(graph.value(event, VLT.amendsAt)) == "2023-09-18"
 
 
-def test_version_date_only_from_own_amendments():
+def test_version_date_counts_only_consolidated_amendments():
+    builder, source_uri = phap_dien_graph(CITATION)
     document = {"effective_date": "2021-02-15"}
-    assert version_date(document, []) == "2021-02-15"
-    assert version_date(document, [{"date": "2023-09-18"}]) == "2023-09-18"
+    assert version_date(builder.graph, source_uri, document) == "2023-09-18"
+    # An amendment loaded later (from a PDF) is not in the Phap dien text.
+    amended_doc = builder.document("Nghị định", "152/2020/NĐ-CP", None, None)
+    later_doc = builder.document("Nghị định", "99/2025/NĐ-CP", None, "2025-07-01")
+    later = builder.source_article(later_doc, "1")
+    builder.add_amendment(source_uri, amended_doc, later, later_doc, ["sua_doi"], "2025-07-01")
+    assert version_date(builder.graph, source_uri, document) == "2023-09-18"
+    # Another Dieu of the amended document keeps its own date.
+    other = builder.source_article(amended_doc, "4")
+    assert version_date(builder.graph, other, document) == "2021-02-15"
 
 
 AMENDING_DECREE = """CHÍNH PHỦ

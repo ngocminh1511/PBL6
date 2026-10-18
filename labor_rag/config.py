@@ -31,6 +31,8 @@ SCHEMA_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_schema_v4.ttl"
 SHAPES_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_shapes_v4.ttl"
 ABOX_DIR = ONTOLOGY_DIR / "abox"
 LAO_DONG_ABOX_PATH = ABOX_DIR / "abox_lao_dong.ttl"
+# One ABox per loaded PDF (pdf_to_chunks), merged by ontology_to_jsonl.
+PDF_ABOX_DIR = ABOX_DIR / "pdf"
 
 OCR_OUTPUT_DIR = INTERIM_DIR / "ocr"
 VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
