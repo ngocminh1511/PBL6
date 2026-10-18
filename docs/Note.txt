@@ -1,0 +1,8 @@
+PDF chỉ nói sửa ở mức văn bản, không nói sửa ở mức điều
+Nếu như văn bản sửa đổi chỉ sửa đổi ở mức khoản, xử lý ở cả 2 trường hợp la:
+    1 điều được embedding
+    1 điều được embedding 2 lân thì xử lý ntn
+        => bổ sung rõ thông ti n của amended_by.
+
+Các văn bản sửa đổi, thay thế thì xuwrl ý như thế nào
+Cập nhật điều chỉnh abox, tbox và jsonl
