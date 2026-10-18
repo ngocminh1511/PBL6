@@ -20,7 +20,9 @@ from another source; pass --recreate to rebuild anyway, then load them again.
 
 Chunks of an amending document carry amends; after writing them, each amended
 Dieu already in the collection gets the matching amended_by entries
-(set_payload, no re-embedding; labor_rag/ingest/amending.py).
+(set_payload, no re-embedding; labor_rag/ingest/amending.py). A chunk whose
+replaces names other documents ends them: effective_to_date = its
+effective_from_date, and still_valid = false once that date has passed.
 
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
        python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
@@ -34,6 +36,7 @@ import os
 import sys
 import time
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -52,7 +55,7 @@ from qdrant_client.models import (
 )
 
 from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
-from labor_rag.ingest.amending import amended_by_updates, merge_amended_by
+from labor_rag.ingest.amending import amended_by_updates, merge_amended_by, replaced_by
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import article_id, point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
@@ -83,6 +86,7 @@ PAYLOAD_INDEXES = {
     "meta_dieu": PayloadSchemaType.KEYWORD,
     "still_valid": PayloadSchemaType.BOOL,
     "effective_from_date": PayloadSchemaType.DATETIME,
+    "effective_to_date": PayloadSchemaType.DATETIME,
 }
 
 
@@ -203,6 +207,21 @@ def link_amendments(client: QdrantClient, collection: str, chunks: list[dict]) -
         print(f"  amended_by of {target}: {len(entries)} entries" if target in indexed else f"WARNING: {target} is amended but not indexed")
 
 
+def retire_replaced(client: QdrantClient, collection: str, chunks: list[dict]) -> None:
+    """End the documents these chunks replace, without re-embedding them."""
+    for document_id, effective in sorted(replaced_by(chunks).items()):
+        selector = Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))])
+        found = client.count(collection, count_filter=selector, exact=True).count
+        if not found:
+            print(f"WARNING: {document_id} is replaced but not indexed")
+            continue
+        payload: dict = {"effective_to_date": effective}
+        if effective and effective <= date.today().isoformat():
+            payload["still_valid"] = False
+        client.set_payload(collection, payload=payload, points=selector)
+        print(f"  {document_id}: {found} chunks ended on {effective}")
+
+
 def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict]) -> list[dict]:
     """Delete the old parts of every Dieu the new chunks win, and return the
     chunks still to embed and write."""
@@ -275,10 +294,14 @@ def main() -> None:
             )
     incoming = chunks
     if not recreate:
+        # Collections built before an index was added (effective_to_date) get it here.
+        for field, schema in PAYLOAD_INDEXES.items():
+            client.create_payload_index(args.collection, field_name=field, field_schema=schema)
         chunks = apply_upsert_plan(client, args.collection, chunks)
         if not chunks:
             print("Nothing to embed.")
             link_amendments(client, args.collection, incoming)
+            retire_replaced(client, args.collection, incoming)
             return
     texts = [c["text"] for c in chunks]
 
@@ -305,6 +328,7 @@ def main() -> None:
         print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
 
     link_amendments(client, args.collection, incoming)
+    retire_replaced(client, args.collection, incoming)
     print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}")
 
 

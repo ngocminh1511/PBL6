@@ -124,3 +124,36 @@ def merge_amended_by(existing: list[dict], new: list[dict]) -> list[dict]:
     keys = {(entry["by"], entry["scope"], entry["action"]) for entry in new}
     kept = [entry for entry in existing if (entry["by"], entry["scope"], entry["action"]) not in keys]
     return kept + new
+
+
+# The Dieu that can retire other documents: "Hiệu lực thi hành", "Điều khoản thi hành", ...
+EFFECT_TITLE_RE = re.compile(r"hiệu lực|thi hành|chuyển tiếp", re.IGNORECASE)
+REPLACING_RE = re.compile(r"thay thế|hết hiệu lực", re.IGNORECASE)
+
+
+def replaced_documents(title: str, text: str, own_document_id: str | None = None) -> list[str]:
+    """document_id of every document this Dieu replaces or ends, read from
+    its sentences with "thay thế" / "hết hiệu lực" ("Nghị định này thay thế
+    Nghị định số 05/2015/NĐ-CP"; "Thông tư số 10/2020/TT-BLĐTBXH hết hiệu lực
+    kể từ ngày Thông tư này có hiệu lực"). Only in an effect Dieu, since
+    "thay thế" is common in provisions too."""
+    if not EFFECT_TITLE_RE.search(nfc(title)):
+        return []
+    found = []
+    for sentence in re.split(r"(?<=[.;])\s+|\n", nfc(text)):
+        if not REPLACING_RE.search(sentence):
+            continue
+        for match in DOCUMENT_RE.finditer(sentence):
+            document_id = make_document_id(match.group(1))
+            if document_id != own_document_id and document_id not in found:
+                found.append(document_id)
+    return found
+
+
+def replaced_by(chunks: list[dict]) -> dict[str, str | None]:
+    """{replaced document_id: effective date of the replacing document}."""
+    return {
+        document_id: chunk.get("effective_from_date")
+        for chunk in chunks
+        for document_id in chunk.get("replaces") or []
+    }

@@ -100,7 +100,9 @@ def amending_parts(payloads: list[dict], by: str, target: str) -> list[dict]:
 
 
 def in_force(today: date | None = None) -> Filter:
-    """still_valid AND (effective_from_date <= today OR effective_from_date IS NULL)."""
+    """still_valid AND (effective_from_date <= today OR IS NULL) AND
+    (effective_to_date > today OR IS NULL): a replaced document stays in force
+    until the day its replacement takes effect."""
     today = today or date.today()
     return Filter(
         must=[
@@ -109,6 +111,12 @@ def in_force(today: date | None = None) -> Filter:
                 should=[
                     FieldCondition(key="effective_from_date", range=DatetimeRange(lte=today.isoformat())),
                     IsNullCondition(is_null=PayloadField(key="effective_from_date")),
+                ]
+            ),
+            Filter(
+                should=[
+                    FieldCondition(key="effective_to_date", range=DatetimeRange(gt=today.isoformat())),
+                    IsNullCondition(is_null=PayloadField(key="effective_to_date")),
                 ]
             ),
         ]

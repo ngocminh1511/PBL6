@@ -14,12 +14,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.stdout.reconfigure(encoding="utf-8")
 
-from labor_rag.ingest.amending import actions_in, amended_by_updates, merge_amended_by, parse_targets
+from labor_rag.ingest.amending import (
+    actions_in,
+    amended_by_updates,
+    merge_amended_by,
+    parse_targets,
+    replaced_by,
+    replaced_documents,
+)
 from labor_rag.ingest.build_abox import INST, VLD, AboxBuilder
 from labor_rag.ingest.ontology_to_jsonl import amendments, version_date
 from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
 from labor_rag.ocr.structure import extract_metadata, parse_structure
-from labor_rag.retrieval.hybrid_retrieve import Evidence, amending_parts, pending_amendments
+from labor_rag.retrieval.hybrid_retrieve import Evidence, amending_parts, in_force, pending_amendments
 
 CITATION = (
     "( Điều 3 Nghị định số 152/2020/NĐ-CP, có hiệu lực thi hành kể từ ngày 15/02/2021, "
@@ -79,7 +86,8 @@ Sửa đổi, bổ sung một số điều của Nghị định số 152/2020/N�
 “Điều 7a. Báo cáo
 Người sử dụng lao động báo cáo hằng năm.”
 Điều 2. Hiệu lực thi hành
-Nghị định này có hiệu lực thi hành từ ngày 18 tháng 9 năm 2023.
+1. Nghị định này có hiệu lực thi hành từ ngày 18 tháng 9 năm 2023.
+2. Nghị định này thay thế Nghị định số 11/2016/NĐ-CP.
 """
 
 
@@ -145,6 +153,28 @@ def test_retrieval_attaches_only_pending_amendments():
     assert pending_amendments(evidence) == ["70-2023-nd-cp:d1"]
     parts = amending_parts(list(amending_chunks().values()), "70-2023-nd-cp:d1", "152-2020-nd-cp:d3")
     assert [part["chunk_id"] for part in parts] == ["70-2023-nd-cp:d1:p1"]
+
+
+def test_replaced_documents():
+    text = "Nghị định này thay thế Nghị định số 05/2015/NĐ-CP và Nghị định số 148/2018/NĐ-CP."
+    assert replaced_documents("Hiệu lực thi hành", text, "145-2020-nd-cp") == ["05-2015-nd-cp", "148-2018-nd-cp"]
+    text = "Thông tư số 10/2020/TT-BLĐTBXH hết hiệu lực kể từ ngày Thông tư này có hiệu lực."
+    assert replaced_documents("Điều khoản thi hành", text) == ["10-2020-tt-bldtbxh"]
+    # "thay thế" outside an effect Dieu is ordinary wording.
+    assert replaced_documents("Thay thế người lao động", "Nghị định số 05/2015/NĐ-CP thay thế") == []
+
+
+def test_effect_dieu_carries_replaces():
+    chunks = amending_chunks()
+    effect = chunks["70-2023-nd-cp:d2"]
+    assert effect["replaces"] == ["11-2016-nd-cp"]
+    assert replaced_by(list(chunks.values())) == {"11-2016-nd-cp": effect["effective_from_date"]}
+    assert chunks["70-2023-nd-cp:d1:p1"]["replaces"] == []
+
+
+def test_in_force_checks_effective_to_date():
+    keys = {condition.key for clause in in_force().must[2:] for condition in clause.should if hasattr(condition, "key")}
+    assert keys == {"effective_to_date"}
 
 
 if __name__ == "__main__":

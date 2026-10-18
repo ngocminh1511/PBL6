@@ -31,7 +31,8 @@ Lấy từ Pháp điển (Điều 10 của NĐ 145/2020, xếp vào Chương III
   "still_valid": true,
   "content_hash": "3f1c0a9e7b2d4c51",
   "amends": [],
-  "amended_by": []
+  "amended_by": [],
+  "replaces": []
 }
 ```
 
@@ -58,7 +59,8 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
   "still_valid": true,
   "content_hash": "9a0b7c3d2e1f4a5b",
   "amends": [],
-  "amended_by": []
+  "amended_by": [],
+  "replaces": []
 }
 ```
 
@@ -86,6 +88,7 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
 | `content_hash` | string | Phát hiện Điều thay đổi | sha1 (16 ký tự hex) của **nội dung** Điều (không gồm phần đầu), sau khi chuẩn hóa NFC và gộp khoảng trắng. Mọi phần của một Điều có cùng giá trị |
 | `amends` | list object | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi: `{target, scope, action, date}`. Mục 10 |
 | `amended_by` | list object | Văn bản sửa đổi | Các Điều đã sửa đổi Điều này: `{by, scope, action, date}`. Mục 10 |
+| `replaces` | list `document_id` | Văn bản thay thế | Văn bản mà Điều này thay thế / làm hết hiệu lực (chỉ Điều hiệu lực thi hành). Pháp điển: `[]`. Mục 10 |
 
 **Chương của văn bản gốc và chương Pháp điển là hai thứ khác nhau.** Pháp điển xếp Điều của
 nghị định, thông tư vào khung chương của đề mục (lấy theo Bộ luật), nên Điều 10 NĐ 145/2020 nằm ở
@@ -224,13 +227,16 @@ def split_article(header, lead, clauses, count, max_tokens=1024):
 | Trường | Ý nghĩa | Pháp điển | PDF |
 |---|---|---|---|
 | `effective_from_date` | Ngày bắt đầu có hiệu lực | `effective_date` của văn bản trong KG | `effective_date` trong KG nếu văn bản đã có trong Pháp điển; không thì `metadata.ngay_hieu_luc` (`ocr/structure.py`): câu dẫn VBHN, hoặc câu "… này có hiệu lực (thi hành) (kể) từ ngày …" dạng `dd/mm/yyyy` hay `ngày dd tháng mm năm yyyy`; không thấy thì `null` |
-| `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` nếu có (hiện ABox chưa có, nên `null`) | `null` lúc nạp; điền khi nạp văn bản bãi bỏ/thay thế nó |
-| `still_valid` | Đã bị bãi bỏ/thay thế chưa | Luôn `true` | `true` lúc nạp; đổi thành `false` khi nạp văn bản bãi bỏ/thay thế nó |
+| `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` nếu có (hiện ABox chưa có, nên `null`) | `null` lúc nạp; điền khi nạp văn bản thay thế nó |
+| `still_valid` | Đã bị thay thế chưa | `true` lúc nạp | `true` lúc nạp |
 
-Filter lúc truy vấn:
-`still_valid = true AND (effective_from_date <= hôm nay OR effective_from_date IS NULL)`.
+Khi nạp văn bản có `replaces`, `embed_and_index` đặt cho mọi chunk của văn bản bị thay thế (Qdrant `set_payload`
+theo `document_id`, không embedding lại): `effective_to_date` = ngày hiệu lực của văn bản mới, và
+`still_valid = false` nếu ngày đó đã qua.
 
-Khi `still_valid` thay đổi thì cập nhật payload (Qdrant `set_payload` theo `document_id`), không cần embedding lại.
+Filter lúc truy vấn (`hybrid_retrieve.in_force`):
+`still_valid = true AND (effective_from_date <= hôm nay OR IS NULL) AND (effective_to_date > hôm nay OR IS NULL)`.
+Điều kiện cuối giữ văn bản cũ đến đúng ngày văn bản mới có hiệu lực, kể cả khi nạp văn bản mới trước ngày đó.
 
 ## 7. Quy tắc nạp
 
@@ -297,7 +303,7 @@ So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, kh
 |---|---|---|
 | Nạp lại cùng văn bản | PDF NĐ 145/2020 OCR lại | Cùng `document_id` nên `chunk_id` khớp 1-1. `chunk_id` chỉ có ở bản mới: Điều mới. Chỉ có ở bản cũ: Điều bị mất (thường do OCR, cần cảnh báo). Có ở cả hai: so `content_hash`, chỉ embedding lại Điều đổi hash |
 | Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Xem "Văn bản sửa đổi" bên dưới |
-| Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). Đặt mọi chunk của văn bản cũ `still_valid = false`, `effective_to_date` = ngày văn bản mới có hiệu lực. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine, lưu thành cạnh `REPLACES` có điểm trong Neo4j |
+| Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). `pdf_to_chunks` đọc câu "thay thế / hết hiệu lực" trong Điều có tên chứa "hiệu lực / thi hành / chuyển tiếp" -> `replaces`; `embed_and_index` kết thúc văn bản cũ như mục 6. KG không có cạnh `REPLACES` nên không lấy từ KG. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine |
 
 - **Không xóa bản cũ**, chỉ đặt `still_valid = false`: vẫn trả lời được "trước đây quy định thế nào" và so được phiên bản.
   Filter mặc định ở mục 6 đã loại bản cũ khỏi truy vấn thường.

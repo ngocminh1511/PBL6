@@ -541,6 +541,7 @@ def main() -> int:
                     # one is dated on or before version_date (structural_jsonl.md, section 10).
                     "amends": amends_article.get(article, []),
                     "amended_by": amended_by_article.get(article, []),
+                    "replaces": [],
                 }
             )
     chunks.sort(key=article_sort_key)

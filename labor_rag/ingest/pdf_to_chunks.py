@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Iterator
 
 from labor_rag.config import INTERIM_DIR, LAO_DONG_DIR
-from labor_rag.ingest.amending import Target, amends_entries, document_in, is_amending, parse_targets
+from labor_rag.ingest.amending import Target, amends_entries, document_in, is_amending, parse_targets, replaced_documents
 from labor_rag.ingest.chunk_schema import (
     MAX_TOKENS,
     Counter,
@@ -193,6 +193,7 @@ def document_to_chunks(
         "still_valid": True,
         "amends": [],
         "amended_by": [],
+        "replaces": [],
     }
 
     def split(header: str, body: str) -> list[tuple[str, str | None]]:
@@ -221,6 +222,7 @@ def document_to_chunks(
         body = nfc(article_body(article))
         header = build_header(context, meta_dieu, ten)
         units = amending_units(article)
+        replaces = replaced_documents(article.article_title, body, document_id)
         if units:
             # One part per khoan (more if it is long), headed by the change it makes.
             parts = [
@@ -245,6 +247,7 @@ def document_to_chunks(
                     "content_hash": content_hash(body),
                     **common,
                     "amends": amends,
+                    "replaces": replaces,
                 }
             )
 
@@ -271,7 +274,7 @@ def document_to_chunks(
     order = [
         "chunk_id", "document_id", "mapc", "source", "ten", "text", "meta_de_muc", "meta_chuong", "meta_muc",
         "pd_chuong", "pd_muc", "meta_dieu", "meta_khoan", "effective_from_date", "effective_to_date",
-        "version_date", "still_valid", "content_hash", "amends", "amended_by",
+        "version_date", "still_valid", "content_hash", "amends", "amended_by", "replaces",
     ]
     return [{key: chunk[key] for key in order} for chunk in chunks], warnings
 
