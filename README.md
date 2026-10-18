@@ -90,7 +90,8 @@ python -m labor_rag.ingest.pdf_to_chunks --from-json data/interim/pdf_chunks/45-
 python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/45-2019-qh14_chunks.jsonl --upsert
 ```
 
-Dựng lại collection Pháp điển (`embed_and_index` không kèm `--upsert`) sẽ xóa chunk PDF; chạy lại lệnh `--upsert`.
+Dựng lại collection (`embed_and_index` không kèm `--upsert`) sẽ xóa chunk PDF, nên lệnh dừng lại nếu collection đang có chunk
+không phải Pháp điển. Muốn dựng lại thật (ví dụ đổi model) thì thêm `--recreate`, sau đó chạy lại các lệnh `--upsert`.
 
 ## Chạy embedding trên Modal, dùng Qdrant/Neo4j trên cloud (tùy chọn)
 

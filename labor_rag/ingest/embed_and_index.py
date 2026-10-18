@@ -14,11 +14,13 @@ come back, the upsert still happens from this machine.
 
 By default the collection is rebuilt from --chunks. With --upsert it is kept
 and the chunks are merged in per Dieu (labor_rag/ingest/merge.py): the newer
-version_date wins and the losing Dieu's old parts are deleted. Rebuilding the
-Phap dien collection drops PDF chunks loaded with --upsert; load them again.
+version_date wins and the losing Dieu's old parts are deleted. A rebuild drops
+PDF chunks loaded with --upsert, so it stops when the collection holds chunks
+from another source; pass --recreate to rebuild anyway, then load them again.
 
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
        python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
+       python -m labor_rag.ingest.embed_and_index --recreate   # rebuild, dropping PDF chunks
 """
 from __future__ import annotations
 
@@ -38,6 +40,7 @@ from qdrant_client.models import (
     FieldCondition,
     Filter,
     MatchAny,
+    MatchValue,
     PayloadSchemaType,
     PointIdsList,
     PointStruct,
@@ -47,7 +50,7 @@ from qdrant_client.models import (
 from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
-from labor_rag.ingest.merge import plan_upsert
+from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
 sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
@@ -147,6 +150,24 @@ def indexed_chunks(client: QdrantClient, collection: str, document_ids: list[str
             return found
 
 
+def other_source_documents(client: QdrantClient, collection: str) -> Counter:
+    """Chunk count per document_id for chunks whose source is not Phap dien."""
+    found: Counter = Counter()
+    offset = None
+    while True:
+        points, offset = client.scroll(
+            collection_name=collection,
+            scroll_filter=Filter(must_not=[FieldCondition(key="source", match=MatchValue(value=PHAP_DIEN))]),
+            with_payload=["document_id"],
+            with_vectors=False,
+            limit=256,
+            offset=offset,
+        )
+        found.update(str((point.payload or {}).get("document_id")) for point in points)
+        if offset is None:
+            return found
+
+
 def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict]) -> list[dict]:
     """Delete the old parts of every Dieu the new chunks win, and return the
     chunks still to embed and write."""
@@ -180,11 +201,17 @@ def main() -> None:
         help=f"Token budget per batch (batch size x longest chunk); default {DEFAULT_MAX_BATCH_TOKENS} "
         f"local, {MODAL_MAX_BATCH_TOKENS} on Modal",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--upsert",
         action="store_true",
         help="add to the collection instead of rebuilding it: per Dieu, the newer version_date wins "
         "(labor_rag/ingest/merge.py); used for PDF chunks from pdf_to_chunks",
+    )
+    mode.add_argument(
+        "--recreate",
+        action="store_true",
+        help="rebuild even when the collection holds chunks from another source (PDF); they are dropped",
     )
     args = parser.parse_args()
     max_batch_tokens = args.max_batch_tokens or (
@@ -201,7 +228,16 @@ def main() -> None:
     client = QdrantClient(url=args.qdrant_url, api_key=QDRANT_API_KEY, timeout=QDRANT_TIMEOUT)
     client.get_collections()
 
-    recreate = not args.upsert or not client.collection_exists(args.collection)
+    exists = client.collection_exists(args.collection)
+    recreate = not args.upsert or not exists
+    if recreate and exists and not args.recreate:
+        others = other_source_documents(client, args.collection)
+        if others:
+            listed = ", ".join(f"{doc} ({n})" for doc, n in sorted(others.items()))
+            raise SystemExit(
+                f"{args.collection} holds {sum(others.values())} chunks not from Phap dien: {listed}.\n"
+                "A rebuild would delete them. Use --upsert to merge, or --recreate to rebuild and load them again."
+            )
     if not recreate:
         chunks = apply_upsert_plan(client, args.collection, chunks)
         if not chunks:

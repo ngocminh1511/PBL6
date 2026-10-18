@@ -242,7 +242,9 @@ Code: `labor_rag/ingest/merge.py::plan_upsert`, chạy bởi `embed_and_index --
   (nạp lại) thì bản mới thay bản cũ. Nội dung và `version_date` y hệt thì bỏ qua, không embedding lại.
 - Bên mới thắng: **xóa mọi phần cũ** của Điều rồi mới ghi, vì hai bên có thể cắt Điều thành số phần khác nhau.
 - Điều chỉ có ở bản đang index: giữ nguyên, in cảnh báo (thường do OCR bỏ sót Điều).
-- Dựng lại collection Pháp điển (`embed_and_index` không có `--upsert`) sẽ xóa luôn chunk PDF: chạy lại `--upsert`.
+- Dựng lại collection (`embed_and_index` không có `--upsert`) sẽ xóa luôn chunk PDF, nên lệnh dừng lại khi collection có
+  chunk không phải Pháp điển. Thêm `--recreate` để vẫn dựng lại, rồi chạy lại `--upsert`. `--upsert` bỏ qua Điều không đổi,
+  nên không dùng để embedding lại khi đổi model.
 - Văn bản sửa đổi, bổ sung có số hiệu riêng, nên là văn bản riêng.
 
 `version_date` (`YYYY-MM-DD`): ngày hiệu lực mới nhất mà nội dung đã phản ánh.
