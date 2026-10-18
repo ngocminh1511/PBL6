@@ -353,3 +353,26 @@ python -m labor_rag.ingest.load_neo4j --replace-dataset
 python -m labor_rag.ingest.embed_and_index --chunks data/processed/lao_dong_v5/chunks.jsonl --upsert   # chỉ cập nhật metadata
 python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
 ```
+
+## 11. Dẫn chiếu trong nội dung Điều
+
+Code: `labor_rag/ingest/references.py` (đọc), `build_abox.py` / `pdf_abox.py` (ghi vào ABox), `hybrid_retrieve.py`
+(dùng khi truy vấn). Không thêm trường nào vào chunk.
+
+- Mỗi Điều của văn bản nguồn được tách thành khoản: `vld:Clause` (`SourceClause_<văn bản>_D<n>_K<k>`, kèm nội dung khoản);
+  điểm được dẫn chiếu tới thành `vld:Point` (`..._P<a>`).
+- Dẫn chiếu trong câu chữ ("theo quy định tại điểm a, b khoản 2 Điều 35 của Bộ luật Lao động", "khoản 3 Điều này",
+  "Điều 5 Nghị định số 145/2020/NĐ-CP", "tại khoản 2") thành cạnh từ khoản (hoặc Điều, nếu ở câu dẫn) tới Điều /
+  khoản / điểm đích: `vlr:citesComponent`; nếu câu dẫn của danh sách có "quy định chi tiết / hướng dẫn" thì
+  `vlr:implementsComponent`. Neo4j: `CITES_COMPONENT`, `IMPLEMENTS_COMPONENT`.
+- Văn bản đích, theo thứ tự: văn bản nêu ngay sau dẫn chiếu (hoặc sau dẫn chiếu cuối của chuỗi "… và …"); văn bản
+  nêu ở câu dẫn của danh sách ("… sau đây của Bộ luật Lao động:"); văn bản nêu sau trong cùng dòng, nếu dòng không
+  nêu văn bản của chính nó; nếu Điều đích không có trong văn bản đang xét mà có trong văn bản được nêu tên ở dòng
+  đó thì lấy văn bản đó; còn lại là chính văn bản đang xét. Tên luật ("Bộ luật Lao động") tra theo `vld:shortTitle`,
+  dựng từ ghi chú nguồn Pháp điển.
+- Liên kết "nội dung liên quan" của Pháp điển (`REFERS_TO`, mức Điều) vẫn giữ; khoảng một nửa không có trong câu chữ.
+- Retrieval: với mỗi Điều trả về, lấy các khoản mà khoản trúng (`meta_khoan`) dẫn chiếu tới, đưa vào **nội dung đúng
+  khoản đó** (không cả Điều), nếu Điều đích còn hiệu lực trong Qdrant.
+
+Đo trên 1.407 Điều Lao động: 1.620 dẫn chiếu, 2.108 đích (1.456 ở mức khoản), 3.767 khoản; lấy lại 99,4% liên kết
+Pháp điển có số Điều trong câu chữ; 39/40 đúng trên mẫu ngẫu nhiên.

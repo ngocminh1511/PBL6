@@ -144,4 +144,7 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
 - OCR gộp mọi phụ lục thành một chunk `:pl1`, chưa tách theo từng phụ lục.
 - Điều 14 NĐ 97/2022 (`20.2.NĐ.6.14`) gần như toàn phụ lục dạng bảng, bị cắt theo câu thành 16 phần; khi ghép
   lại cả Điều (`join_parts`) còn lặp vài dòng gối đầu.
-
+- Dẫn chiếu trong câu chữ (`references.py`): 32 dẫn chiếu tới luật không có trong dữ liệu và không kèm số hiệu
+  ("Luật Bảo hiểm xã hội") không thành cạnh. "Điều 14" không nêu văn bản, trong một văn bản cũng có Điều 14, được
+  gán cho chính văn bản đó dù có thể là văn bản khác (3/503 liên kết Pháp điển bị lệch vì vậy). "Của Luật này" trong
+  nội dung mà một Điều sửa đổi chèn vào luật khác (Điều 219 BLLĐ) bị hiểu là luật đang xét.
