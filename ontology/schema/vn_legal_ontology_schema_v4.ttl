@@ -169,6 +169,11 @@ vlr:cites a owl:ObjectProperty ; rdfs:domain vld:LegalEntity ; rdfs:range vlc:Le
 vlr:amendsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:repealsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:replacesComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+# Article-level amendment: amended article -> event -> amending article.
+vlr:hasAmendment a owl:ObjectProperty ; rdfs:domain vld:DocumentComponent ; rdfs:range vlt:AmendmentEvent .
+vlr:amendingComponent a owl:ObjectProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range vld:DocumentComponent .
+vlr:amendmentAction a owl:DatatypeProperty ; rdfs:domain vlt:AmendmentEvent ; rdfs:range xsd:string ;
+    rdfs:comment "sua_doi | bo_sung | bai_bo | thay_cum_tu"@vi .
 vlr:relatedTo a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlc:LegalEntity .
 vlr:precedes a owl:ObjectProperty ; rdfs:domain vlpd:CodificationComponent ; rdfs:range vlpd:CodificationComponent .
 vlr:follows a owl:ObjectProperty ; owl:inverseOf vlr:precedes .

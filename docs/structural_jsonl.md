@@ -84,8 +84,8 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
 | `version_date` | `YYYY-MM-DD` / null | Chọn bản khi trùng | Ngày hiệu lực mới nhất mà nội dung đã phản ánh. Mục 7 |
 | `still_valid` | bool | Lọc hiệu lực | Mục 6 |
 | `content_hash` | string | Phát hiện Điều thay đổi | sha1 (16 ký tự hex) của **nội dung** Điều (không gồm phần đầu), sau khi chuẩn hóa NFC và gộp khoảng trắng. Mọi phần của một Điều có cùng giá trị |
-| `amends` | list `chunk_id` | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi, bổ sung. Mục 10 |
-| `amended_by` | list `chunk_id` | Văn bản sửa đổi | Các Điều đã sửa đổi Điều này. Mục 10 |
+| `amends` | list object | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi: `{target, scope, action, date}`. Mục 10 |
+| `amended_by` | list object | Văn bản sửa đổi | Các Điều đã sửa đổi Điều này: `{by, scope, action, date}`. Mục 10 |
 
 **Chương của văn bản gốc và chương Pháp điển là hai thứ khác nhau.** Pháp điển xếp Điều của
 nghị định, thông tư vào khung chương của đề mục (lấy theo Bộ luật), nên Điều 10 NĐ 145/2020 nằm ở
@@ -251,7 +251,7 @@ Code: `labor_rag/ingest/merge.py::plan_upsert`, chạy bởi `embed_and_index --
 
 | Nguồn | Cách tính |
 |---|---|
-| Pháp điển | max(`effective_date` của văn bản, `effective_date` của các văn bản `vlr:amends`/`partiallyAmends` nó). Pháp điển chỉ ghi sửa đổi ở mức văn bản nên đây là xấp xỉ |
+| Pháp điển | max(`effective_date` của văn bản, `date` của các mục trong `amended_by` của **chính Điều đó**). Ghi chú nguồn trong HTML nêu Điều nào sửa Điều này ("được sửa đổi … bởi Điều X …"), nên Điều không bị sửa giữ ngày hiệu lực gốc |
 | PDF văn bản gốc | Ngày hiệu lực ("… này có hiệu lực (thi hành) từ ngày …") |
 | PDF VBHN | max(ngày hiệu lực văn bản gốc, ngày hiệu lực từng văn bản sửa đổi trong câu dẫn "…, được sửa đổi, bổ sung bởi: 1. … 2. …") |
 
@@ -301,5 +301,17 @@ So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, kh
 
 - **Không xóa bản cũ**, chỉ đặt `still_valid = false`: vẫn trả lời được "trước đây quy định thế nào" và so được phiên bản.
   Filter mặc định ở mục 6 đã loại bản cũ khỏi truy vấn thường.
-- Pháp điển đã hợp nhất các lần sửa đổi vào nội dung Điều, nên chunk Pháp điển có `amends = amended_by = []`.
-  Hai trường này dành cho văn bản sửa đổi mới, ra sau lần cập nhật Pháp điển gần nhất.
+- Mỗi mục `amends` / `amended_by` là một hành động trên một Điều:
+
+  ```json
+  {"by": "61-2020-nd-cp:d2", "scope": null, "action": "sua_doi", "date": "2020-07-15"}
+  ```
+
+  `by` / `target` là `{document_id}:d{N}` (không có `:pK`). `action`: `sua_doi`, `bo_sung`, `bai_bo`, `thay_cum_tu`.
+  `scope` là khoản bị sửa (`"khoản 2"`), `null` khi nguồn chỉ nêu Điều (luôn vậy với Pháp điển).
+  `date`: ngày văn bản sửa đổi có hiệu lực. Điều bị cắt nhiều phần: mọi phần mang cùng danh sách.
+- Pháp điển đã hợp nhất các lần sửa đổi vào nội dung Điều. `amended_by` của chunk Pháp điển lấy từ ghi chú nguồn
+  (ABox: `vlr:hasAmendment` -> `vlt:AmendmentEvent` -> `vlr:amendingComponent`), mọi `date` đều ≤ `version_date`.
+  Quy tắc retrieval: chỉ kéo theo chunk sửa đổi khi `date` > `version_date` của chunk (sửa đổi chưa được hợp nhất).
+- `amends` của chunk Pháp điển thường rỗng: Điều sửa đổi (Điều 1 NĐ 70/2023, …) đã hợp nhất vào Điều bị sửa nên
+  không có chunk riêng.

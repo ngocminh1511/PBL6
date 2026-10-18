@@ -4,7 +4,8 @@ The HTML is read in memory by parse_demuc_html.parse_demuc_nodes(), so every
 de muc in data/raw/bophapdien goes through one code path. Topic/item numbers and names come from
 data/interim/chu_de.json and de_muc.json (run parse_jsondata first); source
 documents, their issuing authorities and validity dates are derived from the
-pGhiChu citation of each Dieu, and amending documents from its
+pGhiChu citation of each Dieu, and its amendments (which article of which
+document, sửa đổi / bổ sung / bãi bỏ, from when) from the
 "... được sửa đổi ... bởi Điều X <văn bản>" tail.
 
 Usage (from the repository root):
@@ -21,6 +22,7 @@ import sys
 import unicodedata
 from collections import Counter
 from pathlib import Path
+from typing import NamedTuple
 
 from rdflib import Graph, Literal, Namespace, RDF, RDFS, URIRef
 from rdflib.namespace import XSD
@@ -133,6 +135,22 @@ SOURCE_RE = re.compile(
 ISSUED_RE = re.compile(r"ngày\s+(\d{1,2}/\d{1,2}/\d{4})\s+của\s", re.IGNORECASE)
 # "03/2017/TT- BVHTTDL" -> "03/2017/TT-BVHTTDL"
 BROKEN_NUMBER_RE = re.compile(r"(?<=[A-ZĐ])-\s+(?=[A-ZĐ])")
+# Words before "bởi Điều X ..." in a pGhiChu citation -> vlr:amendmentAction.
+AMENDMENT_ACTIONS = {"sửa đổi": "sua_doi", "bổ sung": "bo_sung", "bãi bỏ": "bai_bo"}
+
+
+class Source(NamedTuple):
+    """One "Điều X <văn bản> ..., có hiệu lực ... ngày D" in a citation."""
+
+    document: URIRef
+    article: str
+    effective: str | None
+    actions: list[str]  # for an amending source: what it did to the Dieu
+
+
+def amendment_actions(text: str) -> list[str]:
+    """'..., có nội dung được sửa đổi, có nội dung được bổ sung bởi ' -> ['sua_doi', 'bo_sung']."""
+    return [action for words, action in AMENDMENT_ACTIONS.items() if words in text.lower()]
 
 
 def clean_text(text: str | None) -> str:
@@ -248,29 +266,38 @@ class AboxBuilder:
             self.add(doc_uri, VLT.hasValidityInterval, interval)
             self.add(doc_uri, VLD.effectiveDate, Literal(valid_from, datatype=XSD.date))
 
-    def sources(self, citation: str | None) -> list[tuple[URIRef, str]]:
-        """[(document, article number in it)]: the codified source first,
-        then documents that amended it."""
+    def sources(self, citation: str | None) -> list[Source]:
+        """The codified source first, then the articles that amended it, each
+        with the actions named between the previous citation and its own."""
         found = []
-        for m in SOURCE_RE.finditer(BROKEN_NUMBER_RE.sub("-", citation or "")):
+        text = BROKEN_NUMBER_RE.sub("-", citation or "")
+        previous_end = 0
+        for m in SOURCE_RE.finditer(text):
             issued = ISSUED_RE.search(m["summary"] or "")
+            effective = parse_vn_date(m["date"])
             doc = self.document(
-                m["kind"], m["number"], m["name"], parse_vn_date(m["date"]), parse_vn_date(issued.group(1)) if issued else None
+                m["kind"], m["number"], m["name"], effective, parse_vn_date(issued.group(1)) if issued else None
             )
-            found.append((doc, m["article"]))
+            actions = amendment_actions(text[previous_end:m.start()]) if found else []
+            found.append(Source(doc, m["article"], effective, actions))
+            previous_end = m.end()
         if citation and not found:
             self.unparsed_citations.append(citation)
         return found
 
     # --- codification structure ------------------------------------------
 
-    def add_source_mapping(self, article_uri: URIRef, doc_uri: URIRef, source_article: str, quote: str) -> None:
-        source_uri = INST[f"SourceArticle_{slug(source_article.replace('đ', 'dd'))}_{slug(str(doc_uri))}"]
+    def source_article(self, doc_uri: URIRef, number: str) -> URIRef:
+        source_uri = INST[f"SourceArticle_{slug(number.replace('đ', 'dd'))}_{slug(str(doc_uri))}"]
         self.add(source_uri, RDF.type, VLD.Article)
         self.add(source_uri, VLD.locatedInDocument, doc_uri)
         # The article number in the source document ("35", "4a"): with the
         # document number it identifies the Dieu across Phap dien and PDF.
-        self.add(source_uri, VLD.itemNumber, Literal(source_article, datatype=XSD.string))
+        self.add(source_uri, VLD.itemNumber, Literal(number, datatype=XSD.string))
+        return source_uri
+
+    def add_source_mapping(self, article_uri: URIRef, doc_uri: URIRef, source_article: str, quote: str) -> URIRef:
+        source_uri = self.source_article(doc_uri, source_article)
         self.add(article_uri, VLPD.codificationOf, source_uri)
 
         key = f"{slug(str(article_uri))}_{slug(str(doc_uri))}"
@@ -285,6 +312,23 @@ class AboxBuilder:
         self.add(statement_uri, VLP.sourceDocument, doc_uri)
         self.add(statement_uri, VLP.sourceComponent, source_uri)
         self.add(statement_uri, VLP.sourceQuote, Literal(quote, lang="vi"))
+        return source_uri
+
+    def add_amendment(self, amended_uri: URIRef, amended_doc: URIRef, amending: Source) -> None:
+        """Article-level amendment from the citation tail "được sửa đổi ...
+        bởi Điều X <văn bản>": which article of which document, what it did
+        and from when, so version_date and amended_by are per Dieu."""
+        amending_uri = self.source_article(amending.document, amending.article)
+        event_uri = INST[f"Amendment_{slug(str(amended_uri))}_{slug(str(amending_uri))}"]
+        self.add(event_uri, RDF.type, VLT.AmendmentEvent)
+        self.add(amended_uri, VLR.hasAmendment, event_uri)
+        self.add(event_uri, VLR.amendingComponent, amending_uri)
+        for action in amending.actions:
+            self.add(event_uri, VLR.amendmentAction, Literal(action, datatype=XSD.string))
+        if amending.effective:
+            self.add(event_uri, VLT.amendsAt, Literal(amending.effective, datatype=XSD.date))
+        self.add(amending.document, VLR.partiallyAmends, amended_doc)
+        self.add(amending.document, VLR.amendsComponent, amended_uri)
 
     def add_references(self, owner_uri: URIRef, owner_code: str | None, references: list[dict]) -> None:
         for ref in references:
@@ -368,10 +412,11 @@ class AboxBuilder:
             self.add(parent_uri, VLPD.hasArticle, uri)
             sources = self.sources(dieu["citation"])
             if sources:
-                codified_doc, source_article = sources[0]
-                self.add_source_mapping(uri, codified_doc, source_article, body)
-                for amending_doc, _ in sources[1:]:
-                    self.add(amending_doc, VLR.partiallyAmends, codified_doc)
+                codified = sources[0]
+                source_uri = self.add_source_mapping(uri, codified.document, codified.article, body)
+                for amending in sources[1:]:
+                    self.add_amendment(source_uri, codified.document, amending)
+                    stats["amendments"] += 1
             self.add_references(uri, code, dieu["references"])
             stats["articles"] += 1
 

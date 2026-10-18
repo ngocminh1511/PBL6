@@ -86,6 +86,7 @@ CLASS_LABELS = {
     "SourceMapping": "SourceMapping",
     "LegalValidityInterval": "LegalValidityInterval",
     "ExtractedStatement": "ExtractedStatement",
+    "AmendmentEvent": "AmendmentEvent",
 }
 
 SPECIAL_PROPERTY_KEYS = {
@@ -116,6 +117,7 @@ CONTAINS_LOCALS = {
 }
 PART_OF_LOCALS = {"hasParentComponent", "partOfTopic", "belongsToItem"}
 REFERENCE_LOCALS = {"cites", "refersToCodificationComponent", "refersToExternalComponent"}
+AMENDMENT_ORDER = ["sua_doi", "bo_sung", "bai_bo", "thay_cum_tu"]
 RELATION_NAME_MAP = {
     "promulgatedBy": "ISSUED_BY",
     "locatedInDocument": "LOCATED_IN_DOCUMENT",
@@ -273,14 +275,44 @@ def source_of(graph: Graph, article, node_by_uri: dict[str, dict]) -> tuple[str 
     return None, None
 
 
-def version_date(graph: Graph, document: dict, node_by_uri: dict[str, dict]) -> str | None:
-    """Latest effective date among the document and the documents that amend
-    it (vlr:amends / vlr:partiallyAmends). Phap dien only records amendments
-    per document, so this dates the whole document's consolidated text."""
-    dates = [document.get("effective_date")]
-    for predicate in ("amends", "partiallyAmends"):
-        for amending in graph.subjects(URIRef(f"{VLR}{predicate}"), URIRef(document["uri"])):
-            dates.append((node_by_uri.get(str(amending)) or {}).get("effective_date"))
+def source_article_id(graph: Graph, component, node_by_uri: dict[str, dict]) -> str | None:
+    """'<document_id>:d<N>' of a vld:Article in a source document."""
+    number = first_literal(graph, component, [URIRef(f"{VLD}itemNumber")])
+    document = next(graph.objects(component, URIRef(f"{VLD}locatedInDocument")), None)
+    so_hieu = (node_by_uri.get(str(document)) or {}).get("document_number") if document else None
+    return make_chunk_id(make_document_id(str(so_hieu)), number) if number and so_hieu else None
+
+
+def amendments(graph: Graph, node_by_uri: dict[str, dict]) -> tuple[dict[str, list[dict]], dict[str, list[dict]]]:
+    """(amended_by, amends) keyed by '<document_id>:d<N>', from the
+    article-level vlr:hasAmendment events: one entry per action. scope (the
+    khoan) is null: the Phap dien citation names only the Dieu."""
+    amended_by: dict[str, list[dict]] = defaultdict(list)
+    amends: dict[str, list[dict]] = defaultdict(list)
+    for amended, event in sorted(graph.subject_objects(URIRef(f"{VLR}hasAmendment")), key=lambda pair: str(pair[1])):
+        target = source_article_id(graph, amended, node_by_uri)
+        by = next(
+            (
+                source_article_id(graph, component, node_by_uri)
+                for component in graph.objects(event, URIRef(f"{VLR}amendingComponent"))
+            ),
+            None,
+        )
+        if not target or not by:
+            print(f"WARNING: incomplete amendment {event}", file=sys.stderr)
+            continue
+        date = first_literal(graph, event, [URIRef(f"{VLT}amendsAt")])
+        actions = sorted(literal_strings(graph, event, URIRef(f"{VLR}amendmentAction")), key=AMENDMENT_ORDER.index) or [None]
+        for action in actions:
+            amended_by[target].append({"by": by, "scope": None, "action": action, "date": date})
+            amends[by].append({"target": target, "scope": None, "action": action, "date": date})
+    return amended_by, amends
+
+
+def version_date(document: dict, amended_by: list[dict]) -> str | None:
+    """Latest effective date among the document and the amendments of this
+    Dieu: an amendment elsewhere in the document does not date it."""
+    dates = [document.get("effective_date"), *(entry["date"] for entry in amended_by)]
     return max((str(d) for d in dates if d), default=None)
 
 
@@ -433,6 +465,7 @@ def main() -> int:
     edges.sort(key=lambda e: (e["source"], e["type"], e["target"], e["predicate_iri"]))
 
     node_by_uri = nodes
+    amended_by_article, amends_article = amendments(graph, node_by_uri)
     count = TokenCounter() if args.max_tokens > 0 else None
     chunks = []
     seen_articles: dict[str, str] = {}
@@ -500,13 +533,14 @@ def main() -> int:
                     "meta_khoan": meta_khoan,
                     "effective_from_date": document.get("effective_date"),
                     "effective_to_date": document.get("valid_to"),
-                    "version_date": version_date(graph, document, node_by_uri),
+                    "version_date": version_date(document, amended_by_article.get(article, [])),
                     # Phap dien drops repealed provisions when it is updated.
                     "still_valid": True,
                     "content_hash": content_hash(body),
-                    # Phap dien text already consolidates the amendments.
-                    "amends": [],
-                    "amended_by": [],
+                    # Phap dien text already consolidates these amendments; each
+                    # one is dated on or before version_date (structural_jsonl.md, section 10).
+                    "amends": amends_article.get(article, []),
+                    "amended_by": amended_by_article.get(article, []),
                 }
             )
     chunks.sort(key=article_sort_key)
