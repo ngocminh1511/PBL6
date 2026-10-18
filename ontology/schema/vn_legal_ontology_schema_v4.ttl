@@ -277,7 +277,10 @@ vlp:generatedStatement a owl:ObjectProperty ; rdfs:domain vlp:Extraction ; rdfs:
 #################################################################
 # Useful structural properties for both source and codification layers
 #################################################################
-vld:hasComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
+# A document has Dieu, a Dieu has khoan, a khoan has diem: the domain covers both, so
+# vld:hasClause / vld:hasPoint (sub-properties) do not make a Dieu a vld:LegalDocument.
+vld:hasComponent a owl:ObjectProperty ; rdfs:domain [ a owl:Class ; owl:unionOf ( vld:LegalDocument vld:DocumentComponent ) ] ;
+    rdfs:range vld:DocumentComponent .
 vld:hasParentComponent a owl:ObjectProperty ; owl:inverseOf vld:hasComponent .
 vld:hasArticle a owl:ObjectProperty ; rdfs:subPropertyOf vld:hasComponent ; rdfs:domain vld:LegalDocument ; rdfs:range vld:Article .
 vld:hasClause a owl:ObjectProperty ; rdfs:subPropertyOf vld:hasComponent ; rdfs:domain vld:Article ; rdfs:range vld:Clause .

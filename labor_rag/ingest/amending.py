@@ -1,4 +1,4 @@
-"""Read what an amending document changes (docs/structural_jsonl.md, section 10).
+"""Read what a newly loaded document changes in the others (docs/structural_jsonl.md, section 10).
 
 An amending Dieu ("Điều 1. Sửa đổi, bổ sung một số điều của Nghị định số
 145/2020/NĐ-CP") lists one change per khoan:
@@ -11,13 +11,16 @@ An amending Dieu ("Điều 1. Sửa đổi, bổ sung một số điều của N
 parse_targets() turns the lead of each khoan (the part before "như sau",
 since the quoted new text cites other Dieu) into Target records; the target
 document is the one named there, else the one in the Dieu title.
+replaced_documents() reads "... thay thế / hết hiệu lực ..." in the effect
+Dieu. pdf_abox writes both into the PDF's ABox; the graph, not the chunk
+payload, holds them.
 """
 from __future__ import annotations
 
 import re
 from typing import NamedTuple
 
-from labor_rag.ingest.chunk_schema import article_id, make_chunk_id, make_document_id, nfc
+from labor_rag.ingest.chunk_schema import make_chunk_id, make_document_id, nfc
 
 # Phrase -> action, in the order entries are written.
 ACTIONS = {
@@ -31,7 +34,7 @@ ACTION_ORDER = ["sua_doi", "bo_sung", "bai_bo", "thay_cum_tu"]
 
 AMENDING_TITLE_RE = re.compile(r"^\s*(?:sửa đổi|bổ sung|bãi bỏ|thay thế cụm từ|thay cụm từ)", re.IGNORECASE)
 KINDS = r"Bộ luật|Luật|Pháp lệnh|Nghị quyết|Nghị định|Thông tư liên tịch|Thông tư|Quyết định"
-DOCUMENT_RE = re.compile(rf"(?:{KINDS})\s+(?:số\s+)?(\d+[a-z]?/\d{{4}}/[\w-]*\w)", re.IGNORECASE)
+DOCUMENT_RE = re.compile(rf"(?P<kind>{KINDS})\s+(?:số\s+)?(?P<number>\d+[a-z]?/\d{{4}}/[\w-]*\w)", re.IGNORECASE)
 # "điểm a khoản 2 Điều 35", "khoản 1, khoản 2 Điều 5", "các khoản 1, 2 và 3 Điều 5", "Điều 35a".
 TARGET_RE = re.compile(
     r"(?P<scope>(?:(?:các\s+)?(?:điểm|khoản)\s+[\wđ]+(?:\s*(?:,|và)\s*(?:(?:điểm|khoản)\s+)?[\wđ]+)*\s+)*)"
@@ -41,12 +44,27 @@ INSERTED_AFTER_RE = re.compile(r"vào\s+(?:sau|trước)\s+Điều\s+(\d+[a-zđ]
 QUOTE_RE = re.compile(r"[\"“”].*?[\"“”]", re.DOTALL)
 
 
+class DocumentRef(NamedTuple):
+    """A document named in the text: 'Nghị định' + '145/2020/NĐ-CP'."""
+
+    kind: str
+    number: str
+
+    @property
+    def document_id(self) -> str:
+        return make_document_id(self.number)
+
+
 class Target(NamedTuple):
-    article: str  # '<document_id>:d<N>' as in amends / amended_by
-    document_id: str
+    document: DocumentRef
     dieu: str
     scope: str | None  # "khoản 2", "điểm b khoản 3"; None for the whole Dieu
     actions: list[str]
+
+    @property
+    def article(self) -> str:
+        """'<document_id>:d<N>', the chunk key of the amended Dieu."""
+        return make_chunk_id(self.document.document_id, self.dieu)
 
 
 def actions_in(text: str) -> list[str]:
@@ -60,10 +78,10 @@ def is_amending(title: str) -> bool:
     return bool(AMENDING_TITLE_RE.match(nfc(title)))
 
 
-def document_in(text: str) -> str | None:
-    """document_id of the first document number named in the text."""
+def document_in(text: str) -> DocumentRef | None:
+    """The first document named in the text."""
     match = DOCUMENT_RE.search(nfc(text))
-    return make_document_id(match.group(1)) if match else None
+    return DocumentRef(match["kind"].capitalize(), match["number"]) if match else None
 
 
 def lead(text: str) -> str:
@@ -73,14 +91,14 @@ def lead(text: str) -> str:
     return QUOTE_RE.sub(" ", text)
 
 
-def parse_targets(text: str, default_document_id: str | None) -> list[Target]:
+def parse_targets(text: str, default_document: DocumentRef | None) -> list[Target]:
     """The Dieu changed by one khoan of an amending Dieu."""
     instruction = lead(text)
     actions = actions_in(instruction)
     if not actions:
         return []
-    document_id = document_in(instruction) or default_document_id
-    if not document_id:
+    document = document_in(instruction) or default_document
+    if not document:
         return []
     inserted_after = INSERTED_AFTER_RE.search(instruction)
     if inserted_after and "bo_sung" in actions:
@@ -88,42 +106,14 @@ def parse_targets(text: str, default_document_id: str | None) -> list[Target]:
         # the new Dieu hangs off the one it follows.
         new = TARGET_RE.search(instruction[: inserted_after.start()])
         scope = f"Điều {new['dieu']}" if new else None
-        dieu = inserted_after.group(1)
-        return [Target(make_chunk_id(document_id, dieu), document_id, dieu, scope, actions)]
+        return [Target(document, inserted_after.group(1), scope, actions)]
     targets = []
     for match in TARGET_RE.finditer(instruction):
         scope = re.sub(r"\s+", " ", match["scope"]).strip() or None
-        target = Target(make_chunk_id(document_id, match["dieu"]), document_id, match["dieu"], scope, actions)
+        target = Target(document, match["dieu"], scope, actions)
         if target not in targets:
             targets.append(target)
     return targets
-
-
-def amends_entries(targets: list[Target], date: str | None) -> list[dict]:
-    """Payload entries of the amending chunk, one per (target, action)."""
-    return [
-        {"target": t.article, "scope": t.scope, "action": action, "date": date} for t in targets for action in t.actions
-    ]
-
-
-def amended_by_updates(chunks: list[dict]) -> dict[str, list[dict]]:
-    """{amended Dieu: amended_by entries} from the amends of amending chunks."""
-    updates: dict[str, list[dict]] = {}
-    for chunk in chunks:
-        for entry in chunk.get("amends") or []:
-            by = {"by": article_id(chunk["chunk_id"]), "scope": entry["scope"], "action": entry["action"], "date": entry["date"]}
-            updates.setdefault(entry["target"], [])
-            if by not in updates[entry["target"]]:
-                updates[entry["target"]].append(by)
-    return updates
-
-
-def merge_amended_by(existing: list[dict], new: list[dict]) -> list[dict]:
-    """existing + new, one entry per (by, scope, action): a reload of the
-    amending document replaces its own entries."""
-    keys = {(entry["by"], entry["scope"], entry["action"]) for entry in new}
-    kept = [entry for entry in existing if (entry["by"], entry["scope"], entry["action"]) not in keys]
-    return kept + new
 
 
 # The Dieu that can retire other documents: "Hiệu lực thi hành", "Điều khoản thi hành", ...
@@ -131,29 +121,20 @@ EFFECT_TITLE_RE = re.compile(r"hiệu lực|thi hành|chuyển tiếp", re.IGNOR
 REPLACING_RE = re.compile(r"thay thế|hết hiệu lực", re.IGNORECASE)
 
 
-def replaced_documents(title: str, text: str, own_document_id: str | None = None) -> list[str]:
-    """document_id of every document this Dieu replaces or ends, read from
-    its sentences with "thay thế" / "hết hiệu lực" ("Nghị định này thay thế
-    Nghị định số 05/2015/NĐ-CP"; "Thông tư số 10/2020/TT-BLĐTBXH hết hiệu lực
-    kể từ ngày Thông tư này có hiệu lực"). Only in an effect Dieu, since
-    "thay thế" is common in provisions too."""
+def replaced_documents(title: str, text: str, own_document_id: str | None = None) -> list[DocumentRef]:
+    """Every document this Dieu replaces or ends, read from its sentences with
+    "thay thế" / "hết hiệu lực" ("Nghị định này thay thế Nghị định số
+    05/2015/NĐ-CP"; "Thông tư số 10/2020/TT-BLĐTBXH hết hiệu lực kể từ ngày
+    Thông tư này có hiệu lực"). Only in an effect Dieu, since "thay thế" is
+    common in provisions too."""
     if not EFFECT_TITLE_RE.search(nfc(title)):
         return []
-    found = []
+    found: list[DocumentRef] = []
     for sentence in re.split(r"(?<=[.;])\s+|\n", nfc(text)):
         if not REPLACING_RE.search(sentence):
             continue
         for match in DOCUMENT_RE.finditer(sentence):
-            document_id = make_document_id(match.group(1))
-            if document_id != own_document_id and document_id not in found:
-                found.append(document_id)
+            ref = DocumentRef(match["kind"].capitalize(), match["number"])
+            if ref.document_id != own_document_id and ref.document_id not in {r.document_id for r in found}:
+                found.append(ref)
     return found
-
-
-def replaced_by(chunks: list[dict]) -> dict[str, str | None]:
-    """{replaced document_id: effective date of the replacing document}."""
-    return {
-        document_id: chunk.get("effective_from_date")
-        for chunk in chunks
-        for document_id in chunk.get("replaces") or []
-    }

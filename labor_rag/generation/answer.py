@@ -21,7 +21,8 @@ def render(evidence: Evidence) -> str:
     # "[Điều 35 khoản 4-5 Nghị định số 145/2020/NĐ-CP] Trợ cấp thôi việc" (docs/structural_jsonl.md, section 9)
     lines = [f"[{evidence.citation}] {evidence.ten}", f"Nội dung: {evidence.text}"]
     for amendment in evidence.amendments:
-        lines += [f"Được sửa đổi bởi [{amendment.citation}]:", amendment.text]
+        change = f" ({amendment.change})" if amendment.change else ""
+        lines += [f"Được sửa đổi bởi [{amendment.citation}]{change}:", amendment.text]
     return "\n".join(lines)
 
 

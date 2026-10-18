@@ -7,10 +7,13 @@ Chunks follow schema v5 (docs/structural_jsonl.md): a long Dieu is stored as
 parts "<doc>:d35:p1", ":p2", ...; vector hits are grouped per Dieu and only
 provisions in force today are searched.
 
-A Dieu whose amended_by names an amendment dated after its version_date
-(not consolidated into its text yet) gets the amending parts attached as
-Evidence.amendments, so they stay with it through reranking and the prompt
-can put them first (docs/structural_jsonl.md, section 10).
+Amendments come from the graph: for each Dieu found, Neo4j gives the
+amendments of its source Dieu (SourceComponent -[:HAS_AMENDMENT]->
+AmendmentEvent -[:AMENDING_COMPONENT]-> the amending Dieu or khoan) dated
+after the Dieu's version_date, i.e. not consolidated into its text yet. Their
+chunks are attached as Evidence.amendments, so they stay with the Dieu
+through reranking and the prompt can put them first
+(docs/structural_jsonl.md, section 10).
 """
 from __future__ import annotations
 
@@ -52,8 +55,8 @@ class Evidence:
     meta_khoan: str | None = None
     meta_de_muc: str | None = None
     version_date: str | None = None
-    amended_by: list[dict] = field(default_factory=list)
     amendments: list["Evidence"] = field(default_factory=list)  # parts that amend this Dieu after version_date
+    change: str | None = None  # on an amendment: "sửa đổi, bổ sung khoản 2"
 
     @property
     def citation(self) -> str:
@@ -74,27 +77,38 @@ class Evidence:
             meta_khoan=payload.get("meta_khoan"),
             meta_de_muc=payload.get("meta_de_muc"),
             version_date=payload.get("version_date"),
-            amended_by=payload.get("amended_by") or [],
         )
 
 
-def pending_amendments(evidence: Evidence) -> list[str]:
-    """Amending Dieu ('<doc>:d<N>') dated after the Dieu's version_date: its
-    text does not reflect them yet. Phap dien entries are all consolidated."""
-    found = []
-    for entry in evidence.amended_by:
-        date_ = entry.get("date")
-        if date_ and (not evidence.version_date or date_ > evidence.version_date) and entry["by"] not in found:
-            found.append(entry["by"])
-    return found
+# Amendments of the source Dieu behind each hit, dated after the hit's
+# version_date (the ones its text does not include yet).
+PENDING_AMENDMENTS = """
+UNWIND $keys AS key
+MATCH (s:SourceComponent {dataset_id: $dataset_id, document_id: key.document_id, article_number: key.meta_dieu})
+      -[:HAS_AMENDMENT]->(e:AmendmentEvent)-[:AMENDING_COMPONENT]->(c:SourceComponent)
+WHERE e.date IS NOT NULL AND (key.version_date IS NULL OR e.date > key.version_date)
+RETURN key.index AS index, e.date AS date, e.actions AS actions, e.scope AS scope,
+       c.document_id AS document_id, c.article_number AS article_number, c.clause_number AS clause_number
+ORDER BY index, date
+"""
+
+ACTION_WORDS = {"sua_doi": "sửa đổi", "bo_sung": "bổ sung", "bai_bo": "bãi bỏ", "thay_cum_tu": "thay cụm từ"}
 
 
-def amending_parts(payloads: list[dict], by: str, target: str) -> list[dict]:
-    """Parts of amending Dieu `by` that change Dieu `target`, in order."""
+def change_text(actions: list[str] | None, scope: str | None) -> str:
+    """['sua_doi', 'bo_sung'] + 'khoản 2' -> 'sửa đổi, bổ sung khoản 2'."""
+    words = ", ".join(ACTION_WORDS.get(action, action) for action in actions or [])
+    return " ".join(part for part in [words, scope] if part)
+
+
+def amending_parts(payloads: list[dict], document_id: str, article_number: str, clause_number: str | None) -> list[dict]:
+    """Chunks of the amending Dieu, only its khoan when the graph names one, in order."""
     parts = [
         payload
         for payload in payloads
-        if article_id(payload["chunk_id"]) == by and any(entry.get("target") == target for entry in payload.get("amends") or [])
+        if payload.get("document_id") == document_id
+        and payload.get("meta_dieu") == article_number
+        and (clause_number is None or payload.get("meta_khoan") == clause_number)
     ]
     return sorted(parts, key=lambda payload: part_number(payload["chunk_id"]))
 
@@ -199,10 +213,22 @@ class HybridRetriever:
             hydrated.text = join_parts([payload["text"] for payload in payloads])
             vars(ev).update(vars(hydrated))
 
+    def pending_amendments(self, evidences: list[Evidence]) -> list[dict]:
+        """Rows of PENDING_AMENDMENTS; `index` is the position in evidences."""
+        keys = [
+            {"index": i, "document_id": ev.document_id, "meta_dieu": ev.meta_dieu, "version_date": ev.version_date}
+            for i, ev in enumerate(evidences)
+            if ev.document_id and ev.meta_dieu
+        ]
+        if not keys:
+            return []
+        with self.neo4j.session(database=NEO4J_DATABASE) as session:
+            return [dict(row) for row in session.run(PENDING_AMENDMENTS, keys=keys, dataset_id=DATASET_ID)]
+
     def attach_amendments(self, evidences: list[Evidence]) -> None:
-        """Fill Evidence.amendments from the amending parts in force."""
-        pending = {id(ev): pending_amendments(ev) for ev in evidences}
-        document_ids = sorted({by.split(":", 1)[0] for found in pending.values() for by in found})
+        """Fill Evidence.amendments with the chunks (in force) of the pending amendments."""
+        rows = self.pending_amendments(evidences)
+        document_ids = sorted({row["document_id"] for row in rows if row["document_id"]})
         if not document_ids:
             return
         payloads: list[dict] = []
@@ -218,18 +244,16 @@ class HybridRetriever:
             payloads += [point.payload for point in points if point.payload]
             if offset is None:
                 break
-        for ev in evidences:
-            target = article_id(ev.chunk_id)
-            for by in pending[id(ev)]:
-                parts = amending_parts(payloads, by, target)
-                if not parts:
-                    continue
-                amendment = Evidence.from_payload(parts[0], "amendment")
-                amendment.chunk_id = by
-                khoan = [part["meta_khoan"] for part in parts if part.get("meta_khoan")]
-                amendment.meta_khoan = ", ".join(dict.fromkeys(khoan)) or None
-                amendment.text = join_parts([part["text"] for part in parts])
-                ev.amendments.append(amendment)
+        for row in rows:
+            parts = amending_parts(payloads, row["document_id"], row["article_number"], row["clause_number"])
+            if not parts:
+                continue  # the amending document is not indexed (or not in force)
+            amendment = Evidence.from_payload(parts[0], "amendment")
+            amendment.chunk_id = article_id(parts[0]["chunk_id"])
+            amendment.meta_khoan = row["clause_number"]
+            amendment.text = join_parts([part["text"] for part in parts])
+            amendment.change = change_text(row["actions"], row["scope"])
+            evidences[row["index"]].amendments.append(amendment)
 
     def retrieve(self, query: str, top_k: int = 8, graph_limit_per_node: int = 3) -> list[Evidence]:
         vector_hits = self.vector_search(query, top_k=top_k)

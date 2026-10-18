@@ -14,15 +14,17 @@ come back, the upsert still happens from this machine.
 
 By default the collection is rebuilt from --chunks. With --upsert it is kept
 and the chunks are merged in per Dieu (labor_rag/ingest/merge.py): the newer
-version_date wins and the losing Dieu's old parts are deleted. A rebuild drops
-PDF chunks loaded with --upsert, so it stops when the collection holds chunks
-from another source; pass --recreate to rebuild anyway, then load them again.
+version_date wins and the losing Dieu's old parts are deleted; a Dieu whose
+text did not change only gets its new metadata (set_payload, no embedding).
+A rebuild drops PDF chunks loaded with --upsert, so it stops when the
+collection holds chunks from another source; pass --recreate to rebuild
+anyway, then load them again.
 
-Chunks of an amending document carry amends; after writing them, each amended
-Dieu already in the collection gets the matching amended_by entries
-(set_payload, no re-embedding; labor_rag/ingest/amending.py). A chunk whose
-replaces names other documents ends them: effective_to_date = its
-effective_from_date, and still_valid = false once that date has passed.
+Amendments and replacements are in the graph (ontology_to_jsonl, Neo4j),
+not in the payload. Each run copies the end of validity of every document
+the graph says was replaced (kg_nodes.jsonl: VanBan.valid_to) into
+effective_to_date of its chunks, so the in-force filter drops them from that
+day without re-embedding.
 
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
        python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
@@ -36,7 +38,6 @@ import os
 import sys
 import time
 from collections import Counter
-from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -55,9 +56,8 @@ from qdrant_client.models import (
 )
 
 from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
-from labor_rag.ingest.amending import amended_by_updates, merge_amended_by, replaced_by
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
-from labor_rag.ingest.chunk_schema import article_id, point_id
+from labor_rag.ingest.chunk_schema import point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -84,6 +84,7 @@ PAYLOAD_INDEXES = {
     "document_id": PayloadSchemaType.KEYWORD,
     "mapc": PayloadSchemaType.KEYWORD,
     "meta_dieu": PayloadSchemaType.KEYWORD,
+    "meta_khoan": PayloadSchemaType.KEYWORD,
     "source": PayloadSchemaType.KEYWORD,
     "still_valid": PayloadSchemaType.BOOL,
     "effective_from_date": PayloadSchemaType.DATETIME,
@@ -139,9 +140,6 @@ def upsert_with_retry(client: QdrantClient, collection: str, points: list[PointS
             time.sleep(5 * attempt)
 
 
-MERGE_FIELDS = ["chunk_id", "document_id", "meta_dieu", "source", "version_date", "text"]
-
-
 def indexed_chunks(client: QdrantClient, collection: str, document_ids: list[str]) -> list[dict]:
     """Payloads already in the collection for these documents."""
     found: list[dict] = []
@@ -150,7 +148,7 @@ def indexed_chunks(client: QdrantClient, collection: str, document_ids: list[str
         points, offset = client.scroll(
             collection_name=collection,
             scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids))]),
-            with_payload=MERGE_FIELDS,
+            with_payload=True,
             with_vectors=False,
             limit=256,
             offset=offset,
@@ -178,49 +176,20 @@ def other_source_documents(client: QdrantClient, collection: str) -> Counter:
             return found
 
 
-def link_amendments(client: QdrantClient, collection: str, chunks: list[dict]) -> None:
-    """Add the amends of these chunks to amended_by of every part of the
-    amended Dieu. A Dieu not indexed yet is reported; load this file again
-    after loading it."""
-    updates = amended_by_updates(chunks)
-    if not updates:
+def sync_validity(client: QdrantClient, collection: str, kg_dir: Path) -> None:
+    """effective_to_date of every chunk of a document the graph ends
+    (VanBan.valid_to in kg_nodes.jsonl, set when a loaded document replaces it)."""
+    nodes_path = kg_dir / "kg_nodes.jsonl"
+    if not nodes_path.exists():
         return
-    document_ids = sorted({target.split(":", 1)[0] for target in updates})
-    indexed: dict[str, list] = {}
-    offset = None
-    while True:
-        points, offset = client.scroll(
-            collection_name=collection,
-            scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids))]),
-            with_payload=["chunk_id", "amended_by"],
-            with_vectors=False,
-            limit=256,
-            offset=offset,
-        )
-        for point in points:
-            indexed.setdefault(article_id(point.payload["chunk_id"]), []).append(point)
-        if offset is None:
-            break
-    for target, entries in sorted(updates.items()):
-        for point in indexed.get(target, []):
-            merged = merge_amended_by(point.payload.get("amended_by") or [], entries)
-            client.set_payload(collection, payload={"amended_by": merged}, points=[point.id])
-        print(f"  amended_by of {target}: {len(entries)} entries" if target in indexed else f"WARNING: {target} is amended but not indexed")
-
-
-def retire_replaced(client: QdrantClient, collection: str, chunks: list[dict]) -> None:
-    """End the documents these chunks replace, without re-embedding them."""
-    for document_id, effective in sorted(replaced_by(chunks).items()):
-        selector = Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))])
-        found = client.count(collection, count_filter=selector, exact=True).count
-        if not found:
-            print(f"WARNING: {document_id} is replaced but not indexed")
+    for line in nodes_path.read_text(encoding="utf-8").splitlines():
+        node = json.loads(line) if line.strip() else {}
+        if node.get("label") != "VanBan" or not node.get("valid_to") or not node.get("document_id"):
             continue
-        payload: dict = {"effective_to_date": effective}
-        if effective and effective <= date.today().isoformat():
-            payload["still_valid"] = False
-        client.set_payload(collection, payload=payload, points=selector)
-        print(f"  {document_id}: {found} chunks ended on {effective}")
+        selector = Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=node["document_id"]))])
+        if client.count(collection, count_filter=selector, exact=True).count:
+            client.set_payload(collection, payload={"effective_to_date": node["valid_to"]}, points=selector)
+            print(f"  {node['document_id']}: in force until {node['valid_to']}")
 
 
 def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict]) -> list[dict]:
@@ -232,18 +201,23 @@ def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict])
         print(f"WARNING: {warning}")
     print(
         f"Upsert into {collection}: write {len(plan.upsert)} chunks, delete {len(plan.delete)} old parts, "
-        f"keep {len(plan.kept)} newer indexed Dieu, {len(plan.unchanged)} unchanged"
+        f"refresh the metadata of {len(plan.refresh)} chunks, keep {len(plan.kept)} newer indexed Dieu, "
+        f"{len(plan.unchanged)} unchanged"
     )
     for key in plan.kept:
         print(f"  kept indexed version of {key}")
     if plan.delete:
         client.delete(collection, points_selector=PointIdsList(points=[point_id(c) for c in plan.delete]))
+    for chunk in plan.refresh:
+        # overwrite: fields the chunk no longer has are dropped too.
+        client.overwrite_payload(collection, payload=chunk_payload(chunk), points=[point_id(chunk["chunk_id"])])
     return plan.upsert
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
+    parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="graph projection to read validity from")
     parser.add_argument("--model", default=MODEL_NAME)
     parser.add_argument("--collection", default=COLLECTION)
     parser.add_argument("--qdrant-url", default=QDRANT_URL)
@@ -299,13 +273,11 @@ def main() -> None:
                 f"{args.collection} holds {sum(others.values())} chunks not from Phap dien: {listed}.\n"
                 "A rebuild would delete them. Use --upsert to merge, or --recreate to rebuild and load them again."
             )
-    incoming = chunks
     if not recreate:
         chunks = apply_upsert_plan(client, args.collection, chunks)
         if not chunks:
             print("Nothing to embed.")
-            link_amendments(client, args.collection, incoming)
-            retire_replaced(client, args.collection, incoming)
+            sync_validity(client, args.collection, args.kg_dir)
             return
     texts = [c["text"] for c in chunks]
 
@@ -331,8 +303,7 @@ def main() -> None:
         done += len(batch_ids)
         print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
 
-    link_amendments(client, args.collection, incoming)
-    retire_replaced(client, args.collection, incoming)
+    sync_validity(client, args.collection, args.kg_dir)
     print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}")
 
 

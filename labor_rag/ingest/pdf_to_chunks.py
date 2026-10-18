@@ -6,18 +6,24 @@ Dieu split by chunk_schema.split_article. When the document is already in
 the Phap dien KG (kg_nodes.jsonl of LAO_DONG_DIR), each Dieu gets its mapc
 and the document its Phap dien title and effective date, so the PDF chunks
 line up with the Phap dien ones. Footnotes cut from the page bottoms are
-written next to the chunks for a later amended_by pass.
+written next to the chunks; reading their amendments is not done yet.
 
 A Dieu that amends another document ("Sửa đổi, bổ sung một số điều của ...")
 is cut per khoan instead of by length: each part starts with the change it
 makes ("Sửa đổi khoản 2 Điều 35 Nghị định số 145/2020/NĐ-CP (Điều 35. ...)")
-and carries it in amends; embed_and_index then fills amended_by of the
-amended Dieu (labor_rag/ingest/amending.py).
+and has meta_khoan = that khoan.
+
+What the document changes in others (amendments per khoan, replaced
+documents) goes into its ABox, ontology/abox/pdf/<document_id>.ttl
+(labor_rag/ingest/pdf_abox.py), not into the chunks: the graph is the one
+place that holds it, and Qdrant only gets the validity dates derived from it.
 
 Usage (from the repository root):
     python -m labor_rag.ingest.pdf_to_chunks --input docs/Luat_lao_dong.pdf
     python -m labor_rag.ingest.pdf_to_chunks --from-json data/interim/pdf_chunks/45-2019-qh14_hierarchical.jsonl
-Then load them without rebuilding the collection:
+Then put its ABox into the graph and load the chunks without rebuilding the collection:
+    python -m labor_rag.ingest.ontology_to_jsonl
+    python -m labor_rag.ingest.load_neo4j --replace-dataset
     python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/45-2019-qh14_chunks.jsonl --upsert
 """
 from __future__ import annotations
@@ -29,8 +35,8 @@ import sys
 from pathlib import Path
 from typing import Iterator
 
-from labor_rag.config import INTERIM_DIR, LAO_DONG_DIR
-from labor_rag.ingest.amending import Target, amends_entries, document_in, is_amending, parse_targets, replaced_documents
+from labor_rag.config import INTERIM_DIR, LAO_DONG_DIR, PDF_ABOX_DIR
+from labor_rag.ingest.amending import Target, document_in, is_amending, parse_targets
 from labor_rag.ingest.chunk_schema import (
     MAX_TOKENS,
     Counter,
@@ -138,10 +144,10 @@ ACTION_WORDS = {"sua_doi": "sửa đổi", "bo_sung": "bổ sung", "bai_bo": "b�
 def change_line(target: Target, kg: KgIndex | None) -> str:
     """'Sửa đổi, bổ sung khoản 2 Điều 35 Nghị định số 145/2020/NĐ-CP (Điều 35. Trợ cấp thôi việc)'."""
     words = ", ".join(ACTION_WORDS[action] for action in target.actions)
-    known = kg.document(target.document_id) if kg else None
-    document = str(known["ten"]) if known else target.document_id
+    known = kg.document(target.document.document_id) if kg else None
+    document = str(known["ten"]) if known else f"{target.document.kind} số {target.document.number}"
     where = f"{target.scope} Điều {target.dieu}" if target.scope else f"Điều {target.dieu}"
-    title = kg.title(target.document_id, target.dieu) if kg else None
+    title = kg.title(target.document.document_id, target.dieu) if kg else None
     suffix = f" (Điều {target.dieu}. {title})" if title else ""
     return nfc(f"{words[:1].upper()}{words[1:]} {where} {document}{suffix}")
 
@@ -188,12 +194,10 @@ def document_to_chunks(
         "pd_chuong": None,
         "pd_muc": None,
         "effective_from_date": effective_from,
-        "effective_to_date": None,
+        # Set when a later document replaces this one (in the graph).
+        "effective_to_date": (known or {}).get("valid_to"),
         "version_date": meta.version_date or effective_from,
         "still_valid": True,
-        "amends": [],
-        "amended_by": [],
-        "replaces": [],
     }
 
     def split(header: str, body: str) -> list[tuple[str, str | None]]:
@@ -222,18 +226,17 @@ def document_to_chunks(
         body = nfc(article_body(article))
         header = build_header(context, meta_dieu, ten)
         units = amending_units(article)
-        replaces = replaced_documents(article.article_title, body, document_id)
         if units:
             # One part per khoan (more if it is long), headed by the change it makes.
             parts = [
-                (text, khoan, amends_entries(targets, effective_from))
+                (text, khoan)
                 for targets, khoan, unit_body in units
                 for text, _ in split("\n".join([header, *(change_line(t, kg) for t in targets)]), nfc(unit_body))
             ]
         else:
-            parts = [(text, meta_khoan, []) for text, meta_khoan in split(header, body)]
+            parts = split(header, body)
         mapc = kg.mapc(document_id, meta_dieu) if kg else None
-        for index, (text, meta_khoan, amends) in enumerate(parts, start=1):
+        for index, (text, meta_khoan) in enumerate(parts, start=1):
             chunks.append(
                 {
                     "chunk_id": make_chunk_id(document_id, meta_dieu, index if len(parts) > 1 else None),
@@ -246,8 +249,6 @@ def document_to_chunks(
                     "meta_khoan": meta_khoan,
                     "content_hash": content_hash(body),
                     **common,
-                    "amends": amends,
-                    "replaces": replaces,
                 }
             )
 
@@ -274,7 +275,7 @@ def document_to_chunks(
     order = [
         "chunk_id", "document_id", "mapc", "source", "ten", "text", "meta_de_muc", "meta_chuong", "meta_muc",
         "pd_chuong", "pd_muc", "meta_dieu", "meta_khoan", "effective_from_date", "effective_to_date",
-        "version_date", "still_valid", "content_hash", "amends", "amended_by", "replaces",
+        "version_date", "still_valid", "content_hash",
     ]
     return [{key: chunk[key] for key in order} for chunk in chunks], warnings
 
@@ -298,6 +299,7 @@ def main() -> int:
     source.add_argument("--from-json", type=Path, help="saved OCR tree (<document_id>_hierarchical.jsonl)")
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="Phap dien projection for mapc lookups")
+    parser.add_argument("--abox-dir", type=Path, default=PDF_ABOX_DIR, help="where the document's ABox is written")
     parser.add_argument(
         "--max-tokens", type=int, default=MAX_TOKENS, help="split longer Dieu (0: never split, no tokenizer)"
     )
@@ -325,6 +327,15 @@ def main() -> int:
     write_jsonl(chunks_path, chunks)
     write_jsonl(footnotes_path, doc.footnotes)
 
+    from labor_rag.ingest.pdf_abox import document_abox
+
+    builder, abox_stats = document_abox(doc, kg)
+    abox_path = args.abox_dir / f"{doc.document_id}.ttl"
+    if builder is None:
+        print("WARNING: no document number, so no ABox: the graph will not know this document.", file=sys.stderr)
+    else:
+        builder.serialize(abox_path)
+
     meta = doc.metadata
     articles = {chunk["chunk_id"].split(":p")[0] for chunk in chunks if chunk["meta_dieu"]}
     summary = {
@@ -341,11 +352,12 @@ def main() -> int:
             key=lambda d: (int(re.match(r"\d+", d).group()) if re.match(r"\d+", d) else 0, d),
         ),
         "footnotes": len(doc.footnotes),
+        "abox": abox_stats,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     for warning in warnings:
         print(f"WARNING: {warning}", file=sys.stderr)
-    print(f"Wrote {chunks_path} and {footnotes_path}")
+    print(f"Wrote {chunks_path} and {footnotes_path}" + (f", ABox {abox_path}" if builder else ""))
     return 0
 
 
