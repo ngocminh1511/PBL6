@@ -157,6 +157,24 @@ Thông tư này có hiệu lực thi hành từ ngày 01 tháng 7 năm 2025.
     assert stats["references"] == 3
 
 
+def test_retrieval_adds_only_the_referenced_khoan():
+    from labor_rag.retrieval.hybrid_retrieve import khoans_of, referenced_evidence
+
+    assert khoans_of("1-4") == ["1", "2", "3", "4"] and khoans_of("3") == ["3"] and khoans_of(None) is None
+    payloads = [
+        {"chunk_id": f"{BLLD}:d147", "document_id": BLLD, "meta_dieu": "147", "ten": "Công việc cấm",
+         "text": "Điều 147.\n1. ...\n3. Bộ trưởng quy định danh mục.", "meta_de_muc": "Bộ luật số 45/2019/QH14"},
+    ]
+    row = {"relation": "IMPLEMENTS_COMPONENT", "document_id": BLLD, "article_number": "147", "clause_number": "3",
+           "point_number": None, "text": "3. Bộ trưởng quy định danh mục."}
+    evidence = referenced_evidence(row, payloads)
+    assert (evidence.chunk_id, evidence.meta_khoan, evidence.source) == (f"{BLLD}:d147", "3", "graph:IMPLEMENTS")
+    assert evidence.text == "3. Bộ trưởng quy định danh mục."
+    assert evidence.citation == "Điều 147 khoản 3 Bộ luật số 45/2019/QH14"
+    # Not in force / not indexed: nothing.
+    assert referenced_evidence({**row, "document_id": "x"}, payloads) is None
+
+
 def test_quoted_text_is_ignored():
     line = "Sửa đổi khoản 2 Điều 5 như sau: “2. Theo quy định tại Điều 99 của Luật này.”"
     assert [t[1] for t in targets(read_line(line, "x", "1", None, index()))] == ["5"]

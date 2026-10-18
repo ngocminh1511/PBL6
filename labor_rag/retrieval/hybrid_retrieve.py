@@ -1,6 +1,8 @@
 """Hybrid retrieval: vector search on Qdrant (semantic match) + 1-hop graph
-expansion on Neo4j (CONTAINS/PART_OF for chapter context, REFERS_TO for
-explicitly cross-referenced provisions). Corresponds to the "Vector
+expansion on Neo4j (CONTAINS/PART_OF for chapter context, REFERS_TO for the
+Dieu Phap dien links, CITES_COMPONENT / IMPLEMENTS_COMPONENT for the khoan a
+hit's khoan refer to in their text, e.g. "theo quy định tại khoản 3 Điều 147
+của Bộ luật Lao động": only that khoan's text is added, not the whole Dieu). Corresponds to the "Vector
 Retrieval + Graph Retrieval -> Hybrid Retrieval" stage of the pipeline.
 
 Chunks follow schema v5 (docs/structural_jsonl.md): a long Dieu is stored as
@@ -27,7 +29,7 @@ from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCo
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
-from labor_rag.ingest.chunk_schema import article_id, citation, join_parts, part_number
+from labor_rag.ingest.chunk_schema import article_id, citation, join_parts, make_chunk_id, part_number
 
 load_dotenv()
 
@@ -91,6 +93,51 @@ RETURN key.index AS index, e.date AS date, e.actions AS actions, e.scope AS scop
        c.document_id AS document_id, c.article_number AS article_number, c.clause_number AS clause_number
 ORDER BY index, date
 """
+
+# Source Dieu / khoan / diem that the khoan of each hit (or the Dieu, for a
+# hit that is a whole Dieu) refer to in their text.
+REFERENCED_COMPONENTS = """
+UNWIND $keys AS key
+MATCH (c:SourceComponent {dataset_id: $dataset_id, document_id: key.document_id, article_number: key.meta_dieu})
+WHERE c.point_number IS NULL AND (key.khoans IS NULL OR c.clause_number IS NULL OR c.clause_number IN key.khoans)
+MATCH (c)-[r:CITES_COMPONENT|IMPLEMENTS_COMPONENT]->(t:SourceComponent)
+WHERE t.article_number IS NOT NULL AND NOT (t.document_id = key.document_id AND t.article_number = key.meta_dieu)
+OPTIONAL MATCH (k:SourceComponent)-[:CONTAINS]->(t) WHERE t.point_number IS NOT NULL
+RETURN DISTINCT key.index AS index, type(r) AS relation, t.document_id AS document_id,
+       t.article_number AS article_number, t.clause_number AS clause_number, t.point_number AS point_number,
+       coalesce(t.text, k.text) AS text
+"""
+
+
+def khoans_of(meta_khoan: str | None) -> list[str] | None:
+    """'1-8' -> ['1', ..., '8']; '3' -> ['3']; None (a whole Dieu) -> None."""
+    if not meta_khoan:
+        return None
+    start, _, end = str(meta_khoan).partition("-")
+    if end and start.isdigit() and end.isdigit():
+        return [str(number) for number in range(int(start), int(end) + 1)]
+    return [start, end] if end else [start]
+
+
+def referenced_evidence(row: dict, payloads: list[dict]) -> Evidence | None:
+    """Evidence for one REFERENCED_COMPONENTS row: the referenced khoan's text
+    (the whole Dieu when the reference names no khoan), with the chunk fields
+    of the in-force Dieu; None when that Dieu is not indexed or not in force."""
+    parts = sorted(
+        (p for p in payloads if p.get("document_id") == row["document_id"] and p.get("meta_dieu") == row["article_number"]),
+        key=lambda payload: part_number(payload["chunk_id"]),
+    )
+    if not parts:
+        return None
+    source = "graph:IMPLEMENTS" if row["relation"] == "IMPLEMENTS_COMPONENT" else "graph:CITES"
+    evidence = Evidence.from_payload(parts[0], source)
+    evidence.chunk_id = make_chunk_id(row["document_id"], row["article_number"])
+    evidence.meta_khoan = row["clause_number"]
+    evidence.text = (row.get("text") if row["clause_number"] else None) or join_parts([p["text"] for p in parts])
+    if row.get("point_number"):
+        evidence.change = f"điểm {row['point_number']}"
+    return evidence
+
 
 ACTION_WORDS = {"sua_doi": "sửa đổi", "bo_sung": "bổ sung", "bai_bo": "bãi bỏ", "thay_cum_tu": "thay cụm từ"}
 
@@ -213,6 +260,49 @@ class HybridRetriever:
             hydrated.text = join_parts([payload["text"] for payload in payloads])
             vars(ev).update(vars(hydrated))
 
+    def in_force_payloads(self, document_ids: list[str]) -> list[dict]:
+        """Every chunk in force of these documents."""
+        payloads: list[dict] = []
+        offset = None
+        while True:
+            points, offset = self.qdrant.scroll(
+                collection_name=COLLECTION,
+                scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids)), in_force()]),
+                limit=256,
+                offset=offset,
+                with_payload=True,
+            )
+            payloads += [point.payload for point in points if point.payload]
+            if offset is None:
+                return payloads
+
+    def reference_expand(self, evidences: list[Evidence], limit_per_node: int = 3) -> list[Evidence]:
+        """The khoan (or Dieu) that each hit refers to in its text, in force."""
+        keys = [
+            {"index": i, "document_id": ev.document_id, "meta_dieu": ev.meta_dieu, "khoans": khoans_of(ev.meta_khoan)}
+            for i, ev in enumerate(evidences)
+            if ev.document_id and ev.meta_dieu
+        ]
+        if not keys:
+            return []
+        with self.neo4j.session(database=NEO4J_DATABASE) as session:
+            rows = [dict(row) for row in session.run(REFERENCED_COMPONENTS, keys=keys, dataset_id=DATASET_ID)]
+        document_ids = sorted({row["document_id"] for row in rows if row["document_id"]})
+        payloads = self.in_force_payloads(document_ids) if document_ids else []
+        found: list[Evidence] = []
+        per_hit: dict[int, int] = {}
+        seen: set[tuple] = set()
+        for row in rows:
+            key = (row["document_id"], row["article_number"], row["clause_number"])
+            if key in seen or per_hit.get(row["index"], 0) >= limit_per_node:
+                continue
+            evidence = referenced_evidence(row, payloads)
+            if evidence:
+                seen.add(key)
+                per_hit[row["index"]] = per_hit.get(row["index"], 0) + 1
+                found.append(evidence)
+        return found
+
     def pending_amendments(self, evidences: list[Evidence]) -> list[dict]:
         """Rows of PENDING_AMENDMENTS; `index` is the position in evidences."""
         keys = [
@@ -231,19 +321,7 @@ class HybridRetriever:
         document_ids = sorted({row["document_id"] for row in rows if row["document_id"]})
         if not document_ids:
             return
-        payloads: list[dict] = []
-        offset = None
-        while True:
-            points, offset = self.qdrant.scroll(
-                collection_name=COLLECTION,
-                scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids)), in_force()]),
-                limit=256,
-                offset=offset,
-                with_payload=True,
-            )
-            payloads += [point.payload for point in points if point.payload]
-            if offset is None:
-                break
+        payloads = self.in_force_payloads(document_ids)
         for row in rows:
             parts = amending_parts(payloads, row["document_id"], row["article_number"], row["clause_number"])
             if not parts:
@@ -260,13 +338,15 @@ class HybridRetriever:
         seed_mapcs = [e.mapc for e in vector_hits if e.mapc]
         graph_hits = self.graph_expand(seed_mapcs, limit_per_node=graph_limit_per_node)
         self.hydrate_from_qdrant(graph_hits)
+        # Khoan-level references first: they carry only the khoan cited.
+        reference_hits = self.reference_expand(vector_hits, limit_per_node=graph_limit_per_node)
 
         seen = {article_id(e.chunk_id) for e in vector_hits}
         merged = list(vector_hits)
-        for e in graph_hits:
-            if e.text and e.chunk_id not in seen:
+        for e in reference_hits + graph_hits:
+            if e.text and article_id(e.chunk_id) not in seen:
                 merged.append(e)
-                seen.add(e.chunk_id)
+                seen.add(article_id(e.chunk_id))
         self.attach_amendments(merged)
         return merged
 
