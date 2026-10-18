@@ -27,7 +27,7 @@ Lấy từ Pháp điển (Điều 10 của NĐ 145/2020, xếp vào Chương III
   "meta_khoan": null,
   "effective_from_date": "2021-02-01",
   "effective_to_date": null,
-  "version_date": "2022-07-15",
+  "version_date": "2021-02-01",
   "still_valid": true,
   "content_hash": "3f1c0a9e7b2d4c51",
   "amends": [],

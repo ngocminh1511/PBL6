@@ -84,6 +84,7 @@ PAYLOAD_INDEXES = {
     "document_id": PayloadSchemaType.KEYWORD,
     "mapc": PayloadSchemaType.KEYWORD,
     "meta_dieu": PayloadSchemaType.KEYWORD,
+    "source": PayloadSchemaType.KEYWORD,
     "still_valid": PayloadSchemaType.BOOL,
     "effective_from_date": PayloadSchemaType.DATETIME,
     "effective_to_date": PayloadSchemaType.DATETIME,
@@ -283,6 +284,12 @@ def main() -> None:
     client.get_collections()
 
     exists = client.collection_exists(args.collection)
+    if exists:
+        # Qdrant in strict mode refuses a filter on a field without an index, so
+        # a collection built before an index was added (source, effective_to_date)
+        # gets it before the checks below filter on it.
+        for field, schema in PAYLOAD_INDEXES.items():
+            client.create_payload_index(args.collection, field_name=field, field_schema=schema)
     recreate = not args.upsert or not exists
     if recreate and exists and not args.recreate:
         others = other_source_documents(client, args.collection)
@@ -294,9 +301,6 @@ def main() -> None:
             )
     incoming = chunks
     if not recreate:
-        # Collections built before an index was added (effective_to_date) get it here.
-        for field, schema in PAYLOAD_INDEXES.items():
-            client.create_payload_index(args.collection, field_name=field, field_schema=schema)
         chunks = apply_upsert_plan(client, args.collection, chunks)
         if not chunks:
             print("Nothing to embed.")
