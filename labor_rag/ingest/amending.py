@@ -34,7 +34,10 @@ ACTION_ORDER = ["sua_doi", "bo_sung", "bai_bo", "thay_cum_tu"]
 
 AMENDING_TITLE_RE = re.compile(r"^\s*(?:sửa đổi|bổ sung|bãi bỏ|thay thế cụm từ|thay cụm từ)", re.IGNORECASE)
 KINDS = r"Bộ luật|Luật|Pháp lệnh|Nghị quyết|Nghị định|Thông tư liên tịch|Thông tư|Quyết định"
-DOCUMENT_RE = re.compile(rf"(?P<kind>{KINDS})\s+(?:số\s+)?(?P<number>\d+[a-z]?/\d{{4}}/[\w-]*\w)", re.IGNORECASE)
+# A document number, ending at its last capital or digit: "58/2014/QH13đang"
+# (a missing space in the source) -> "58/2014/QH13"; "QĐ-TTg" keeps "TTg".
+NUMBER = r"(?-i:\d+[a-z]?/\d{4}/[A-ZĐ][\w-]*?(?:TTg|[A-ZĐ0-9])(?![A-ZĐ0-9-]))"
+DOCUMENT_RE = re.compile(rf"(?P<kind>{KINDS})\s+(?:số\s+)?(?P<number>{NUMBER})", re.IGNORECASE)
 # "điểm a khoản 2 Điều 35", "khoản 1, khoản 2 Điều 5", "các khoản 1, 2 và 3 Điều 5", "Điều 35a".
 TARGET_RE = re.compile(
     r"(?P<scope>(?:(?:các\s+)?(?:điểm|khoản)\s+[\wđ]+(?:\s*(?:,|và)\s*(?:(?:điểm|khoản)\s+)?[\wđ]+)*\s+)*)"
