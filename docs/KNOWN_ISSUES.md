@@ -117,6 +117,11 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
   Lý do: `ontology_to_jsonl` lấy id của node, và id này chuyển sang URI khi mã bị trùng. Nội dung chunk vẫn đúng.
 - **48 Điều không có tiêu đề trong nguồn** (47 ở 20.5, ví dụ `20.5.QĐ.1.2`, và 1 ở 20.4). Trường `ten` của chunk
   được thay bằng "Điều <mã>.".
+- **Số Điều trong `mapc` lệch số Điều gốc ở 12 / 1.407 Điều.** Pháp điển hợp nhất các Điều sửa đổi vào văn bản
+  bị sửa và nối các Điều còn lại (hiệu lực, trách nhiệm thi hành) vào cuối văn bản đó, nên các Điều này mang số mới:
+  `20.4.NĐ.3.43`, `.44` (Điều 3, 4 NĐ 61/2020), `20.2.NĐ.4.31` (Điều 3 NĐ 70/2023), `20.4.NĐ.5.46`, `.47`
+  (Điều 2, 3 NĐ 74/2019), `20.5.TT.21.8`, `.9` (Điều 2, 3 TT 02/2023). `meta_dieu` lấy từ ghi chú nguồn nên vẫn đúng;
+  trích dẫn và đối chiếu PDF dùng `meta_dieu`, không dùng số cuối của `mapc`.
 - **Số khoản không liên tục** ở `20.2.NĐ.4.13`, `20.4.NĐ.3.18`, `20.4.NĐ.3.22`, `20.4.NĐ.3.30`.
   Các khoản này thiếu ngay trong HTML gốc, không phải do lỗi parse.
 
@@ -128,15 +133,17 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
 
 - `meta_chuong` / `meta_muc` của chunk Pháp điển luôn `null`: ABox chỉ có chương, mục của đề mục Pháp điển
   (`pd_chuong` / `pd_muc`), không có chương của văn bản gốc.
-- `effective_to_date` luôn `null`: ABox chưa có `vlt:validTo`.
-- `amends` / `amended_by` luôn rỗng với Pháp điển (nội dung đã hợp nhất). Phần parse văn bản sửa đổi từ PDF chưa làm.
+- `effective_to_date` của chunk Pháp điển luôn `null`: ABox chưa có `vlt:validTo`. Chỉ được điền khi nạp một văn bản
+  PDF có `replaces` (structural_jsonl.md mục 6).
+- Văn bản sửa đổi từ PDF chỉ có trong Qdrant (`amends` / `amended_by`), chưa có cạnh trong Neo4j.
+- Parser văn bản sửa đổi (`labor_rag/ingest/amending.py`) mới thử trên văn bản mẫu, chưa chạy trên PDF thật.
+  Nếu OCR tách sai phần nội dung mới trong ngoặc kép thành khoản riêng, phần sửa đổi sẽ bị cắt sai.
 - PDF: `pdf_to_chunks` + `embed_and_index --upsert` đã có, nhưng chưa chạy thử trên OCR thật của
   `docs/Luat_lao_dong.pdf`. Cần xem: số Điều nhận được (~220), Điều sai số do OCR, chú thích tách đúng chưa.
 - Dấu chú thích nằm trong câu ("Bộ luật Lao động1", "động¹") chưa bị xóa: OCR đọc số mũ không ổn định.
 - Chú thích chỉ được tách khi nằm trọn trong một trang; chú thích tràn sang trang sau còn lẫn vào nội dung.
   Chưa parse chú thích thành `amended_by`.
 - OCR gộp mọi phụ lục thành một chunk `:pl1`, chưa tách theo từng phụ lục.
-- `version_date` của Pháp điển tính ở mức văn bản (Pháp điển không ghi sửa đổi theo Điều).
 - Điều 14 NĐ 97/2022 (`20.2.NĐ.6.14`) gần như toàn phụ lục dạng bảng, bị cắt theo câu thành 16 phần; khi ghép
   lại cả Điều (`join_parts`) còn lặp vài dòng gối đầu.
 
