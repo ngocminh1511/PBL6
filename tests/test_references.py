@@ -124,6 +124,39 @@ def test_abox_clauses_and_khoan_level_edges():
     assert stats["clauses"] == 2 and stats["references"] == 4
 
 
+def test_pdf_references_resolve_against_the_graph():
+    from labor_rag.ingest.build_abox import INST, VLR
+    from labor_rag.ingest.pdf_abox import document_abox
+    from labor_rag.ingest.pdf_to_chunks import KgIndex
+    from labor_rag.ocr.structure import extract_metadata, parse_structure
+
+    text = """BỘ LAO ĐỘNG - THƯƠNG BINH VÀ XÃ HỘI
+Số: 99/2025/TT-BLĐTBXH
+THÔNG TƯ
+Điều 1. Danh mục công việc
+1. Danh mục công việc quy định tại khoản 3 Điều 147 của Bộ luật Lao động gồm:
+a) Công việc trong hầm mỏ;
+2. Người sử dụng lao động thực hiện theo khoản 1 Điều này và Điều 2.
+Điều 2. Hiệu lực thi hành
+Thông tư này có hiệu lực thi hành từ ngày 01 tháng 7 năm 2025.
+"""
+    doc = parse_structure(text)
+    doc.metadata = extract_metadata(text, doc.title)
+    doc.document_id = "99-2025-tt-bldtbxh"
+    kg = KgIndex(
+        {(BLLD, "147"): "20.2.LQ.147"},
+        {BLLD: {"ten": "Bộ luật số 45/2019/QH14", "document_number": "45/2019/QH14", "short_title": "Bộ Luật lao động"}},
+    )
+    builder, stats = document_abox(doc, kg)
+    graph = builder.graph
+    k1 = INST["SourceClause_Circular_99_2025_TT_BLDTBXH_D1_K1"]
+    k2 = INST["SourceClause_Circular_99_2025_TT_BLDTBXH_D1_K2"]
+    assert (k1, VLR.citesComponent, INST["SourceClause_Law_45_2019_QH14_D147_K3"]) in graph
+    assert (k2, VLR.citesComponent, k1) in graph
+    assert (k2, VLR.citesComponent, INST["SourceArticle_Circular_99_2025_TT_BLDTBXH_D2"]) in graph
+    assert stats["references"] == 3
+
+
 def test_quoted_text_is_ignored():
     line = "Sửa đổi khoản 2 Điều 5 như sau: “2. Theo quy định tại Điều 99 của Luật này.”"
     assert [t[1] for t in targets(read_line(line, "x", "1", None, index()))] == ["5"]

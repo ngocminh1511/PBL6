@@ -146,7 +146,7 @@ def test_amending_dieu_is_cut_per_khoan():
 def test_pdf_abox_holds_amendments_per_khoan_and_replacements():
     builder, stats = document_abox(amending_decree(), KG)
     graph = builder.graph
-    assert stats == {"articles": 2, "amendments": 3, "replaces": 1}
+    assert stats == {"articles": 2, "clauses": 2, "amendments": 3, "replaces": 1}  # clauses: of the effect Dieu
     amended = INST["SourceArticle_Decree_152_2020_ND_CP_D3"]
     (event,) = graph.objects(amended, VLR.hasAmendment)
     assert graph.value(event, VLR.amendingComponent) == INST["SourceClause_Decree_70_2023_ND_CP_D1_K1"]
