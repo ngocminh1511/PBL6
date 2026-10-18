@@ -49,7 +49,12 @@ from labor_rag.ingest.chunk_schema import point_id
 load_dotenv()
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
+DEFAULT_QUESTIONS_V2 = EVALUATION_DIR / "benchmark_questions_v2.jsonl"
+DEFAULT_QUESTIONS = (
+    DEFAULT_QUESTIONS_V2
+    if DEFAULT_QUESTIONS_V2.exists()
+    else EVALUATION_DIR / "benchmark_questions.jsonl"
+)
 DEFAULT_RESULTS = EVALUATION_DIR / "results"
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 BATCH_SIZE = 64
@@ -114,7 +119,7 @@ def load_and_validate_dataset(
     chunks_path: Path = DEFAULT_CHUNKS,
     questions_path: Path = DEFAULT_QUESTIONS,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Load chunks/questions and validate every gold MAPC before querying."""
+    """Load chunks/questions and validate every gold MAPC and chunk_id before querying."""
 
     chunks = read_jsonl(chunks_path)
     questions = read_jsonl(questions_path)
@@ -125,6 +130,7 @@ def load_and_validate_dataset(
         raise ValueError("Chunks must have unique, non-empty chunk_id values")
     # Gold labels are mapc; every part of a split Dieu carries the same one.
     mapc_set = {str(chunk["mapc"]) for chunk in chunks if chunk.get("mapc")}
+    chunk_id_set = set(chunk_ids)
 
     errors: list[str] = []
     for question in questions:
@@ -151,6 +157,13 @@ def load_and_validate_dataset(
                 valid_positive = True
         if not valid_positive:
             errors.append(f"{question_id}: must contain at least one positive gold label")
+
+        # Validate chunk_relevance if present
+        chunk_rel = question.get("chunk_relevance")
+        if isinstance(chunk_rel, dict):
+            for cid in chunk_rel:
+                if cid not in chunk_id_set:
+                    errors.append(f"{question_id}: unknown gold chunk_id {cid}")
 
     ids = [str(question.get("id", "")) for question in questions]
     if len(set(ids)) != len(ids):
@@ -406,10 +419,11 @@ def calculate_query_metrics(
     results: list[dict[str, Any]],
     relevance: dict[str, Any],
     top_k: int,
+    chunk_relevance: dict[str, Any] | None = None,
 ) -> dict[str, float | int | None]:
     gold = {str(mapc) for mapc, grade in relevance.items() if float(grade) > 0}
     first_rank = _first_relevant_rank(results, relevance, top_k)
-    return {
+    metrics: dict[str, float | int | None] = {
         "recall_at_1": int(any(result["mapc"] in gold for result in results[:1])),
         "recall_at_5": int(any(result["mapc"] in gold for result in results[:5])),
         "recall_at_10": int(any(result["mapc"] in gold for result in results[:10])),
@@ -417,6 +431,17 @@ def calculate_query_metrics(
         "mrr_at_10": 1.0 / first_rank if first_rank is not None else 0.0,
         "ndcg_at_10": _ndcg_at_k(results, relevance, min(top_k, 10)),
     }
+    if chunk_relevance:
+        gold_chunks = {str(cid) for cid, grade in chunk_relevance.items() if float(grade) > 0}
+        first_chunk_rank = None
+        for r in results[:top_k]:
+            if r.get("chunk_id") in gold_chunks:
+                first_chunk_rank = int(r["rank"])
+                break
+        metrics["chunk_recall_at_5"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:5]))
+        metrics["chunk_recall_at_10"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:10]))
+        metrics["chunk_mrr_at_10"] = 1.0 / first_chunk_rank if first_chunk_rank is not None else 0.0
+    return metrics
 
 
 def evaluate_model(
@@ -458,39 +483,47 @@ def evaluate_model(
             retrieve_once(client, model, model_spec["collection"], str(question["question"]), top_k)
             for _ in range(repeats)
         ]
+        chunk_rel = question.get("chunk_relevance")
         metrics = calculate_query_metrics(
             results=runs[0]["results"],
             relevance=question["relevance"],
             top_k=top_k,
+            chunk_relevance=chunk_rel,
         )
         total_latencies = [float(run["total_latency_ms"]) for run in runs]
         encode_latencies = [float(run["encode_latency_ms"]) for run in runs]
         search_latencies = [float(run["search_latency_ms"]) for run in runs]
-        per_query.append(
-            {
-                "model": model_spec["key"],
-                "model_id": model_spec["model"],
-                "collection": model_spec["collection"],
-                "question_id": question["id"],
-                "question": question["question"],
-                "de_muc": question.get("de_muc"),
-                "style": question.get("style"),
-                "tags": question.get("tags", []),
-                "gold_relevance": question["relevance"],
-                "top_k_results": runs[0]["results"],
-                "first_relevant_rank": metrics["first_relevant_rank"],
-                "recall_at_1": metrics["recall_at_1"],
-                "recall_at_5": metrics["recall_at_5"],
-                "recall_at_10": metrics["recall_at_10"],
-                "mrr_at_10": metrics["mrr_at_10"],
-                "ndcg_at_10": metrics["ndcg_at_10"],
-                "encode_latency_ms": round(median(encode_latencies), 4),
-                "search_latency_ms": round(median(search_latencies), 4),
-                "latency_ms": round(median(total_latencies), 4),
-                "latency_runs_ms": [round(value, 4) for value in total_latencies],
-            }
-        )
+        entry = {
+            "model": model_spec["key"],
+            "model_id": model_spec["model"],
+            "collection": model_spec["collection"],
+            "question_id": question["id"],
+            "question": question["question"],
+            "de_muc": question.get("de_muc"),
+            "style": question.get("style"),
+            "tags": question.get("tags", []),
+            "retrieval_type": question.get("retrieval_type"),
+            "gold_relevance": question["relevance"],
+            "gold_chunk_relevance": chunk_rel or {},
+            "kg_relevance": question.get("kg_relevance", {}),
+            "top_k_results": runs[0]["results"],
+            "first_relevant_rank": metrics["first_relevant_rank"],
+            "recall_at_1": metrics["recall_at_1"],
+            "recall_at_5": metrics["recall_at_5"],
+            "recall_at_10": metrics["recall_at_10"],
+            "mrr_at_10": metrics["mrr_at_10"],
+            "ndcg_at_10": metrics["ndcg_at_10"],
+            "chunk_recall_at_5": metrics.get("chunk_recall_at_5"),
+            "chunk_recall_at_10": metrics.get("chunk_recall_at_10"),
+            "chunk_mrr_at_10": metrics.get("chunk_mrr_at_10"),
+            "encode_latency_ms": round(median(encode_latencies), 4),
+            "search_latency_ms": round(median(search_latencies), 4),
+            "latency_ms": round(median(total_latencies), 4),
+            "latency_runs_ms": [round(value, 4) for value in total_latencies],
+        }
+        per_query.append(entry)
 
+    has_chunk_metrics = any(row.get("chunk_recall_at_5") is not None for row in per_query)
     summary = {
         "model": model_spec["key"],
         "model_id": model_spec["model"],
@@ -504,6 +537,15 @@ def evaluate_model(
         "Recall@10": round(mean(float(row["recall_at_10"]) for row in per_query), 6),
         "MRR@10": round(mean(float(row["mrr_at_10"]) for row in per_query), 6),
         "nDCG@10": round(mean(float(row["ndcg_at_10"]) for row in per_query), 6),
+        **(
+            {
+                "Chunk-Recall@5": round(mean(float(row["chunk_recall_at_5"]) for row in per_query if row.get("chunk_recall_at_5") is not None), 6),
+                "Chunk-Recall@10": round(mean(float(row["chunk_recall_at_10"]) for row in per_query if row.get("chunk_recall_at_10") is not None), 6),
+                "Chunk-MRR@10": round(mean(float(row["chunk_mrr_at_10"]) for row in per_query if row.get("chunk_mrr_at_10") is not None), 6),
+            }
+            if has_chunk_metrics
+            else {}
+        ),
         "mean_latency_ms": round(mean(float(row["latency_ms"]) for row in per_query), 4),
         "median_latency_ms": round(median(float(row["latency_ms"]) for row in per_query), 4),
         "mean_encode_latency_ms": round(mean(float(row["encode_latency_ms"]) for row in per_query), 4),

@@ -1,5 +1,5 @@
 {
-  "source": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\annotation\\seeds.jsonl + D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\benchmark_questions.jsonl (not finalized yet)",
+  "source": "labor_rag\\evaluation\\benchmark_questions_v2.jsonl",
   "questions": 150,
   "by_de_muc": {
     "20.2": 50,
@@ -28,8 +28,8 @@
   "gold_per_question": 1.45,
   "grade_distribution": {
     "1": 23,
-    "2": 35,
-    "3": 160
+    "2": 45,
+    "3": 150
   },
   "dieu_coverage_by_de_muc": {
     "20.2": "56/409 (14%)",

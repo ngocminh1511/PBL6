@@ -140,17 +140,24 @@ def build_ir_evaluator(val_records: list[dict[str, Any]], chunks: list[dict[str,
     relevant_docs: dict[str, set[str]] = defaultdict(set)
     for r in val_records:
         qid = r["id"]
-        for mapc, grade in r.get("relevance", {}).items():
-            if grade >= 1:
-                for cid in mapc_to_chunks.get(mapc, []):
+        # Prefer exact chunk_relevance if available
+        if "chunk_relevance" in r and r["chunk_relevance"]:
+            for cid, grade in r["chunk_relevance"].items():
+                if float(grade) >= 1.0:
                     relevant_docs[qid].add(cid)
+        else:
+            for mapc, grade in r.get("relevance", {}).items():
+                if float(grade) >= 1.0:
+                    for cid in mapc_to_chunks.get(mapc, []):
+                        relevant_docs[qid].add(cid)
 
+    eval_name = "labor_benchmark_v2" if len(val_records) > 30 else "labor_benchmark_v1"
     return InformationRetrievalEvaluator(
         queries=queries,
         corpus=corpus,
         relevant_docs=relevant_docs,
-        name="labor_benchmark_v1",
-        main_score_function="cos_sim",
+        name=eval_name,
+        main_score_function="cosine",
         mrr_at_k=[5, 10],
         ndcg_at_k=[5, 10],
         accuracy_at_k=[1, 5, 10],
