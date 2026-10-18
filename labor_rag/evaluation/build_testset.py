@@ -14,16 +14,18 @@ Dieu.  Labels are LLM-assisted but human-verified:
   export    Excel workbook for human review; re-running it keeps
             every value a reviewer has already typed                 -> review.xlsx
   finalize  reviewed workbook -> benchmark_questions_v2.jsonl
+  import    questions written by a person (or Claude) with their gold
+            Dieu and a reference answer, appended as more seeds/drafts
   stats     coverage report                                          -> testset_stats.json
 
-The 30 v1 questions are carried over (ids q01..q30) and re-pooled against the
-full topic, because Dieu outside 20.5 (e.g. the Bo luat Lao dong chapter on
-an toan lao dong) may now also answer them.
+The 30 v1 questions (q01..q30) are left out by default: they mostly restate
+the Dieu title, so they measure little.  --with-v1 brings them back.
 
 Run from the repository root:
 
     python -m labor_rag.evaluation.build_testset sample
     python -m labor_rag.evaluation.build_testset draft
+    python -m labor_rag.evaluation.build_testset import --input authored.jsonl --drafted-by claude
     python -m labor_rag.evaluation.build_testset pool
     python -m labor_rag.evaluation.build_testset judge
     python -m labor_rag.evaluation.build_testset export
@@ -581,6 +583,83 @@ def cmd_draft(args: argparse.Namespace) -> int:
     return 0
 
 
+# --------------------------------------------------------------------- import
+
+AUTHORED_KEYS = {"style", "question", "gold", "tags", "target_khoan", "answer_hint", "category"}
+
+
+def cmd_import(args: argparse.Namespace) -> int:
+    """Append questions written outside `draft` as seeds + ok drafts.
+
+    Each input line: {"style", "question", "gold": {mapc: 2|3}, "tags",
+    "target_khoan", "answer_hint", "category"}.  The gold goes into the pool
+    as seeds and shows up in review.xlsx as the suggested grade.
+    """
+
+    chunks = load_chunks(args.chunks)
+    seeds = read_jsonl(SEEDS_PATH)
+    known_questions = {normalize(d["question"]) for d in read_jsonl(DRAFTS_PATH) if d.get("question")}
+    numbers = [int(s["qid"][2:]) for s in seeds if re.fullmatch(r"ld\d+", s["qid"])]
+    next_number = max(numbers, default=0) + 1
+    rows = read_jsonl(args.input)
+    errors = []
+    for line, row in enumerate(rows, start=1):
+        missing = AUTHORED_KEYS - set(row)
+        if missing:
+            errors.append(f"line {line}: missing {sorted(missing)}")
+            continue
+        if row["style"] not in STYLE_INSTRUCTIONS:
+            errors.append(f"line {line}: unknown style {row['style']}")
+        gold = row["gold"]
+        if not gold or not all(m in chunks and MAPC_RE.match(m) for m in gold):
+            errors.append(f"line {line}: gold must be known, stable mapc values: {list(gold)}")
+        elif not any(int(g) == 3 for g in gold.values()) or any(int(g) not in (2, 3) for g in gold.values()):
+            errors.append(f"line {line}: gold grades must be 2 or 3, with at least one 3")
+        seed_like = {"seed_mapcs": [m for m in gold if m in chunks]}
+        problem = check_draft(row["question"], seed_like, chunks)
+        if problem:
+            errors.append(f"line {line}: {problem}")
+        if normalize(row["question"]) in known_questions:
+            errors.append(f"line {line}: question already imported/drafted")
+        if row["category"] not in CATEGORIES:
+            errors.append(f"line {line}: unknown category {row['category']}")
+    if errors:
+        print("Nothing imported:\n- " + "\n- ".join(errors))
+        return 1
+
+    for row in rows:
+        gold = {m: int(g) for m, g in sorted(row["gold"].items(), key=lambda kv: -int(kv[1]))}
+        mapcs = list(gold)
+        qid = f"ld{next_number:03d}"
+        next_number += 1
+        tags = list(row["tags"])
+        if len(mapcs) > 1 and "multi_dieu" not in tags:
+            tags.append("multi_dieu")
+        append_jsonl(SEEDS_PATH, {
+            "qid": qid,
+            "de_muc": de_muc_of(mapcs[0]),
+            "style": row["style"],
+            "seed_mapcs": mapcs,
+            "doc_types": [doc_type_of(m) for m in mapcs],
+            "tags": tags,
+            "target_khoan": row["target_khoan"],
+            "target_khoan_text": None,
+            "origin": "authored",
+            "author_relevance": gold,
+        })
+        append_jsonl(DRAFTS_PATH, {
+            "qid": qid,
+            "status": "ok",
+            "drafted_by": args.drafted_by,
+            "question": row["question"].strip(),
+            "answer_hint": row["answer_hint"].strip(),
+            "category": row["category"],
+            "error": None,
+        })
+    print(f"Imported {len(rows)} questions as ld{next_number - len(rows):03d}..ld{next_number - 1:03d}")
+    return 0
+
+
 # ----------------------------------------------------------------------- pool
 
 
@@ -619,13 +698,14 @@ def corpus_embeddings(key: str, model: Any, texts: list[str], max_seq_length: in
     return vectors
 
 
-def current_questions() -> list[dict[str, Any]]:
-    """v1 questions + successful drafts, with text edited in review.xlsx taking precedence."""
+def current_questions(with_v1: bool = False) -> list[dict[str, Any]]:
+    """Successful drafts (plus the v1 questions with ``with_v1``), with text
+    edited in review.xlsx taking precedence."""
 
     seeds = {s["qid"]: s for s in read_jsonl(SEEDS_PATH)}
     drafts = latest_by_qid(read_jsonl(DRAFTS_PATH))
     questions: list[dict[str, Any]] = []
-    for row in read_jsonl(V1_QUESTIONS):
+    for row in read_jsonl(V1_QUESTIONS) if with_v1 else []:
         questions.append(
             {
                 "qid": row["id"],
@@ -641,6 +721,7 @@ def current_questions() -> list[dict[str, Any]]:
                 "origin": "manual_v1",
                 "drafted_by": "human",
                 "v1_relevance": {m: int(g) for m, g in row["relevance"].items()},
+                "author_relevance": {},
                 "notes": row.get("notes", ""),
             }
         )
@@ -660,9 +741,12 @@ def current_questions() -> list[dict[str, Any]]:
                 "target_khoan": seed.get("target_khoan"),
                 "answer_hint": draft.get("answer_hint", ""),
                 "category": draft.get("category", "khac"),
-                "origin": "llm_draft",
+                "origin": seed.get("origin", "llm_draft"),
                 "drafted_by": draft.get("drafted_by", "gemini"),
                 "v1_relevance": {},
+                # Gold chosen by whoever wrote an imported question: shown as a
+                # suggestion in review.xlsx, never as a reviewer grade.
+                "author_relevance": seed.get("author_relevance", {}),
                 "notes": "",
             }
         )
@@ -681,7 +765,7 @@ def cmd_pool(args: argparse.Namespace) -> int:
     chunks = load_chunks(args.chunks)
     mapcs = list(chunks)
     texts = [chunks[m]["text"] for m in mapcs]
-    questions = current_questions()
+    questions = current_questions(args.with_v1)
     if not questions:
         raise SystemExit("No questions yet; run `draft` first.")
     query_texts = [q["question"] for q in questions]
@@ -838,7 +922,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     from openpyxl.worksheet.datavalidation import DataValidation
 
     chunks = load_chunks(args.chunks)
-    questions = current_questions()
+    questions = current_questions(args.with_v1)
     pools = {p["qid"]: p for p in read_jsonl(POOLS_PATH)}
     judged = latest_by_qid(read_jsonl(JUDGMENTS_PATH))
     old_q = read_review_questions() if REVIEW_PATH.exists() else {}
@@ -890,7 +974,10 @@ def cmd_export(args: argparse.Namespace) -> int:
         pool = pools.get(qid)
         if not pool:
             continue
-        suggestions = judged.get(qid, {}).get("grades", {})
+        suggestions = {
+            **{m: {"grade": g, "why": "Điều gold do người soạn câu hỏi chọn"} for m, g in question["author_relevance"].items()},
+            **judged.get(qid, {}).get("grades", {}),
+        }
         candidates = pool["candidates"]
 
         def order(mapc: str) -> tuple:
@@ -987,7 +1074,7 @@ def cmd_finalize(args: argparse.Namespace) -> int:
     if not REVIEW_PATH.exists():
         raise SystemExit("Run `export` and review the workbook first.")
     chunks = load_chunks(args.chunks)
-    meta = {q["qid"]: q for q in current_questions()}
+    meta = {q["qid"]: q for q in current_questions(args.with_v1)}
     reviewed_q = read_review_questions()
     judgments: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in _read_sheet(REVIEW_PATH, "judgments"):
@@ -1035,8 +1122,8 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         info = meta.get(qid, {})
         edited = question_text != str(info.get("question_draft", question_text)).strip()
         origin = info.get("origin", "llm_draft")
-        if origin == "llm_draft":
-            origin = "llm_draft_edited" if edited else "llm_draft_reviewed"
+        if origin in ("llm_draft", "authored"):
+            origin = f"{origin}_edited" if edited else f"{origin}_reviewed"
         output.append(
             {
                 "id": qid,
@@ -1095,13 +1182,14 @@ def cmd_stats(args: argparse.Namespace) -> int:
             {"de_muc": q["de_muc"], "style": q["style"], "tags": q.get("tags", []), "relevance": q["relevance"]}
             for q in questions
         ]
-    else:  # before finalize: plan coverage from seeds + v1
-        source = f"{SEEDS_PATH} + {V1_QUESTIONS} (not finalized yet)"
+    else:  # before finalize: plan coverage from the seeds (+ v1)
+        source = f"{SEEDS_PATH}" + (f" + {V1_QUESTIONS}" if args.with_v1 else "") + " (not finalized yet)"
         rows = [
             {"de_muc": "20.5", "style": "truc_tiep", "tags": [], "relevance": q["relevance"]}
-            for q in read_jsonl(V1_QUESTIONS)
+            for q in (read_jsonl(V1_QUESTIONS) if args.with_v1 else [])
         ] + [
-            {"de_muc": s["de_muc"], "style": s["style"], "tags": s["tags"], "relevance": {m: 3 for m in s["seed_mapcs"]}}
+            {"de_muc": s["de_muc"], "style": s["style"], "tags": s["tags"],
+             "relevance": s.get("author_relevance") or {m: 3 for m in s["seed_mapcs"]}}
             for s in read_jsonl(SEEDS_PATH)
         ]
     gold = [m for r in rows for m in r["relevance"]]
@@ -1132,6 +1220,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--chunks", type=Path, default=DEFAULT_CHUNKS)
+    parser.add_argument("--with-v1", action="store_true", help="also include the 30 v1 questions (q01..q30)")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sample = sub.add_parser("sample", help="choose seed Dieu")
@@ -1146,6 +1235,11 @@ def build_parser() -> argparse.ArgumentParser:
     draft.add_argument("--sleep", type=float, default=4.0, help="seconds between calls (free-tier RPM)")
     draft.add_argument("--qids", nargs="+", help="only these seeds (e.g. a trial run)")
     draft.set_defaults(func=cmd_draft)
+
+    authored = sub.add_parser("import", help="append questions written outside `draft` (with gold + answer)")
+    authored.add_argument("--input", type=Path, required=True)
+    authored.add_argument("--drafted-by", required=True, help="who wrote them, e.g. claude or a name")
+    authored.set_defaults(func=cmd_import)
 
     pool = sub.add_parser("pool", help="candidate Dieu from BM25 + embedding models")
     pool.add_argument("--models", nargs="+", default=list(DENSE_MODELS), choices=list(DENSE_MODELS))

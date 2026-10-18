@@ -1,40 +1,39 @@
 {
-  "source": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\annotation\\seeds.jsonl + D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\benchmark_questions.jsonl (not finalized yet)",
-  "questions": 150,
+  "source": "D:\\Work\\Learn\\HK7_2026-2027\\PBL6\\labor_rag\\evaluation\\annotation\\seeds.jsonl (not finalized yet)",
+  "questions": 200,
   "by_de_muc": {
-    "20.2": 50,
-    "20.3": 20,
-    "20.4": 30,
-    "20.5": 50
+    "20.2": 114,
+    "20.3": 25,
+    "20.4": 36,
+    "20.5": 25
   },
   "by_style": {
-    "truc_tiep": 54,
-    "tinh_huong": 45,
-    "doi_thuong": 29,
-    "tu_khoa": 12,
-    "nhieu_dieu": 10
+    "tinh_huong": 93,
+    "doi_thuong": 47,
+    "truc_tiep": 24,
+    "nhieu_dieu": 24,
+    "tu_khoa": 12
   },
   "by_tag": {
-    "deep_khoan": 30,
-    "multi_dieu": 10
+    "deep_khoan": 51,
+    "multi_dieu": 41
   },
   "gold_by_doc_type": {
-    "LQ": 146,
-    "NĐ": 40,
-    "TT": 27,
+    "LQ": 154,
+    "NĐ": 64,
+    "TT": 22,
     "QĐ": 3,
     "TL": 2
   },
-  "gold_per_question": 1.45,
+  "gold_per_question": 1.23,
   "grade_distribution": {
-    "1": 23,
-    "2": 35,
-    "3": 160
+    "2": 32,
+    "3": 213
   },
   "dieu_coverage_by_de_muc": {
-    "20.2": "56/409 (14%)",
-    "20.3": "22/161 (14%)",
-    "20.4": "30/313 (10%)",
-    "20.5": "64/103 (62%)"
+    "20.2": "129/409 (32%)",
+    "20.3": "30/161 (19%)",
+    "20.4": "39/313 (12%)",
+    "20.5": "29/103 (28%)"
   }
 }
