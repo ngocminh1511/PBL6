@@ -9,26 +9,25 @@ Các con số dưới đây lấy từ lần dựng ABox cho toàn bộ 45 chủ
 
 ## 1. Chưa có kết quả benchmark embedding trên dữ liệu Lao động
 
-**Trạng thái:** cần chạy.
+**Trạng thái:** benchmark `lao_dong_v5` đã đóng băng với bộ v1 (30 câu, 20.5). Chưa chạy.
+Bộ câu hỏi phủ cả chủ đề đang được làm lại.
 
 Ngày 2026-10-10 đã xóa bộ dữ liệu thử nghiệm chỉ gồm 20.5 (`data/processed/ontology_v4/`) cùng kết quả benchmark
-cũ của nó (ngày 2026-09-30, 348 chunk, parser cũ). Hiện chỉ còn một bộ dữ liệu:
-`data/processed/lao_dong_v5/` (1.407 Điều, 38 Điều dài bị cắt thành nhiều phần, 1.481 chunk).
-Benchmark mặc định chạy trên bộ này, với các collection `legal_ld_v5_*`.
+cũ của nó (ngày 2026-09-30, 348 chunk, parser cũ). Benchmark hiện chạy trên
+`data/processed/lao_dong_v5/` (1.407 Điều, 38 Điều dài bị cắt thành nhiều phần, 1.481 chunk), qua
+`labor_rag/evaluation/benchmarks/lao_dong_v5/` (README, mục "Benchmark theo phiên bản dữ liệu").
 
-**Cách xử lý** (cần bật Docker):
+Trên Qdrant Cloud (kiểm tra ngày 2026-10-12) chỉ có `legal_ld_v5_bge`: 1.481 point, text khớp `chunks.jsonl`.
+Chưa có `legal_ld_v5_bkai` và `legal_ld_v5_mpnet`. Lần chạy đầu sẽ tạo hai collection này bằng model trên máy,
+hoặc tạo trước bằng Modal (`embed_and_index --backend modal --model ... --collection ...`).
 
 ```powershell
-docker compose up -d
-& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --rebuild
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1
 ```
 
-Phải dùng `--rebuild` khi text đổi: bộ benchmark chỉ so tập `chunk_id` để quyết định dùng lại
-collection, nên nếu tập `chunk_id` trùng mà text đã đổi, nó sẽ dùng lại vector cũ.
+Collection chỉ được dùng lại khi đủ `chunk_id` **và** đúng text, nên không còn rủi ro dùng vector cũ sau khi text đổi.
 bkai và mpnet chỉ đọc 256 token đầu (bge-m3 đọc 8192), trong khi chunk v5 dài tới 1024 token,
-nên phần cuối Điều dài không nằm trong vector của hai mô hình này.
-Sau đó chạy lại `notebooks/embedding_benchmark.ipynb` để cập nhật biểu đồ. Output đang lưu trong notebook
-vẫn là kết quả cũ trên 20.5.
+nên phần cuối Điều dài không nằm trong vector của hai mô hình này (`max_seq_length` có trong `summary.csv`).
 
 ---
 

@@ -15,7 +15,7 @@ PBL6/
 │   ├── generation/         # LLM client, sinh câu trả lời, kiểm tra trích dẫn
 │   ├── app/                # chat.py – REPL end-to-end
 │   ├── ocr/                # PDF/ảnh người dùng tải lên → text (PyMuPDF + VietOCR) → cấu trúc Điều/Khoản/Điểm
-│   └── evaluation/         # Benchmark embedding + bộ câu hỏi + kết quả
+│   └── evaluation/         # Benchmark embedding, benchmarks/<dataset_id>/ (bộ câu hỏi đóng băng), results/
 ├── ontology/
 │   ├── schema/             # TBox v4 + SHACL shapes
 │   ├── abox/               # ABox đã sinh (nguồn chuẩn của dữ liệu pháp lý)
@@ -122,9 +122,37 @@ python -m labor_rag.ingest.embed_and_index --backend modal --model bkai-foundati
 python -m labor_rag.ingest.load_neo4j --replace-dataset   # ghi vào NEO4J_URI (local hoặc Aura)
 ```
 
-Benchmark embedding dùng lại collection đã có nếu đủ các `chunk_id` và đúng số chiều, nên có thể index
-ba collection `legal_ld_v5_{bkai,bge,mpnet}` bằng Modal như trên rồi chạy `embedding_benchmark` **không** kèm `--rebuild`.
-Kết quả được gom theo `mapc` trước khi tính điểm, nên một Điều bị cắt thành nhiều phần chỉ tính một lần.
+Benchmark embedding dùng lại collection đã có nếu đủ các `chunk_id`, đúng text và đúng số chiều. Vì vậy có thể index
+ba collection `legal_ld_v5_{bkai,bge,mpnet}` bằng Modal như trên, rồi chạy `embedding_benchmark` (mục dưới).
+Collection nào thiếu hoặc lệch text sẽ được benchmark tạo lại bằng model chạy trên máy.
+
+## Benchmark theo phiên bản dữ liệu
+
+Mỗi phiên bản dữ liệu (`data/processed/<dataset_id>`, ví dụ `lao_dong_v5`) có benchmark riêng, đóng băng trong
+`labor_rag/evaluation/benchmarks/<dataset_id>/`. Manifest ghi sha256 của chunks, KG, TBox và ABox.
+Benchmark **không chạy** nếu chunks hoặc bộ câu hỏi đã đổi so với lúc đóng băng. Thiết kế và metric:
+[docs/BENCHMARK.md](docs/BENCHMARK.md).
+
+```powershell
+# đóng băng một bộ câu hỏi (relevance {mapc: grade 1-3}) cho một phiên bản dữ liệu
+python -m labor_rag.evaluation.benchmark_version freeze --dataset lao_dong_v5 --testset v1 `
+    --questions labor_rag/evaluation/benchmark_questions.jsonl
+python -m labor_rag.evaluation.benchmark_version check --dataset lao_dong_v5
+python -m labor_rag.evaluation.benchmark_version list
+
+# chạy (cần Qdrant); kết quả: labor_rag/evaluation/results/<dataset_id>/<testset>/<run_id>/
+python -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1 --validate-only
+python -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1 --model bge
+
+# phiên bản dữ liệu mới: mang bộ câu hỏi sang, câu có Điều gold đổi nội dung bị loại để chấm lại
+python -m labor_rag.evaluation.benchmark_version freeze --dataset lao_dong_v6 --testset v1 --from lao_dong_v5
+```
+
+Metric: HitRate@1/5/10, Recall@5/10 (micro), MultiHit@5/10, MRR@10, nDCG@10, kèm khoảng tin cậy 95% (bootstrap).
+Một Điều được tính là đúng khi có grade ≥ 2 (`--min-grade`). Kết quả được gom theo `mapc` trước khi tính điểm,
+nên một Điều bị cắt thành nhiều phần chỉ tính một lần. File kết quả: `summary.csv`, `metrics.csv` (CI),
+`breakdown.csv` (theo đề mục / kiểu câu / tag), `per_query_results.jsonl`, `run.json`.
+Notebook `notebooks/embedding_benchmark.ipynb` đọc lần chạy mới nhất.
 
 ## Bộ test truy hồi v2 (chủ đề Lao động)
 
@@ -142,9 +170,9 @@ python -m labor_rag.evaluation.build_testset export     # -> annotation/review.x
 python -m labor_rag.evaluation.build_testset finalize   # -> benchmark_questions_v2.jsonl
 python -m labor_rag.evaluation.build_testset stats
 
-python -m labor_rag.evaluation.embedding_benchmark --rebuild `
-    --questions labor_rag/evaluation/benchmark_questions_v2.jsonl `
-    --results-dir labor_rag/evaluation/results/lao_dong_v2
+python -m labor_rag.evaluation.benchmark_version freeze --dataset lao_dong_v5 --testset v2 `
+    --questions labor_rag/evaluation/benchmark_questions_v2.jsonl
+python -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v2
 ```
 
 ## OCR văn bản người dùng tải lên
