@@ -8,6 +8,7 @@ Layout:
   data/processed/lao_dong_v5/ JSONL projection of the Lao dong ABox, chunk schema v5 (tracked in git)
   data/processed/lao_dong_v4/ previous projection (mapc as chunk_id), kept for comparison
   ontology/                   schema/, abox/, reports/
+  labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
 """
 from __future__ import annotations
 
@@ -36,4 +37,7 @@ VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
+# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/BENCHMARK.md)
+BENCHMARKS_DIR = EVALUATION_DIR / "benchmarks"
+RESULTS_DIR = EVALUATION_DIR / "results"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"

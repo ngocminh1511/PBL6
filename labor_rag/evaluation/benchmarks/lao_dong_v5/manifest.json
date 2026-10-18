@@ -1,0 +1,38 @@
+{
+  "dataset_id": "lao_dong_v5",
+  "collection_prefix": "legal_ld_v5",
+  "frozen_at": "2026-10-12T08:19:37+00:00",
+  "data": {
+    "chunks": {
+      "path": "data/processed/lao_dong_v5/chunks.jsonl",
+      "sha256": "3636630a6ac9743a02ef4d0f42e91914767e1a7c0b9bde4982212208d0cb25a7"
+    },
+    "kg_nodes": {
+      "path": "data/processed/lao_dong_v5/kg_nodes.jsonl",
+      "sha256": "c87ab4d59b7cc9f906cce9c80846a7c610519cb3b3edb64698c75e0f4d9cffa4"
+    },
+    "kg_edges": {
+      "path": "data/processed/lao_dong_v5/kg_edges.jsonl",
+      "sha256": "aee0123b8ef5751527629c419108ac8f9b82bce2869ce9253deb5fd3ac3aed18"
+    },
+    "schema": {
+      "path": "ontology/schema/vn_legal_ontology_schema_v4.ttl",
+      "sha256": "302298668617f9a4c40d5a57bc8ea1e35a2f22cfa6012265bcd8ad1d9d0b5e78"
+    },
+    "abox": {
+      "path": "ontology/abox/abox_lao_dong.ttl",
+      "sha256": "0ea87a0aecdb7fb4d7ab64af741204d3febf637dea3dd4178ac0ccb44a660ec6"
+    }
+  },
+  "testsets": {
+    "v1": {
+      "file": "v1.jsonl",
+      "gold_file": "v1.gold.jsonl",
+      "source": "labor_rag/evaluation/benchmark_questions.jsonl",
+      "sha256": "aad9db612e85a410e2f398fa9cfdf414ee86000ea057aeb91d9a4078fac28c82",
+      "questions": 30,
+      "gold_dieu": 42,
+      "frozen_at": "2026-10-12T08:19:37+00:00"
+    }
+  }
+}
