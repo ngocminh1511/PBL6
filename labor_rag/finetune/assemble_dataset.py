@@ -17,7 +17,7 @@ Output train.jsonl schema:
 
 Output val.jsonl schema:
     {
-        "id": "q01",
+        "id": "ld001",
         "question": "...",
         "relevance": {"mapc": grade, ...},
         "category": "..."
@@ -48,11 +48,16 @@ DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
 DEFAULT_SYNTHETIC = FINETUNE_DIR / "synthetic_queries.jsonl"
 DEFAULT_KG_PAIRS = FINETUNE_DIR / "kg_positive_pairs.jsonl"
 DEFAULT_HARD_NEGS = FINETUNE_DIR / "hard_negatives.jsonl"
-DEFAULT_BENCHMARK = EVALUATION_DIR / "benchmark_questions.jsonl"
+DEFAULT_BENCHMARK = (
+    EVALUATION_DIR / "benchmark_questions_v2.jsonl"
+    if (EVALUATION_DIR / "benchmark_questions_v2.jsonl").exists()
+    else EVALUATION_DIR / "benchmark_questions.jsonl"
+)
 
 DEFAULT_TRAIN = FINETUNE_DIR / "train.jsonl"
 DEFAULT_VAL = FINETUNE_DIR / "val.jsonl"
 DEFAULT_STATS = FINETUNE_DIR / "dataset_stats.json"
+DEFAULT_VAL_PER_DE_MUC = 12
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -67,6 +72,35 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return records
 
 
+def select_validation_records(
+    records: list[dict[str, Any]], per_de_muc: int = DEFAULT_VAL_PER_DE_MUC
+) -> list[dict[str, Any]]:
+    """Select an evenly spaced, deterministic validation subset per de muc."""
+
+    if per_de_muc < 1:
+        raise ValueError("per_de_muc must be at least 1")
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        grouped.setdefault(record.get("de_muc", ""), []).append(record)
+
+    selected: list[dict[str, Any]] = []
+    for de_muc in sorted(grouped):
+        group = grouped[de_muc]
+        count = min(per_de_muc, len(group))
+        if count == len(group):
+            selected.extend(group)
+            continue
+        indices = {
+            min(len(group) - 1, int((index + 0.5) * len(group) / count))
+            for index in range(count)
+        }
+        selected.extend(group[index] for index in sorted(indices))
+
+    order = {id(record): index for index, record in enumerate(records)}
+    return sorted(selected, key=lambda record: order[id(record)])
+
+
 def assemble_dataset(
     chunks_path: Path = DEFAULT_CHUNKS,
     synthetic_path: Path = DEFAULT_SYNTHETIC,
@@ -76,26 +110,39 @@ def assemble_dataset(
     train_path: Path = DEFAULT_TRAIN,
     val_path: Path = DEFAULT_VAL,
     stats_path: Path = DEFAULT_STATS,
+    val_per_de_muc: int = DEFAULT_VAL_PER_DE_MUC,
 ) -> dict[str, Any]:
     print("Loading chunks...")
     chunks = load_jsonl(chunks_path)
     chunks_by_id = {c["chunk_id"]: c for c in chunks}
     print(f"Loaded {len(chunks_by_id)} chunks.")
 
-    # 1. Validation set from benchmark_questions.jsonl
+    # 1. Stratified validation set from the complete benchmark.
     print(f"Loading benchmark questions from {benchmark_path}...")
     bench_records = load_jsonl(benchmark_path)
+    val_records = select_validation_records(bench_records, val_per_de_muc)
     val_path.parent.mkdir(parents=True, exist_ok=True)
     with val_path.open("w", encoding="utf-8") as f:
-        for b in bench_records:
+        for b in val_records:
             val_record = {
                 "id": b["id"],
                 "question": b["question"],
-                "relevance": b.get("relevance", {}),
+                "de_muc": b.get("de_muc", ""),
                 "category": b.get("category", ""),
+                "style": b.get("style", "truc_tiep"),
+                "tags": b.get("tags", []),
+                "retrieval_type": b.get("retrieval_type", "chunk_only"),
+                "relevance": b.get("relevance", {}),
+                "chunk_relevance": b.get("chunk_relevance", {}),
+                "kg_relevance": b.get("kg_relevance", {}),
+                "answer_hint": b.get("answer_hint", ""),
+                "target_khoan": b.get("target_khoan"),
             }
             f.write(json.dumps(val_record, ensure_ascii=False) + "\n")
-    print(f"Saved {len(bench_records)} validation questions to {val_path}")
+    print(
+        f"Saved {len(val_records)} validation questions to {val_path} "
+        f"({val_per_de_muc} per de muc where available)"
+    )
 
     # 2. Hard negatives map: query_id -> list of negative chunk_ids
     hard_negs_map: dict[str, list[dict[str, Any]]] = {}
@@ -179,7 +226,9 @@ def assemble_dataset(
         "synthetic_query_samples": len(synthetic_samples),
         "kg_pair_samples": len(kg_samples),
         "samples_with_hard_negatives": sum(1 for s in all_train if s["negatives"]),
-        "validation_queries": len(bench_records),
+        "benchmark_queries": len(bench_records),
+        "validation_queries": len(val_records),
+        "validation_per_de_muc": val_per_de_muc,
         "corpus_chunks_count": len(chunks_by_id),
     }
 
@@ -248,6 +297,12 @@ def main() -> None:
     parser.add_argument("--train", type=Path, default=DEFAULT_TRAIN, help="Path to train.jsonl")
     parser.add_argument("--val", type=Path, default=DEFAULT_VAL, help="Path to val.jsonl")
     parser.add_argument("--stats", type=Path, default=DEFAULT_STATS, help="Path to dataset_stats.json")
+    parser.add_argument(
+        "--val-per-de-muc",
+        type=int,
+        default=DEFAULT_VAL_PER_DE_MUC,
+        help="Number of validation questions selected for each de muc",
+    )
     parser.add_argument("--validate-only", action="store_true", help="Validate existing dataset files")
     args = parser.parse_args()
 
@@ -264,6 +319,7 @@ def main() -> None:
         train_path=args.train,
         val_path=args.val,
         stats_path=args.stats,
+        val_per_de_muc=args.val_per_de_muc,
     )
 
 

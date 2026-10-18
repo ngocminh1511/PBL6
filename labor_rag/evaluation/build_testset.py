@@ -987,6 +987,19 @@ def cmd_finalize(args: argparse.Namespace) -> int:
     if not REVIEW_PATH.exists():
         raise SystemExit("Run `export` and review the workbook first.")
     chunks = load_chunks(args.chunks)
+    raw_chunks = read_jsonl(args.chunks)
+    mapc_to_raw: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for c in raw_chunks:
+        if c.get("mapc"):
+            mapc_to_raw[str(c["mapc"])].append(c)
+
+    edges_path = getattr(args, "edges", DEFAULT_EDGES)
+    edge_map: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    if edges_path.exists():
+        for e in read_jsonl(edges_path):
+            if e.get("type") in ("REFERS_TO", "PART_OF"):
+                edge_map[str(e.get("source"))].append(e)
+
     meta = {q["qid"]: q for q in current_questions()}
     reviewed_q = read_review_questions()
     judgments: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -1037,6 +1050,75 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         origin = info.get("origin", "llm_draft")
         if origin == "llm_draft":
             origin = "llm_draft_edited" if edited else "llm_draft_reviewed"
+
+        # Chunk relevance mapping
+        chunk_rel: dict[str, int] = {}
+        target_khoan = info.get("target_khoan")
+        tags = info.get("tags", [])
+        if "deep_khoan" in tags and target_khoan:
+            seed_m = (info.get("seed_mapcs") or [list(relevance.keys())[0]])[0]
+            c_list = mapc_to_raw.get(seed_m, [])
+            matched_cid = None
+            for c in c_list:
+                mk = str(c.get("meta_khoan") or "")
+                if "-" in mk:
+                    parts = mk.split("-")
+                    if parts[0].isdigit() and parts[1].isdigit() and int(parts[0]) <= target_khoan <= int(parts[1]):
+                        matched_cid = c["chunk_id"]
+                        break
+                elif mk.isdigit() and int(mk) == target_khoan:
+                    matched_cid = c["chunk_id"]
+                    break
+            if not matched_cid and c_list:
+                for c in c_list:
+                    if re.search(rf'(?:^|\n){target_khoan}\.\s', c["text"]):
+                        matched_cid = c["chunk_id"]
+                        break
+            if matched_cid:
+                chunk_rel[matched_cid] = 3
+                for c in c_list:
+                    if c["chunk_id"] != matched_cid:
+                        chunk_rel[c["chunk_id"]] = 1
+            else:
+                for c in c_list:
+                    chunk_rel[c["chunk_id"]] = 3
+        else:
+            for m, g in relevance.items():
+                for c in mapc_to_raw.get(m, []):
+                    chunk_rel[c["chunk_id"]] = g
+
+        # Knowledge Graph relevance mapping
+        seed_mapcs = info.get("seed_mapcs") or [list(relevance.keys())[0]]
+        connected_edges = []
+        expanded_mapcs = []
+        for sm in seed_mapcs:
+            for edge in edge_map.get(sm, []):
+                tgt = edge.get("target")
+                if tgt in relevance and tgt not in seed_mapcs:
+                    connected_edges.append({
+                        "source": sm,
+                        "type": edge.get("type"),
+                        "target": tgt,
+                        "predicate": edge.get("predicate_iri", ""),
+                    })
+                    if tgt not in expanded_mapcs:
+                        expanded_mapcs.append(tgt)
+                elif "multi_dieu" in tags and tgt in seed_mapcs and tgt != sm:
+                    connected_edges.append({
+                        "source": sm,
+                        "type": edge.get("type"),
+                        "target": tgt,
+                        "predicate": edge.get("predicate_iri", ""),
+                    })
+
+        retrieval_type = "chunk_only"
+        if "multi_dieu" in tags or connected_edges:
+            retrieval_type = "graph_expanded"
+        elif "deep_khoan" in tags:
+            retrieval_type = "deep_khoan"
+        elif len(chunk_rel) > 1:
+            retrieval_type = "multi_chunk"
+
         output.append(
             {
                 "id": qid,
@@ -1044,10 +1126,17 @@ def cmd_finalize(args: argparse.Namespace) -> int:
                 "de_muc": info.get("de_muc", row.get("de_muc")),
                 "category": row.get("category") or info.get("category", "khac"),
                 "style": info.get("style", row.get("style")),
-                "tags": info.get("tags", []),
+                "tags": tags,
+                "retrieval_type": retrieval_type,
                 "relevance": dict(sorted(relevance.items(), key=lambda kv: -kv[1])),
-                "seed_mapcs": info.get("seed_mapcs", []),
-                "target_khoan": info.get("target_khoan"),
+                "chunk_relevance": dict(sorted(chunk_rel.items(), key=lambda kv: -kv[1])),
+                "kg_relevance": {
+                    "seed_mapcs": seed_mapcs,
+                    "graph_edges": connected_edges,
+                    "expanded_mapcs": expanded_mapcs,
+                },
+                "seed_mapcs": seed_mapcs,
+                "target_khoan": target_khoan,
                 "origin": origin,
                 "drafted_by": info.get("drafted_by", "unknown"),
                 "grades_from_suggestion": from_suggestion,
