@@ -56,6 +56,8 @@ vld:Appendix a owl:Class ; rdfs:subClassOf vld:DocumentComponent .
 
 vld:documentNumber a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string .
 vld:title a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string .
+vld:shortTitle a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:string ;
+    rdfs:comment "Tên gọi dùng khi dẫn chiếu trong văn bản khác: \"Bộ luật Lao động\", \"Luật Việc làm\""@vi .
 vld:issuedDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
 vld:effectiveDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
 vld:expiryDate a owl:DatatypeProperty ; rdfs:domain vld:LegalDocument ; rdfs:range xsd:date .
@@ -167,7 +169,14 @@ vlr:replaces a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range v
 vlr:replacedBy a owl:ObjectProperty ; owl:inverseOf vlr:replaces .
 vlr:consolidates a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
 vlr:implements a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:LegalDocument .
-vlr:cites a owl:ObjectProperty ; rdfs:domain vld:LegalEntity ; rdfs:range vlc:LegalEntity .
+vlr:cites a owl:ObjectProperty ; rdfs:domain vlc:LegalEntity ; rdfs:range vlc:LegalEntity .
+# A reference written in the text of a Dieu / khoan to another Dieu, khoan or
+# diem ("theo quy định tại khoản 3 Điều 147 của Bộ luật Lao động"), between
+# components of the source documents. implementsComponent: the citing part
+# details or guides the target ("quy định chi tiết / hướng dẫn thi hành ...").
+vlr:citesComponent a owl:ObjectProperty ; rdfs:subPropertyOf vlr:cites ;
+    rdfs:domain vld:DocumentComponent ; rdfs:range vld:DocumentComponent .
+vlr:implementsComponent a owl:ObjectProperty ; rdfs:subPropertyOf vlr:citesComponent .
 vlr:amendsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:repealsComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .
 vlr:replacesComponent a owl:ObjectProperty ; rdfs:domain vld:LegalDocument ; rdfs:range vld:DocumentComponent .

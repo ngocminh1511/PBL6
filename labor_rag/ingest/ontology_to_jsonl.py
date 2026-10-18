@@ -109,6 +109,8 @@ SPECIAL_PROPERTY_KEYS = {
     f"{VLPD}itemName": "ten",
     f"{VLPD}topicName": "ten",
     f"{VLPD}contentText": "text",
+    f"{VLD}contentText": "text",
+    f"{VLD}shortTitle": "short_title",
     f"{VLD}title": "ten",
     f"{VLD}documentNumber": "document_number",
     f"{VLD}itemNumber": "article_number",
@@ -186,9 +188,9 @@ def class_uris(graph: Graph, subject) -> list[str]:
 
 
 def choose_label(type_uris: list[str]) -> str:
-    if f"{VLD}Article" in type_uris or f"{VLD}Clause" in type_uris:
+    if {f"{VLD}Article", f"{VLD}Clause", f"{VLD}Point"} & set(type_uris):
         if f"{VLPD}CodificationArticle" not in type_uris:
-            return "SourceComponent"  # a Dieu / khoan of a source document
+            return "SourceComponent"  # a Dieu / khoan / diem of a source document
     for uri in type_uris:
         label = CLASS_LABELS.get(local_name(URIRef(uri)))
         if label:
@@ -318,10 +320,19 @@ def describe_documents(graph: Graph, nodes: dict[str, dict]) -> None:
         document = nodes.get(str(next(graph.objects(subject, URIRef(f"{VLD}locatedInDocument")), "")))
         if document and document.get("document_id"):
             node["document_id"] = document["document_id"]
-        if f"{VLD}Clause" in node["class_iris"]:
+        # vld:itemNumber was read as article_number; a khoan / diem gets its
+        # own number plus the numbers of the components above it.
+        if f"{VLD}Point" in node["class_iris"]:
+            node["point_number"] = node.pop("article_number", None)
+            clause = next(graph.subjects(URIRef(f"{VLD}hasPoint"), subject), None)
+            node["clause_number"] = first_literal(graph, clause, [URIRef(f"{VLD}itemNumber")]) if clause else None
+        elif f"{VLD}Clause" in node["class_iris"]:
             node["clause_number"] = node.pop("article_number", None)
-            article = next(graph.subjects(URIRef(f"{VLD}hasClause"), subject), None)
-            node["article_number"] = first_literal(graph, article, [URIRef(f"{VLD}itemNumber")]) if article else None
+            clause = subject
+        else:
+            continue
+        article = next(graph.subjects(URIRef(f"{VLD}hasClause"), clause), None) if clause is not None else None
+        node["article_number"] = first_literal(graph, article, [URIRef(f"{VLD}itemNumber")]) if article else None
     for node in nodes.values():
         if node["label"] == "AmendmentEvent":
             actions = node.get("actions") or []

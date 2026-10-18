@@ -97,6 +97,33 @@ def test_bare_khoan_is_this_dieu_unless_a_chain_names_one():
     assert targets(read_line(line, ND145, "70", "2", names)) == [(BLLD, "123", "1", None), (BLLD, "123", "2", None)]
 
 
+def test_abox_clauses_and_khoan_level_edges():
+    from labor_rag.ingest.build_abox import INST, VLD, VLR, AboxBuilder
+
+    builder = AboxBuilder()
+    blld = builder.document("Bộ luật", "45/2019/QH14", None, "2021-01-01")
+    builder.index.add("Bộ luật", "45/2019/QH14", "Bộ Luật lao động ngày 20/11/2019", "2021-01-01")
+    circular = builder.document("Thông tư", "09/2020/TT-BLĐTBXH", None, "2021-03-15")
+    source = builder.source_article(circular, "1")
+    paragraphs = [
+        "Thông tư này quy định chi tiết và hướng dẫn thi hành một số điều, khoản sau đây của Bộ luật Lao động:",
+        "1. Sử dụng người chưa đủ 15 tuổi làm việc theo quy định tại khoản 4 Điều 145.",
+        "2. Danh mục theo quy định tại điểm a, b khoản 3 Điều 143 và khoản 1 Điều này.",
+    ]
+    stats = builder.add_clauses_and_references(source, circular, "1", paragraphs)
+    graph = builder.graph
+    k1 = INST["SourceClause_Circular_09_2020_TT_BLDTBXH_D1_K1"]
+    assert str(graph.value(k1, VLD.contentText)).startswith("1. Sử dụng người")
+    assert (k1, VLR.implementsComponent, INST["SourceClause_Law_45_2019_QH14_D145_K4"]) in graph
+    k2 = INST["SourceClause_Circular_09_2020_TT_BLDTBXH_D1_K2"]
+    points = set(graph.objects(k2, VLR.implementsComponent))
+    assert INST["SourcePoint_Law_45_2019_QH14_D143_K3_Pa"] in points and INST["SourcePoint_Law_45_2019_QH14_D143_K3_Pb"] in points
+    assert (k2, VLR.citesComponent, k1) not in graph  # "khoản 1 Điều này" is listed under the lead: implements
+    assert (k2, VLR.implementsComponent, k1) in graph
+    assert graph.value(INST["SourcePoint_Law_45_2019_QH14_D143_K3_Pa"], VLD.locatedInDocument) == blld
+    assert stats["clauses"] == 2 and stats["references"] == 4
+
+
 def test_quoted_text_is_ignored():
     line = "Sửa đổi khoản 2 Điều 5 như sau: “2. Theo quy định tại Điều 99 của Luật này.”"
     assert [t[1] for t in targets(read_line(line, "x", "1", None, index()))] == ["5"]

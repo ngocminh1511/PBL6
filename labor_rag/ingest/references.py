@@ -74,6 +74,12 @@ class DocumentIndex:
     def __init__(self) -> None:
         self.by_name: dict[str, tuple[str, str]] = {}  # folded title -> (effective date, document_id)
         self.articles: set[tuple[str, str]] = set()  # (document_id, Dieu number)
+        self.numbers: dict[str, tuple[str, str]] = {}  # document_id -> (kind, document number)
+
+    def register(self, kind: str, number: str) -> str:
+        document_id = make_document_id(number)
+        self.numbers.setdefault(document_id, (kind, number))
+        return document_id
 
     def has(self, document_id: str | None, dieu: str) -> bool:
         return (document_id, dieu) in self.articles
@@ -81,14 +87,18 @@ class DocumentIndex:
     def knows(self, document_id: str | None) -> bool:
         return any(doc == document_id for doc, _ in self.articles)
 
-    def add(self, kind: str, number: str, summary: str | None, effective: str | None) -> None:
+    def add(self, kind: str, number: str, summary: str | None, effective: str | None) -> str | None:
+        """Register a cited document; returns its short title for a law ("Bộ luật Lao động")."""
+        self.register(kind, number)
         if not summary or kind.lower() not in {"bộ luật", "luật", "pháp lệnh"}:
-            return
-        title = re.split(r"\s+ngày\s+\d", summary)[0]
-        name = fold(title if fold(title).startswith(fold(kind)) else f"{kind} {title}")
+            return None
+        title = re.split(r"\s+ngày\s+\d", summary)[0].strip()
+        short_title = title if fold(title).startswith(fold(kind)) else f"{kind} {title}"
+        name = fold(short_title)
         current = self.by_name.get(name)
         if current is None or (effective or "") > current[0]:
             self.by_name[name] = (effective or "", make_document_id(number))
+        return short_title
 
     def find(self, text: str) -> tuple[str | None, str]:
         """(document_id, matched title) for the longest known title starting the text."""
@@ -115,14 +125,14 @@ def document_after(text: str, own_document_id: str, names: DocumentIndex) -> tup
     if match["this"]:
         return own_document_id, None, True
     if match["number"]:
-        return make_document_id(match["number"]), None, True
+        return names.register(match["kind"].capitalize(), match["number"]), None, True
     document_id, _ = names.find(f"{match['kind']} {match['rest']}")
     if document_id:
         return document_id, None, True
     # "Luật bảo hiểm xã hội số 58/2014/QH13": a title, then the number.
     number = re.match(rf"[^,;.]{{0,80}}?\bsố\s+({NUMBER})", match["rest"] or "")
     if number:
-        return make_document_id(number.group(1)), None, True
+        return names.register(match["kind"].capitalize(), number.group(1)), None, True
     title = f"{match['kind']} {match['rest']}".strip()
     # "Luật này" handled above; a bare kind ("theo Luật") is not a reference to a document.
     return (None, title, True) if match["kind"].lower() in {"bộ luật", "luật", "pháp lệnh"} and match["rest"].strip() else (own_document_id, None, False)
@@ -142,25 +152,26 @@ def read_line(
     found: list[Reference] = []
     matches = list(REF_RE.finditer(text))
     taken = [match.span() for match in matches]
+    # "Điều này" points at this Dieu; it names no document for the others.
+    this_dieu = [split_list(match["dieu"], "Điều") == ["này"] for match in matches]
     documents = []  # (document_id, unresolved title, named) per match
-    for match in matches:
-        if split_list(match["dieu"], "Điều") == ["này"]:
-            documents.append((own_document_id, None, True))
-        else:
-            documents.append(document_after(text[match.end():], own_document_id, names))
+    for match, this in zip(matches, this_dieu):
+        documents.append((own_document_id, None, True) if this else document_after(text[match.end():], own_document_id, names))
     # "khoản 1 Điều 35 và khoản 2 Điều 36 của Bộ luật Lao động": the document
     # named after the last reference of a chain applies to the whole chain.
     for index in range(len(matches) - 2, -1, -1):
         gap = text[matches[index].end():matches[index + 1].start()]
-        if not documents[index][2] and documents[index + 1][2] and CHAIN_GAP_RE.fullmatch(gap):
+        if not documents[index][2] and documents[index + 1][2] and not this_dieu[index + 1] and CHAIN_GAP_RE.fullmatch(gap):
             documents[index] = documents[index + 1]
     # "... theo Điều 111, ... theo Điều 112, Điều 113; ... của Bộ luật Lao động":
     # in a line that never names its own document, an unnamed reference
     # belongs to the next document named after it.
-    if not any(named and document_id == own_document_id for document_id, _, named in documents):
+    named_documents = [(d, this) for d, this in zip(documents, this_dieu) if d[2] and not this]
+    if not any(d[0] == own_document_id for d, _ in named_documents):
         for index in range(len(matches)):
             if not documents[index][2]:
-                documents[index] = next((d for d in documents[index + 1:] if d[2]), documents[index])
+                later = [d for d, this in zip(documents[index + 1:], this_dieu[index + 1:]) if d[2] and not this]
+                documents[index] = later[0] if later else documents[index]
     named_in_line = [document_id for document_id, _, named in documents if named and document_id]
     for match, (document_id, unresolved, named) in zip(matches, documents):
         dieus = split_list(match["dieu"], "Điều")
@@ -216,10 +227,8 @@ def list_context(lead: str, own_document_id: str, names: DocumentIndex) -> tuple
     return document_id, bool(IMPLEMENTS_RE.search(lead))
 
 
-def read_article(
-    paragraphs: list[str], own_document_id: str, own_dieu: str, names: DocumentIndex
-) -> list[tuple[str | None, Reference]]:
-    """[(khoan of the citing Dieu or None for its lead, reference)] for one Dieu."""
+def split_clauses(paragraphs: list[str]) -> tuple[list[str], list[tuple[str, list[str]]]]:
+    """(lead lines, [(khoan number, its lines incl. its diem)]) of a Dieu."""
     lead: list[str] = []
     clauses: list[tuple[str, list[str]]] = []
     for paragraph in paragraphs:
@@ -230,6 +239,14 @@ def read_article(
             clauses[-1][1].append(paragraph)
         else:
             lead.append(paragraph)
+    return lead, clauses
+
+
+def read_article(
+    paragraphs: list[str], own_document_id: str, own_dieu: str, names: DocumentIndex
+) -> list[tuple[str | None, Reference]]:
+    """[(khoan of the citing Dieu or None for its lead, reference)] for one Dieu."""
+    lead, clauses = split_clauses(paragraphs)
     # A lead that introduces a list names the document its items refer to:
     # the Dieu lead for its khoan, a khoan's first line for its diem.
     default_document_id, implements = list_context(" ".join(lead), own_document_id, names) if clauses else (None, False)

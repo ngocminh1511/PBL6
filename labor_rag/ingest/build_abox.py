@@ -6,7 +6,12 @@ data/interim/chu_de.json and de_muc.json (run parse_jsondata first); source
 documents, their issuing authorities and validity dates are derived from the
 pGhiChu citation of each Dieu, and its amendments (which article of which
 document, sửa đổi / bổ sung / bãi bỏ, from when) from the
-"... được sửa đổi ... bởi Điều X <văn bản>" tail.
+"... được sửa đổi ... bởi Điều X <văn bản>" tail. Each Dieu is split into its
+khoan (vld:Clause, with their text), and the references written in its text
+("theo quy định tại khoản 3 Điều 147 của Bộ luật Lao động") become
+vlr:citesComponent / vlr:implementsComponent between source Dieu, khoan and
+diem (labor_rag/ingest/references.py). Citations are read in a first pass over
+every selected de muc, so a reference can name any document of the run.
 
 Usage (from the repository root):
     python -m labor_rag.ingest.build_abox --chu-de 20 --output ontology/abox/abox_lao_dong.ttl
@@ -29,6 +34,8 @@ from rdflib.namespace import XSD
 
 from labor_rag.config import ABOX_DIR, BOPHAPDIEN_DIR, INTERIM_DIR
 from labor_rag.ingest.amending import actions_in
+from labor_rag.ingest.chunk_schema import make_document_id
+from labor_rag.ingest.references import DocumentIndex, read_article, split_clauses
 from labor_rag.ingest.parse_demuc_html import iter_dieu, load_linh_vuc_index, parse_demuc_nodes
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -183,6 +190,12 @@ def parse_vn_date(text: str) -> str | None:
     return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
 
 
+def normalize_number(number: str) -> str:
+    """'45/2019/QH14.' -> '45/2019/QH14'; 'NQ.HĐTP' -> 'NQ-HĐTP'."""
+    number = number.replace("Ð", "Đ").rstrip(".\"”")
+    return re.sub(r"(?<=[A-ZĐ])\.(?=[A-ZĐ])", "-", number)
+
+
 def document_kind(kind_text: str) -> tuple[URIRef, str, str]:
     for kind, cls, local in DOCUMENT_KINDS:
         if kind_text.lower() == kind.lower():
@@ -216,6 +229,9 @@ class AboxBuilder:
             self.graph.bind(prefix, namespace)
         self.effective_dates: dict[URIRef, set[str]] = {}
         self.valid_to: dict[URIRef, str] = {}
+        self.index = DocumentIndex()  # law titles and Dieu of every document, for references
+        self.doc_by_id: dict[str, URIRef] = {}
+        self.id_by_doc: dict[URIRef, str] = {}
         self.article_uris: Counter[str] = Counter()
         self.unparsed_citations: list[str] = []
         self.unknown_issuers: Counter[str] = Counter()
@@ -241,12 +257,14 @@ class AboxBuilder:
     ) -> URIRef:
         cls, local, kind = document_kind(kind_text)
         if number:
-            number = number.replace("Ð", "Đ").rstrip(".\"”")
-            number = re.sub(r"(?<=[A-ZĐ])\.(?=[A-ZĐ])", "-", number)  # "NQ.HĐTP" -> "NQ-HĐTP"
+            number = normalize_number(number)
         # Some older documents (e.g. "Pháp lệnh Về Hàm, cấp ngoại giao", 1995)
         # are cited by title only; the title then serves as their identifier.
         identifier = number or f"{kind} {clean_text(name)}"
         uri = INST[f"Doc_{local}_{slug(identifier.replace('/', '_'))}"]
+        if number:
+            self.doc_by_id.setdefault(make_document_id(number), uri)
+            self.id_by_doc.setdefault(uri, make_document_id(number))
         self.add(uri, RDF.type, cls)
         self.add(uri, VLD.documentNumber, Literal(identifier, datatype=XSD.string))
         self.add(uri, VLD.title, Literal(f"{kind} số {number}" if number else identifier, lang="vi"))
@@ -291,6 +309,10 @@ class AboxBuilder:
             doc = self.document(
                 m["kind"], m["number"], m["name"], effective, parse_vn_date(issued.group(1)) if issued else None
             )
+            if m["number"]:
+                short_title = self.index.add(m["kind"], normalize_number(m["number"]), m["summary"], effective)
+                if short_title:
+                    self.add(doc, VLD.shortTitle, Literal(short_title, lang="vi"))
             # ", có nội dung được sửa đổi, có nội dung được bổ sung bởi " -> vlr:amendmentAction
             actions = actions_in(text[previous_end:m.start()]) if found else []
             found.append(Source(doc, m["article"], effective, actions))
@@ -336,6 +358,70 @@ class AboxBuilder:
         self.add(clause_uri, VLD.itemNumber, Literal(number, datatype=XSD.string))
         self.add(article_uri, VLD.hasClause, clause_uri)
         return clause_uri
+
+    def index_de_muc(self, tree: dict) -> None:
+        """First pass: law titles and the Dieu of each source document, so a
+        reference in any de muc can be resolved."""
+        for dieu, _ in iter_dieu(tree):
+            text = BROKEN_NUMBER_RE.sub("-", dieu["citation"] or "")
+            for position, m in enumerate(SOURCE_RE.finditer(text)):
+                if not m["number"]:
+                    continue
+                number = normalize_number(m["number"])
+                self.index.add(m["kind"], number, m["summary"], parse_vn_date(m["date"]))
+                if position == 0:
+                    self.index.articles.add((make_document_id(number), m["article"]))
+
+    def source_point(self, clause_uri: URIRef, doc_uri: URIRef, letter: str) -> URIRef:
+        """Diem `letter` of a source khoan: SourcePoint_Decree_145_2020_ND_CP_D35_K2_Pa."""
+        point_uri = INST[f"SourcePoint_{local_name(clause_uri).removeprefix('SourceClause_')}_P{number_slug(letter)}"]
+        self.add(point_uri, RDF.type, VLD.Point)
+        self.add(point_uri, VLD.locatedInDocument, doc_uri)
+        self.add(point_uri, VLD.itemNumber, Literal(letter, datatype=XSD.string))
+        self.add(clause_uri, VLD.hasPoint, point_uri)
+        return point_uri
+
+    def document_uri(self, document_id: str) -> URIRef | None:
+        """The document node for a document_id met in a reference."""
+        if document_id not in self.doc_by_id and document_id in self.index.numbers:
+            kind, number = self.index.numbers[document_id]
+            self.document(kind, number, None, None)
+        return self.doc_by_id.get(document_id)
+
+    def add_clauses_and_references(self, source_uri: URIRef, doc_uri: URIRef, dieu_number: str, paragraphs: list[str]) -> Counter:
+        """The khoan of a source Dieu (vld:Clause + text) and the references in its text."""
+        stats: Counter = Counter()
+        _, clauses = split_clauses(paragraphs)
+        clause_uris: dict[str, URIRef] = {}
+        for khoan, lines in clauses:
+            if khoan in clause_uris:
+                continue  # numbering restarts (a quoted list): keep the first
+            clause_uris[khoan] = self.source_clause(source_uri, doc_uri, khoan)
+            self.add(clause_uris[khoan], VLD.contentText, Literal("\n".join(lines), lang="vi"))
+            stats["clauses"] += 1
+        own_id = self.id_by_doc.get(doc_uri)
+        if not own_id:
+            return stats
+        for khoan, reference in read_article(paragraphs, own_id, dieu_number, self.index):
+            citing = clause_uris.get(khoan, source_uri) if khoan else source_uri
+            predicate = VLR.implementsComponent if reference.implements else VLR.citesComponent
+            for target in reference.targets:
+                target_doc = self.document_uri(target.document_id) if target.document_id else None
+                if target_doc is None:
+                    stats["references_unresolved"] += 1
+                    continue
+                target_uri = self.source_article(target_doc, target.dieu)
+                target_uris = [target_uri]
+                if target.khoan:
+                    target_uri = self.source_clause(target_uri, target_doc, target.khoan)
+                    target_uris = [target_uri]
+                    if target.diem:
+                        target_uris = [self.source_point(target_uri, target_doc, letter) for letter in target.diem.split(", ")]
+                for uri in target_uris:
+                    if uri != citing:
+                        self.add(citing, predicate, uri)
+                        stats["references"] += 1
+        return stats
 
     def add_amendment(
         self,
@@ -392,8 +478,16 @@ class AboxBuilder:
             self.add(owner_uri, VLPD.hasCrossReference, reference_uri)
             self.add(owner_uri, VLR.cites, target_uri)
 
-    def add_de_muc(self, html_path: Path, topic_number: int, topic_name: str, item_number: int, item_name: str) -> Counter:
-        tree = parse_demuc_nodes(html_path)
+    def add_de_muc(
+        self,
+        html_path: Path,
+        topic_number: int,
+        topic_name: str,
+        item_number: int,
+        item_name: str,
+        tree: dict | None = None,
+    ) -> Counter:
+        tree = tree or parse_demuc_nodes(html_path)
         stats: Counter = Counter()
         if next(iter_dieu(tree), None) is None:
             return stats  # de muc not codified yet
@@ -474,6 +568,12 @@ class AboxBuilder:
                         consolidated=True,
                     )
                     stats["amendments"] += 1
+                # 429 Dieu carry their whole provision in the heading line.
+                stats.update(
+                    self.add_clauses_and_references(
+                        source_uri, codified.document, codified.article, dieu["paragraphs"] or [title]
+                    )
+                )
             self.add_references(uri, code, dieu["references"])
             stats["articles"] += 1
 
@@ -533,8 +633,13 @@ def main() -> None:
         args.output = ABOX_DIR / f"abox_{selected[0]['path'].stem}.ttl"
 
     builder = AboxBuilder()
+    trees = {row["code"]: parse_demuc_nodes(row["path"]) for row in selected}
+    for tree in trees.values():
+        builder.index_de_muc(tree)
     for row in selected:
-        stats = builder.add_de_muc(row["path"], row["topic_number"], row["topic_name"], row["item_number"], row["item_name"])
+        stats = builder.add_de_muc(
+            row["path"], row["topic_number"], row["topic_name"], row["item_number"], row["item_name"], trees[row["code"]]
+        )
         if stats["articles"] == 0:
             print(f"{row['code']} {row['item_name']}: khong co Dieu nao (chua phap dien hoa), bo qua.")
             continue
