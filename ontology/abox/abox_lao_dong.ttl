@@ -8,31 +8,6 @@
 @prefix vlt: <https://example.org/vn-legal/time#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-inst:Doc_Circular_37_2018_TT_BCT a vld:Circular ;
-    vld:documentNumber "37/2018/TT-BCT"^^xsd:string ;
-    vld:effectiveDate "2018-12-10"^^xsd:date ;
-    vld:title "Thông tư số 37/2018/TT-BCT"@vi ;
-    vlr:partiallyAmends inst:Doc_Circular_09_2017_TT_BCT ;
-    vlr:promulgatedBy inst:Auth_BCT ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT .
-
-inst:Doc_Decree_140_2018_ND_CP a vld:Decree ;
-    vld:documentNumber "140/2018/NĐ-CP"^^xsd:string ;
-    vld:effectiveDate "2018-10-08"^^xsd:date ;
-    vld:title "Nghị định số 140/2018/NĐ-CP"@vi ;
-    vlr:partiallyAmends inst:Doc_Decree_31_2015_ND_CP ;
-    vlr:promulgatedBy inst:Auth_ChinhPhu ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
-
-inst:Doc_Decree_35_2022_ND_CP a vld:Decree ;
-    vld:documentNumber "35/2022/NĐ-CP"^^xsd:string ;
-    vld:effectiveDate "2022-07-15"^^xsd:date ;
-    vld:title "Nghị định số 35/2022/NĐ-CP"@vi ;
-    vlr:partiallyAmends inst:Doc_Decree_145_2020_ND_CP,
-        inst:Doc_Decree_152_2020_ND_CP ;
-    vlr:promulgatedBy inst:Auth_ChinhPhu ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP .
-
 inst:Statement_000274e38c33 a vlp:ExtractedStatement ;
     vlp:sourceComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_01_2022_TT_BLDTBXH ;
     vlp:sourceDocument inst:Doc_Circular_01_2022_TT_BLDTBXH ;
@@ -13365,6 +13340,409 @@ inst:Statement_ffc29ddf2ae7 a vlp:ExtractedStatement ;
     vlp:sourceDocument inst:Doc_Law_45_2019_QH14 ;
     vlp:sourceQuote """1. Người sử dụng lao động xây dựng kế hoạch hằng năm và dành kinh phí cho việc đào tạo, bồi dưỡng, nâng cao trình độ, kỹ năng nghề, phát triển kỹ năng nghề cho người lao động đang làm việc cho mình; đào tạo cho người lao động trước khi chuyển làm nghề khác cho mình.
 2. Hằng năm, người sử dụng lao động thông báo kết quả đào tạo, bồi dưỡng, nâng cao trình độ, kỹ năng nghề cho cơ quan chuyên môn về lao động thuộc Ủy ban nhân dân cấp tỉnh."""@vi .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_09_2017_TT_BCT_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-12-10"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "bo_sung"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_72_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_72_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string,
+        "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bai_bo"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2022-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2024-05-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2017-10-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2019-11-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2024-05-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2017-10-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2022-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2024-05-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2018-10-08"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2024-05-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2020-07-15"^^xsd:date .
+
+inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vlt:AmendmentEvent ;
+    vlr:amendingComponent inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP ;
+    vlr:amendmentAction "bo_sung"^^xsd:string,
+        "sua_doi"^^xsd:string ;
+    vlt:amendsAt "2023-09-18"^^xsd:date .
 
 inst:Article_20_2_LQ_1 a vlpd:CodificationArticle ;
     rdfs:label "Điều 20.2.LQ.1: Phạm vi điều chỉnh"@vi ;
@@ -31549,6 +31927,40 @@ inst:CrossReference_ffe6c19ade7e a vlpd:CrossReference ;
     vlpd:referenceText "Điều 44.3.NĐ.4. Nhiệm vụ, quyền hạn của tổ chức pháp chế ở cơ quan thuộc Chính phủ"@vi ;
     vlpd:refersToCodificationComponent inst:Article_44_3_ND_4 .
 
+inst:Doc_Circular_37_2018_TT_BCT a vld:Circular ;
+    vld:documentNumber "37/2018/TT-BCT"^^xsd:string ;
+    vld:effectiveDate "2018-12-10"^^xsd:date ;
+    vld:title "Thông tư số 37/2018/TT-BCT"@vi ;
+    vlr:amendsComponent inst:SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_09_2017_TT_BCT ;
+    vlr:partiallyAmends inst:Doc_Circular_09_2017_TT_BCT ;
+    vlr:promulgatedBy inst:Auth_BCT ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT .
+
+inst:Doc_Decree_140_2018_ND_CP a vld:Decree ;
+    vld:documentNumber "140/2018/NĐ-CP"^^xsd:string ;
+    vld:effectiveDate "2018-10-08"^^xsd:date ;
+    vld:title "Nghị định số 140/2018/NĐ-CP"@vi ;
+    vlr:amendsComponent inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP,
+        inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP ;
+    vlr:partiallyAmends inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:promulgatedBy inst:Auth_ChinhPhu ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT a vld:Article ;
+    vld:itemNumber "2"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_37_2018_TT_BCT .
+
+inst:SourceArticle_72_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP a vld:Article ;
+    vld:itemNumber "72"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_35_2022_ND_CP .
+
 inst:SourceMapping_https_example_org_vn_legal_instance_Article_20_2_LQ_100_https_example_org_vn_legal_instance_Doc_Law_45_2019_QH14 a vlpd:SourceMapping ;
     vlpd:mapsToSourceComponent inst:SourceArticle_100_https_example_org_vn_legal_instance_Doc_Law_45_2019_QH14 ;
     vlpd:mapsToSourceDocument inst:Doc_Law_45_2019_QH14 .
@@ -39582,6 +39994,26 @@ inst:Validity_https_example_org_vn_legal_instance_Doc_Law_84_2015_QH13 a vlt:Leg
 inst:Auth_ThuTuong a vla:PrimeMinister ;
     rdfs:label "Thủ tướng Chính phủ"@vi .
 
+inst:Doc_Decree_35_2022_ND_CP a vld:Decree ;
+    vld:documentNumber "35/2022/NĐ-CP"^^xsd:string ;
+    vld:effectiveDate "2022-07-15"^^xsd:date ;
+    vld:title "Nghị định số 35/2022/NĐ-CP"@vi ;
+    vlr:amendsComponent inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP,
+        inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP ;
+    vlr:partiallyAmends inst:Doc_Decree_145_2020_ND_CP,
+        inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:promulgatedBy inst:Auth_ChinhPhu ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP .
+
+inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "1"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_24_2017_TT_BLDTBXH .
+
+inst:SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP a vld:Article ;
+    vld:itemNumber "73"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_35_2022_ND_CP .
+
 inst:Article_20_2_LQ_101 a vlpd:CodificationArticle ;
     rdfs:label "Điều 20.2.LQ.101: Tạm ứng tiền lương"@vi ;
     vlpd:belongsToItem inst:Item_20_2 ;
@@ -42325,15 +42757,6 @@ inst:Doc_Circular_12_2020_TT_BCT a vld:Circular ;
     vlr:promulgatedBy inst:Auth_BCT ;
     vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_12_2020_TT_BCT .
 
-inst:Doc_Circular_24_2017_TT_BLDTBXH a vld:Circular ;
-    vld:documentNumber "24/2017/TT-BLĐTBXH"^^xsd:string ;
-    vld:effectiveDate "2017-10-15"^^xsd:date ;
-    vld:issuedDate "2015-11-11"^^xsd:date ;
-    vld:title "Thông tư số 24/2017/TT-BLĐTBXH"@vi ;
-    vlr:partiallyAmends inst:Doc_Circular_45_2015_TT_BLDTBXH ;
-    vlr:promulgatedBy inst:Auth_BLD ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH .
-
 inst:Doc_Circular_24_2022_TT_BLDTBXH a vld:Circular ;
     vld:documentNumber "24/2022/TT-BLĐTBXH"^^xsd:string ;
     vld:effectiveDate "2023-03-01"^^xsd:date ;
@@ -42348,15 +42771,6 @@ inst:Doc_Circular_29_2021_TT_BLDTBXH a vld:Circular ;
     vld:title "Thông tư số 29/2021/TT-BLĐTBXH"@vi ;
     vlr:promulgatedBy inst:Auth_BLD ;
     vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_29_2021_TT_BLDTBXH .
-
-inst:Doc_Decree_70_2023_ND_CP a vld:Decree ;
-    vld:documentNumber "70/2023/NĐ-CP"^^xsd:string ;
-    vld:effectiveDate "2023-09-18"^^xsd:date ;
-    vld:issuedDate "2023-09-18"^^xsd:date ;
-    vld:title "Nghị định số 70/2023/NĐ-CP"@vi ;
-    vlr:partiallyAmends inst:Doc_Decree_152_2020_ND_CP ;
-    vlr:promulgatedBy inst:Auth_ChinhPhu ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
 
 inst:SourceArticle_100_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
     vld:itemNumber "100"^^xsd:string ;
@@ -42513,10 +42927,6 @@ inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND
 inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "10"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "10"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
 inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "10"^^xsd:string ;
@@ -42678,10 +43088,6 @@ inst:SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "11"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "11"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "11"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -42834,21 +43240,9 @@ inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "12"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "12"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "12"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "12"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "12"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "12"^^xsd:string ;
@@ -42962,10 +43356,6 @@ inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "13"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "13"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "13"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -42973,10 +43363,6 @@ inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
 inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
     vld:itemNumber "13"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "13"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "13"^^xsd:string ;
@@ -43094,10 +43480,6 @@ inst:SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "14"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "14"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "14"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
@@ -43214,10 +43596,6 @@ inst:SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
     vld:itemNumber "15"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
-inst:SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "15"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
 inst:SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "15"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
@@ -43326,10 +43704,6 @@ inst:SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "16"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "16"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "16"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
@@ -43434,17 +43808,9 @@ inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "17"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "17"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "17"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "17"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
 inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "17"^^xsd:string ;
@@ -43566,10 +43932,6 @@ inst:SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "18"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "18"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "18"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
@@ -43637,10 +43999,6 @@ inst:SourceArticle_199_https_example_org_vn_legal_instance_Doc_Law_45_2019_QH14 
 inst:SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_01_2022_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "19"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_01_2022_TT_BLDTBXH .
-
-inst:SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_09_2017_TT_BCT a vld:Article ;
-    vld:itemNumber "19"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_09_2017_TT_BCT .
 
 inst:SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_153_2021_TT_BQP a vld:Article ;
     vld:itemNumber "19"^^xsd:string ;
@@ -44046,10 +44404,6 @@ inst:SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
     vld:itemNumber "20"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
-inst:SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "20"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
 inst:SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "20"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
@@ -44146,17 +44500,9 @@ inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "21"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "21"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "21"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "21"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "21"^^xsd:string ;
@@ -44202,21 +44548,9 @@ inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "22"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "22"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "22"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "22"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "22"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "22"^^xsd:string ;
@@ -44262,21 +44596,9 @@ inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "23"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "23"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "23"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "23"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "23"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "23"^^xsd:string ;
@@ -44334,17 +44656,9 @@ inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "24"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "24"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "24"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "24"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "24"^^xsd:string ;
@@ -44394,17 +44708,9 @@ inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "25"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "25"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "25"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "25"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "25"^^xsd:string ;
@@ -44454,14 +44760,6 @@ inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
     vld:itemNumber "26"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
-inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "26"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "26"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "26"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -44494,10 +44792,6 @@ inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "27"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "27"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "27"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -44509,10 +44803,6 @@ inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
 inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "27"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "27"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "27"^^xsd:string ;
@@ -44557,10 +44847,6 @@ inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
 inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "28"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "28"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "28"^^xsd:string ;
@@ -45202,25 +45488,13 @@ inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "30"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "30"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "30"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "30"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "30"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "30"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "30"^^xsd:string ;
@@ -45242,10 +45516,6 @@ inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_112_2021_ND
     vld:itemNumber "31"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_112_2021_ND_CP .
 
-inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
-    vld:itemNumber "31"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
 inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "31"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -45257,10 +45527,6 @@ inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
 inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "31"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "31"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "31"^^xsd:string ;
@@ -45338,10 +45604,6 @@ inst:SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_
     vld:itemNumber "33"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
-inst:SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "33"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_33_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "33"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -45370,17 +45632,9 @@ inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "34"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "34"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "34"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "34"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "34"^^xsd:string ;
@@ -45418,10 +45672,6 @@ inst:SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_
     vld:itemNumber "35"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
-inst:SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "35"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_35_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "35"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -45450,17 +45700,9 @@ inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "36"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "36"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "36"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "36"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "36"^^xsd:string ;
@@ -45498,10 +45740,6 @@ inst:SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_
     vld:itemNumber "37"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
-inst:SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "37"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_37_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "37"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -45530,17 +45768,9 @@ inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_
     vld:itemNumber "38"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "38"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "38"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
-
-inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "38"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "38"^^xsd:string ;
@@ -45569,10 +45799,6 @@ inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
 inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
     vld:itemNumber "39"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "39"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "39"^^xsd:string ;
@@ -45874,10 +46100,6 @@ inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2016_TT
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_21_2016_TT_BYT .
 
-inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "3"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH .
-
 inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_22_2016_TT_BYT a vld:Article ;
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_22_2016_TT_BYT .
@@ -45974,10 +46196,6 @@ inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_43_2016_TT
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_43_2016_TT_BLDTBXH .
 
-inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "3"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_45_2015_TT_BLDTBXH .
-
 inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_48_2015_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_48_2015_TT_BLDTBXH .
@@ -46034,25 +46252,13 @@ inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "3"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
 
-inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "3"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
 inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_293_2025_ND_CP a vld:Article ;
     vld:itemNumber "3"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_293_2025_ND_CP .
-
-inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "3"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_44_2016_ND_CP a vld:Article ;
     vld:itemNumber "3"^^xsd:string ;
@@ -46122,10 +46328,6 @@ inst:SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
     vld:itemNumber "40"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
-inst:SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "40"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_40_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "40"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -46153,10 +46355,6 @@ inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
 inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
     vld:itemNumber "41"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "41"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "41"^^xsd:string ;
@@ -46186,10 +46384,6 @@ inst:SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_
     vld:itemNumber "42"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
-inst:SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "42"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_42_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "42"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -46213,10 +46407,6 @@ inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_112_2021_ND
 inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
     vld:itemNumber "43"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
-inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "43"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "43"^^xsd:string ;
@@ -46242,10 +46432,6 @@ inst:SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND
     vld:itemNumber "44"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "44"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
-
 inst:SourceArticle_44_https_example_org_vn_legal_instance_Doc_Law_38_2013_QH13 a vld:Article ;
     vld:itemNumber "44"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Law_38_2013_QH13 .
@@ -46269,10 +46455,6 @@ inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_112_2021_ND
 inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
     vld:itemNumber "45"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
-inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
-    vld:itemNumber "45"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP .
 
 inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_88_2020_ND_CP a vld:Article ;
     vld:itemNumber "45"^^xsd:string ;
@@ -46474,10 +46656,6 @@ inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_20_2023_TT
     vld:itemNumber "4"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_20_2023_TT_BCT .
 
-inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "4"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH .
-
 inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_28_2015_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "4"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_28_2015_TT_BLDTBXH .
@@ -46493,10 +46671,6 @@ inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_38_2015_TT
 inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_43_2016_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "4"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_43_2016_TT_BLDTBXH .
-
-inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "4"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_45_2015_TT_BLDTBXH .
 
 inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_56_2015_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "4"^^xsd:string ;
@@ -46517,14 +46691,6 @@ inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_112_2021_ND_
 inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_135_2020_ND_CP a vld:Article ;
     vld:itemNumber "4"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_135_2020_ND_CP .
-
-inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
-    vld:itemNumber "4"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
-inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "4"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
 
 inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "4"^^xsd:string ;
@@ -46842,10 +47008,6 @@ inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_20_2023_TT
     vld:itemNumber "5"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_20_2023_TT_BCT .
 
-inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "5"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH .
-
 inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_28_2015_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "5"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_28_2015_TT_BLDTBXH .
@@ -46893,10 +47055,6 @@ inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_135_2020_ND_
 inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
     vld:itemNumber "5"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
-inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "5"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
 
 inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "5"^^xsd:string ;
@@ -47214,10 +47372,6 @@ inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_
     vld:itemNumber "6"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "6"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "6"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -47225,10 +47379,6 @@ inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_C
 inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
     vld:itemNumber "6"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
-
-inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
-    vld:itemNumber "6"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP .
 
 inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
     vld:itemNumber "6"^^xsd:string ;
@@ -47454,10 +47604,6 @@ inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_20_2023_TT
     vld:itemNumber "7"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_20_2023_TT_BCT .
 
-inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
-    vld:itemNumber "7"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH .
-
 inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_28_2015_TT_BLDTBXH a vld:Article ;
     vld:itemNumber "7"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Circular_28_2015_TT_BLDTBXH .
@@ -47489,10 +47635,6 @@ inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_135_2020_ND_
 inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
     vld:itemNumber "7"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
-
-inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "7"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
 
 inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "7"^^xsd:string ;
@@ -47738,17 +47880,9 @@ inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_
     vld:itemNumber "8"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "8"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "8"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
-
-inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
-    vld:itemNumber "8"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP .
 
 inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
     vld:itemNumber "8"^^xsd:string ;
@@ -47950,10 +48084,6 @@ inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_
     vld:itemNumber "9"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP .
 
-inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
-    vld:itemNumber "9"^^xsd:string ;
-    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP .
-
 inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_23_2021_ND_CP a vld:Article ;
     vld:itemNumber "9"^^xsd:string ;
     vld:locatedInDocument inst:Doc_Decree_23_2021_ND_CP .
@@ -47988,6 +48118,403 @@ inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Law_84_2015_QH13 a 
 
 inst:Auth_QuocHoi a vla:NationalAssembly ;
     rdfs:label "Quốc hội"@vi .
+
+inst:Doc_Circular_24_2017_TT_BLDTBXH a vld:Circular ;
+    vld:documentNumber "24/2017/TT-BLĐTBXH"^^xsd:string ;
+    vld:effectiveDate "2017-10-15"^^xsd:date ;
+    vld:issuedDate "2015-11-11"^^xsd:date ;
+    vld:title "Thông tư số 24/2017/TT-BLĐTBXH"@vi ;
+    vlr:amendsComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH,
+        inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH ;
+    vlr:partiallyAmends inst:Doc_Circular_45_2015_TT_BLDTBXH ;
+    vlr:promulgatedBy inst:Auth_BLD ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH .
+
+inst:Doc_Decree_70_2023_ND_CP a vld:Decree ;
+    vld:documentNumber "70/2023/NĐ-CP"^^xsd:string ;
+    vld:effectiveDate "2023-09-18"^^xsd:date ;
+    vld:issuedDate "2023-09-18"^^xsd:date ;
+    vld:title "Nghị định số 70/2023/NĐ-CP"@vi ;
+    vlr:amendsComponent inst:SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP,
+        inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP ;
+    vlr:partiallyAmends inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:promulgatedBy inst:Auth_ChinhPhu ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "10"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "11"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_11_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "12"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "12"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "12"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "13"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "13"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_13_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "14"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "15"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_15_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "16"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "17"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "17"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "18"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_09_2017_TT_BCT a vld:Article ;
+    vld:itemNumber "19"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_09_2017_TT_BCT ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_19_https_example_org_vn_legal_instance_Doc_Circular_09_2017_TT_BCT_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Circular_37_2018_TT_BCT .
+
+inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "1"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "20"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_20_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "21"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "21"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "22"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "22"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "22"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "23"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "23"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "23"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "24"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "24"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "25"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "25"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "26"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "26"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "27"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "27"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "28"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vld:Article ;
+    vld:itemNumber "2"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "30"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_72_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP .
+
+inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "30"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_2_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "30"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
+    vld:itemNumber "31"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP .
+
+inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "31"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "33"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "34"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "34"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "35"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "36"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "36"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "37"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "38"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "38"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "39"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_45_2015_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "40"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "41"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "42"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "43"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "44"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP a vld:Article ;
+    vld:itemNumber "45"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
+inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "4"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "4"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_45_2015_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_45_2015_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_24_2017_TT_BLDTBXH .
+
+inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP a vld:Article ;
+    vld:itemNumber "4"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_145_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_145_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_73_https_example_org_vn_legal_instance_Doc_Decree_35_2022_ND_CP .
+
+inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "4"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_4_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "5"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "5"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_5_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "6"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP a vld:Article ;
+    vld:itemNumber "6"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_31_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_6_https_example_org_vn_legal_instance_Doc_Decree_31_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP .
+
+inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH a vld:Article ;
+    vld:itemNumber "7"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "7"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_7_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "8"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
+
+inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP a vld:Article ;
+    vld:itemNumber "8"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
+
+inst:SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP a vld:Article ;
+    vld:itemNumber "9"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_152_2020_ND_CP ;
+    vlr:hasAmendment inst:Amendment_https_example_org_vn_legal_instance_SourceArticle_9_https_example_org_vn_legal_instance_Doc_Decree_152_2020_ND_CP_https_example_org_vn_legal_instance_SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP .
 
 inst:Topic_20 a vlpd:Topic ;
     rdfs:label "20. Lao động"@vi ;
@@ -49571,15 +50098,6 @@ inst:Doc_Circular_02_2023_TT_BYT a vld:Circular ;
     vlr:promulgatedBy inst:Auth_BYT ;
     vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_02_2023_TT_BYT .
 
-inst:Doc_Circular_02_2024_TT_BLDTBXH a vld:Circular ;
-    vld:documentNumber "02/2024/TT-BLĐTBXH"^^xsd:string ;
-    vld:effectiveDate "2024-05-15"^^xsd:date ;
-    vld:issuedDate "2024-02-23"^^xsd:date ;
-    vld:title "Thông tư số 02/2024/TT-BLĐTBXH"@vi ;
-    vlr:partiallyAmends inst:Doc_Circular_21_2021_TT_BLDTBXH ;
-    vlr:promulgatedBy inst:Auth_BLD ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
-
 inst:Doc_Circular_04_2012_TT_BLDTBXH a vld:Circular ;
     vld:documentNumber "04/2012/TT-BLĐTBXH"^^xsd:string ;
     vld:effectiveDate "2012-08-16"^^xsd:date ;
@@ -50105,24 +50623,6 @@ inst:Doc_Decision_64_2008_QD_BLDTBXH a vld:Decision ;
     vld:title "Quyết định số 64/2008/QĐ-BLĐTBXH"@vi ;
     vlr:promulgatedBy inst:Auth_BLD ;
     vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decision_64_2008_QD_BLDTBXH .
-
-inst:Doc_Decree_61_2020_ND_CP a vld:Decree ;
-    vld:documentNumber "61/2020/NĐ-CP"^^xsd:string ;
-    vld:effectiveDate "2020-07-15"^^xsd:date ;
-    vld:issuedDate "2020-05-29"^^xsd:date ;
-    vld:title "Nghị định số 61/2020/NĐ-CP"@vi ;
-    vlr:partiallyAmends inst:Doc_Decree_28_2015_ND_CP ;
-    vlr:promulgatedBy inst:Auth_ChinhPhu ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
-
-inst:Doc_Decree_74_2019_ND_CP a vld:Decree ;
-    vld:documentNumber "74/2019/NĐ-CP"^^xsd:string ;
-    vld:effectiveDate "2019-11-08"^^xsd:date ;
-    vld:issuedDate "2019-09-23"^^xsd:date ;
-    vld:title "Nghị định số 74/2019/NĐ-CP"@vi ;
-    vlr:partiallyAmends inst:Doc_Decree_61_2015_ND_CP ;
-    vlr:promulgatedBy inst:Auth_ChinhPhu ;
-    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
 
 inst:Article_20_2_LQ_105 a vlpd:CodificationArticle ;
     rdfs:label "Điều 20.2.LQ.105: Thời giờ làm việc bình thường"@vi ;
@@ -51271,8 +51771,77 @@ inst:Article_20_5_LQ_59 a vlpd:CodificationArticle ;
         inst:Article_20_5_LQ_58,
         inst:Article_20_5_LQ_61 .
 
+inst:Doc_Circular_02_2024_TT_BLDTBXH a vld:Circular ;
+    vld:documentNumber "02/2024/TT-BLĐTBXH"^^xsd:string ;
+    vld:effectiveDate "2024-05-15"^^xsd:date ;
+    vld:issuedDate "2024-02-23"^^xsd:date ;
+    vld:title "Thông tư số 02/2024/TT-BLĐTBXH"@vi ;
+    vlr:amendsComponent inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH,
+        inst:SourceArticle_4_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH,
+        inst:SourceArticle_5_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH,
+        inst:SourceArticle_7_https_example_org_vn_legal_instance_Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:partiallyAmends inst:Doc_Circular_21_2021_TT_BLDTBXH ;
+    vlr:promulgatedBy inst:Auth_BLD ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_02_2024_TT_BLDTBXH .
+
+inst:Doc_Decree_74_2019_ND_CP a vld:Decree ;
+    vld:documentNumber "74/2019/NĐ-CP"^^xsd:string ;
+    vld:effectiveDate "2019-11-08"^^xsd:date ;
+    vld:issuedDate "2019-09-23"^^xsd:date ;
+    vld:title "Nghị định số 74/2019/NĐ-CP"@vi ;
+    vlr:amendsComponent inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_26_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_27_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_28_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_31_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_33_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_35_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_37_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_39_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_40_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_41_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_42_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_43_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_44_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP,
+        inst:SourceArticle_45_https_example_org_vn_legal_instance_Doc_Decree_61_2015_ND_CP ;
+    vlr:partiallyAmends inst:Doc_Decree_61_2015_ND_CP ;
+    vlr:promulgatedBy inst:Auth_ChinhPhu ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP .
+
 inst:Auth_BCT a vla:Ministry ;
     rdfs:label "Bộ Công Thương"@vi .
+
+inst:Doc_Decree_61_2020_ND_CP a vld:Decree ;
+    vld:documentNumber "61/2020/NĐ-CP"^^xsd:string ;
+    vld:effectiveDate "2020-07-15"^^xsd:date ;
+    vld:issuedDate "2020-05-29"^^xsd:date ;
+    vld:title "Nghị định số 61/2020/NĐ-CP"@vi ;
+    vlr:amendsComponent inst:SourceArticle_10_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_12_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_14_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_16_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_17_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_18_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_21_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_22_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_23_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_24_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_25_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_30_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_34_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_36_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_38_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP,
+        inst:SourceArticle_8_https_example_org_vn_legal_instance_Doc_Decree_28_2015_ND_CP ;
+    vlr:partiallyAmends inst:Doc_Decree_28_2015_ND_CP ;
+    vlr:promulgatedBy inst:Auth_ChinhPhu ;
+    vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP .
 
 inst:Article_20_2_LQ_104 a vlpd:CodificationArticle ;
     rdfs:label "Điều 20.2.LQ.104: Thưởng"@vi ;
@@ -52247,6 +52816,10 @@ inst:Doc_Circular_54_2016_TT_BLDTBXH a vld:Circular ;
     vld:title "Thông tư số 54/2016/TT-BLĐTBXH"@vi ;
     vlr:promulgatedBy inst:Auth_BLD ;
     vlt:hasValidityInterval inst:Validity_https_example_org_vn_legal_instance_Doc_Circular_54_2016_TT_BLDTBXH .
+
+inst:SourceArticle_3_https_example_org_vn_legal_instance_Doc_Decree_140_2018_ND_CP a vld:Article ;
+    vld:itemNumber "3"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_140_2018_ND_CP .
 
 inst:Doc_Circular_09_2017_TT_BCT a vld:Circular ;
     vld:documentNumber "09/2017/TT-BCT"^^xsd:string ;
@@ -53245,8 +53818,16 @@ b) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm 
         inst:Article_20_5_ND_4_10,
         inst:Article_20_5_TT_95_5 .
 
+inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_61_2020_ND_CP a vld:Article ;
+    vld:itemNumber "1"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_61_2020_ND_CP .
+
 inst:Auth_BYT a vla:Ministry ;
     rdfs:label "Bộ Y tế"@vi .
+
+inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_70_2023_ND_CP a vld:Article ;
+    vld:itemNumber "1"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_70_2023_ND_CP .
 
 inst:Article_20_2_LQ_112 a vlpd:CodificationArticle ;
     rdfs:label "Điều 20.2.LQ.112: Nghỉ lễ, tết"@vi ;
@@ -54023,6 +54604,10 @@ inst:Article_20_3_TT_2_1 a vlpd:CodificationArticle ;
     vlpd:heading "Phạm vi điều chỉnh"@vi ;
     vlr:cites inst:Article_20_3_LQ_26,
         inst:Article_20_3_LQ_43 .
+
+inst:SourceArticle_1_https_example_org_vn_legal_instance_Doc_Decree_74_2019_ND_CP a vld:Article ;
+    vld:itemNumber "1"^^xsd:string ;
+    vld:locatedInDocument inst:Doc_Decree_74_2019_ND_CP .
 
 inst:Doc_Circular_11_2017_TT_BLDTBXH a vld:Circular ;
     vld:documentNumber "11/2017/TT-BLĐTBXH"^^xsd:string ;

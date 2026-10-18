@@ -4,8 +4,8 @@
   "dataset_id": "lao_dong_v5",
   "schema_counts": {
     "classes": 96,
-    "object_properties": 71,
-    "datatype_properties": 36
+    "object_properties": 73,
+    "datatype_properties": 37
   },
   "used_terms": {
     "classes": [
@@ -27,6 +27,7 @@
       "https://example.org/vn-legal/phapdien#SourceMapping",
       "https://example.org/vn-legal/phapdien#Topic",
       "https://example.org/vn-legal/provenance#ExtractedStatement",
+      "https://example.org/vn-legal/time#AmendmentEvent",
       "https://example.org/vn-legal/time#LegalValidityInterval"
     ],
     "object_properties": [
@@ -45,7 +46,10 @@
       "https://example.org/vn-legal/phapdien#refersToCodificationComponent",
       "https://example.org/vn-legal/provenance#sourceComponent",
       "https://example.org/vn-legal/provenance#sourceDocument",
+      "https://example.org/vn-legal/relation#amendingComponent",
+      "https://example.org/vn-legal/relation#amendsComponent",
       "https://example.org/vn-legal/relation#cites",
+      "https://example.org/vn-legal/relation#hasAmendment",
       "https://example.org/vn-legal/relation#partiallyAmends",
       "https://example.org/vn-legal/relation#promulgatedBy",
       "https://example.org/vn-legal/time#hasValidityInterval"
@@ -65,6 +69,8 @@
       "https://example.org/vn-legal/phapdien#topicName",
       "https://example.org/vn-legal/phapdien#topicNumber",
       "https://example.org/vn-legal/provenance#sourceQuote",
+      "https://example.org/vn-legal/relation#amendmentAction",
+      "https://example.org/vn-legal/time#amendsAt",
       "https://example.org/vn-legal/time#validFrom"
     ]
   },
@@ -139,7 +145,6 @@
       "https://example.org/vn-legal/provenance#Extraction",
       "https://example.org/vn-legal/provenance#Review",
       "https://example.org/vn-legal/provenance#SourceArtifact",
-      "https://example.org/vn-legal/time#AmendmentEvent",
       "https://example.org/vn-legal/time#EffectiveEvent",
       "https://example.org/vn-legal/time#LegalEvent",
       "https://example.org/vn-legal/time#PromulgationEvent",
@@ -181,7 +186,6 @@
       "https://example.org/vn-legal/provenance#hasExtraction",
       "https://example.org/vn-legal/provenance#reviewedBy",
       "https://example.org/vn-legal/relation#amends",
-      "https://example.org/vn-legal/relation#amendsComponent",
       "https://example.org/vn-legal/relation#consolidates",
       "https://example.org/vn-legal/relation#definedIn",
       "https://example.org/vn-legal/relation#defines",
@@ -220,7 +224,6 @@
       "https://example.org/vn-legal/provenance#pageNumber",
       "https://example.org/vn-legal/provenance#reviewStatus",
       "https://example.org/vn-legal/provenance#sourceURL",
-      "https://example.org/vn-legal/time#amendsAt",
       "https://example.org/vn-legal/time#eventDate",
       "https://example.org/vn-legal/time#repealsAt",
       "https://example.org/vn-legal/time#validTo"
