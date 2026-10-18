@@ -1,11 +1,12 @@
 {
   "schema": "ontology/schema/vn_legal_ontology_schema_v4.ttl",
   "abox": "ontology/abox/abox_lao_dong.ttl",
+  "pdf_aboxes": [],
   "dataset_id": "lao_dong_v5",
   "schema_counts": {
-    "classes": 96,
+    "classes": 97,
     "object_properties": 73,
-    "datatype_properties": 37
+    "datatype_properties": 39
   },
   "used_terms": {
     "classes": [
@@ -61,6 +62,7 @@
       "https://example.org/vn-legal/document#itemNumber",
       "https://example.org/vn-legal/document#title",
       "https://example.org/vn-legal/phapdien#codificationNumber",
+      "https://example.org/vn-legal/phapdien#consolidatedInCodification",
       "https://example.org/vn-legal/phapdien#contentText",
       "https://example.org/vn-legal/phapdien#heading",
       "https://example.org/vn-legal/phapdien#itemName",
@@ -151,7 +153,8 @@
       "https://example.org/vn-legal/time#RepealEvent",
       "https://example.org/vn-legal/time#ReplacementEvent",
       "https://example.org/vn-legal/time#SigningEvent",
-      "https://example.org/vn-legal/time#SuspensionEvent"
+      "https://example.org/vn-legal/time#SuspensionEvent",
+      "n8a1c638b605f4460a217606624d2c9cdb1"
     ],
     "object_properties": [
       "https://example.org/vn-legal/authority#hasCompetenceRule",
@@ -224,6 +227,7 @@
       "https://example.org/vn-legal/provenance#pageNumber",
       "https://example.org/vn-legal/provenance#reviewStatus",
       "https://example.org/vn-legal/provenance#sourceURL",
+      "https://example.org/vn-legal/relation#amendmentScope",
       "https://example.org/vn-legal/time#eventDate",
       "https://example.org/vn-legal/time#repealsAt",
       "https://example.org/vn-legal/time#validTo"
