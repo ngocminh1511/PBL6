@@ -6,16 +6,21 @@ Retrieval + Graph Retrieval -> Hybrid Retrieval" stage of the pipeline.
 Chunks follow schema v5 (docs/structural_jsonl.md): a long Dieu is stored as
 parts "<doc>:d35:p1", ":p2", ...; vector hits are grouped per Dieu and only
 provisions in force today are searched.
+
+A Dieu whose amended_by names an amendment dated after its version_date
+(not consolidated into its text yet) gets the amending parts attached as
+Evidence.amendments, so they stay with it through reranking and the prompt
+can put them first (docs/structural_jsonl.md, section 10).
 """
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
-from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCondition, MatchValue, PayloadField
+from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCondition, MatchAny, MatchValue, PayloadField
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
@@ -46,6 +51,9 @@ class Evidence:
     meta_dieu: str | None = None
     meta_khoan: str | None = None
     meta_de_muc: str | None = None
+    version_date: str | None = None
+    amended_by: list[dict] = field(default_factory=list)
+    amendments: list["Evidence"] = field(default_factory=list)  # parts that amend this Dieu after version_date
 
     @property
     def citation(self) -> str:
@@ -65,7 +73,30 @@ class Evidence:
             meta_dieu=payload.get("meta_dieu"),
             meta_khoan=payload.get("meta_khoan"),
             meta_de_muc=payload.get("meta_de_muc"),
+            version_date=payload.get("version_date"),
+            amended_by=payload.get("amended_by") or [],
         )
+
+
+def pending_amendments(evidence: Evidence) -> list[str]:
+    """Amending Dieu ('<doc>:d<N>') dated after the Dieu's version_date: its
+    text does not reflect them yet. Phap dien entries are all consolidated."""
+    found = []
+    for entry in evidence.amended_by:
+        date_ = entry.get("date")
+        if date_ and (not evidence.version_date or date_ > evidence.version_date) and entry["by"] not in found:
+            found.append(entry["by"])
+    return found
+
+
+def amending_parts(payloads: list[dict], by: str, target: str) -> list[dict]:
+    """Parts of amending Dieu `by` that change Dieu `target`, in order."""
+    parts = [
+        payload
+        for payload in payloads
+        if article_id(payload["chunk_id"]) == by and any(entry.get("target") == target for entry in payload.get("amends") or [])
+    ]
+    return sorted(parts, key=lambda payload: part_number(payload["chunk_id"]))
 
 
 def in_force(today: date | None = None) -> Filter:
@@ -160,6 +191,38 @@ class HybridRetriever:
             hydrated.text = join_parts([payload["text"] for payload in payloads])
             vars(ev).update(vars(hydrated))
 
+    def attach_amendments(self, evidences: list[Evidence]) -> None:
+        """Fill Evidence.amendments from the amending parts in force."""
+        pending = {id(ev): pending_amendments(ev) for ev in evidences}
+        document_ids = sorted({by.split(":", 1)[0] for found in pending.values() for by in found})
+        if not document_ids:
+            return
+        payloads: list[dict] = []
+        offset = None
+        while True:
+            points, offset = self.qdrant.scroll(
+                collection_name=COLLECTION,
+                scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids)), in_force()]),
+                limit=256,
+                offset=offset,
+                with_payload=True,
+            )
+            payloads += [point.payload for point in points if point.payload]
+            if offset is None:
+                break
+        for ev in evidences:
+            target = article_id(ev.chunk_id)
+            for by in pending[id(ev)]:
+                parts = amending_parts(payloads, by, target)
+                if not parts:
+                    continue
+                amendment = Evidence.from_payload(parts[0], "amendment")
+                amendment.chunk_id = by
+                khoan = [part["meta_khoan"] for part in parts if part.get("meta_khoan")]
+                amendment.meta_khoan = ", ".join(dict.fromkeys(khoan)) or None
+                amendment.text = join_parts([part["text"] for part in parts])
+                ev.amendments.append(amendment)
+
     def retrieve(self, query: str, top_k: int = 8, graph_limit_per_node: int = 3) -> list[Evidence]:
         vector_hits = self.vector_search(query, top_k=top_k)
         seed_mapcs = [e.mapc for e in vector_hits if e.mapc]
@@ -172,6 +235,7 @@ class HybridRetriever:
             if e.text and e.chunk_id not in seen:
                 merged.append(e)
                 seen.add(e.chunk_id)
+        self.attach_amendments(merged)
         return merged
 
 
@@ -187,6 +251,8 @@ if __name__ == "__main__":
         for e in results:
             print(f"[{e.source}] {e.ten} (score={e.score:.3f})")
             print(f"  {e.citation}  ({e.chunk_id})")
+            for amendment in e.amendments:
+                print(f"  sửa đổi bởi {amendment.citation}  ({amendment.chunk_id})")
             print()
     finally:
         retriever.close()

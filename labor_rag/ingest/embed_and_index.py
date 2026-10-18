@@ -18,6 +18,10 @@ version_date wins and the losing Dieu's old parts are deleted. A rebuild drops
 PDF chunks loaded with --upsert, so it stops when the collection holds chunks
 from another source; pass --recreate to rebuild anyway, then load them again.
 
+Chunks of an amending document carry amends; after writing them, each amended
+Dieu already in the collection gets the matching amended_by entries
+(set_payload, no re-embedding; labor_rag/ingest/amending.py).
+
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
        python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
        python -m labor_rag.ingest.embed_and_index --recreate   # rebuild, dropping PDF chunks
@@ -48,8 +52,9 @@ from qdrant_client.models import (
 )
 
 from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
+from labor_rag.ingest.amending import amended_by_updates, merge_amended_by
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
-from labor_rag.ingest.chunk_schema import point_id
+from labor_rag.ingest.chunk_schema import article_id, point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -168,6 +173,36 @@ def other_source_documents(client: QdrantClient, collection: str) -> Counter:
             return found
 
 
+def link_amendments(client: QdrantClient, collection: str, chunks: list[dict]) -> None:
+    """Add the amends of these chunks to amended_by of every part of the
+    amended Dieu. A Dieu not indexed yet is reported; load this file again
+    after loading it."""
+    updates = amended_by_updates(chunks)
+    if not updates:
+        return
+    document_ids = sorted({target.split(":", 1)[0] for target in updates})
+    indexed: dict[str, list] = {}
+    offset = None
+    while True:
+        points, offset = client.scroll(
+            collection_name=collection,
+            scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids))]),
+            with_payload=["chunk_id", "amended_by"],
+            with_vectors=False,
+            limit=256,
+            offset=offset,
+        )
+        for point in points:
+            indexed.setdefault(article_id(point.payload["chunk_id"]), []).append(point)
+        if offset is None:
+            break
+    for target, entries in sorted(updates.items()):
+        for point in indexed.get(target, []):
+            merged = merge_amended_by(point.payload.get("amended_by") or [], entries)
+            client.set_payload(collection, payload={"amended_by": merged}, points=[point.id])
+        print(f"  amended_by of {target}: {len(entries)} entries" if target in indexed else f"WARNING: {target} is amended but not indexed")
+
+
 def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict]) -> list[dict]:
     """Delete the old parts of every Dieu the new chunks win, and return the
     chunks still to embed and write."""
@@ -238,10 +273,12 @@ def main() -> None:
                 f"{args.collection} holds {sum(others.values())} chunks not from Phap dien: {listed}.\n"
                 "A rebuild would delete them. Use --upsert to merge, or --recreate to rebuild and load them again."
             )
+    incoming = chunks
     if not recreate:
         chunks = apply_upsert_plan(client, args.collection, chunks)
         if not chunks:
             print("Nothing to embed.")
+            link_amendments(client, args.collection, incoming)
             return
     texts = [c["text"] for c in chunks]
 
@@ -267,6 +304,7 @@ def main() -> None:
         done += len(batch_ids)
         print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
 
+    link_amendments(client, args.collection, incoming)
     print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}")
 
 

@@ -24,6 +24,7 @@ from typing import Iterable
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
 
 from labor_rag.config import LAO_DONG_ABOX_PATH, LAO_DONG_DATASET_ID, LAO_DONG_DIR, ROOT_DIR, SCHEMA_V4_PATH
+from labor_rag.ingest.amending import ACTION_ORDER
 from labor_rag.ingest.chunk_schema import (
     MAX_TOKENS,
     TokenCounter,
@@ -117,7 +118,6 @@ CONTAINS_LOCALS = {
 }
 PART_OF_LOCALS = {"hasParentComponent", "partOfTopic", "belongsToItem"}
 REFERENCE_LOCALS = {"cites", "refersToCodificationComponent", "refersToExternalComponent"}
-AMENDMENT_ORDER = ["sua_doi", "bo_sung", "bai_bo", "thay_cum_tu"]
 RELATION_NAME_MAP = {
     "promulgatedBy": "ISSUED_BY",
     "locatedInDocument": "LOCATED_IN_DOCUMENT",
@@ -302,7 +302,7 @@ def amendments(graph: Graph, node_by_uri: dict[str, dict]) -> tuple[dict[str, li
             print(f"WARNING: incomplete amendment {event}", file=sys.stderr)
             continue
         date = first_literal(graph, event, [URIRef(f"{VLT}amendsAt")])
-        actions = sorted(literal_strings(graph, event, URIRef(f"{VLR}amendmentAction")), key=AMENDMENT_ORDER.index) or [None]
+        actions = sorted(literal_strings(graph, event, URIRef(f"{VLR}amendmentAction")), key=ACTION_ORDER.index) or [None]
         for action in actions:
             amended_by[target].append({"by": by, "scope": None, "action": action, "date": date})
             amends[by].append({"target": target, "scope": None, "action": action, "date": date})

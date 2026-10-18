@@ -28,6 +28,7 @@ from rdflib import Graph, Literal, Namespace, RDF, RDFS, URIRef
 from rdflib.namespace import XSD
 
 from labor_rag.config import ABOX_DIR, BOPHAPDIEN_DIR, INTERIM_DIR
+from labor_rag.ingest.amending import actions_in
 from labor_rag.ingest.parse_demuc_html import iter_dieu, load_linh_vuc_index, parse_demuc_nodes
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -135,8 +136,6 @@ SOURCE_RE = re.compile(
 ISSUED_RE = re.compile(r"ngày\s+(\d{1,2}/\d{1,2}/\d{4})\s+của\s", re.IGNORECASE)
 # "03/2017/TT- BVHTTDL" -> "03/2017/TT-BVHTTDL"
 BROKEN_NUMBER_RE = re.compile(r"(?<=[A-ZĐ])-\s+(?=[A-ZĐ])")
-# Words before "bởi Điều X ..." in a pGhiChu citation -> vlr:amendmentAction.
-AMENDMENT_ACTIONS = {"sửa đổi": "sua_doi", "bổ sung": "bo_sung", "bãi bỏ": "bai_bo"}
 
 
 class Source(NamedTuple):
@@ -146,11 +145,6 @@ class Source(NamedTuple):
     article: str
     effective: str | None
     actions: list[str]  # for an amending source: what it did to the Dieu
-
-
-def amendment_actions(text: str) -> list[str]:
-    """'..., có nội dung được sửa đổi, có nội dung được bổ sung bởi ' -> ['sua_doi', 'bo_sung']."""
-    return [action for words, action in AMENDMENT_ACTIONS.items() if words in text.lower()]
 
 
 def clean_text(text: str | None) -> str:
@@ -278,7 +272,8 @@ class AboxBuilder:
             doc = self.document(
                 m["kind"], m["number"], m["name"], effective, parse_vn_date(issued.group(1)) if issued else None
             )
-            actions = amendment_actions(text[previous_end:m.start()]) if found else []
+            # ", có nội dung được sửa đổi, có nội dung được bổ sung bởi " -> vlr:amendmentAction
+            actions = actions_in(text[previous_end:m.start()]) if found else []
             found.append(Source(doc, m["article"], effective, actions))
             previous_end = m.end()
         if citation and not found:

@@ -296,7 +296,7 @@ So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, kh
 | Trường hợp | Ví dụ | Cách làm |
 |---|---|---|
 | Nạp lại cùng văn bản | PDF NĐ 145/2020 OCR lại | Cùng `document_id` nên `chunk_id` khớp 1-1. `chunk_id` chỉ có ở bản mới: Điều mới. Chỉ có ở bản cũ: Điều bị mất (thường do OCR, cần cảnh báo). Có ở cả hai: so `content_hash`, chỉ embedding lại Điều đổi hash |
-| Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Parse văn bản và Điều đích -> `145-2020-nd-cp:d35`. Chunk sửa đổi có `amends: ["145-2020-nd-cp:d35"]`, chunk cũ thêm vào `amended_by` (Qdrant `set_payload`). Retrieval trúng Điều cũ thì kéo theo chunk sửa đổi, prompt ghi rõ quy định sửa đổi được ưu tiên |
+| Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Xem "Văn bản sửa đổi" bên dưới |
 | Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). Đặt mọi chunk của văn bản cũ `still_valid = false`, `effective_to_date` = ngày văn bản mới có hiệu lực. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine, lưu thành cạnh `REPLACES` có điểm trong Neo4j |
 
 - **Không xóa bản cũ**, chỉ đặt `still_valid = false`: vẫn trả lời được "trước đây quy định thế nào" và so được phiên bản.
@@ -315,3 +315,22 @@ So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, kh
   Quy tắc retrieval: chỉ kéo theo chunk sửa đổi khi `date` > `version_date` của chunk (sửa đổi chưa được hợp nhất).
 - `amends` của chunk Pháp điển thường rỗng: Điều sửa đổi (Điều 1 NĐ 70/2023, …) đã hợp nhất vào Điều bị sửa nên
   không có chunk riêng.
+
+**Văn bản sửa đổi** (PDF, `labor_rag/ingest/amending.py`):
+
+1. `pdf_to_chunks`: Điều có tên bắt đầu bằng "Sửa đổi / Bổ sung / Bãi bỏ / Thay (thế) cụm từ" được cắt **theo từng
+   khoản** (khoản dài thì cắt tiếp), không theo độ dài. Phần lệnh của khoản (trước "như sau", bỏ cụm trong ngoặc kép)
+   cho Điều đích, `scope`, `action`. Văn bản đích là văn bản nêu trong khoản, nếu không có thì lấy văn bản nêu trong tên Điều.
+   - Mỗi phần có dòng ngữ cảnh "Sửa đổi, bổ sung khoản 2 Điều 3 Nghị định số 152/2020/NĐ-CP (Điều 3. <tên>)" ngay sau
+     phần đầu, `meta_khoan` = số khoản của Điều sửa đổi, `amends` = các mục của khoản đó, `date` = ngày hiệu lực.
+   - "Bổ sung Điều 35a vào sau Điều 35": đích là Điều 35, `scope = "Điều 35a"`, vì chưa có chunk Điều 35a.
+2. `embed_and_index --upsert`: sau khi ghi, thêm vào `amended_by` của mọi phần Điều đích đang có trong collection
+   (`set_payload`, không embedding lại). Mỗi `(by, scope, action)` chỉ có một mục, nên nạp lại văn bản sửa đổi không
+   tạo trùng. Điều đích chưa có trong collection: in cảnh báo, nạp lại file sau khi nạp văn bản đích.
+3. Retrieval (`hybrid_retrieve.attach_amendments`): với Điều trả về có mục `amended_by` mà `date` > `version_date`,
+   lấy các phần của Điều sửa đổi có `amends.target` là Điều đó, gắn vào `Evidence.amendments`. Prompt đặt chúng ngay
+   dưới Điều gốc ("Được sửa đổi bởi …") và yêu cầu áp dụng quy định sửa đổi thay cho nội dung gốc ở phần bị sửa.
+- Chỉ nạp văn bản sửa đổi khi chưa có VBHN. Không tự áp nội dung sửa đổi vào Điều cũ: khi có VBHN / Pháp điển mới,
+  `version_date` của Điều mới ≥ `date` nên chunk sửa đổi tự không còn bị kéo theo.
+- Dựng lại collection (`--recreate`) làm mất các mục `amended_by` thêm từ PDF: chạy lại `--upsert` cho văn bản sửa đổi.
+- Neo4j chưa có cạnh cho văn bản sửa đổi từ PDF (không có node, `mapc = null`); retrieval chỉ dùng payload Qdrant.
