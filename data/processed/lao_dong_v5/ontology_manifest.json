@@ -5,8 +5,8 @@
   "dataset_id": "lao_dong_v5",
   "schema_counts": {
     "classes": 97,
-    "object_properties": 73,
-    "datatype_properties": 39
+    "object_properties": 75,
+    "datatype_properties": 40
   },
   "used_terms": {
     "classes": [
@@ -16,10 +16,12 @@
       "https://example.org/vn-legal/authority#PrimeMinister",
       "https://example.org/vn-legal/document#Article",
       "https://example.org/vn-legal/document#Circular",
+      "https://example.org/vn-legal/document#Clause",
       "https://example.org/vn-legal/document#Decision",
       "https://example.org/vn-legal/document#Decree",
       "https://example.org/vn-legal/document#JointCircular",
       "https://example.org/vn-legal/document#Law",
+      "https://example.org/vn-legal/document#Point",
       "https://example.org/vn-legal/phapdien#CodificationArticle",
       "https://example.org/vn-legal/phapdien#CodificationChapter",
       "https://example.org/vn-legal/phapdien#CodificationItem",
@@ -32,6 +34,8 @@
       "https://example.org/vn-legal/time#LegalValidityInterval"
     ],
     "object_properties": [
+      "https://example.org/vn-legal/document#hasClause",
+      "https://example.org/vn-legal/document#hasPoint",
       "https://example.org/vn-legal/document#locatedInDocument",
       "https://example.org/vn-legal/phapdien#belongsToItem",
       "https://example.org/vn-legal/phapdien#codificationOf",
@@ -50,16 +54,20 @@
       "https://example.org/vn-legal/relation#amendingComponent",
       "https://example.org/vn-legal/relation#amendsComponent",
       "https://example.org/vn-legal/relation#cites",
+      "https://example.org/vn-legal/relation#citesComponent",
       "https://example.org/vn-legal/relation#hasAmendment",
+      "https://example.org/vn-legal/relation#implementsComponent",
       "https://example.org/vn-legal/relation#partiallyAmends",
       "https://example.org/vn-legal/relation#promulgatedBy",
       "https://example.org/vn-legal/time#hasValidityInterval"
     ],
     "datatype_properties": [
+      "https://example.org/vn-legal/document#contentText",
       "https://example.org/vn-legal/document#documentNumber",
       "https://example.org/vn-legal/document#effectiveDate",
       "https://example.org/vn-legal/document#issuedDate",
       "https://example.org/vn-legal/document#itemNumber",
+      "https://example.org/vn-legal/document#shortTitle",
       "https://example.org/vn-legal/document#title",
       "https://example.org/vn-legal/phapdien#codificationNumber",
       "https://example.org/vn-legal/phapdien#consolidatedInCodification",
@@ -98,7 +106,6 @@
       "https://example.org/vn-legal/core#LegalStatus",
       "https://example.org/vn-legal/document#Appendix",
       "https://example.org/vn-legal/document#Chapter",
-      "https://example.org/vn-legal/document#Clause",
       "https://example.org/vn-legal/document#Constitution",
       "https://example.org/vn-legal/document#DocumentComponent",
       "https://example.org/vn-legal/document#LegalDocument",
@@ -106,7 +113,6 @@
       "https://example.org/vn-legal/document#Ordinance",
       "https://example.org/vn-legal/document#OtherLegalDocument",
       "https://example.org/vn-legal/document#Part",
-      "https://example.org/vn-legal/document#Point",
       "https://example.org/vn-legal/document#Resolution",
       "https://example.org/vn-legal/document#Section",
       "https://example.org/vn-legal/document#Subsection",
@@ -154,15 +160,13 @@
       "https://example.org/vn-legal/time#ReplacementEvent",
       "https://example.org/vn-legal/time#SigningEvent",
       "https://example.org/vn-legal/time#SuspensionEvent",
-      "n8a1c638b605f4460a217606624d2c9cdb1"
+      "n6f2e78088a7e4fdb8568dd779efb3d77b1"
     ],
     "object_properties": [
       "https://example.org/vn-legal/authority#hasCompetenceRule",
       "https://example.org/vn-legal/document#hasArticle",
-      "https://example.org/vn-legal/document#hasClause",
       "https://example.org/vn-legal/document#hasComponent",
       "https://example.org/vn-legal/document#hasParentComponent",
-      "https://example.org/vn-legal/document#hasPoint",
       "https://example.org/vn-legal/norm#expressedIn",
       "https://example.org/vn-legal/norm#expresses",
       "https://example.org/vn-legal/norm#hasAction",
@@ -210,7 +214,6 @@
       "https://example.org/vn-legal/time#hasLegalEvent"
     ],
     "datatype_properties": [
-      "https://example.org/vn-legal/document#contentText",
       "https://example.org/vn-legal/document#documentStatus",
       "https://example.org/vn-legal/document#expiryDate",
       "https://example.org/vn-legal/document#heading",
