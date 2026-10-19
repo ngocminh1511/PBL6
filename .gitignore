@@ -6,6 +6,7 @@
 .ipynb_checkpoints/
 
 # Local credentials and environment files
+.vscode/
 .env
 **/.env
 !.env.example
