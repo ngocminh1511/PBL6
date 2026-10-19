@@ -42,11 +42,15 @@ except ImportError:
 
 from torch.utils.data import DataLoader
 
-from labor_rag.config import DATA_DIR, FINETUNE_DIR, FINETUNE_MODELS_DIR, LAO_DONG_DIR
+# Many queries share one positive chunk; a plain DataLoader can put two of them in a
+# batch, making one's positive an in-batch negative of the other under MNRL.
+from sentence_transformers.datasets import NoDuplicatesDataLoader
+
+from labor_rag.config import DATA_DIR, FINETUNE_MERGED_DIR, FINETUNE_MODELS_DIR, LAO_DONG_DIR
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_TRAIN = FINETUNE_DIR / "train.jsonl"
-DEFAULT_VAL = FINETUNE_DIR / "val.jsonl"
+DEFAULT_TRAIN = FINETUNE_MERGED_DIR / "train.jsonl"
+DEFAULT_VAL = FINETUNE_MERGED_DIR / "val.jsonl"
 DEFAULT_MODEL = "BAAI/bge-m3"
 DEFAULT_OUTPUT = FINETUNE_MODELS_DIR
 
@@ -215,7 +219,7 @@ def train_model(
         print("STARTING PHASE 1: Contrastive Learning (MNRL with in-batch negatives)")
         print("=" * 60)
         phase1_examples = build_phase1_examples(train_samples)
-        phase1_loader = DataLoader(phase1_examples, shuffle=True, batch_size=batch_size)
+        phase1_loader = NoDuplicatesDataLoader(phase1_examples, batch_size=batch_size)
         phase1_loss = MultipleNegativesRankingLoss(model)
 
         total_steps = len(phase1_loader) * epochs
@@ -258,7 +262,11 @@ def train_model(
                 print("Aborting Phase 2 because no hard negatives are present.")
                 return
 
-        phase2_loader = DataLoader(phase2_examples, shuffle=True, batch_size=batch_size)
+        phase2_loader = (
+            DataLoader(phase2_examples, shuffle=True, batch_size=batch_size)
+            if phase2_loss_mode == "triplet"
+            else NoDuplicatesDataLoader(phase2_examples, batch_size=batch_size)
+        )
         if phase2_loss_mode == "triplet":
             phase2_loss = TripletLoss(model)
         else:

@@ -1,17 +1,19 @@
 """Stage 3: Hard Negative Mining for BGE-M3 Fine-tuning.
 
 Uses a pretrained bi-encoder (default: BAAI/bge-m3) to mine hard negatives
-for each query in synthetic_queries.jsonl.
+for each query in merged/queries_train.jsonl (build_dataset.py).
 
 Hard negatives are passages that score high in cosine similarity against
-the query embedding, but are NOT the true positive passage (and do not belong
-to the same legal Article/Điều).
+the query embedding, but are NOT a positive passage: candidates in the same
+Article/Điều as any positive, or in an article that a positive's article
+REFERS_TO (or is referred to by), are skipped as likely false negatives.
 
 Output JSONL schema:
     {
         "query_id": "...",
         "query": "...",
         "chunk_id": "...",
+        "positive_chunk_ids": ["...", ...],
         "hard_negatives": [
             {"chunk_id": "...", "score": 0.812},
             ...
@@ -29,7 +31,7 @@ import argparse
 import json
 import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -41,13 +43,44 @@ if hasattr(sys.stderr, "reconfigure"):
 import torch
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import FINETUNE_DIR, LAO_DONG_DIR
+from labor_rag.config import FINETUNE_MERGED_DIR, LAO_DONG_DIR
 from labor_rag.ingest.chunk_schema import article_id
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_QUERIES = FINETUNE_DIR / "synthetic_queries.jsonl"
-DEFAULT_OUTPUT = FINETUNE_DIR / "hard_negatives.jsonl"
+DEFAULT_QUERIES = FINETUNE_MERGED_DIR / "queries_train.jsonl"
+DEFAULT_OUTPUT = FINETUNE_MERGED_DIR / "hard_negatives.jsonl"
+DEFAULT_KG_EDGES = LAO_DONG_DIR / "kg_edges.jsonl"
 DEFAULT_MODEL = "BAAI/bge-m3"
+ARTICLE_IRI_PREFIX = "Article_"
+
+
+def load_reference_neighbours(edges_path: Path, chunks: list[dict[str, Any]]) -> dict[str, set[str]]:
+    """article_id -> article_ids it REFERS_TO or is referred to by (both directions)."""
+    if not edges_path.exists():
+        return {}
+    article_of_mapc = {c["mapc"]: article_id(c["chunk_id"]) for c in chunks if c.get("mapc")}
+
+    def to_article(node: str) -> str | None:
+        if node in article_of_mapc:
+            return article_of_mapc[node]
+        tail = node.rsplit("#", 1)[-1]
+        if tail.startswith(ARTICLE_IRI_PREFIX):
+            return article_of_mapc.get(tail[len(ARTICLE_IRI_PREFIX):].replace("_", "."))
+        return None
+
+    neighbours: dict[str, set[str]] = defaultdict(set)
+    with edges_path.open(encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            edge = json.loads(line)
+            if edge.get("type") != "REFERS_TO":
+                continue
+            a, b = to_article(edge["source"]), to_article(edge["target"])
+            if a and b and a != b:
+                neighbours[a].add(b)
+                neighbours[b].add(a)
+    return neighbours
 
 
 def load_chunks(chunks_path: Path) -> list[dict[str, Any]]:
@@ -79,6 +112,7 @@ def mine_hard_negatives(
     neg_k: int = 5,
     batch_size: int = 32,
     device: str | None = None,
+    neighbours: dict[str, set[str]] | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -141,7 +175,10 @@ def mine_hard_negatives(
             top_scores, top_indices = torch.topk(sim_matrix, k=min(top_k, len(chunks)), dim=1)
 
             for i, query_item in enumerate(batch):
-                pos_art = article_id(query_item["chunk_id"])
+                positives = query_item.get("positive_chunk_ids") or [query_item["chunk_id"]]
+                excluded = {article_id(cid) for cid in positives}
+                for art in list(excluded):
+                    excluded |= (neighbours or {}).get(art, set())
                 negatives: list[dict[str, Any]] = []
 
                 cand_indices = top_indices[i].tolist()
@@ -149,8 +186,8 @@ def mine_hard_negatives(
 
                 for c_idx, score in zip(cand_indices, cand_scores):
                     cand_chunk = chunks[c_idx]
-                    # Exclude the positive chunk and any chunk in the same article
-                    if chunk_articles[c_idx] == pos_art:
+                    # Exclude positives, their articles and referenced articles
+                    if chunk_articles[c_idx] in excluded:
                         continue
                     negatives.append(
                         {
@@ -165,6 +202,7 @@ def mine_hard_negatives(
                     "query_id": query_item["query_id"],
                     "query": query_item["query"],
                     "chunk_id": query_item["chunk_id"],
+                    "positive_chunk_ids": positives,
                     "hard_negatives": negatives,
                 }
                 out_f.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -234,7 +272,8 @@ def validate_hard_negatives(output_path: Path = DEFAULT_OUTPUT) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Stage 3: Mine hard negatives using pretrained bi-encoder")
     parser.add_argument("--chunks", type=Path, default=DEFAULT_CHUNKS, help="Path to chunks.jsonl")
-    parser.add_argument("--queries", type=Path, default=DEFAULT_QUERIES, help="Path to synthetic_queries.jsonl")
+    parser.add_argument("--queries", type=Path, default=DEFAULT_QUERIES, help="Path to queries_train.jsonl")
+    parser.add_argument("--kg-edges", type=Path, default=DEFAULT_KG_EDGES, help="kg_edges.jsonl for REFERS_TO exclusion")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Path to output jsonl")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help="Model name for negative mining")
     parser.add_argument("--top-k", type=int, default=30, help="Initial candidate pool size per query")
@@ -260,6 +299,7 @@ def main() -> None:
         neg_k=args.neg_k,
         batch_size=args.batch_size,
         device=args.device,
+        neighbours=load_reference_neighbours(args.kg_edges, chunks),
     )
 
 

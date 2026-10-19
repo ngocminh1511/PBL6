@@ -23,8 +23,15 @@ Output val.jsonl schema:
         "category": "..."
     }
 
+Default mode reads build_dataset.py's merged/queries_train.jsonl and
+merged/queries_val.jsonl, so validation comes from held-out articles and the
+benchmark stays a test set. --legacy keeps the earlier synthetic-query +
+KG-pair assembly that validated on benchmark questions.
+
 Usage:
     python -m labor_rag.finetune.assemble_dataset
+    python -m labor_rag.finetune.assemble_dataset --with-kg-pairs
+    python -m labor_rag.finetune.assemble_dataset --legacy
     python -m labor_rag.finetune.assemble_dataset --validate-only
 """
 from __future__ import annotations
@@ -42,7 +49,7 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", line_buffering=True)
 
-from labor_rag.config import EVALUATION_DIR, FINETUNE_DIR, LAO_DONG_DIR
+from labor_rag.config import EVALUATION_DIR, FINETUNE_DIR, FINETUNE_MERGED_DIR, LAO_DONG_DIR
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
 DEFAULT_SYNTHETIC = FINETUNE_DIR / "synthetic_queries.jsonl"
@@ -58,6 +65,13 @@ DEFAULT_TRAIN = FINETUNE_DIR / "train.jsonl"
 DEFAULT_VAL = FINETUNE_DIR / "val.jsonl"
 DEFAULT_STATS = FINETUNE_DIR / "dataset_stats.json"
 DEFAULT_VAL_PER_DE_MUC = 12
+
+MERGED_QUERIES = FINETUNE_MERGED_DIR / "queries_train.jsonl"
+MERGED_VAL_QUERIES = FINETUNE_MERGED_DIR / "queries_val.jsonl"
+MERGED_HARD_NEGS = FINETUNE_MERGED_DIR / "hard_negatives.jsonl"
+MERGED_TRAIN = FINETUNE_MERGED_DIR / "train.jsonl"
+MERGED_VAL = FINETUNE_MERGED_DIR / "val.jsonl"
+MERGED_STATS = FINETUNE_MERGED_DIR / "dataset_stats.json"
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -239,6 +253,80 @@ def assemble_dataset(
     return stats
 
 
+def assemble_from_queries(
+    chunks_path: Path = DEFAULT_CHUNKS,
+    queries_path: Path = MERGED_QUERIES,
+    val_queries_path: Path = MERGED_VAL_QUERIES,
+    hard_negs_path: Path = MERGED_HARD_NEGS,
+    train_path: Path = MERGED_TRAIN,
+    val_path: Path = MERGED_VAL,
+    stats_path: Path = MERGED_STATS,
+    kg_pairs_path: Path | None = None,
+) -> dict[str, Any]:
+    """train.jsonl from build_dataset queries (+ mined negatives), val.jsonl from held-out queries."""
+    chunks_by_id = {c["chunk_id"]: c for c in load_jsonl(chunks_path)}
+    queries = load_jsonl(queries_path)
+    if not queries:
+        raise SystemExit(f"No queries at {queries_path}; run python -m labor_rag.finetune.build_dataset first")
+    hard_negs = {row["query_id"]: row.get("hard_negatives", []) for row in load_jsonl(hard_negs_path)}
+
+    samples: list[dict[str, Any]] = []
+    for q in queries:
+        positives = [cid for cid in q.get("positive_chunk_ids") or [q["chunk_id"]] if cid in chunks_by_id]
+        if not positives:
+            continue
+        negatives = [chunks_by_id[n["chunk_id"]]["text"] for n in hard_negs.get(q["query_id"], [])
+                     if n["chunk_id"] in chunks_by_id]
+        samples.append({
+            "id": q["query_id"],
+            "anchor": q["query"],
+            "positive": chunks_by_id[positives[0]]["text"],
+            "negatives": negatives,
+            "type": "synthetic_query" if q.get("is_synthetic") else "real_query",
+            "metadata": {
+                "chunk_id": positives[0],
+                "positive_chunk_ids": positives,
+                "source": q.get("source"),
+                "tier": q.get("tier"),
+                "temporal": q.get("temporal"),
+            },
+        })
+    kg_samples = 0
+    if kg_pairs_path is not None:
+        for p in load_jsonl(kg_pairs_path):
+            samples.append({
+                "id": p["pair_id"], "anchor": p["anchor"], "positive": p["positive"], "negatives": [],
+                "type": "kg_pair", "metadata": {"relation": p.get("relation", "refers_to")},
+            })
+            kg_samples += 1
+
+    val_records = [
+        {**v, "relevance": v.get("relevance", {}), "category": v.get("category", v.get("source", ""))}
+        for v in load_jsonl(val_queries_path)
+    ]
+    train_path.parent.mkdir(parents=True, exist_ok=True)
+    with train_path.open("w", encoding="utf-8") as f:
+        for s in samples:
+            f.write(json.dumps(s, ensure_ascii=False) + "\n")
+    with val_path.open("w", encoding="utf-8") as f:
+        for v in val_records:
+            f.write(json.dumps(v, ensure_ascii=False) + "\n")
+
+    stats = {
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "total_train_samples": len(samples),
+        "by_type": dict(Counter(s["type"] for s in samples)),
+        "by_source": dict(Counter(s["metadata"].get("source") for s in samples if s["type"] != "kg_pair")),
+        "kg_pair_samples": kg_samples,
+        "samples_with_hard_negatives": sum(1 for s in samples if s["negatives"]),
+        "validation_queries": len(val_records),
+        "corpus_chunks_count": len(chunks_by_id),
+    }
+    stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Saved {len(samples)} training samples to {train_path} and {len(val_records)} validation queries to {val_path}")
+    return stats
+
+
 def validate_dataset(
     train_path: Path = DEFAULT_TRAIN,
     val_path: Path = DEFAULT_VAL,
@@ -304,7 +392,15 @@ def main() -> None:
         help="Number of validation questions selected for each de muc",
     )
     parser.add_argument("--validate-only", action="store_true", help="Validate existing dataset files")
+    parser.add_argument("--legacy", action="store_true", help="Old synthetic + KG assembly, val from benchmark")
+    parser.add_argument("--with-kg-pairs", action="store_true", help="Also add KG positive pairs (default off)")
     args = parser.parse_args()
+
+    if not args.legacy:
+        if args.validate_only:
+            sys.exit(0 if validate_dataset(MERGED_TRAIN, MERGED_VAL, MERGED_STATS) else 1)
+        assemble_from_queries(chunks_path=args.chunks, kg_pairs_path=args.kg_pairs if args.with_kg_pairs else None)
+        return
 
     if args.validate_only:
         valid = validate_dataset(args.train, args.val, args.stats)
