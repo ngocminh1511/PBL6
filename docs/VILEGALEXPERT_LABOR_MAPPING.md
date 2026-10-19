@@ -12,16 +12,16 @@ python -m labor_rag.finetune.map_vilegal_labor
 Mặc định module đọc:
 
 ```text
-data/finetune/ViLegalExpert/train_data.json
+data/finetune/vilegal/train_data.json
 data/processed/lao_dong_v5/chunks.jsonl
 ```
 
 và ghi:
 
 ```text
-data/processed/lao_dong_v5/finetune/vilegal_labor_mapped.json
-data/processed/lao_dong_v5/finetune/vilegal_labor_review.json
-data/processed/lao_dong_v5/finetune/vilegal_labor_mapping_report.json
+data/processed/finetune/vilegal/vilegal_labor_mapped.json
+data/processed/finetune/vilegal/vilegal_labor_review.json
+data/processed/finetune/vilegal/vilegal_labor_mapping_report.json
 ```
 
 Có thể thay đổi đường dẫn bằng `--input`, `--chunks`, `--output`, `--review`
@@ -92,3 +92,6 @@ bản và context gốc kèm:
 Nguồn nội dung pháp lý canonical để chưng cất vẫn là
 `data/processed/lao_dong_v5/chunks.jsonl`; answer của ViLegalExpert được giữ
 để huấn luyện và truy vết, không thay thế văn bản Pháp điển.
+
+Bước tiếp theo (gióng lại phần Điều khớp nhất, gộp với các nguồn khác, chia train/val):
+`docs/FINETUNE_DATA.md`.

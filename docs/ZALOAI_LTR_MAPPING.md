@@ -14,25 +14,25 @@ python -m labor_rag.finetune.map_zaloai_labor
 Mặc định module đọc:
 
 ```text
-data/finetune/ZaloAI2021_LTR/train_data_model.json
+data/finetune/zalo/train_data_model.json
 data/processed/lao_dong_v5/chunks.jsonl
 ```
 
 và ghi:
 
 ```text
-data/processed/lao_dong_v5/finetune/zaloai_ltr_lao_dong.json
-data/processed/lao_dong_v5/finetune/zaloai_ltr_lao_dong_mapping_report.json
+data/processed/finetune/zalo/zaloai_ltr_lao_dong.json
+data/processed/finetune/zalo/zaloai_ltr_lao_dong_mapping_report.json
 ```
 
 Có thể chỉ định đường dẫn khác:
 
 ```powershell
 python -m labor_rag.finetune.map_zaloai_labor `
-  --input data/finetune/ZaloAI2021_LTR/train_data_model.json `
+  --input data/finetune/zalo/train_data_model.json `
   --chunks data/processed/lao_dong_v5/chunks.jsonl `
-  --output data/processed/lao_dong_v5/finetune/zaloai_ltr_lao_dong.json `
-  --report data/processed/lao_dong_v5/finetune/zaloai_ltr_lao_dong_mapping_report.json
+  --output data/processed/finetune/zalo/zaloai_ltr_lao_dong.json `
+  --report data/processed/finetune/zalo/zaloai_ltr_lao_dong_mapping_report.json
 ```
 
 ## Quy tắc định danh
@@ -70,3 +70,5 @@ Mỗi article được ánh xạ có thêm:
 
 `mapping_report.json` ghi coverage theo câu hỏi, số Điều mapped và các lý do
 không khớp (`missing_document`, `missing_article`, `invalid_identifier`).
+
+Bước tiếp theo (gộp với các nguồn khác, chia train/val): `docs/FINETUNE_DATA.md`.

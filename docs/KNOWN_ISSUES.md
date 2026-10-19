@@ -148,3 +148,27 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
   ("Luật Bảo hiểm xã hội") không thành cạnh. "Điều 14" không nêu văn bản, trong một văn bản cũng có Điều 14, được
   gán cho chính văn bản đó dù có thể là văn bản khác (3/503 liên kết Pháp điển bị lệch vì vậy). "Của Luật này" trong
   nội dung mà một Điều sửa đổi chèn vào luật khác (Điều 219 BLLĐ) bị hiểu là luật đang xét.
+
+---
+
+## Fine-tune: các điểm cần lưu ý (2026-10-19)
+
+Chi tiết dữ liệu fine-tune: docs/FINETUNE_DATA.md.
+
+**1. `data/processed/lao_dong_v5/` từng bị xóa khỏi repo.** Commit `c0ece55` ("update result after run benchmark test 200
+question", vào `develop` qua PR #1) xóa toàn bộ thư mục, gồm `chunks.jsonl`, `kg_nodes.jsonl`, `kg_edges.jsonl`.
+Qdrant và Neo4j không bị ảnh hưởng, nhưng pipeline fine-tune và benchmark cần file cục bộ. Đã khôi phục nguyên trạng
+ở `5d28985` (trên `dev/minh`). Khi merge `develop` cần kiểm tra để thư mục không bị xóa lại.
+
+**2. Corpus v5 có thể đã cũ ở mảng Việc làm / BHXH / Công đoàn — cần đối chiếu.** `38-2013-qh13` (Luật Việc làm 2013)
+và các nghị định hướng dẫn (28/2015, 61/2015, 31/2015) vẫn có `still_valid = true`. Nếu Pháp điển đã cập nhật luật thay thế
+(Luật Việc làm 2025, Luật BHXH 2024, Luật Công đoàn 2024) thì chatbot đang trả lời theo văn bản cũ. Khoảng 290 câu
+ViLegal và hầu hết câu Zalo gắn vào nhóm văn bản này. Khi corpus được cập nhật, chạy lại `build_dataset` (docs/FINETUNE_DATA.md, mục 4).
+
+**3. Ánh xạ exact của ViLegal có lỗi; đã sửa ở bước gióng.** `map_vilegal_labor` luôn trả `chunk_id` = phần `:p1`
+(43/107 Điều nhiều phần khớp ở phần khác) và gán sai Điều ở 40 câu (ví dụ "đi nghĩa vụ quân sự về có được làm tiếp"
+→ Điều 32 thay vì Điều 31). `align.py` kiểm chứng lại bằng nội dung, nên `merged/` đã dùng chunk đúng.
+Các file `vilegal_labor_mapped.json` thì vẫn giữ ánh xạ gốc.
+
+**4. Có node `mapc` dạng IRI `..._dup2`.** 3 chunk (`24-2017-tt-bldtbxh:d2`, hai chunk của `TT_74`) có `mapc` là IRI
+`https://example.org/vn-legal/instance#Article_..._dup2` thay vì mã `20.x...`, nên thống kê theo đề mục ở chỗ này bị lẫn.
