@@ -27,11 +27,9 @@ Lấy từ Pháp điển (Điều 10 của NĐ 145/2020, xếp vào Chương III
   "meta_khoan": null,
   "effective_from_date": "2021-02-01",
   "effective_to_date": null,
-  "version_date": "2022-07-15",
+  "version_date": "2021-02-01",
   "still_valid": true,
-  "content_hash": "3f1c0a9e7b2d4c51",
-  "amends": [],
-  "amended_by": []
+  "content_hash": "3f1c0a9e7b2d4c51"
 }
 ```
 
@@ -56,9 +54,7 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
   "effective_to_date": null,
   "version_date": "2026-12-01",
   "still_valid": true,
-  "content_hash": "9a0b7c3d2e1f4a5b",
-  "amends": [],
-  "amended_by": []
+  "content_hash": "9a0b7c3d2e1f4a5b"
 }
 ```
 
@@ -84,8 +80,9 @@ Phần thứ 2 của một Điều dài, lấy từ PDF:
 | `version_date` | `YYYY-MM-DD` / null | Chọn bản khi trùng | Ngày hiệu lực mới nhất mà nội dung đã phản ánh. Mục 7 |
 | `still_valid` | bool | Lọc hiệu lực | Mục 6 |
 | `content_hash` | string | Phát hiện Điều thay đổi | sha1 (16 ký tự hex) của **nội dung** Điều (không gồm phần đầu), sau khi chuẩn hóa NFC và gộp khoảng trắng. Mọi phần của một Điều có cùng giá trị |
-| `amends` | list `chunk_id` | Văn bản sửa đổi | Các Điều mà Điều này sửa đổi, bổ sung. Mục 10 |
-| `amended_by` | list `chunk_id` | Văn bản sửa đổi | Các Điều đã sửa đổi Điều này. Mục 10 |
+
+Quan hệ sửa đổi và thay thế **không nằm trong chunk**: chúng ở đồ thị (ABox -> Neo4j), mục 10. Payload chỉ giữ
+những gì cần để lọc lúc tìm vector (`effective_from_date`, `effective_to_date`, `still_valid`), sinh ra từ đồ thị.
 
 **Chương của văn bản gốc và chương Pháp điển là hai thứ khác nhau.** Pháp điển xếp Điều của
 nghị định, thông tư vào khung chương của đề mục (lấy theo Bộ luật), nên Điều 10 NĐ 145/2020 nằm ở
@@ -259,13 +256,16 @@ def split_article(header, lead, clauses, count, max_tokens=1024):
 | Trường | Ý nghĩa | Pháp điển | PDF |
 |---|---|---|---|
 | `effective_from_date` | Ngày bắt đầu có hiệu lực | `effective_date` của văn bản trong KG | `effective_date` trong KG nếu văn bản đã có trong Pháp điển; không thì `metadata.ngay_hieu_luc` (`ocr/structure.py`): câu dẫn VBHN, hoặc câu "… này có hiệu lực (thi hành) (kể) từ ngày …" dạng `dd/mm/yyyy` hay `ngày dd tháng mm năm yyyy`; không thấy thì `null` |
-| `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` nếu có (hiện ABox chưa có, nên `null`) | `null` lúc nạp; điền khi nạp văn bản bãi bỏ/thay thế nó |
-| `still_valid` | Đã bị bãi bỏ/thay thế chưa | Luôn `true` | `true` lúc nạp; đổi thành `false` khi nạp văn bản bãi bỏ/thay thế nó |
+| `effective_to_date` | Ngày hết hiệu lực | `vlt:validTo` của văn bản (khoảng hiệu lực `vlt:LegalValidityInterval`); `null` khi chưa bị thay thế | Như Pháp điển, đọc từ `kg_nodes` (`VanBan.valid_to`) |
+| `still_valid` | Cờ loại thủ công | `true` | `true` |
 
-Filter lúc truy vấn:
-`still_valid = true AND (effective_from_date <= hôm nay OR effective_from_date IS NULL)`.
+`vlt:validTo` do ABox của văn bản thay thế ghi (mục 10). `embed_and_index` mỗi lần chạy chép `VanBan.valid_to` trong
+`kg_nodes.jsonl` sang `effective_to_date` của mọi chunk văn bản đó (Qdrant `set_payload` theo `document_id`, không
+embedding lại).
 
-Khi `still_valid` thay đổi thì cập nhật payload (Qdrant `set_payload` theo `document_id`), không cần embedding lại.
+Filter lúc truy vấn (`hybrid_retrieve.in_force`):
+`still_valid = true AND (effective_from_date <= hôm nay OR IS NULL) AND (effective_to_date > hôm nay OR IS NULL)`.
+Điều kiện cuối giữ văn bản cũ đến đúng ngày văn bản mới có hiệu lực, kể cả khi nạp văn bản mới trước ngày đó.
 
 ## 7. Quy tắc nạp
 
@@ -273,18 +273,22 @@ Code: `labor_rag/ingest/merge.py::plan_upsert`, chạy bởi `embed_and_index --
 
 - Quyết định **theo từng Điều** (`chunk_id` bỏ `:p{k}`), không theo từng phần, để một Điều không bao giờ
   lẫn phần của hai nguồn.
-- Điều có ở cả hai bên: bên có **`version_date` lớn hơn thắng**. Bằng nhau thì Pháp điển thắng PDF; cùng nguồn
-  (nạp lại) thì bản mới thay bản cũ. Nội dung và `version_date` y hệt thì bỏ qua, không embedding lại.
+- Điều có ở cả hai bên với cùng các phần và cùng `text`: không embedding lại. Nếu chỉ metadata đổi (`version_date`,
+  `effective_to_date`, …) và bên mới là nạp lại cùng nguồn hoặc thắng, ghi đè payload (`overwrite_payload`).
+- Điều có ở cả hai bên, nội dung khác: bên có **`version_date` lớn hơn thắng**. Bằng nhau thì Pháp điển thắng PDF;
+  cùng nguồn (nạp lại) thì bản mới thay bản cũ.
 - Bên mới thắng: **xóa mọi phần cũ** của Điều rồi mới ghi, vì hai bên có thể cắt Điều thành số phần khác nhau.
 - Điều chỉ có ở bản đang index: giữ nguyên, in cảnh báo (thường do OCR bỏ sót Điều).
-- Dựng lại collection Pháp điển (`embed_and_index` không có `--upsert`) sẽ xóa luôn chunk PDF: chạy lại `--upsert`.
+- Dựng lại collection (`embed_and_index` không có `--upsert`) sẽ xóa luôn chunk PDF, nên lệnh dừng lại khi collection có
+  chunk không phải Pháp điển. Thêm `--recreate` để vẫn dựng lại, rồi chạy lại `--upsert`. `--upsert` không embedding lại
+  Điều có `text` không đổi, nên khi đổi model phải dùng `--recreate`.
 - Văn bản sửa đổi, bổ sung có số hiệu riêng, nên là văn bản riêng.
 
 `version_date` (`YYYY-MM-DD`): ngày hiệu lực mới nhất mà nội dung đã phản ánh.
 
 | Nguồn | Cách tính |
 |---|---|
-| Pháp điển | max(`effective_date` của văn bản, `effective_date` của các văn bản `vlr:amends`/`partiallyAmends` nó). Pháp điển chỉ ghi sửa đổi ở mức văn bản nên đây là xấp xỉ |
+| Pháp điển | max(`effective_date` của văn bản, `vlt:amendsAt` của các `AmendmentEvent` của **chính Điều đó** có `vlpd:consolidatedInCodification = true`). Ghi chú nguồn trong HTML nêu Điều nào sửa Điều này ("được sửa đổi … bởi Điều X …"), nên Điều không bị sửa giữ ngày hiệu lực gốc; sửa đổi nạp sau từ PDF không tính vì chưa có trong nội dung |
 | PDF văn bản gốc | Ngày hiệu lực ("… này có hiệu lực (thi hành) từ ngày …") |
 | PDF VBHN | max(ngày hiệu lực văn bản gốc, ngày hiệu lực từng văn bản sửa đổi trong câu dẫn "…, được sửa đổi, bổ sung bởi: 1. … 2. …") |
 
@@ -304,7 +308,12 @@ Ví dụ: Pháp điển trong repo có Bộ luật Lao động với `version_da
 | `ten` | `article_title` |
 | `mapc` | KG: `(document_id, article_number)` của node Dieu -> `mapc`; Điều không có trong Pháp điển thì `null` |
 | `effective_from_date` | KG nếu có, không thì `metadata.ngay_hieu_luc` |
+| `effective_to_date` | KG (`VanBan.valid_to`) nếu văn bản đã bị thay thế |
 | `version_date` | `metadata.version_date` (mục 7) |
+
+Cùng lúc, `pdf_to_chunks` ghi ABox của văn bản ra `ontology/abox/pdf/<document_id>.ttl` (`pdf_abox.py`): văn bản,
+các Điều (`vld:Article`, `vld:heading`), và những gì văn bản thay đổi ở văn bản khác (mục 10). URI giống ABox Pháp điển,
+nên `ontology_to_jsonl` ghép vào cùng một đồ thị.
 
 - Thân Điều dựng lại thành từng dòng: câu dẫn, `"1. …"`, `"a) …"` (cây OCR bỏ các ký hiệu này), rồi cắt theo mục 5.
 - Phụ lục: OCR gộp mọi phụ lục thành một khối -> chunk `{document_id}:pl1` (cắt nếu dài). Phần mở đầu không thành chunk.
@@ -313,7 +322,7 @@ Ví dụ: Pháp điển trong repo có Bộ luật Lao động với `version_da
   số của văn bản gốc (VBHN mang số hiệu gốc trong câu dẫn), không phải số VBHN.
 - **Chú thích cuối trang** (`cleaner.split_footnotes`): khối dòng cuối trang bắt đầu bằng số chú thích, các số tăng
   liên tiếp và có từ khóa sửa đổi/căn cứ ban hành, được cắt khỏi nội dung và ghi ra `{document_id}_footnotes.jsonl`
-  (`{page, number, text}`) để sau này điền `amended_by`.
+  (`{page, number, text}`). Chưa đọc thông tin sửa đổi từ chú thích.
 
 ## 9. Prompt cho LLM
 
@@ -329,10 +338,76 @@ So sánh bản cũ và bản mới **luôn theo `(document_id, meta_dieu)`**, kh
 | Trường hợp | Ví dụ | Cách làm |
 |---|---|---|
 | Nạp lại cùng văn bản | PDF NĐ 145/2020 OCR lại | Cùng `document_id` nên `chunk_id` khớp 1-1. `chunk_id` chỉ có ở bản mới: Điều mới. Chỉ có ở bản cũ: Điều bị mất (thường do OCR, cần cảnh báo). Có ở cả hai: so `content_hash`, chỉ embedding lại Điều đổi hash |
-| Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Parse văn bản và Điều đích -> `145-2020-nd-cp:d35`. Chunk sửa đổi có `amends: ["145-2020-nd-cp:d35"]`, chunk cũ thêm vào `amended_by` (Qdrant `set_payload`). Retrieval trúng Điều cũ thì kéo theo chunk sửa đổi, prompt ghi rõ quy định sửa đổi được ưu tiên |
-| Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). Đặt mọi chunk của văn bản cũ `still_valid = false`, `effective_to_date` = ngày văn bản mới có hiệu lực. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine, lưu thành cạnh `REPLACES` có điểm trong Neo4j |
+| Văn bản sửa đổi, bổ sung | "Sửa đổi khoản 2 Điều 35 Nghị định 145/2020/NĐ-CP" | Văn bản riêng, `document_id` riêng. Xem "Văn bản sửa đổi" bên dưới |
+| Văn bản thay thế | NĐ mới "thay thế Nghị định 145/2020/NĐ-CP" | Không so theo Điều được (đánh số lại). Xem "Văn bản thay thế" bên dưới. Nếu cần ghép Điều cũ - Điều mới để hiển thị thì dùng tên Điều + cosine |
 
-- **Không xóa bản cũ**, chỉ đặt `still_valid = false`: vẫn trả lời được "trước đây quy định thế nào" và so được phiên bản.
-  Filter mặc định ở mục 6 đã loại bản cũ khỏi truy vấn thường.
-- Pháp điển đã hợp nhất các lần sửa đổi vào nội dung Điều, nên chunk Pháp điển có `amends = amended_by = []`.
-  Hai trường này dành cho văn bản sửa đổi mới, ra sau lần cập nhật Pháp điển gần nhất.
+- **Không xóa bản cũ**: văn bản bị thay thế chỉ có thêm `effective_to_date`, vẫn trả lời được "trước đây quy định thế
+  nào" và so được phiên bản. Filter mặc định ở mục 6 đã loại bản cũ khỏi truy vấn thường.
+
+**Đồ thị là nơi giữ quan hệ.** Sửa đổi và thay thế nằm trong ABox (Pháp điển: `build_abox`; mỗi PDF:
+`ontology/abox/pdf/<document_id>.ttl`), được `ontology_to_jsonl` ghép lại và `load_neo4j` nạp vào Neo4j:
+
+```text
+(:SourceComponent {document_id, article_number})              Điều bị sửa
+   -[:HAS_AMENDMENT]-> (:AmendmentEvent {actions, scope, date, consolidated})
+   -[:AMENDING_COMPONENT]-> (:SourceComponent {document_id, article_number, clause_number})   Điều / khoản sửa
+(:VanBan {document_id, valid_to}) -[:REPLACES]-> (:VanBan)      văn bản thay thế
+```
+
+- `actions`: `sua_doi`, `bo_sung`, `bai_bo`, `thay_cum_tu`. `scope`: phần bị sửa (`"khoản 2"`), không có khi nguồn chỉ
+  nêu Điều (luôn vậy với Pháp điển). `date`: ngày văn bản sửa đổi có hiệu lực.
+- `consolidated = true`: Pháp điển đã hợp nhất sửa đổi này vào nội dung Điều (lấy từ ghi chú nguồn "được sửa đổi … bởi
+  Điều X …"). Chỉ các sửa đổi này được tính vào `version_date` (mục 7).
+- Retrieval (`hybrid_retrieve.attach_amendments`): với mỗi Điều trả về, hỏi Neo4j các `AmendmentEvent` có `date` >
+  `version_date` của chunk (sửa đổi chưa có trong nội dung), lấy chunk của Điều / khoản sửa đổi (lọc `document_id`,
+  `meta_dieu`, `meta_khoan`) và gắn vào `Evidence.amendments`. Prompt đặt chúng ngay dưới Điều gốc
+  ("Được sửa đổi bởi … (sửa đổi, bổ sung khoản 2)") và yêu cầu áp dụng quy định sửa đổi thay cho nội dung gốc.
+
+**Văn bản sửa đổi** (PDF, `labor_rag/ingest/amending.py`, `pdf_abox.py`):
+
+1. `pdf_to_chunks`: Điều có tên bắt đầu bằng "Sửa đổi / Bổ sung / Bãi bỏ / Thay (thế) cụm từ" được cắt **theo từng
+   khoản** (khoản dài thì cắt tiếp). Mỗi phần có dòng ngữ cảnh "Sửa đổi, bổ sung khoản 2 Điều 3 Nghị định số
+   152/2020/NĐ-CP (Điều 3. <tên>)" ngay sau phần đầu; `meta_khoan` = số khoản của Điều sửa đổi.
+2. ABox của PDF: mỗi khoản là một `vld:Clause`; phần lệnh của khoản (trước "như sau", bỏ cụm trong ngoặc kép) cho Điều
+   đích, `scope`, `actions` -> một `AmendmentEvent` cho mỗi Điều đích. Văn bản đích là văn bản nêu trong khoản, nếu
+   không có thì lấy văn bản nêu trong tên Điều. "Bổ sung Điều 35a vào sau Điều 35": đích là Điều 35, `scope = "Điều 35a"`.
+- Chỉ nạp văn bản sửa đổi khi chưa có VBHN. Không tự áp nội dung sửa đổi vào Điều cũ: khi có VBHN / Pháp điển mới,
+  `version_date` của Điều mới ≥ `date` nên chunk sửa đổi tự không còn bị kéo theo.
+
+**Văn bản thay thế**: trong Điều có tên chứa "hiệu lực / thi hành / chuyển tiếp", câu có "thay thế / hết hiệu lực" nêu
+văn bản nào thì ABox của PDF ghi `vlr:replaces` và `vlt:validTo` = ngày hiệu lực của văn bản mới trên khoảng hiệu lực của
+văn bản cũ. Từ đó ra `VanBan.valid_to` và `effective_to_date` (mục 6). Dữ liệu Pháp điển không có quan hệ này (Pháp
+điển chỉ giữ văn bản còn hiệu lực), nên nó chỉ đến từ văn bản nạp sau.
+
+**Thứ tự nạp một PDF**:
+
+```powershell
+python -m labor_rag.ingest.pdf_to_chunks --input <file>.pdf        # chunk + ontology/abox/pdf/<doc>.ttl
+python -m labor_rag.ingest.ontology_to_jsonl                       # ghép ABox, chiếu lại kg_nodes/edges + chunks
+python -m labor_rag.ingest.load_neo4j --replace-dataset
+python -m labor_rag.ingest.embed_and_index --chunks data/processed/lao_dong_v5/chunks.jsonl --upsert   # chỉ cập nhật metadata
+python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
+```
+
+## 11. Dẫn chiếu trong nội dung Điều
+
+Code: `labor_rag/ingest/references.py` (đọc), `build_abox.py` / `pdf_abox.py` (ghi vào ABox), `hybrid_retrieve.py`
+(dùng khi truy vấn). Không thêm trường nào vào chunk.
+
+- Mỗi Điều của văn bản nguồn được tách thành khoản: `vld:Clause` (`SourceClause_<văn bản>_D<n>_K<k>`, kèm nội dung khoản);
+  điểm được dẫn chiếu tới thành `vld:Point` (`..._P<a>`).
+- Dẫn chiếu trong câu chữ ("theo quy định tại điểm a, b khoản 2 Điều 35 của Bộ luật Lao động", "khoản 3 Điều này",
+  "Điều 5 Nghị định số 145/2020/NĐ-CP", "tại khoản 2") thành cạnh từ khoản (hoặc Điều, nếu ở câu dẫn) tới Điều /
+  khoản / điểm đích: `vlr:citesComponent`; nếu câu dẫn của danh sách có "quy định chi tiết / hướng dẫn" thì
+  `vlr:implementsComponent`. Neo4j: `CITES_COMPONENT`, `IMPLEMENTS_COMPONENT`.
+- Văn bản đích, theo thứ tự: văn bản nêu ngay sau dẫn chiếu (hoặc sau dẫn chiếu cuối của chuỗi "… và …"); văn bản
+  nêu ở câu dẫn của danh sách ("… sau đây của Bộ luật Lao động:"); văn bản nêu sau trong cùng dòng, nếu dòng không
+  nêu văn bản của chính nó; nếu Điều đích không có trong văn bản đang xét mà có trong văn bản được nêu tên ở dòng
+  đó thì lấy văn bản đó; còn lại là chính văn bản đang xét. Tên luật ("Bộ luật Lao động") tra theo `vld:shortTitle`,
+  dựng từ ghi chú nguồn Pháp điển.
+- Liên kết "nội dung liên quan" của Pháp điển (`REFERS_TO`, mức Điều) vẫn giữ; khoảng một nửa không có trong câu chữ.
+- Retrieval: với mỗi Điều trả về, lấy các khoản mà khoản trúng (`meta_khoan`) dẫn chiếu tới, đưa vào **nội dung đúng
+  khoản đó** (không cả Điều), nếu Điều đích còn hiệu lực trong Qdrant.
+
+Đo trên 1.407 Điều Lao động: 1.620 dẫn chiếu, 2.108 đích (1.456 ở mức khoản), 3.767 khoản; lấy lại 99,4% liên kết
+Pháp điển có số Điều trong câu chữ; 39/40 đúng trên mẫu ngẫu nhiên.

@@ -40,17 +40,17 @@ This loads Neo4j dataset `lao_dong_v4` and Qdrant collection `legal_ld_v4_bkai`.
 
 ## Benchmark embeddings
 
-The vector-only benchmark uses the 1,407 Lao dong chunks and keeps one Qdrant
-collection per model (`legal_ld_v4_bkai`, `legal_ld_v4_bge`, `legal_ld_v4_mpnet`):
+The vector-only benchmark runs on a frozen benchmark version: a test set
+frozen against one projection (`labor_rag/evaluation/benchmarks/lao_dong_v5/`,
+see docs/BENCHMARK.md). It keeps one Qdrant collection per model
+(`legal_ld_v5_bkai`, `legal_ld_v5_bge`, `legal_ld_v5_mpnet`):
 
 ```powershell
-& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --validate-only
-& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --rebuild `
-    --questions .\labor_rag\evaluation\benchmark_questions_v2.jsonl `
-    --results-dir .\labor_rag\evaluation\results\lao_dong_v2
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1 --validate-only
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1
 ```
 
-Without `--questions` it uses the v1 set (30 questions on 20.5).
+The run stops if `chunks.jsonl` or the frozen questions changed since freezing.
 
 Chunks are embedded in length-sorted batches capped by `--max-batch-tokens`
 (default 8192 = batch size x longest chunk), so one long Dieu no longer pads a
@@ -59,19 +59,21 @@ large GPU such as an A100 raise it, e.g. `--max-batch-tokens 131072`. The same
 flag exists on `embed_and_index`. The first full
 run downloads BGE-M3 and multilingual MPNet when they are not already cached.
 
-Results are written to the results directory:
+Each run is written to `results/<dataset_id>/<testset>/<run_id>/`:
 
 ```text
-summary.csv
+summary.csv               one row per model
+metrics.csv               every metric with its 95% bootstrap CI
+breakdown.csv             metrics per de muc / question style / tag
 per_query_results.jsonl
-model_metadata.json
+run.json                  config, git commit, frozen data hashes
 ```
 
-When an existing collection already contains the expected MAPCs, the
-benchmark reports `index_action=reused` and `index_time_seconds=0` for that
-run. Use `--rebuild` whenever the chunk text changed (the reuse check compares
-MAPCs only) or for a fresh indexing-time measurement.
+When an existing collection already holds the expected chunk ids with the
+same text, the benchmark reports `index_action=reused` and
+`index_time_seconds=0`; otherwise it rebuilds that collection. Use
+`--rebuild` for a fresh indexing-time measurement.
 
 Open `notebooks/embedding_benchmark.ipynb` after the CLI run to show
-the metric table, Recall/MRR/nDCG charts, latency charts, per-question heatmap,
-and a top-5 comparison.
+the metric table with CIs, HitRate/MRR/nDCG charts, latency charts,
+per-question heatmap, and a top-5 comparison.

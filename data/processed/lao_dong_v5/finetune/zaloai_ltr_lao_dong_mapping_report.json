@@ -1,0 +1,29 @@
+{
+  "source": "D:\\Schools\\PBL6\\project\\PBL6\\data\\finetune\\ZaloAI2021_LTR\\train_data_model.json",
+  "chunks": "D:\\Schools\\PBL6\\project\\PBL6\\data\\processed\\lao_dong_v5\\chunks.jsonl",
+  "scope": "Lao dong topic in the current lao_dong_v5 projection",
+  "input_questions": 3196,
+  "output_questions": 14,
+  "input_relevant_articles": 3298,
+  "input_non_relevant_articles": 31907,
+  "mapped_relevant_articles": 14,
+  "mapped_non_relevant_articles": 50,
+  "mapped_relevant_question_rate": 0.004380475594493116,
+  "status_counts": {
+    "missing_document": 34846,
+    "missing_article": 196,
+    "mapped": 163
+  },
+  "relevant_status_counts": {
+    "missing_document": 3273,
+    "mapped": 14,
+    "missing_article": 11
+  },
+  "non_relevant_status_counts": {
+    "missing_document": 31573,
+    "missing_article": 185,
+    "mapped": 149
+  },
+  "labor_documents": 153,
+  "labor_articles": 1407
+}

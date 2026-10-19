@@ -8,6 +8,7 @@ Layout:
   data/processed/lao_dong_v5/ JSONL projection of the Lao dong ABox, chunk schema v5 (tracked in git)
   data/processed/lao_dong_v4/ previous projection (mapc as chunk_id), kept for comparison
   ontology/                   schema/, abox/, reports/
+  labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
 """
 import os
 from pathlib import Path
@@ -33,12 +34,17 @@ SCHEMA_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_schema_v4.ttl"
 SHAPES_V4_PATH = ONTOLOGY_DIR / "schema" / "vn_legal_ontology_shapes_v4.ttl"
 ABOX_DIR = ONTOLOGY_DIR / "abox"
 LAO_DONG_ABOX_PATH = ABOX_DIR / "abox_lao_dong.ttl"
+# One ABox per loaded PDF (pdf_to_chunks), merged by ontology_to_jsonl.
+PDF_ABOX_DIR = ABOX_DIR / "pdf"
 
 OCR_OUTPUT_DIR = INTERIM_DIR / "ocr"
 VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
+# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/BENCHMARK.md)
+BENCHMARKS_DIR = EVALUATION_DIR / "benchmarks"
+RESULTS_DIR = EVALUATION_DIR / "results"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"
 
 FINETUNE_DIR = LAO_DONG_DIR / "finetune"

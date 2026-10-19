@@ -142,7 +142,7 @@ def test_newer_pdf_replaces_every_phap_dien_part():
 
 
 def test_older_pdf_keeps_phap_dien():
-    plan = plan_upsert([chunk("d:d35", "phap_dien", "2026-01-01")], [chunk("d:d35", "pdf", "2021-01-01")])
+    plan = plan_upsert([chunk("d:d35", "phap_dien", "2026-01-01")], [chunk("d:d35", "pdf", "2021-01-01", "old")])
     assert plan.kept == ["d:d35"] and not plan.upsert and not plan.delete
 
 
@@ -157,11 +157,22 @@ def test_tie_keeps_phap_dien_and_same_source_replaces():
 
 def test_new_and_missing_articles():
     old = [chunk("d:d1", "phap_dien", "2021-01-01"), chunk("d:d2", "phap_dien", "2021-01-01")]
-    new = [chunk("d:d1", "pdf", "2026-01-01"), chunk("d:d3a", "pdf", "2026-01-01")]
+    new = [chunk("d:d1", "pdf", "2026-01-01", "new"), chunk("d:d3a", "pdf", "2026-01-01")]
     plan = plan_upsert(old, new)
     assert sorted(c["chunk_id"] for c in plan.upsert) == ["d:d1", "d:d3a"]
     assert plan.delete == ["d:d1"]
     assert len(plan.warnings) == 1 and plan.warnings[0].startswith("d:d2 ")
+
+
+
+def test_same_text_new_metadata_is_refreshed_not_embedded():
+    old = [{**chunk("d:d1", "phap_dien", "2022-07-15"), "amended_by": []}]
+    new = [chunk("d:d1", "phap_dien", "2021-02-01")]
+    plan = plan_upsert(old, new)
+    assert plan.refresh == new and not plan.upsert and not plan.delete
+    # Nothing changed: nothing to do.
+    plan = plan_upsert([{**new[0], "dataset_id": "lao_dong_v5"}], new)
+    assert plan.unchanged == ["d:d1"] and not plan.refresh
 
 
 if __name__ == "__main__":

@@ -9,26 +9,25 @@ Các con số dưới đây lấy từ lần dựng ABox cho toàn bộ 45 chủ
 
 ## 1. Chưa có kết quả benchmark embedding trên dữ liệu Lao động
 
-**Trạng thái:** cần chạy.
+**Trạng thái:** benchmark `lao_dong_v5` đã đóng băng với bộ v1 (30 câu, 20.5). Chưa chạy.
+Bộ câu hỏi phủ cả chủ đề đang được làm lại.
 
 Ngày 2026-10-10 đã xóa bộ dữ liệu thử nghiệm chỉ gồm 20.5 (`data/processed/ontology_v4/`) cùng kết quả benchmark
-cũ của nó (ngày 2026-09-30, 348 chunk, parser cũ). Hiện chỉ còn một bộ dữ liệu:
-`data/processed/lao_dong_v5/` (1.407 Điều, 38 Điều dài bị cắt thành nhiều phần, 1.481 chunk).
-Benchmark mặc định chạy trên bộ này, với các collection `legal_ld_v5_*`.
+cũ của nó (ngày 2026-09-30, 348 chunk, parser cũ). Benchmark hiện chạy trên
+`data/processed/lao_dong_v5/` (1.407 Điều, 38 Điều dài bị cắt thành nhiều phần, 1.481 chunk), qua
+`labor_rag/evaluation/benchmarks/lao_dong_v5/` (README, mục "Benchmark theo phiên bản dữ liệu").
 
-**Cách xử lý** (cần bật Docker):
+Trên Qdrant Cloud (kiểm tra ngày 2026-10-12) chỉ có `legal_ld_v5_bge`: 1.481 point, text khớp `chunks.jsonl`.
+Chưa có `legal_ld_v5_bkai` và `legal_ld_v5_mpnet`. Lần chạy đầu sẽ tạo hai collection này bằng model trên máy,
+hoặc tạo trước bằng Modal (`embed_and_index --backend modal --model ... --collection ...`).
 
 ```powershell
-docker compose up -d
-& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --rebuild
+& .\labor_rag\venv\Scripts\python.exe -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1
 ```
 
-Phải dùng `--rebuild` khi text đổi: bộ benchmark chỉ so tập `chunk_id` để quyết định dùng lại
-collection, nên nếu tập `chunk_id` trùng mà text đã đổi, nó sẽ dùng lại vector cũ.
+Collection chỉ được dùng lại khi đủ `chunk_id` **và** đúng text, nên không còn rủi ro dùng vector cũ sau khi text đổi.
 bkai và mpnet chỉ đọc 256 token đầu (bge-m3 đọc 8192), trong khi chunk v5 dài tới 1024 token,
-nên phần cuối Điều dài không nằm trong vector của hai mô hình này.
-Sau đó chạy lại `notebooks/embedding_benchmark.ipynb` để cập nhật biểu đồ. Output đang lưu trong notebook
-vẫn là kết quả cũ trên 20.5.
+nên phần cuối Điều dài không nằm trong vector của hai mô hình này (`max_seq_length` có trong `summary.csv`).
 
 ---
 
@@ -117,6 +116,11 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
   Lý do: `ontology_to_jsonl` lấy id của node, và id này chuyển sang URI khi mã bị trùng. Nội dung chunk vẫn đúng.
 - **48 Điều không có tiêu đề trong nguồn** (47 ở 20.5, ví dụ `20.5.QĐ.1.2`, và 1 ở 20.4). Trường `ten` của chunk
   được thay bằng "Điều <mã>.".
+- **Số Điều trong `mapc` lệch số Điều gốc ở 12 / 1.407 Điều.** Pháp điển hợp nhất các Điều sửa đổi vào văn bản
+  bị sửa và nối các Điều còn lại (hiệu lực, trách nhiệm thi hành) vào cuối văn bản đó, nên các Điều này mang số mới:
+  `20.4.NĐ.3.43`, `.44` (Điều 3, 4 NĐ 61/2020), `20.2.NĐ.4.31` (Điều 3 NĐ 70/2023), `20.4.NĐ.5.46`, `.47`
+  (Điều 2, 3 NĐ 74/2019), `20.5.TT.21.8`, `.9` (Điều 2, 3 TT 02/2023). `meta_dieu` lấy từ ghi chú nguồn nên vẫn đúng;
+  trích dẫn và đối chiếu PDF dùng `meta_dieu`, không dùng số cuối của `mapc`.
 - **Số khoản không liên tục** ở `20.2.NĐ.4.13`, `20.4.NĐ.3.18`, `20.4.NĐ.3.22`, `20.4.NĐ.3.30`.
   Các khoản này thiếu ngay trong HTML gốc, không phải do lỗi parse.
 
@@ -128,15 +132,19 @@ ghi chú nguồn và liên kết chỉ dẫn đều khớp 100%. Không có toke
 
 - `meta_chuong` / `meta_muc` của chunk Pháp điển luôn `null`: ABox chỉ có chương, mục của đề mục Pháp điển
   (`pd_chuong` / `pd_muc`), không có chương của văn bản gốc.
-- `effective_to_date` luôn `null`: ABox chưa có `vlt:validTo`.
-- `amends` / `amended_by` luôn rỗng với Pháp điển (nội dung đã hợp nhất). Phần parse văn bản sửa đổi từ PDF chưa làm.
+- `effective_to_date` của chunk Pháp điển luôn `null` với dữ liệu hiện có: Pháp điển không ghi quan hệ thay thế.
+  Chỉ có khi nạp một PDF thay thế văn bản (ABox của PDF ghi `vlt:validTo`, structural_jsonl.md mục 6, 10).
+- Parser văn bản sửa đổi (`labor_rag/ingest/amending.py`) mới thử trên văn bản mẫu, chưa chạy trên PDF thật.
+  Nếu OCR tách sai phần nội dung mới trong ngoặc kép thành khoản riêng, phần sửa đổi sẽ bị cắt sai.
 - PDF: `pdf_to_chunks` + `embed_and_index --upsert` đã có, nhưng chưa chạy thử trên OCR thật của
   `docs/Luat_lao_dong.pdf`. Cần xem: số Điều nhận được (~220), Điều sai số do OCR, chú thích tách đúng chưa.
 - Dấu chú thích nằm trong câu ("Bộ luật Lao động1", "động¹") chưa bị xóa: OCR đọc số mũ không ổn định.
 - Chú thích chỉ được tách khi nằm trọn trong một trang; chú thích tràn sang trang sau còn lẫn vào nội dung.
   Chưa parse chú thích thành `amended_by`.
 - OCR gộp mọi phụ lục thành một chunk `:pl1`, chưa tách theo từng phụ lục.
-- `version_date` của Pháp điển tính ở mức văn bản (Pháp điển không ghi sửa đổi theo Điều).
 - Điều 14 NĐ 97/2022 (`20.2.NĐ.6.14`) gần như toàn phụ lục dạng bảng, bị cắt theo câu thành 16 phần; khi ghép
   lại cả Điều (`join_parts`) còn lặp vài dòng gối đầu.
-
+- Dẫn chiếu trong câu chữ (`references.py`): 32 dẫn chiếu tới luật không có trong dữ liệu và không kèm số hiệu
+  ("Luật Bảo hiểm xã hội") không thành cạnh. "Điều 14" không nêu văn bản, trong một văn bản cũng có Điều 14, được
+  gán cho chính văn bản đó dù có thể là văn bản khác (3/503 liên kết Pháp điển bị lệch vì vậy). "Của Luật này" trong
+  nội dung mà một Điều sửa đổi chèn vào luật khác (Điều 219 BLLĐ) bị hiểu là luật đang xét.

@@ -1,48 +1,64 @@
 """Benchmark three sentence-embedding models on the Lao dong chunks (schema v5).
 
-The benchmark deliberately measures vector retrieval only.  It uses the chunks
-of data/processed/lao_dong_v5 (one per Dieu, long Dieu split into parts that
-share a mapc), three isolated Qdrant collections, and a
-manually labelled question set.  Neo4j and the LLM generation stage are kept
-out of the primary metric so that the effect of the embedding model can be
-measured directly.
+The benchmark deliberately measures vector retrieval only.  Neo4j and the LLM
+stages are kept out so that the effect of the embedding model is measured
+directly.  Each model has its own Qdrant collection ``<prefix>_<model>``.
+
+A run normally targets a frozen benchmark version (benchmark_version.py,
+docs/BENCHMARK.md): the chunks, questions and collection prefix come from
+benchmarks/<dataset_id>/manifest.json, and the run stops if the data no longer
+matches it.  Results go to results/<dataset_id>/<testset>/<run_id>/.
 
 Run from the repository root:
 
-    python -m labor_rag.evaluation.embedding_benchmark --validate-only
-    python -m labor_rag.evaluation.embedding_benchmark --rebuild \
-        --questions labor_rag/evaluation/benchmark_questions_v2.jsonl \
-        --results-dir labor_rag/evaluation/results/lao_dong_v2
+    python -m labor_rag.evaluation.benchmark_version freeze --dataset lao_dong_v5 --testset v1 \
+        --questions labor_rag/evaluation/benchmark_questions.jsonl
+    python -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1 --validate-only
+    python -m labor_rag.evaluation.embedding_benchmark --benchmark lao_dong_v5 --testset v1 --model bge
 
-The default question set is v1 (30 questions on 20.5) until the v2 set is
-finalized.  The ``--rebuild`` flag only recreates the three ``<prefix>_*``
-collections declared in ``MODELS``.
+Without --benchmark it is an ad-hoc run on --chunks/--questions, written to
+results/adhoc/<run_id>/.
 
-Gold labels stay ``relevance: {mapc: grade}``: search results are grouped by
-mapc (best part wins) before recall/nDCG, so a split Dieu counts once.
+Gold labels are ``relevance: {mapc: grade}`` with grades 1-3.  Results are
+grouped by mapc (best part wins) before scoring, so a split Dieu counts once.
+Binary metrics count a Dieu as relevant from ``--min-grade`` (default 2:
+grade 1 only gives context, annotation/GUIDELINES.md); nDCG uses every grade.
+
+Metrics (k = 1, 5, 10; definitions as in NitiBench, EMNLP 2025):
+  HitRate@k    share of questions with at least one relevant Dieu in the top k
+  Recall@k     relevant Dieu found in the top k / all relevant Dieu (micro)
+  MultiHit@k   share of questions with every relevant Dieu in the top k
+  MRR@10       1 / rank of the first relevant Dieu
+  nDCG@10      graded, gain 2^grade - 1
+Each comes with a 95% bootstrap confidence interval over questions (metrics.csv).
 """
+from labor_rag.evaluation.embedding_benchmark import min_grade
+from authlib.common import errors
 from __future__ import annotations
 
 import argparse
 import csv
 import gc
+import hashlib
 import json
 import math
 import os
 import re
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean, median
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
+import numpy as np
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import EVALUATION_DIR, FINETUNE_MODELS_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR
+from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR, RESULTS_DIR, ROOT_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 
@@ -56,10 +72,16 @@ DEFAULT_QUESTIONS = (
     else EVALUATION_DIR / "benchmark_questions.jsonl"
 )
 DEFAULT_RESULTS = EVALUATION_DIR / "results"
+DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
+DEFAULT_RESULTS = RESULTS_DIR
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 BATCH_SIZE = 64
 # Parts of one Dieu collapse into one result, so fetch extra hits.
 OVERFETCH = 2
+DEFAULT_MIN_GRADE = 2
+BOOTSTRAP_SAMPLES = 10_000
+BOOTSTRAP_SEED = 0
+CUTOFFS = (1, 5, 10)
 
 
 MODELS: list[dict[str, str]] = [
@@ -88,6 +110,19 @@ MODELS: list[dict[str, str]] = [
 
 COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|bge_ft|mpnet)$")
 DEFAULT_COLLECTION_PREFIX = "legal_ld_v5"
+# Reported metrics, in column order.  Recall@1 equals HitRate@1 for single-gold
+# questions and adds little, so it is left out.
+METRICS = [
+    "HitRate@1",
+    "HitRate@5",
+    "HitRate@10",
+    "Recall@5",
+    "Recall@10",
+    "MultiHit@5",
+    "MultiHit@10",
+    "MRR@10",
+    "nDCG@10",
+]
 
 
 def with_collection_prefix(specs: list[dict[str, str]], prefix: str) -> list[dict[str, str]]:
@@ -125,14 +160,21 @@ def load_and_validate_dataset(
     questions = read_jsonl(questions_path)
     if not chunks:
         raise ValueError(f"No chunks found in {chunks_path}")
+def validate_questions(
+    chunks: list[dict[str, Any]],
+    questions: list[dict[str, Any]],
+    min_grade: float = DEFAULT_MIN_GRADE,
+) -> list[str]:
+    """Every problem with the gold labels of ``questions`` against ``chunks``."""
+
+    errors: list[str] = []
     chunk_ids = [str(chunk.get("chunk_id") or "") for chunk in chunks]
     if len(set(chunk_ids)) != len(chunk_ids) or any(not chunk_id for chunk_id in chunk_ids):
-        raise ValueError("Chunks must have unique, non-empty chunk_id values")
+        errors.append("Chunks must have unique, non-empty chunk_id values")
     # Gold labels are mapc; every part of a split Dieu carries the same one.
     mapc_set = {str(chunk["mapc"]) for chunk in chunks if chunk.get("mapc")}
     chunk_id_set = set(chunk_ids)
 
-    errors: list[str] = []
     for question in questions:
         question_id = str(question.get("id", "<missing-id>"))
         text = question.get("question")
@@ -142,10 +184,14 @@ def load_and_validate_dataset(
         if not isinstance(relevance, dict) or not relevance:
             errors.append(f"{question_id}: relevance must be a non-empty object")
             continue
-        valid_positive = False
+        has_relevant = False
         for mapc, grade in relevance.items():
             if mapc not in mapc_set:
                 errors.append(f"{question_id}: unknown gold mapc {mapc}")
+            elif "://" in mapc:
+                # The repeated codes get their node URI as mapc (KNOWN_ISSUES 5),
+                # which is not stable across versions.
+                errors.append(f"{question_id}: gold {mapc} has no stable mapc (repeated Dieu code)")
             try:
                 grade_number = float(grade)
             except (TypeError, ValueError):
@@ -158,16 +204,24 @@ def load_and_validate_dataset(
         if not valid_positive:
             errors.append(f"{question_id}: must contain at least one positive gold label")
 
-        # Validate chunk_relevance if present
-        chunk_rel = question.get("chunk_relevance")
-        if isinstance(chunk_rel, dict):
-            for cid in chunk_rel:
-                if cid not in chunk_id_set:
-                    errors.append(f"{question_id}: unknown gold chunk_id {cid}")
-
     ids = [str(question.get("id", "")) for question in questions]
     if len(set(ids)) != len(ids):
         errors.append("Question ids must be unique")
+    return errors
+
+
+def load_and_validate_dataset(
+    chunks_path: Path = DEFAULT_CHUNKS,
+    questions_path: Path = DEFAULT_QUESTIONS,
+    min_grade: float = DEFAULT_MIN_GRADE,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Load chunks/questions and validate every gold MAPC before querying."""
+
+    chunks = read_jsonl(chunks_path)
+    questions = read_jsonl(questions_path)
+    if not chunks:
+        raise ValueError(f"No chunks found in {chunks_path}")
+    errors = validate_questions(chunks, questions, min_grade)
     if errors:
         raise ValueError("Gold-label validation failed:\n- " + "\n- ".join(errors))
     return chunks, questions
@@ -187,10 +241,14 @@ def _as_vector_list(vector: Any) -> list[float]:
     return vector.tolist() if hasattr(vector, "tolist") else [float(value) for value in vector]
 
 
-def _payload_for_chunk(chunk: dict[str, Any], model_key: str, model_id: str) -> dict[str, Any]:
+def _text_digest(text: Any) -> str:
+    return hashlib.sha1(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _payload_for_chunk(chunk: dict[str, Any], model_key: str, model_id: str, dataset_id: str) -> dict[str, Any]:
     return {
         **chunk,
-        "dataset_id": chunk.get("dataset_id", LAO_DONG_DATASET_ID),
+        "dataset_id": chunk.get("dataset_id", dataset_id),
         "embedding_model_key": model_key,
         "embedding_model": model_id,
     }
@@ -220,28 +278,30 @@ def _get_collection_info(client: QdrantClient, collection: str) -> Any | None:
 def _collection_has_expected_chunks(
     client: QdrantClient,
     collection: str,
-    expected_chunk_ids: set[str],
+    expected: dict[str, str],
 ) -> bool:
-    """Check payload identity so an old same-sized collection is not reused."""
+    """True if the collection holds exactly these chunk_ids with this text.
 
-    found: set[str] = set()
+    ``expected`` maps chunk_id to a digest of its text: a collection with the
+    same ids but older text (re-projected chunks) is not reused.
+    """
+
+    found: dict[str, str] = {}
     offset: Any = None
     while True:
         points, offset = client.scroll(
             collection_name=collection,
             offset=offset,
             limit=256,
-            with_payload=["chunk_id"],
+            with_payload=["chunk_id", "text"],
             with_vectors=False,
         )
-        found.update(
-            str(point.payload.get("chunk_id"))
-            for point in points
-            if point.payload and point.payload.get("chunk_id") is not None
-        )
+        for point in points:
+            if point.payload and point.payload.get("chunk_id") is not None:
+                found[str(point.payload["chunk_id"])] = _text_digest(point.payload.get("text"))
         if offset is None:
             break
-    return found == expected_chunk_ids
+    return found == expected
 
 
 def _index_chunks(
@@ -251,6 +311,7 @@ def _index_chunks(
     model: SentenceTransformer,
     model_key: str,
     model_id: str,
+    dataset_id: str,
     batch_size: int,
     max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
 ) -> tuple[float, int]:
@@ -269,7 +330,7 @@ def _index_chunks(
             PointStruct(
                 id=point_id(chunks[index]["chunk_id"]),
                 vector=_as_vector_list(vector),
-                payload=_payload_for_chunk(chunks[index], model_key, model_id),
+                payload=_payload_for_chunk(chunks[index], model_key, model_id, dataset_id),
             )
             for index, vector in zip(batch, vectors)
         ]
@@ -288,6 +349,7 @@ def ensure_collection_index(
     batch_size: int = BATCH_SIZE,
     rebuild: bool = False,
     max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
+    dataset_id: str = LAO_DONG_DATASET_ID,
 ) -> dict[str, Any]:
     """Create/rebuild one isolated legal_* collection or safely reuse it."""
 
@@ -295,7 +357,7 @@ def ensure_collection_index(
     if not COLLECTION_RE.match(collection) or collection == "labor_dieu":
         raise ValueError(f"Refusing to index unapproved collection: {collection}")
 
-    expected_chunk_ids = {str(chunk["chunk_id"]) for chunk in chunks}
+    expected = {str(chunk["chunk_id"]): _text_digest(chunk.get("text")) for chunk in chunks}
     info = _get_collection_info(client, collection)
     points_count = int(getattr(info, "points_count", 0) or 0) if info else 0
     reusable = (
@@ -303,7 +365,7 @@ def ensure_collection_index(
         and info is not None
         and points_count == len(chunks)
         and _collection_dimension(info) == dimension
-        and _collection_has_expected_chunks(client, collection, expected_chunk_ids)
+        and _collection_has_expected_chunks(client, collection, expected)
     )
     if reusable:
         return {
@@ -313,6 +375,10 @@ def ensure_collection_index(
             "dimension": dimension,
         }
 
+    # legal_ld_v5_bge is also the chatbot's collection, so a rebuilt one gets
+    # the same payload indexes as embed_and_index creates.
+    from labor_rag.ingest.embed_and_index import PAYLOAD_INDEXES
+
     # Delete/create only the approved legal_* collection.  Using the
     # explicit API avoids Qdrant's deprecated recreate_collection wrapper.
     if info is not None:
@@ -321,6 +387,8 @@ def ensure_collection_index(
         collection_name=collection,
         vectors_config=VectorParams(size=dimension, distance=Distance.COSINE),
     )
+    for field, schema in PAYLOAD_INDEXES.items():
+        client.create_payload_index(collection, field_name=field, field_schema=schema)
     index_time, indexed_points = _index_chunks(
         client=client,
         collection=collection,
@@ -328,6 +396,7 @@ def ensure_collection_index(
         model=model,
         model_key=model_spec["key"],
         model_id=model_spec["model"],
+        dataset_id=dataset_id,
         batch_size=batch_size,
         max_batch_tokens=max_batch_tokens,
     )
@@ -395,12 +464,8 @@ def retrieve_once(
     }
 
 
-def _first_relevant_rank(results: list[dict[str, Any]], relevance: dict[str, Any], top_k: int) -> int | None:
-    gold = {str(mapc) for mapc, grade in relevance.items() if float(grade) > 0}
-    for result in results[:top_k]:
-        if result["mapc"] in gold:
-            return int(result["rank"])
-    return None
+def _relevant(relevance: dict[str, Any], min_grade: float) -> set[str]:
+    return {str(mapc) for mapc, grade in relevance.items() if float(grade) >= min_grade}
 
 
 def _ndcg_at_k(results: list[dict[str, Any]], relevance: dict[str, Any], top_k: int) -> float:
@@ -418,30 +483,59 @@ def _ndcg_at_k(results: list[dict[str, Any]], relevance: dict[str, Any], top_k: 
 def calculate_query_metrics(
     results: list[dict[str, Any]],
     relevance: dict[str, Any],
-    top_k: int,
-    chunk_relevance: dict[str, Any] | None = None,
-) -> dict[str, float | int | None]:
-    gold = {str(mapc) for mapc, grade in relevance.items() if float(grade) > 0}
-    first_rank = _first_relevant_rank(results, relevance, top_k)
-    metrics: dict[str, float | int | None] = {
-        "recall_at_1": int(any(result["mapc"] in gold for result in results[:1])),
-        "recall_at_5": int(any(result["mapc"] in gold for result in results[:5])),
-        "recall_at_10": int(any(result["mapc"] in gold for result in results[:10])),
-        "first_relevant_rank": first_rank,
-        "mrr_at_10": 1.0 / first_rank if first_rank is not None else 0.0,
-        "ndcg_at_10": _ndcg_at_k(results, relevance, min(top_k, 10)),
-    }
-    if chunk_relevance:
-        gold_chunks = {str(cid) for cid, grade in chunk_relevance.items() if float(grade) > 0}
-        first_chunk_rank = None
-        for r in results[:top_k]:
-            if r.get("chunk_id") in gold_chunks:
-                first_chunk_rank = int(r["rank"])
-                break
-        metrics["chunk_recall_at_5"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:5]))
-        metrics["chunk_recall_at_10"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:10]))
-        metrics["chunk_mrr_at_10"] = 1.0 / first_chunk_rank if first_chunk_rank is not None else 0.0
-    return metrics
+    min_grade: float = DEFAULT_MIN_GRADE,
+) -> dict[str, Any]:
+    """Per-question values; ``found_at_k`` / ``n_relevant`` feed the micro Recall."""
+
+    relevant = _relevant(relevance, min_grade)
+    ranked = [result["mapc"] for result in results]
+    first_rank = next((rank for rank, mapc in enumerate(ranked[:10], start=1) if mapc in relevant), None)
+    row: dict[str, Any] = {"n_relevant": len(relevant), "first_relevant_rank": first_rank}
+    for k in CUTOFFS:
+        found = len(relevant & set(ranked[:k]))
+        row[f"found_at_{k}"] = found
+        row[f"hit_at_{k}"] = int(found > 0)
+        row[f"multi_hit_at_{k}"] = int(found == len(relevant))
+    row["mrr_at_10"] = 1.0 / first_rank if first_rank is not None else 0.0
+    row["ndcg_at_10"] = _ndcg_at_k(results, relevance, 10)
+    return row
+
+
+# Each metric as a function of a block of per-question rows, so one function
+# gives both the point estimate and every bootstrap resample.
+METRIC_FUNCTIONS: dict[str, Callable[[dict[str, np.ndarray]], float]] = {
+    **{f"HitRate@{k}": (lambda c, k=k: float(c[f"hit_at_{k}"].mean())) for k in CUTOFFS},
+    **{f"Recall@{k}": (lambda c, k=k: float(c[f"found_at_{k}"].sum() / c["n_relevant"].sum())) for k in (5, 10)},
+    **{f"MultiHit@{k}": (lambda c, k=k: float(c[f"multi_hit_at_{k}"].mean())) for k in (5, 10)},
+    "MRR@10": lambda c: float(c["mrr_at_10"].mean()),
+    "nDCG@10": lambda c: float(c["ndcg_at_10"].mean()),
+}
+METRIC_COLUMNS = ["n_relevant", "mrr_at_10", "ndcg_at_10"] + [
+    f"{name}_at_{k}" for k in CUTOFFS for name in ("found", "hit", "multi_hit")
+]
+
+
+def aggregate_metrics(
+    rows: list[dict[str, Any]],
+    samples: int = BOOTSTRAP_SAMPLES,
+    seed: int = BOOTSTRAP_SEED,
+) -> dict[str, dict[str, float]]:
+    """{metric: {value, ci_low, ci_high}}: 95% percentile bootstrap over questions."""
+
+    columns = {name: np.array([float(row[name]) for row in rows]) for name in METRIC_COLUMNS}
+    values = {metric: METRIC_FUNCTIONS[metric](columns) for metric in METRICS}
+    draws: dict[str, list[float]] = {metric: [] for metric in METRICS}
+    rng = np.random.default_rng(seed)
+    for _ in range(samples):
+        index = rng.integers(0, len(rows), size=len(rows))
+        resampled = {name: column[index] for name, column in columns.items()}
+        for metric in METRICS:
+            draws[metric].append(METRIC_FUNCTIONS[metric](resampled))
+    output: dict[str, dict[str, float]] = {}
+    for metric, value in values.items():
+        low, high = (float(x) for x in np.percentile(draws[metric], [2.5, 97.5])) if samples else (value, value)
+        output[metric] = {"value": round(value, 6), "ci_low": round(low, 6), "ci_high": round(high, 6)}
+    return output
 
 
 def evaluate_model(
@@ -455,6 +549,9 @@ def evaluate_model(
     batch_size: int,
     rebuild: bool,
     max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
+    min_grade: float = DEFAULT_MIN_GRADE,
+    dataset_id: str = LAO_DONG_DATASET_ID,
+    bootstrap_samples: int = BOOTSTRAP_SAMPLES,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
     if repeats < 1:
         raise ValueError("repeats must be at least 1")
@@ -472,6 +569,7 @@ def evaluate_model(
         batch_size=batch_size,
         rebuild=rebuild,
         max_batch_tokens=max_batch_tokens,
+        dataset_id=dataset_id,
     )
 
     for question in questions[:warmup]:
@@ -524,11 +622,13 @@ def evaluate_model(
         per_query.append(entry)
 
     has_chunk_metrics = any(row.get("chunk_recall_at_5") is not None for row in per_query)
+    aggregated = aggregate_metrics(per_query, samples=bootstrap_samples)
     summary = {
         "model": model_spec["key"],
         "model_id": model_spec["model"],
         "collection": model_spec["collection"],
         "embedding_dimension": dimension,
+        "max_seq_length": getattr(model, "max_seq_length", None),
         "query_count": len(per_query),
         "index_action": index_info["action"],
         "indexed_points": index_info["indexed_points"],
@@ -557,7 +657,7 @@ def evaluate_model(
         "embedding_dimension": dimension,
         "model_load_time_seconds": round(model_load_seconds, 6),
         "index": index_info,
-        "query_config": {"top_k": top_k, "warmup": warmup, "repeats": repeats},
+        "metrics_ci95": aggregated,
     }
     try:
         client.close()
@@ -568,6 +668,26 @@ def evaluate_model(
     return summary, per_query, metadata
 
 
+def breakdown_rows(per_query: list[dict[str, Any]], samples: int = 0) -> list[dict[str, Any]]:
+    """Metrics per model and per de_muc / style / tag, to see where a model fails."""
+
+    groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    for row in per_query:
+        keys = [("de_muc", row.get("de_muc")), ("style", row.get("style"))]
+        keys += [("tag", tag) for tag in row.get("tags") or []]
+        for field, value in keys:
+            if value:
+                groups.setdefault((row["model"], field, str(value)), []).append(row)
+    output = []
+    for (model, field, value), rows in sorted(groups.items()):
+        aggregated = aggregate_metrics(rows, samples=samples)
+        output.append(
+            {"model": model, "group_by": field, "group": value, "questions": len(rows)}
+            | {metric: aggregated[metric]["value"] for metric in METRICS}
+        )
+    return output
+
+
 def _write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="\n") as handle:
@@ -575,10 +695,32 @@ def _write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows({key: row.get(key) for key in fieldnames} for row in rows)
+
+
+def _git_commit() -> str | None:
+    try:
+        output = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT_DIR, capture_output=True, text=True, check=True
+        )
+        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT_DIR, capture_output=True, text=True).stdout
+        return output.stdout.strip() + ("-dirty" if dirty.strip() else "")
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
+def run_id_now() -> str:
+    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
 def run_benchmark(
     chunks_path: Path = DEFAULT_CHUNKS,
     questions_path: Path = DEFAULT_QUESTIONS,
-    results_dir: Path = DEFAULT_RESULTS,
+    results_dir: Path | None = None,
     qdrant_url: str = DEFAULT_QDRANT_URL,
     top_k: int = 10,
     warmup: int = 3,
@@ -588,18 +730,37 @@ def run_benchmark(
     model_keys: list[str] | None = None,
     collection_prefix: str = DEFAULT_COLLECTION_PREFIX,
     max_batch_tokens: int = DEFAULT_MAX_BATCH_TOKENS,
+    min_grade: float = DEFAULT_MIN_GRADE,
+    benchmark: dict[str, Any] | None = None,
+    bootstrap_samples: int = BOOTSTRAP_SAMPLES,
 ) -> dict[str, Any]:
-    """Run the benchmark and write summary/per-query/metadata outputs."""
+    """Run the benchmark and write its outputs to one run directory.
 
-    chunks, questions = load_and_validate_dataset(chunks_path, questions_path)
+    ``benchmark`` is a resolved benchmark version (benchmark_version.resolve);
+    it overrides the chunks, questions and collection prefix.
+    """
+
+    if benchmark is not None:
+        chunks_path = benchmark["chunks_path"]
+        questions_path = benchmark["questions_path"]
+        collection_prefix = benchmark["collection_prefix"]
+    chunks, questions = load_and_validate_dataset(chunks_path, questions_path, min_grade)
+    dataset_id = benchmark["dataset_id"] if benchmark else str(chunks[0].get("dataset_id") or LAO_DONG_DATASET_ID)
+    run_id = run_id_now()
+    if results_dir is None:
+        results_dir = (
+            DEFAULT_RESULTS / benchmark["dataset_id"] / benchmark["testset"] / run_id
+            if benchmark
+            else DEFAULT_RESULTS / "adhoc" / run_id
+        )
+    unknown = set(model_keys or []) - {spec["key"] for spec in MODELS}
+    if unknown:
+        raise ValueError(f"Unknown model key(s): {', '.join(sorted(unknown))}")
     selected = with_collection_prefix(
         [spec for spec in MODELS if model_keys is None or spec["key"] in model_keys], collection_prefix
     )
     if not selected:
         raise ValueError("No model selected")
-    unknown = set(model_keys or []) - {spec["key"] for spec in MODELS}
-    if unknown:
-        raise ValueError(f"Unknown model key(s): {', '.join(sorted(unknown))}")
 
     summaries: list[dict[str, Any]] = []
     per_query_rows: list[dict[str, Any]] = []
@@ -617,54 +778,82 @@ def run_benchmark(
             batch_size=batch_size,
             rebuild=rebuild,
             max_batch_tokens=max_batch_tokens,
+            min_grade=min_grade,
+            dataset_id=dataset_id,
+            bootstrap_samples=bootstrap_samples,
         )
         summaries.append(summary)
         per_query_rows.extend(rows)
         metadata_rows.append(metadata)
+        ci = metadata["metrics_ci95"]
         print(
-            f"  Recall@10={summary['Recall@10']:.3f} "
-            f"MRR@10={summary['MRR@10']:.3f} "
-            f"median={summary['median_latency_ms']:.2f} ms"
+            f"  index {summary['index_action']}; "
+            + "  ".join(
+                f"{metric}={ci[metric]['value']:.3f} [{ci[metric]['ci_low']:.3f}, {ci[metric]['ci_high']:.3f}]"
+                for metric in ("HitRate@5", "Recall@10", "MRR@10", "nDCG@10")
+            )
+            + f"  median={summary['median_latency_ms']:.1f} ms"
         )
 
     results_dir.mkdir(parents=True, exist_ok=True)
-    summary_path = results_dir / "summary.csv"
-    fieldnames = [
-        "model",
-        "model_id",
-        "collection",
-        "embedding_dimension",
-        "query_count",
-        "index_action",
-        "indexed_points",
-        "Recall@1",
-        "Recall@5",
-        "Recall@10",
-        "MRR@10",
-        "nDCG@10",
-        "mean_latency_ms",
-        "median_latency_ms",
-        "mean_encode_latency_ms",
-        "mean_search_latency_ms",
-        "index_time_seconds",
-    ]
-    with summary_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows({key: row.get(key) for key in fieldnames} for row in summaries)
-
+    _write_csv(
+        results_dir / "summary.csv",
+        summaries,
+        [
+            "model",
+            "model_id",
+            "collection",
+            "embedding_dimension",
+            "max_seq_length",
+            "query_count",
+            "index_action",
+            "indexed_points",
+            *METRICS,
+            "mean_latency_ms",
+            "median_latency_ms",
+            "mean_encode_latency_ms",
+            "mean_search_latency_ms",
+            "index_time_seconds",
+        ],
+    )
+    _write_csv(
+        results_dir / "metrics.csv",
+        [
+            {"model": meta["key"], "metric": metric, **meta["metrics_ci95"][metric]}
+            for meta in metadata_rows
+            for metric in METRICS
+        ],
+        ["model", "metric", "value", "ci_low", "ci_high"],
+    )
+    _write_csv(
+        results_dir / "breakdown.csv",
+        breakdown_rows(per_query_rows),
+        ["model", "group_by", "group", "questions", *METRICS],
+    )
     _write_jsonl(results_dir / "per_query_results.jsonl", per_query_rows)
-    metadata = {
+    run = {
+        "run_id": run_id,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "git_commit": _git_commit(),
+        "benchmark": None
+        if benchmark is None
+        else {
+            "dataset_id": benchmark["dataset_id"],
+            "testset": benchmark["testset"],
+            "testset_sha256": benchmark["testset_entry"]["sha256"],
+            "data": benchmark["data"],
+            "warnings": benchmark["warnings"],
+        },
         "dataset": {
+            "dataset_id": dataset_id,
             "chunks_path": str(chunks_path),
             "questions_path": str(questions_path),
             "chunk_count": len(chunks),
             "question_count": len(questions),
-            "dataset_id": chunks[0].get("dataset_id", LAO_DONG_DATASET_ID),
         },
         "config": {
-            "qdrant_url": qdrant_url,
+            # The host only: QDRANT_URL can carry nothing secret, the API key is never written.
+            "qdrant_host": qdrant_url.split("//")[-1].split("/")[0],
             "top_k": top_k,
             "warmup": warmup,
             "repeats": repeats,
@@ -672,26 +861,30 @@ def run_benchmark(
             "max_batch_tokens": max_batch_tokens,
             "rebuild": rebuild,
             "collection_prefix": collection_prefix,
+            "min_grade": min_grade,
+            "bootstrap_samples": bootstrap_samples,
             "neo4j_in_primary_metric": False,
         },
         "models": metadata_rows,
     }
-    (results_dir / "model_metadata.json").write_text(
-        json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    (results_dir / "run.json").write_text(json.dumps(run, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nWrote benchmark outputs to {results_dir}")
-    return {"summary": summaries, "per_query": per_query_rows, "metadata": metadata}
+    return {"summary": summaries, "per_query": per_query_rows, "metadata": run, "results_dir": results_dir}
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--chunks", type=Path, default=DEFAULT_CHUNKS)
-    parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS)
-    parser.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--benchmark", metavar="DATASET_ID", help="frozen benchmark version, e.g. lao_dong_v5")
+    parser.add_argument("--testset", help="test set of that benchmark, e.g. v1")
+    parser.add_argument("--chunks", type=Path, default=DEFAULT_CHUNKS, help="ad-hoc run only")
+    parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS, help="ad-hoc run only")
+    parser.add_argument("--results-dir", type=Path, help="default results/<dataset_id>/<testset>/<run_id>")
     parser.add_argument("--qdrant-url", default=DEFAULT_QDRANT_URL)
     parser.add_argument("--top-k", type=int, default=10)
     parser.add_argument("--warmup", type=int, default=3)
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--min-grade", type=float, default=DEFAULT_MIN_GRADE, help="lowest grade counted as relevant")
+    parser.add_argument("--bootstrap", type=int, default=BOOTSTRAP_SAMPLES, help="bootstrap resamples for the 95%% CI")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Max chunks per indexing batch")
     parser.add_argument(
         "--max-batch-tokens",
@@ -708,12 +901,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--collection-prefix",
         default=DEFAULT_COLLECTION_PREFIX,
-        help="Qdrant collection prefix; use a new one per chunk set (e.g. legal_ld_v5 for lao_dong_v5)",
+        help="ad-hoc run only; a benchmark version takes it from its manifest",
     )
     parser.add_argument(
         "--validate-only",
         action="store_true",
-        help="Validate chunks and manually labelled questions without loading models or Qdrant",
+        help="Validate chunks and gold labels (and the benchmark version) without loading models or Qdrant",
     )
     return parser
 
@@ -722,14 +915,33 @@ def main(argv: list[str] | None = None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     args = build_parser().parse_args(argv)
     if args.top_k < 10:
-        raise SystemExit("--top-k must be at least 10 because the benchmark reports Recall@10/MRR@10")
-    chunks, questions = load_and_validate_dataset(args.chunks, args.questions)
+        raise SystemExit("--top-k must be at least 10 because the benchmark reports HitRate@10/MRR@10")
+
+    benchmark = None
+    if args.benchmark:
+        from labor_rag.evaluation.benchmark_version import BenchmarkError, resolve
+
+        if not args.testset:
+            raise SystemExit("--benchmark needs --testset")
+        try:
+            benchmark = resolve(args.benchmark, args.testset)
+        except BenchmarkError as exc:
+            raise SystemExit(f"ERROR {exc}")
+        for warning in benchmark["warnings"]:
+            print(f"WARN  {warning}")
+        chunks_path, questions_path = benchmark["chunks_path"], benchmark["questions_path"]
+        print(f"Benchmark {args.benchmark}/{args.testset} (collections {benchmark['collection_prefix']}_*)")
+    else:
+        chunks_path, questions_path = args.chunks, args.questions
+        print("Ad-hoc run: not tied to a frozen benchmark version")
+
+    chunks, questions = load_and_validate_dataset(chunks_path, questions_path, args.min_grade)
     print(f"Validated {len(chunks)} chunks and {len(questions)} gold questions")
     if args.validate_only:
         return 0
     run_benchmark(
-        chunks_path=args.chunks,
-        questions_path=args.questions,
+        chunks_path=chunks_path,
+        questions_path=questions_path,
         results_dir=args.results_dir,
         qdrant_url=args.qdrant_url,
         top_k=args.top_k,
@@ -740,6 +952,9 @@ def main(argv: list[str] | None = None) -> int:
         model_keys=args.model_keys,
         collection_prefix=args.collection_prefix,
         max_batch_tokens=args.max_batch_tokens,
+        min_grade=args.min_grade,
+        benchmark=benchmark,
+        bootstrap_samples=args.bootstrap,
     )
     return 0
 

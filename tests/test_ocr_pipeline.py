@@ -339,6 +339,31 @@ def test_van_ban_hop_nhat_metadata():
     assert numbered.so_hieu_vbhn == "05/VBHN-VPQH" and numbered.so_hieu == "45/2019/QH14"
 
 
+def test_van_ban_hop_nhat_metadata_ocr_diacritics():
+    # docs/Luat_lao_dong.pdf as VietOCR read it: "sô" for "số", "kê" for "kể".
+    page = VBHN_PAGE.replace("Lao động số 45", "Lao động sô 45").replace(
+        "nghệ số số 71", "nghệ sô sô 71").replace("nghiệp số 124", "nghiệp sô 124").replace("kể từ", "kê từ")
+    metadata = extract_metadata(page, "BỘ LUẬT LAO ĐỘNG")
+    # Not 113/2025/QH15, the first amending law whose "số" survived OCR.
+    assert metadata.so_hieu == "45/2019/QH14"
+    assert metadata.ngay_hieu_luc == "2021-01-01"
+    assert [doc["so_hieu"] for doc in metadata.van_ban_sua_doi] == ["71/2025/QH15", "113/2025/QH15", "124/2025/QH15"]
+    assert metadata.version_date == "2026-07-01"
+
+
+def test_section_heading_without_dot_below():
+    # VietOCR reads "Mục 3" as "Muc 3"; it must still start a new Mục.
+    text = "Điều 74. A\n1. Nội dung không có dấu chấm cuối\nMuc 3\nTHỎA ƯỚC LAO ĐỘNG TẬP THỂ\nĐiều 75. B\n1. Nội dung."
+    assert "\nMuc 3" in fix_line_breaks(text)
+    assert parse_line("Muc 3 THỎA ƯỚC LAO ĐỘNG TẬP THỂ").level == StructureLevel.SECTION
+
+
+def test_footnote_needs_a_capital():
+    # A body line that wraps after a number ("6 tháng tuổi") is not footnote 6.
+    page = "Điều 139. Nghỉ thai sản\nlao động nữ sinh con dưới\n6 tháng tuổi được nghỉ việc theo quy định của pháp luật về bảo hiểm xã hội, có hiệu lực"
+    assert split_footnotes(page) == (page, [])
+
+
 def test_effective_date_of_original_document():
     metadata = extract_metadata(SAMPLE_LAW + "Điều 220. Hiệu lực thi hành\nBộ luật này có hiệu lực thi hành từ ngày 01 tháng 01 năm 2021.")
     assert not metadata.hop_nhat
