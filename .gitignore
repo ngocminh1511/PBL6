@@ -6,7 +6,6 @@
 .ipynb_checkpoints/
 
 # Local credentials and environment files
-.env
 **/.env
 !.env.example
 
