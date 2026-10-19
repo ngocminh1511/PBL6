@@ -103,9 +103,23 @@ WHERE c.point_number IS NULL AND (key.khoans IS NULL OR c.clause_number IS NULL 
 MATCH (c)-[r:CITES_COMPONENT|IMPLEMENTS_COMPONENT]->(t:SourceComponent)
 WHERE t.article_number IS NOT NULL AND NOT (t.document_id = key.document_id AND t.article_number = key.meta_dieu)
 OPTIONAL MATCH (k:SourceComponent)-[:CONTAINS]->(t) WHERE t.point_number IS NOT NULL
-RETURN DISTINCT key.index AS index, type(r) AS relation, t.document_id AS document_id,
+RETURN DISTINCT key.index AS index, 1 AS hop, type(r) AS relation, t.document_id AS document_id,
        t.article_number AS article_number, t.clause_number AS clause_number, t.point_number AS point_number,
        coalesce(t.text, k.text) AS text
+UNION
+UNWIND $keys AS key
+MATCH (c:SourceComponent {dataset_id: $dataset_id, document_id: key.document_id, article_number: key.meta_dieu})
+WHERE c.point_number IS NULL AND (key.khoans IS NULL OR c.clause_number IS NULL OR c.clause_number IN key.khoans)
+MATCH (c)-[r:CITES_COMPONENT|IMPLEMENTS_COMPONENT]->(t:SourceComponent)
+WHERE t.article_number IS NOT NULL AND NOT (t.document_id = key.document_id AND t.article_number = key.meta_dieu)
+// Hop 2: follow intra-article citations within the same Dieu
+MATCH (t)-[r2:CITES_COMPONENT]->(t2:SourceComponent)
+WHERE t2.document_id = t.document_id AND t2.article_number = t.article_number
+  AND NOT (t2.clause_number = t.clause_number AND coalesce(t2.point_number, '') = coalesce(t.point_number, ''))
+OPTIONAL MATCH (k2:SourceComponent)-[:CONTAINS]->(t2) WHERE t2.point_number IS NOT NULL
+RETURN DISTINCT key.index AS index, 2 AS hop, type(r2) AS relation, t2.document_id AS document_id,
+       t2.article_number AS article_number, t2.clause_number AS clause_number, t2.point_number AS point_number,
+       coalesce(t2.text, k2.text) AS text
 """
 
 
@@ -276,7 +290,7 @@ class HybridRetriever:
             if offset is None:
                 return payloads
 
-    def reference_expand(self, evidences: list[Evidence], limit_per_node: int = 3) -> list[Evidence]:
+    def reference_expand(self, evidences: list[Evidence], limit_per_node: int = 5) -> list[Evidence]:
         """The khoan (or Dieu) that each hit refers to in its text, in force."""
         keys = [
             {"index": i, "document_id": ev.document_id, "meta_dieu": ev.meta_dieu, "khoans": khoans_of(ev.meta_khoan)}
@@ -293,7 +307,7 @@ class HybridRetriever:
         per_hit: dict[int, int] = {}
         seen: set[tuple] = set()
         for row in rows:
-            key = (row["document_id"], row["article_number"], row["clause_number"])
+            key = (row["document_id"], row["article_number"], row["clause_number"], row.get("point_number"))
             if key in seen or per_hit.get(row["index"], 0) >= limit_per_node:
                 continue
             evidence = referenced_evidence(row, payloads)
