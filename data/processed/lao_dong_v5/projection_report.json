@@ -1,0 +1,51 @@
+{
+  "dataset_id": "lao_dong_v5",
+  "triples": 58215,
+  "nodes": 11744,
+  "edges": 33357,
+  "chunks": 1481,
+  "articles": 1407,
+  "split_articles": 38,
+  "edge_types": {
+    "DERIVED_FROM": 1407,
+    "HAS_CROSS_REFERENCE": 1249,
+    "HAS_SOURCE_MAPPING": 1407,
+    "PART_OF": 7146,
+    "REFERS_TO": 2498,
+    "AMENDING_COMPONENT": 71,
+    "HAS_VALIDITY_INTERVAL": 156,
+    "ISSUED_BY": 179,
+    "AMENDS": 9,
+    "AMENDS_COMPONENT": 71,
+    "CONTAINS": 5647,
+    "LOCATED_IN_DOCUMENT": 5637,
+    "CITES_COMPONENT": 2109,
+    "HAS_AMENDMENT": 71,
+    "IMPLEMENTS_COMPONENT": 68,
+    "MAPS_TO_SOURCE_COMPONENT": 1407,
+    "MAPS_TO_SOURCE_DOCUMENT": 1407,
+    "SOURCE_COMPONENT": 1407,
+    "SOURCE_DOCUMENT": 1407,
+    "HAS_ITEM": 4
+  },
+  "node_labels": {
+    "Resource": 130,
+    "AmendmentEvent": 71,
+    "Dieu": 1407,
+    "Authority": 12,
+    "CrossReference": 1249,
+    "VanBan": 175,
+    "DeMuc": 4,
+    "SourceComponent": 5637,
+    "SourceMapping": 1407,
+    "ExtractedStatement": 1407,
+    "Chuong": 39,
+    "Muc": 49,
+    "ChuDe": 1,
+    "LegalValidityInterval": 156
+  },
+  "unprojected_literal_triples": 0,
+  "notes": [
+    "rdf:type is represented by label/class_iris rather than a Neo4j edge."
+  ]
+}
