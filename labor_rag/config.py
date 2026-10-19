@@ -10,9 +10,12 @@ Layout:
   ontology/                   schema/, abox/, reports/
   labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
 """
-from __future__ import annotations
-
+import os
 from pathlib import Path
+
+# Redirect Hugging Face cache to D: drive where there is plenty of disk space
+os.environ.setdefault("HF_HOME", r"D:\PBL6_v2\hf_cache")
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
@@ -43,3 +46,6 @@ ANNOTATION_DIR = EVALUATION_DIR / "annotation"
 BENCHMARKS_DIR = EVALUATION_DIR / "benchmarks"
 RESULTS_DIR = EVALUATION_DIR / "results"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"
+
+FINETUNE_DIR = LAO_DONG_DIR / "finetune"
+FINETUNE_MODELS_DIR = DATA_DIR / "models" / "bge-m3-legal"

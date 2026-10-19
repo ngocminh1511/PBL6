@@ -56,14 +56,26 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
-from labor_rag.config import EVALUATION_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR, RESULTS_DIR, ROOT_DIR
+from labor_rag.config import (
+    EVALUATION_DIR,
+    FINETUNE_MODELS_DIR,
+    LAO_DONG_DATASET_ID,
+    LAO_DONG_DIR,
+    RESULTS_DIR,
+    ROOT_DIR,
+)
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 
 load_dotenv()
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
+DEFAULT_QUESTIONS_V2 = EVALUATION_DIR / "benchmark_questions_v2.jsonl"
+DEFAULT_QUESTIONS = (
+    DEFAULT_QUESTIONS_V2
+    if DEFAULT_QUESTIONS_V2.exists()
+    else EVALUATION_DIR / "benchmark_questions.jsonl"
+)
 DEFAULT_RESULTS = RESULTS_DIR
 DEFAULT_QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 BATCH_SIZE = 64
@@ -87,6 +99,11 @@ MODELS: list[dict[str, str]] = [
         "collection": "legal_ld_v5_bge",
     },
     {
+        "key": "bge_ft",
+        "model": str(FINETUNE_MODELS_DIR),
+        "collection": "legal_ld_v5_bge_ft",
+    },
+    {
         "key": "mpnet",
         "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
         "collection": "legal_ld_v5_mpnet",
@@ -94,7 +111,7 @@ MODELS: list[dict[str, str]] = [
 ]
 
 
-COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
+COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|bge_ft|mpnet)$")
 DEFAULT_COLLECTION_PREFIX = "legal_ld_v5"
 # Reported metrics, in column order.  Recall@1 equals HitRate@1 for single-gold
 # questions and adds little, so it is left out.
@@ -149,6 +166,7 @@ def validate_questions(
         errors.append("Chunks must have unique, non-empty chunk_id values")
     # Gold labels are mapc; every part of a split Dieu carries the same one.
     mapc_set = {str(chunk["mapc"]) for chunk in chunks if chunk.get("mapc")}
+    chunk_id_set = set(chunk_ids)
 
     for question in questions:
         question_id = str(question.get("id", "<missing-id>"))
@@ -178,6 +196,13 @@ def validate_questions(
                 has_relevant = True
         if not has_relevant:
             errors.append(f"{question_id}: needs at least one gold Dieu with grade >= {min_grade:g}")
+
+        # Validate chunk_relevance if present
+        chunk_rel = question.get("chunk_relevance")
+        if isinstance(chunk_rel, dict):
+            for cid in chunk_rel:
+                if cid not in chunk_id_set:
+                    errors.append(f"{question_id}: unknown gold chunk_id {cid}")
 
     ids = [str(question.get("id", "")) for question in questions]
     if len(set(ids)) != len(ids):
@@ -459,6 +484,7 @@ def calculate_query_metrics(
     results: list[dict[str, Any]],
     relevance: dict[str, Any],
     min_grade: float = DEFAULT_MIN_GRADE,
+    chunk_relevance: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Per-question values; ``found_at_k`` / ``n_relevant`` feed the micro Recall."""
 
@@ -473,6 +499,16 @@ def calculate_query_metrics(
         row[f"multi_hit_at_{k}"] = int(found == len(relevant))
     row["mrr_at_10"] = 1.0 / first_rank if first_rank is not None else 0.0
     row["ndcg_at_10"] = _ndcg_at_k(results, relevance, 10)
+    if chunk_relevance:
+        gold_chunks = {str(cid) for cid, grade in chunk_relevance.items() if float(grade) > 0}
+        first_chunk_rank = None
+        for r in results:
+            if r.get("chunk_id") in gold_chunks:
+                first_chunk_rank = int(r["rank"])
+                break
+        row["chunk_recall_at_5"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:5]))
+        row["chunk_recall_at_10"] = int(any(r.get("chunk_id") in gold_chunks for r in results[:10]))
+        row["chunk_mrr_at_10"] = 1.0 / first_chunk_rank if first_chunk_rank is not None else 0.0
     return row
 
 
@@ -556,7 +592,13 @@ def evaluate_model(
             retrieve_once(client, model, model_spec["collection"], str(question["question"]), top_k)
             for _ in range(repeats)
         ]
-        metrics = calculate_query_metrics(runs[0]["results"], question["relevance"], min_grade)
+        chunk_rel = question.get("chunk_relevance")
+        metrics = calculate_query_metrics(
+            runs[0]["results"],
+            question["relevance"],
+            min_grade=min_grade,
+            chunk_relevance=chunk_rel,
+        )
         total_latencies = [float(run["total_latency_ms"]) for run in runs]
         encode_latencies = [float(run["encode_latency_ms"]) for run in runs]
         search_latencies = [float(run["search_latency_ms"]) for run in runs]
@@ -570,7 +612,10 @@ def evaluate_model(
                 "de_muc": question.get("de_muc"),
                 "style": question.get("style"),
                 "tags": question.get("tags", []),
+                "retrieval_type": question.get("retrieval_type"),
                 "gold_relevance": question["relevance"],
+                "gold_chunk_relevance": chunk_rel or {},
+                "kg_relevance": question.get("kg_relevance", {}),
                 "top_k_results": runs[0]["results"],
                 **metrics,
                 "encode_latency_ms": round(median(encode_latencies), 4),
@@ -581,6 +626,7 @@ def evaluate_model(
         )
 
     aggregated = aggregate_metrics(per_query, samples=bootstrap_samples)
+    has_chunk_metrics = any(row.get("chunk_recall_at_5") is not None for row in per_query)
     summary = {
         "model": model_spec["key"],
         "model_id": model_spec["model"],
@@ -591,6 +637,15 @@ def evaluate_model(
         "index_action": index_info["action"],
         "indexed_points": index_info["indexed_points"],
         **{metric: aggregated[metric]["value"] for metric in METRICS},
+        **(
+            {
+                "Chunk-Recall@5": round(mean(float(row["chunk_recall_at_5"]) for row in per_query if row.get("chunk_recall_at_5") is not None), 6),
+                "Chunk-Recall@10": round(mean(float(row["chunk_recall_at_10"]) for row in per_query if row.get("chunk_recall_at_10") is not None), 6),
+                "Chunk-MRR@10": round(mean(float(row["chunk_mrr_at_10"]) for row in per_query if row.get("chunk_mrr_at_10") is not None), 6),
+            }
+            if has_chunk_metrics
+            else {}
+        ),
         "mean_latency_ms": round(mean(float(row["latency_ms"]) for row in per_query), 4),
         "median_latency_ms": round(median(float(row["latency_ms"]) for row in per_query), 4),
         "mean_encode_latency_ms": round(mean(float(row["encode_latency_ms"]) for row in per_query), 4),
