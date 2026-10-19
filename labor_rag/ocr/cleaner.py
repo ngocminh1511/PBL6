@@ -97,7 +97,7 @@ def detect_duplicate_pages(pages_text: list[str]) -> set[int]:
 # Start of a new structural unit: never joined to the previous line.
 _STRUCTURE_START = re.compile(
     r"^("
-    r"Phần\s+|Chương\s+|Mục\s+|Tiểu mục\s+|[ĐD]i[eêèéềếểễệ]u\s+\d+"  # incl. OCR variants of Điều
+    r"Phần\s+|Chương\s+|M[ụu]c\s+|Tiểu mục\s+|[ĐD]i[eêèéềếểễệ]u\s+\d+"  # incl. OCR variants of Mục, Điều
     r"|\d+[a-zđ]?[.,]\s+"  # Khoan, incl. an inserted "1a."
     r"|[a-zđ]\)\s+"  # Diem
     r"|PHỤ LỤC|CỘNG HÒA|Căn cứ"
@@ -160,7 +160,9 @@ def normalize_punctuation(text: str) -> str:
 # ============================================================
 
 # "5 Khoản này được ..." / "12 Luật ..." -- a superscript read as a plain number.
-_FOOTNOTE_START = re.compile(r"^(\d{1,3})\s+(?=\S)")
+# A footnote opens with a capital; "6 tháng tuổi, ..." or "01 tháng 01 năm
+# 2026 ..." at a line start is body text that wrapped after a number.
+_FOOTNOTE_START = re.compile(r"^(\d{1,3})\s+(?=[A-ZĐÀ-Ỹ])")
 _CLAUSE_LIKE = re.compile(r"^\d+[a-zđ]?[.,]\s")
 _FOOTNOTE_KEYWORDS = re.compile(
     r"sửa đổi|bổ sung|bãi bỏ|thay thế|hợp nhất|căn cứ ban hành|có hiệu lực",
@@ -168,7 +170,7 @@ _FOOTNOTE_KEYWORDS = re.compile(
 )
 _MAX_FOOTNOTE_LINES = 30
 _BODY_START = re.compile(
-    r"^(?:(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+\d|(?:CHƯƠNG|Chương|MỤC|Mục|PHẦN|Phần)\s|\d+[a-zđ]?[.,]\s|[a-zđ]\)\s)",
+    r"^(?:(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+\d|(?:CHƯƠNG|Chương|M[ỤU]C|M[ụu]c|PHẦN|Phần)\s|\d+[a-zđ]?[.,]\s|[a-zđ]\)\s)",
     re.UNICODE,
 )
 

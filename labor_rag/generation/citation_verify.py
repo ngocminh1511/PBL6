@@ -17,6 +17,7 @@ SO_HIEU_WINDOW = 120
 
 
 def verify_citations(answer: str, evidences: list[Evidence]) -> dict:
+    evidences = evidences + [amendment for e in evidences for amendment in e.amendments]
     retrieved = {(e.document_id, e.meta_dieu) for e in evidences if e.meta_dieu}
     retrieved_dieu = {dieu for _, dieu in retrieved}
 

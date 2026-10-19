@@ -1,0 +1,77 @@
+================================================================================
+GHI CHÚ HỆ THỐNG VÀ CÁC QUYẾT ĐỊNH THIẾT KẾ (Cập nhật 19/10/2026)
+================================================================================
+
+I. GIẢI QUYẾT CÁC VẤN ĐỀ TRƯỚC ĐÂY (Đã hoàn thành ở commit 54f3e06 -> 245c037)
+--------------------------------------------------------------------------------
+1. Sửa đổi ở mức văn bản vs mức Điều:
+   - ĐÚNG: KG cũ chỉ ghi nhận sửa đổi ở mức văn bản.
+   - NAY ĐÃ GIẢI QUYẾT: Đã bổ sung parser đọc ghi chú nguồn HTML của Pháp điển để 
+     bóc tách thông tin sửa đổi xuống chính xác từng Điều (71 sự kiện sửa đổi 
+     mức Điều được gắn vào node :AmendmentEvent trong Neo4j).
+
+2. Xử lý văn bản sửa đổi ở mức Khoản & 1 Điều bị cắt nhiều lần:
+   - Nếu 1 Điều dài bị cắt thành nhiều chunk (:p1, :p2...): Khi tìm kiếm, hàm 
+     `join_parts` tự động gom các phần lại thành 1 Điều duy nhất dựa trên 
+     cặp khóa `(document_id, meta_dieu)`.
+   - `version_date` được tính riêng cho từng Điều (lấy theo ngày của sửa đổi mới 
+     nhất đã hợp nhất vào chính Điều đó, thay vì lấy ngày chung của cả văn bản).
+   - Khi có sửa đổi chưa hợp nhất (Pending Amendments): Đồ thị tìm ra node 
+     sửa đổi và gắn vào trường `Evidence.amendments` để nhắc LLM áp dụng luật mới.
+
+3. Xử lý văn bản sửa đổi / thay thế từ PDF:
+   - File `pdf_abox.py` tự động đọc PDF và sinh ABox riêng cho văn bản đó.
+   - Nếu là văn bản thay thế: Đồ thị sinh quan hệ (:VanBan)-[:REPLACES]->(:VanBan).
+   - Qdrant không cần lưu quan hệ phức tạp, chỉ cần cập nhật trường `still_valid=False` 
+     và `effective_to_date` để tự động lọc bỏ văn bản cũ khi người dùng tra cứu.
+
+
+II. CƠ CHẾ MỞ RỘNG ĐỒ THỊ (GRAPH EXPANSION) & KIỂM SOÁT BÙNG NỔ CẤP SỐ MŨ
+--------------------------------------------------------------------------------
+1. Thực trạng & Mâu thuẫn bài toán:
+   - Nếu mở rộng quá ngắn (1-hop):
+     Khi gặp các điều khoản mang tính "ủy quyền / giao quyền" (Ví dụ: Khoản 3 Điều 147 
+     chỉ ghi: "Bộ trưởng quy định danh mục tại điểm h khoản 1 và điểm đ khoản 2 Điều này"), 
+     nếu chỉ dừng ở bước 1 thì LLM không nhận được nội dung thực chất của các công việc 
+     bị cấm (nằm ở Điểm h Khoản 1 và Điểm đ Khoản 2).
+   - Nếu mở rộng không kiểm soát (Multi-hop tự do):
+     Dẫn chiếu luật có tính chất đan xen chéo. Một Điều dẫn chiếu 5 Điều, mỗi Điều 
+     dẫn tiếp 5 Điều khác -> Tăng theo cấp số nhân -> Gây vòng lặp vô tận (Cypher treo), 
+     tràn cửa sổ token của LLM (Context Window explosion), tốn chi phí và lạc đề 
+     (Semantic drift).
+
+2. Bốn (4) cơ chế kiểm soát bắt buộc (Guardrails):
+   [1] Khóa cứng độ sâu (Max Depth = 2):
+       - Tuyệt đối không duyệt quá 2 bước:
+         Chunk ban đầu (TT) -> Khoản dẫn chiếu (Luật) -> Khoản/Điểm nội dung thực chất.
+       - Trong văn bản quy phạm pháp luật VN, cấu trúc quy định chi tiết luôn kết thúc 
+         ở bước 2. Bước 3 trở đi luôn bị trôi sang chủ đề khác.
+
+   [2] Ưu tiên mở rộng nội bộ cùng một Điều (Intra-article Constraint):
+       - Chỉ kích hoạt bước 2 nếu đích đến nằm trong CÙNG MỘT ĐIỀU LUẬT (Ví dụ: từ 
+         Khoản 3 dẫn tới Điểm h Khoản 1 và Điểm đ Khoản 2 của CHÍNH ĐIỀU 147 ĐÓ).
+       - Việc này triệt tiêu hoàn toàn nguy cơ lan truyền sang các văn bản xa lạ.
+
+   [3] Giới hạn số lượng bằng ngân sách bằng chứng (Top-K / Budget Token):
+       - Giới hạn cứng trong truy vấn Cypher: `LIMIT 5` (hoặc tối đa 8) bằng chứng bổ trợ.
+       - Chỉ chọn các khoản có quan hệ mật thiết nhất, không gom bừa bãi.
+
+   [4] Chống chu trình / vòng lặp (Cycle Prevention):
+       - Trong Cypher kiểm tra `WHERE NOT t.id IN $visited_keys` để loại bỏ việc 
+         quay lại các Điều/Khoản đã được duyệt trong tập kết quả vector ban đầu.
+
+
+III. TRẠNG THÁI HIỆN TẠI VÀ CÔNG VIỆC TIẾP THEO
+--------------------------------------------------------------------------------
+1. Đã hoàn thành (19/10/2026):
+   - [x] Chạy xong toàn bộ pipeline: build_abox -> validate_abox -> ontology_to_jsonl -> load_neo4j.
+   - [x] Neo4j đã nạp thành công 11.744 nodes và 66.714 cạnh (có đầy đủ node Khoản và cạnh dẫn chiếu).
+   - [x] Đã test trực tiếp 2 câu Cypher REFERENCED_COMPONENTS và PENDING_AMENDMENTS trên Neo4j thật: 
+         chạy thành công 100%, tốc độ 46ms - 154ms.
+   - [x] Kiểm tra benchmark dataset: khớp dữ liệu lao_dong_v5.
+
+2. Việc tiếp theo:
+   - [ ] P0.2: Chạy OCR cho PDF: python -m labor_rag.ingest.pdf_to_chunks --input docs/Luat_lao_dong.pdf
+   - [ ] Cập nhật logic Cypher trong `hybrid_retrieve.py` áp dụng quy tắc mở rộng 2-hop có kiểm soát 
+         (Intra-article cho các khoản ủy quyền).
+   - [ ] Commit dữ liệu mới sinh ra (`ontology/abox/abox_lao_dong.ttl`, `kg_nodes.jsonl`, `kg_edges.jsonl`).

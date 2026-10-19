@@ -5,8 +5,11 @@ Decisions are per Dieu (article_id: "<document_id>:d35", or ":pl1" for an
 appendix), never per part, so a Dieu never mixes parts from two sources:
 
 - only in the new set: write it;
-- in both: the side with the later version_date wins; on a tie Phap dien
-  wins over a PDF, and a reload from the same source replaces;
+- in both with the same parts and text: nothing to embed; when only the
+  metadata differs (version_date, effective_to_date, ...) and the new side is
+  a reload of the same source or would win, its payload is refreshed in place;
+- in both otherwise: the side with the later version_date wins; on a tie
+  Phap dien wins over a PDF, and a reload from the same source replaces;
 - when the new side wins, every old part is deleted first, since the two
   sides may split the Dieu into a different number of parts;
 - a Dieu only in the old set is kept, with a warning (often an OCR miss).
@@ -27,6 +30,7 @@ class UpsertPlan:
     delete: list[str] = field(default_factory=list)  # chunk_ids of old parts to remove first
     kept: list[str] = field(default_factory=list)  # article ids where the old version wins
     unchanged: list[str] = field(default_factory=list)  # article ids identical in both
+    refresh: list[dict] = field(default_factory=list)  # same text, new metadata: set_payload, no embedding
     warnings: list[str] = field(default_factory=list)
 
 
@@ -48,6 +52,11 @@ def new_wins(new: dict, old: dict) -> bool:
     return new.get("source") == PHAP_DIEN
 
 
+def payload_differs(old: dict, new: dict) -> bool:
+    """A field changed, was added, or was dropped (dataset_id is added at indexing)."""
+    return {k: v for k, v in old.items() if k != "dataset_id"} != {k: v for k, v in new.items() if k != "dataset_id"}
+
+
 def plan_upsert(existing: list[dict], new: list[dict]) -> UpsertPlan:
     """existing: payloads already indexed for the documents in ``new``."""
     plan = UpsertPlan()
@@ -59,10 +68,16 @@ def plan_upsert(existing: list[dict], new: list[dict]) -> UpsertPlan:
         if not old_parts:
             plan.upsert += new_parts
             continue
-        if [(c["chunk_id"], c.get("text")) for c in old_parts] == [(c["chunk_id"], c.get("text")) for c in new_parts] and (
-            old_parts[0].get("version_date") == new_parts[0].get("version_date")
-        ):
-            plan.unchanged.append(key)
+        if [(c["chunk_id"], c.get("text")) for c in old_parts] == [(c["chunk_id"], c.get("text")) for c in new_parts]:
+            old_by_id = {c["chunk_id"]: c for c in old_parts}
+            changed = [c for c in new_parts if payload_differs(old_by_id[c["chunk_id"]], c)]
+            # A reload from the same source is the new truth even with an
+            # earlier version_date (a corrected projection).
+            same_source = new_parts[0].get("source") == old_parts[0].get("source")
+            if changed and (same_source or new_wins(new_parts[0], old_parts[0])):
+                plan.refresh += changed
+            else:
+                plan.unchanged.append(key)
             continue
         if new_wins(new_parts[0], old_parts[0]):
             plan.delete += [c["chunk_id"] for c in old_parts]
