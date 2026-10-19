@@ -85,3 +85,7 @@ Nếu nằm ở Top 3 -> Điểm là 1/3 (0.33).
 Nếu nằm ở Top 10 -> Điểm là 1/10 (0.1).
 
 Mức điểm 0.8833 cho thấy trung bình các tài liệu đúng luôn xuất hiện ở vị trí thứ 1 hoặc thứ 2.
+
+
+# báo cáo
+labor_rag\evaluation\results\retrieval_v3_hybrid_pipeline_report.md
