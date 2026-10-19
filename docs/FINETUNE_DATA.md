@@ -168,12 +168,29 @@ python -m labor_rag.finetune.extract_vlsp_pairs            # cần HF_TOKEN + qu
 python -m labor_rag.finetune.map_vilegal_labor             # cần data/finetune/vilegal/train_data.json
 python -m labor_rag.finetune.map_zaloai_labor              # cần data/finetune/zalo/train_data_model.json
 python -m labor_rag.finetune.build_dataset
-python -m labor_rag.finetune.mine_negatives                # GPU
+modal run scripts/modal_finetune.py::mine                  # GPU trên Modal (hoặc: python -m labor_rag.finetune.mine_negatives)
 python -m labor_rag.finetune.assemble_dataset
+modal run scripts/modal_finetune.py::train --epochs 3 --batch-size 32
 pytest tests/test_finetune_build.py
 ```
 
 Hoặc chạy lần lượt `notebooks/finetune/01 → 02 → 03`.
+
+### Chạy GPU trên Modal
+
+Giống `scripts/modal_embed.py`, các bước GPU chạy trên Modal (`scripts/modal_finetune.py`, GPU A10G 24 GB, fp16).
+Cần làm một lần: `pip install modal` rồi `modal setup`.
+
+- `::mine` tải `queries_train.jsonl`, `chunks.jsonl`, `kg_edges.jsonl` lên Volume `labor-rag-finetune`, đào hard negative trên GPU,
+  rồi tải `merged/hard_negatives.jsonl` về máy.
+- `::train` tải `train.jsonl`, `val.jsonl`, `chunks.jsonl`, `benchmark_questions_v3.jsonl` lên, đo BGE-M3 gốc, train,
+  đo lại bản fine-tune trên val và benchmark v3, rồi tải model về `data/models/<run-name>/`
+  (kèm `report.json` có bảng baseline vs fine-tune).
+- Nếu `train.jsonl` chưa có hard negative, `::train` tự chuyển sang `--phase contrastive` (chỉ chạy giai đoạn 1).
+- Weights của mô hình gốc được cache trong Volume `labor-rag-hf-cache`, dùng chung với `modal_embed.py`.
+
+Notebook 02 (`MINING_BACKEND = "modal"`) và 03 (`BACKEND = "modal"`) gọi đúng các lệnh này.
+GPU laptop 4 GB không đủ để fine-tune BGE-M3.
 
 Sau khi fine-tune phải embedding lại toàn bộ corpus bằng model mới vào **collection mới**, giữ collection cũ làm baseline:
 `python -m labor_rag.ingest.embed_and_index --model data/models/bge-m3-legal --collection legal_ld_v5_bge_ft --recreate`.

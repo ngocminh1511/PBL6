@@ -169,6 +169,16 @@ def build_ir_evaluator(val_records: list[dict[str, Any]], chunks: list[dict[str,
     )
 
 
+def primary_score(evaluator: InformationRetrievalEvaluator, result: Any) -> float:
+    """sentence-transformers >= 3 evaluators return a metrics dict, older ones a float."""
+    if isinstance(result, dict):
+        key = getattr(evaluator, "primary_metric", None)
+        if key and key in result:
+            return float(result[key])
+        return float(next(v for k, v in result.items() if k.endswith("ndcg@10")))
+    return float(result)
+
+
 def train_model(
     model_name: str = DEFAULT_MODEL,
     output_dir: Path = DEFAULT_OUTPUT,
@@ -184,7 +194,10 @@ def train_model(
     phase2_loss_mode: str = "mnrl",
     device: str | None = None,
     dry_run: bool = False,
-) -> None:
+    use_amp: bool = False,
+) -> dict[str, float]:
+    """Train, save to output_dir (output_dir/phase1 for phase="contrastive") and
+    return the {"baseline": ..., "final": ...} validation scores."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if device is None:
@@ -206,12 +219,12 @@ def train_model(
 
     # Pre-training baseline evaluation
     print("\nRunning initial baseline evaluation on validation set...")
-    baseline_score = evaluator(model, output_path=str(output_dir))
+    baseline_score = primary_score(evaluator, evaluator(model, output_path=str(output_dir)))
     print(f"Baseline validation score: {baseline_score:.4f}\n")
 
     if dry_run:
         print("[DRY-RUN] Verification complete! Data loaded, model loaded, evaluator ran successfully.")
-        return
+        return {"baseline": baseline_score}
 
     # PHASE 1: Contrastive Learning with in-batch negatives
     if phase in ("contrastive", "both"):
@@ -238,6 +251,7 @@ def train_model(
             output_path=str(phase1_out),
             optimizer_params={"lr": lr},
             show_progress_bar=True,
+            use_amp=use_amp,
         )
         print(f"Phase 1 complete! Saved to {phase1_out}")
 
@@ -260,7 +274,7 @@ def train_model(
             print("[WARN] No hard negatives found in training data. Skipping Phase 2 or running with positive pairs.")
             if phase == "hard_neg":
                 print("Aborting Phase 2 because no hard negatives are present.")
-                return
+                return {"baseline": baseline_score}
 
         phase2_loader = (
             DataLoader(phase2_examples, shuffle=True, batch_size=batch_size)
@@ -286,18 +300,20 @@ def train_model(
             output_path=str(output_dir),
             optimizer_params={"lr": lr / 2},  # lower learning rate for fine adjustments
             show_progress_bar=True,
+            use_amp=use_amp,
         )
         print(f"Phase 2 complete! Final fine-tuned model saved to {output_dir}")
 
     # Final evaluation
     print("\n" + "=" * 60)
     print("FINAL EVALUATION:")
-    final_score = evaluator(model)
+    final_score = primary_score(evaluator, evaluator(model))
     print(f"Baseline validation score: {baseline_score:.4f}")
     print(f"Final validation score:    {final_score:.4f}")
     diff = final_score - baseline_score
     print(f"Delta:                    {'+' if diff >= 0 else ''}{diff:.4f}")
     print("=" * 60)
+    return {"baseline": baseline_score, "final": final_score}
 
 
 def main() -> None:
@@ -316,6 +332,7 @@ def main() -> None:
     parser.add_argument("--loss-phase2", choices=["mnrl", "triplet"], default="mnrl", help="Loss for Phase 2")
     parser.add_argument("--device", type=str, default=None, help="Device (cpu or cuda)")
     parser.add_argument("--dry-run", action="store_true", help="Validate setup and test evaluator without full training")
+    parser.add_argument("--fp16", action="store_true", help="Mixed precision (CUDA only): about half the VRAM")
     args = parser.parse_args()
 
     train_model(
@@ -333,6 +350,7 @@ def main() -> None:
         phase2_loss_mode=args.loss_phase2,
         device=args.device,
         dry_run=args.dry_run,
+        use_amp=args.fp16,
     )
 
 
