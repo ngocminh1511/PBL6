@@ -20,23 +20,17 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from labor_rag.config import FINETUNE_DIR, LAO_DONG_DIR
+from labor_rag.config import LAO_DONG_DIR, finetune_raw_dir, finetune_source_dir
 from labor_rag.ingest.chunk_schema import article_key, citation, make_document_id
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
 
-DEFAULT_INPUT = (
-    Path(__file__).resolve().parents[2]
-    / "data"
-    / "finetune"
-    / "ViLegalExpert"
-    / "train_data.json"
-)
+DEFAULT_INPUT = finetune_raw_dir("vilegal") / "train_data.json"
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_OUTPUT = FINETUNE_DIR / "vilegal_labor_mapped.json"
-DEFAULT_REVIEW = FINETUNE_DIR / "vilegal_labor_review.json"
-DEFAULT_REPORT = FINETUNE_DIR / "vilegal_labor_mapping_report.json"
+DEFAULT_OUTPUT = finetune_source_dir("vilegal") / "vilegal_labor_mapped.json"
+DEFAULT_REVIEW = finetune_source_dir("vilegal") / "vilegal_labor_review.json"
+DEFAULT_REPORT = finetune_source_dir("vilegal") / "vilegal_labor_mapping_report.json"
 
 ARTICLE_CITATION_RE = re.compile(r"\bđiều\s+([0-9]+[a-zđ]?)\b", re.IGNORECASE)
 

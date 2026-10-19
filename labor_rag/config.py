@@ -9,6 +9,7 @@ Layout:
   data/processed/lao_dong_v4/ previous projection (mapc as chunk_id), kept for comparison
   ontology/                   schema/, abox/, reports/
   labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
+  data/finetune/<source>/, data/processed/finetune/<source>/   fine-tune sources (gitignored)
 """
 import os
 from pathlib import Path
@@ -49,3 +50,20 @@ TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"
 
 FINETUNE_DIR = LAO_DONG_DIR / "finetune"
 FINETUNE_MODELS_DIR = DATA_DIR / "models" / "bge-m3-legal"
+
+# Fine-tune sources (docs/FINETUNE_DATA.md), both gitignored, one folder per source:
+#   data/finetune/<source>/            raw downloads
+#   data/processed/finetune/<source>/  extracted / mapped / aligned pairs
+#   data/processed/finetune/merged/    deduplicated train/val built from all sources
+FINETUNE_RAW_DIR = DATA_DIR / "finetune"
+FINETUNE_WORK_DIR = PROCESSED_DIR / "finetune"
+FINETUNE_SOURCES = ("tvpl", "vlsp", "vilegal", "zalo", "bkai", "phamson02", "alqac")
+FINETUNE_MERGED_DIR = FINETUNE_WORK_DIR / "merged"
+
+
+def finetune_raw_dir(source: str) -> Path:
+    return FINETUNE_RAW_DIR / source
+
+
+def finetune_source_dir(source: str) -> Path:
+    return FINETUNE_WORK_DIR / source

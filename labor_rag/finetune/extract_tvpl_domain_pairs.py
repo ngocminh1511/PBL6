@@ -13,7 +13,7 @@ Khác với cách tiếp cận ép cứng vào 1.481 chunks của lao_dong_v5, c
 3. Vẫn đối chiếu với 1.481 chunks của lao_dong_v5: nếu đoạn văn bản khớp với chunk v5 thì lưu chunk_id,
    nếu không thì vẫn lưu toàn văn đoạn trích dương tính (positive_text) để huấn luyện mô hình.
 4. Kiểm tra loại trừ mọi câu hỏi trùng với benchmark đánh giá đóng băng (chống Data Leakage).
-5. Xuất ra data/processed/finetune/tvpl_lao_dong_expanded.jsonl.
+5. Xuất ra data/processed/finetune/tvpl/tvpl_lao_dong_expanded.jsonl.
 
 Cách chạy:
     python -m labor_rag.finetune.extract_tvpl_domain_pairs
@@ -30,7 +30,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from labor_rag.config import BENCHMARKS_DIR, LAO_DONG_DIR, PROCESSED_DIR, ROOT_DIR
+from labor_rag.config import BENCHMARKS_DIR, LAO_DONG_DIR, ROOT_DIR, finetune_source_dir
 
 
 def clean_text(s: str) -> str:
@@ -298,12 +298,12 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=PROCESSED_DIR / "finetune" / "tvpl_lao_dong_expanded.jsonl",
+        default=finetune_source_dir("tvpl") / "tvpl_lao_dong_expanded.jsonl",
         help="Đường dẫn file kết quả xuất ra",
     )
     args = parser.parse_args()
 
-    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN") or True
+    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN") or None
     repo = "GreenNode/TVPL-Retrieval-VN"
 
     print("1. Nạp danh mục 1.481 chunks của lao_dong_v5 để map chéo (nếu có)...")

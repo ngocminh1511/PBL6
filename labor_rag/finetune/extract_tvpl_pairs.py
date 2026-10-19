@@ -29,7 +29,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from labor_rag.config import BENCHMARKS_DIR, LAO_DONG_DIR, PROCESSED_DIR, ROOT_DIR
+from labor_rag.config import BENCHMARKS_DIR, LAO_DONG_DIR, ROOT_DIR, finetune_source_dir
 
 
 def clean_text(s: str) -> str:
@@ -165,12 +165,12 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=PROCESSED_DIR / "finetune" / "tvpl_lao_dong_train.jsonl",
+        default=finetune_source_dir("tvpl") / "tvpl_lao_dong_train.jsonl",
         help="Đường dẫn file kết quả xuất ra",
     )
     args = parser.parse_args()
 
-    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN") or True
+    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN") or None
     repo = "GreenNode/TVPL-Retrieval-VN"
 
     print("1. Nạp danh bạ Điều luật từ lao_dong_v5/chunks.jsonl...")
