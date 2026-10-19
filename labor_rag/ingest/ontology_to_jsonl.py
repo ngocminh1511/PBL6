@@ -380,6 +380,12 @@ def main() -> int:
         default=MAX_TOKENS,
         help="split Dieu longer than this many bge-m3 tokens (0: never split, no tokenizer download)",
     )
+    parser.add_argument(
+        "--text-variant",
+        choices=["full", "minimal", "B", "A"],
+        default="full",
+        help="TH2/B: 'full' (đầy đủ ngữ cảnh + Điều n. Tên + nội dung, mặc định) | TH1/A: 'minimal' (chỉ Điều n. Tên + nội dung)",
+    )
     args = parser.parse_args()
 
     pdf_aboxes = sorted(args.pdf_abox_dir.glob("*.ttl")) if args.pdf_abox_dir.exists() else []
@@ -544,7 +550,7 @@ def main() -> int:
         if re.fullmatch(rf"Điều\s+{re.escape(str(node.get('mapc')))}\.?", ten):
             ten = ""
         body = nfc(node.get("text") or node.get("source_quote") or "")
-        header = build_header(context, meta_dieu, ten)
+        header = build_header(context, meta_dieu, ten, variant=args.text_variant)
         if count:
             parts = split_article(header, body, count, args.max_tokens)
         else:
@@ -609,6 +615,7 @@ def main() -> int:
     }
     report = {
         "dataset_id": args.dataset_id,
+        "text_variant": args.text_variant,
         "triples": len(graph),
         "nodes": len(nodes),
         "edges": len(edges),
@@ -624,6 +631,7 @@ def main() -> int:
     def write_jsonl(path: Path, rows: list[dict]) -> None:
         path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows), encoding="utf-8")
 
+    args.out_dir.mkdir(parents=True, exist_ok=True)
     write_jsonl(args.out_dir / "kg_nodes.jsonl", list(nodes.values()))
     write_jsonl(args.out_dir / "kg_edges.jsonl", edges)
     write_jsonl(args.out_dir / "chunks.jsonl", chunks)

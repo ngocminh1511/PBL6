@@ -40,7 +40,7 @@ from labor_rag.ingest.parse_demuc_html import iter_dieu, load_linh_vuc_index, pa
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-VLC = Namespace("https://example.org/vn-legal/core#")
+VLC = Namespace("https://example.org/vn-legal/core#") # Namespace của TBox
 VLD = Namespace("https://example.org/vn-legal/document#")
 VLA = Namespace("https://example.org/vn-legal/authority#")
 VLR = Namespace("https://example.org/vn-legal/relation#")

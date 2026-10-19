@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-10-13T17:10:12.727848+00:00",
+  "model": "BAAI/bge-m3",
+  "neo4j_uri": "neo4j+s://e97dd8f7.databases.neo4j.io",
+  "benchmarks": {
+    "TH1_minimal_vector_only": {
+      "mode": "TH1_minimal [Vector Only]",
+      "case": "TH1_minimal",
+      "collection": "legal_ld_v6_bge",
+      "Hit@1": 0.8333,
+      "Hit@5": 0.9333,
+      "Hit@10": 0.9667,
+      "Recall@5": 0.6278,
+      "Recall@10": 0.6722,
+      "MRR@10": 0.8889,
+      "NDCG@5": 0.7886,
+      "NDCG@10": 0.8031,
+      "MAP@10": 0.5688,
+      "avg_latency_ms": 430.46
+    },
+    "TH1_minimal_hybrid": {
+      "mode": "TH1_minimal [Vector + Knowledge Graph]",
+      "case": "TH1_minimal",
+      "collection": "legal_ld_v6_bge",
+      "Hit@1": 0.8333,
+      "Hit@5": 0.9333,
+      "Hit@10": 0.9667,
+      "Recall@5": 0.6167,
+      "Recall@10": 0.75,
+      "MRR@10": 0.8806,
+      "NDCG@5": 0.7635,
+      "NDCG@10": 0.7973,
+      "MAP@10": 0.5602,
+      "avg_latency_ms": 511.69
+    },
+    "TH2_full_vector_only": {
+      "mode": "TH2_full [Vector Only]",
+      "case": "TH2_full",
+      "collection": "legal_ld_v5_bge",
+      "Hit@1": 0.8333,
+      "Hit@5": 0.9333,
+      "Hit@10": 0.9667,
+      "Recall@5": 0.6167,
+      "Recall@10": 0.6944,
+      "MRR@10": 0.8783,
+      "NDCG@5": 0.7701,
+      "NDCG@10": 0.7918,
+      "MAP@10": 0.5766,
+      "avg_latency_ms": 369.56
+    },
+    "TH2_full_hybrid": {
+      "mode": "TH2_full [Vector + Knowledge Graph]",
+      "case": "TH2_full",
+      "collection": "legal_ld_v5_bge",
+      "Hit@1": 0.8333,
+      "Hit@5": 0.9333,
+      "Hit@10": 0.9333,
+      "Recall@5": 0.6167,
+      "Recall@10": 0.7389,
+      "MRR@10": 0.8722,
+      "NDCG@5": 0.7384,
+      "NDCG@10": 0.7733,
+      "MAP@10": 0.5531,
+      "avg_latency_ms": 431.25
+    }
+  }
+}

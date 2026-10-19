@@ -199,8 +199,9 @@ def in_force(today: date | None = None) -> Filter:
 
 
 class HybridRetriever:
-    def __init__(self) -> None:
+    def __init__(self, collection: str | None = None) -> None:
         self.model = SentenceTransformer(MODEL_NAME)
+        self.collection = collection or os.getenv("QDRANT_COLLECTION", COLLECTION)
         self.qdrant = QdrantClient(
             url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
         )
@@ -213,7 +214,7 @@ class HybridRetriever:
         """Top-k Dieu: parts of one Dieu count once, with their best score."""
         vector = self.model.encode(query, normalize_embeddings=True).tolist()
         hits = self.qdrant.query_points(
-            collection_name=COLLECTION, query=vector, query_filter=in_force(), limit=top_k * OVERFETCH
+            collection_name=self.collection, query=vector, query_filter=in_force(), limit=top_k * OVERFETCH
         ).points
         best: dict[str, Evidence] = {}
         for h in hits:  # sorted by score, so the first part seen is the best one
@@ -260,7 +261,7 @@ class HybridRetriever:
             if ev.text:
                 continue
             points, _ = self.qdrant.scroll(
-                collection_name=COLLECTION,
+                collection_name=self.collection,
                 scroll_filter=Filter(must=[FieldCondition(key="mapc", match=MatchValue(value=ev.mapc)), in_force()]),
                 limit=64,
                 with_payload=True,
@@ -280,7 +281,7 @@ class HybridRetriever:
         offset = None
         while True:
             points, offset = self.qdrant.scroll(
-                collection_name=COLLECTION,
+                collection_name=self.collection,
                 scroll_filter=Filter(must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids)), in_force()]),
                 limit=256,
                 offset=offset,

@@ -15,6 +15,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 from labor_rag.ingest.chunk_schema import (
     article_id,
+    build_header,
     citation,
     content_hash,
     heading_number,
@@ -140,6 +141,19 @@ def test_join_parts_rebuilds_article():
     body = "\n".join([LEAD, *(clause(n, 40) for n in range(1, 7))])
     parts = split_article(HEADER, body, words, max_tokens=150)
     assert join_parts([text for text, _ in parts]) == HEADER + "\n" + body
+
+
+def test_build_header_variants():
+    context = "Lao động > Nghị định 145/2020 > Chương III. HỢP ĐỒNG"
+    # TH2 / B (full context): default
+    header_full = build_header(context, "10", "Hợp đồng vô hiệu", variant="full")
+    assert header_full == f"{context}\nĐiều 10. Hợp đồng vô hiệu"
+    assert build_header(context, "10", "Hợp đồng vô hiệu") == header_full
+
+    # TH1 / A (minimal: only Điều n. Tên)
+    header_minimal = build_header(context, "10", "Hợp đồng vô hiệu", variant="minimal")
+    assert header_minimal == "Điều 10. Hợp đồng vô hiệu"
+    assert build_header(context, "10", "Hợp đồng vô hiệu", variant="A") == "Điều 10. Hợp đồng vô hiệu"
 
 
 if __name__ == "__main__":

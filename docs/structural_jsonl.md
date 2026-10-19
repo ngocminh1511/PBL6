@@ -139,7 +139,11 @@ def make_document_id(so_hieu: str) -> str:
 
 Mọi phần `:p{k}` của một Điều dùng chung một `mapc`.
 
-## 4. Dựng trường `text`
+## 4. Dựng trường `text` (2 biến thể cấu hình)
+
+Trường `text` là đầu vào trực tiếp cho mô hình embedding (`bge-m3`) và BM25. Hệ thống hỗ trợ 2 biến thể cấu hình thông qua cờ `--text-variant`:
+
+### 4.1. Biến thể B (TH2 - Mặc định / `full`): Phần đầu đầy đủ + Nội dung
 
 ```
 {ngữ cảnh}
@@ -152,8 +156,39 @@ Mọi phần `:p{k}` của một Điều dùng chung một `mapc`.
 | Pháp điển | `{đề mục} > {meta_de_muc} > {các heading Pháp điển: Phần / Chương / Mục ...}` (chương, mục của đề mục, tức `pd_chuong`, `pd_muc`) |
 | PDF | `{meta_de_muc} > Chương {số}. {tên chương}[ > Mục {số}. {tên mục}]` |
 
-Quy tắc:
-- **Phải có tên văn bản** trong ngữ cảnh. Nhiều văn bản có Điều trùng tên ("Phạm vi điều chỉnh", "Đối tượng áp dụng"), nên thiếu tên văn bản thì vector không phân biệt được.
+- **Ưu điểm:**
+  - Phân biệt các Điều trùng tên ("Phạm vi điều chỉnh", "Đối tượng áp dụng") giữa 153 văn bản khác nhau.
+  - Khớp tốt các câu hỏi có tên văn bản ("theo Bộ luật Lao động...") hoặc tên chương ("về tiền lương...").
+- **Nhược điểm:**
+  - Dense vector của `bge-m3` bị kéo về chủ đề chung của chương/đề mục thay vì nội dung riêng của Điều.
+
+### 4.2. Biến thể A (TH1 - Tối giản / `minimal`): Điều n. Tên + Nội dung
+
+```
+Điều {meta_dieu}. {ten}
+{nội dung}
+```
+
+- Bỏ hoàn toàn phần ngữ cảnh đề mục, tên văn bản, chương mục (`context = None`).
+- **Ưu điểm:**
+  - Dense vector tập trung 100% vào nội dung thực chất của từng Điều, các Điều ngắn trong cùng chương không bị kéo vector lại gần nhau.
+  - Phù hợp khi dùng kết hợp với Knowledge Graph (Neo4j đã đảm nhận việc liên kết văn bản/chương mục) hoặc khi so sánh thực nghiệm.
+- **Nhược điểm:**
+  - Các Điều trùng tên ("Phạm vi điều chỉnh") của các văn bản khác nhau sẽ cho vector gần giống nhau nếu không kết hợp lọc metadata (`document_id`).
+
+### 4.3. Cách chuyển đổi giữa 2 trường hợp
+
+Khi xuất dữ liệu từ ontology hoặc PDF, truyền cờ `--text-variant`:
+
+```powershell
+# TH2 / Biến thể B (Mặc định - Đầy đủ ngữ cảnh)
+python -m labor_rag.ingest.ontology_to_jsonl --text-variant full
+
+# TH1 / Biến thể A (Tối giản - Chỉ Điều n. Tên + nội dung)
+python -m labor_rag.ingest.ontology_to_jsonl --text-variant minimal --out-dir data/processed/lao_dong_variant_a
+```
+
+Quy tắc chung cho cả 2 biến thể:
 - **Không** đưa mã pháp điển (`Điều 20.2.LQ.1`) vào `text`.
 - Chuẩn hóa `unicodedata.normalize("NFC", text)`. OCR có thể trả về dấu tổ hợp, làm tokenizer tách khác với Pháp điển.
 - bge-m3 không cần prefix `query:` / `passage:` và không cần tách từ (pyvi).

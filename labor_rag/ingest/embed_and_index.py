@@ -301,10 +301,10 @@ def main() -> None:
         ]
         upsert_with_retry(client, args.collection, points)
         done += len(batch_ids)
-        print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})")
+        print(f"  upserted {done}/{len(chunks)} (batch of {len(batch_ids)})", flush=True)
 
     sync_validity(client, args.collection, args.kg_dir)
-    print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}")
+    print(f"Done. Qdrant dashboard: {args.qdrant_url}/dashboard#/collections/{args.collection}", flush=True)
 
 
 if __name__ == "__main__":
