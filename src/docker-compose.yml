@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL (Users, Chat Sessions, Documents, Ingestion Tasks)
+  postgres:
+    image: postgres:15-alpine
+    container_name: lexgraph_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: lexgraph_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis (Session Cache & Embedding Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: lexgraph_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Qdrant (Vector Database - BGE-m3 Cosine Index)
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: lexgraph_qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"   # REST API + Dashboard
+      - "6334:6334"   # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  # 4. Neo4j (Knowledge Graph - Legal AST & Cross-References)
+  neo4j:
+    image: neo4j:5-community
+    container_name: lexgraph_neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"   # Neo4j Browser UI
+      - "7687:7687"   # Bolt Protocol
+    environment:
+      - NEO4J_AUTH=neo4j/labor_rag_pw
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # 5. Backend (FastAPI Service Layer)
+  backend:
+    build:
+      context: ..
+      dockerfile: src/backend/Dockerfile
+    container_name: lexgraph_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/lexgraph_db
+      - REDIS_URL=redis://redis:6379/0
+      - QDRANT_URL=http://qdrant:6333
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=labor_rag_pw
+      - EMBEDDING_MODEL=BAAI/bge-m3
+      - EMBEDDING_BACKEND=local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 6. Frontend (Next.js + Tailwind + Zustand)
+  frontend:
+    build:
+      context: ..
+      dockerfile: src/frontend/Dockerfile
+    container_name: lexgraph_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  qdrant_data:
+  neo4j_data:
+
