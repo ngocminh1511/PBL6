@@ -89,3 +89,18 @@ Mức điểm 0.8833 cho thấy trung bình các tài liệu đúng luôn xuất
 
 # báo cáo
 labor_rag\evaluation\results\retrieval_v3_hybrid_pipeline_report.md
+
+- Vector Search đóng vai trò "Bắn trúng hồng tâm" (Finding the Seed):
+Knowledge Graph mở rộng dựa trên các hạt giống (Top Seeds) mà Vector tìm thấy. Nếu Vector tìm sai điều luật ban đầu, Graph sẽ duyệt sang các nhánh sai .
+Fine-tuned BGE-M3 sẽ đảm bảo Hit@1 và Hit@3 tăng vọt (dự kiến từ 80% lên ~90%), nghĩa là hạt giống đưa vào Graph luôn chuẩn xác 100%.
+- Knowledge Graph đóng vai trò "Dẫn chiếu tất định" (Deterministic Expansion):
+Người dùng hỏi về quyền lợi thôi việc, nhưng các quy định về thủ tục thông báo cho cơ quan quản lý hoặc văn bản hướng dẫn thi hành (Nghị định 145/2020) thường không chứa các từ khóa trong câu hỏi của người dùng.
+Vector search không thể "đoán" để lấy các nghị định này nếu không có từ khóa tương đồng. Chỉ có Knowledge Graph (REFERS_TO, CITES_COMPONENT) mới gom được trọn vẹn 100% các điều luật dẫn chiếu bổ trợ này.
+
+
+### khi fine tuning mô hình học được gì
+- Những thứ mô hình ĐÃ HỌC ĐƯỢC (Dùng chung tốt cho mọi bộ luật)
+Khi fine-tune BGE-M3 trên tập Luật Lao động, mô hình đã tiếp thu được các đặc trưng chung của hệ thống văn bản quy phạm pháp luật Việt Nam:
+
+Hiểu văn phong pháp lý hành chính: Nhận biết cấu trúc văn bản (Điều, Khoản, Điểm, Căn cứ, Thẩm quyền...).
+Thu hẹp khoảng cách "Hỏi đời thường -> Trả lời pháp lý": Mô hình học được cách ánh xạ từ ngôn ngữ sinh hoạt của người dân sang câu chữ hành chính mang tính quy chuẩn.
