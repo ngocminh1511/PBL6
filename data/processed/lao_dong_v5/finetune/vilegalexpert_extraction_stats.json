@@ -1,0 +1,26 @@
+{
+  "vilegalexpert_total": 70131,
+  "leakage_filtered": 0,
+  "duplicate_queries_filtered": 2401,
+  "in_corpus_matched_queries": 2614,
+  "unique_chunks_covered": 428,
+  "total_chunks_in_corpus": 1481,
+  "chunk_coverage_percent": 28.9,
+  "all_labor_pairs_count": 10770,
+  "top_documents_covered": {
+    "45-2019-qh14": 1491,
+    "145-2020-nd-cp": 271,
+    "84-2015-qh13": 267,
+    "38-2013-qh13": 251,
+    "28-2015-nd-cp": 117,
+    "152-2020-nd-cp": 90,
+    "69-2020-qh14": 54,
+    "135-2020-nd-cp": 20,
+    "112-2021-nd-cp": 18,
+    "23-2021-nd-cp": 18,
+    "61-2015-nd-cp": 9,
+    "97-2022-nd-cp": 4,
+    "31-2015-nd-cp": 2,
+    "88-2020-nd-cp": 2
+  }
+}
