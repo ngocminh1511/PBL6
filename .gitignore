@@ -17,6 +17,7 @@ data/processed/*
 !data/processed/lao_dong_v4/
 !data/processed/lao_dong_v5/
 !data/processed/lao_dong_v5/finetune/
+!data/finetune/ViLegalExpert
 
 # Reference papers/slides (large binaries)
 docs/references/
