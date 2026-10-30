@@ -5,6 +5,18 @@
 *.py[cod]
 .ipynb_checkpoints/
 
+# Node dependencies & Next.js build output
+**/node_modules/
+node_modules/
+**/.next/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.pnp
+.pnp.js
+
 # Local credentials and environment files
 **/.env
 !.env.example
