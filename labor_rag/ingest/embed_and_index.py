@@ -20,6 +20,12 @@ A rebuild drops PDF chunks loaded with --upsert, so it stops when the
 collection holds chunks from another source; pass --recreate to rebuild
 anyway, then load them again.
 
+With --backend file the vectors are not computed here at all: they are read from a
+--vectors-file written elsewhere, e.g. by scripts/colab_embed.ipynb on a free Colab
+T4 when this machine has no GPU. Vectors are matched to chunks by chunk_id, and the
+run stops when one is missing, was made by another model, or was made from a text
+that has since changed.
+
 Amendments and replacements are in the graph (ontology_to_jsonl, Neo4j),
 not in the payload. Each run copies the end of validity of every document
 the graph says was replaced (kg_nodes.jsonl: VanBan.valid_to) into
@@ -29,11 +35,13 @@ day without re-embedding.
 Usage: python -m labor_rag.ingest.embed_and_index [--backend modal] [--model ...] [--collection ...]
        python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc>_chunks.jsonl --upsert
        python -m labor_rag.ingest.embed_and_index --recreate   # rebuild, dropping PDF chunks
+       python -m labor_rag.ingest.embed_and_index --backend file --vectors-file data/interim/vectors.npz
 """
 from __future__ import annotations
 
 import json
 import argparse
+import hashlib
 import os
 import sys
 import time
@@ -55,7 +63,7 @@ from qdrant_client.models import (
     VectorParams,
 )
 
-from labor_rag.config import LAO_DONG_DATASET_ID, LAO_DONG_DIR
+from labor_rag.config import INTERIM_DIR, LAO_DONG_DATASET_ID, LAO_DONG_DIR
 from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
@@ -64,6 +72,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
 
 CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
+# Written by scripts/colab_embed.ipynb, read by --backend file.
+VECTORS_PATH = INTERIM_DIR / "vectors.npz"
 
 MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v5_bge")
@@ -125,6 +135,52 @@ def embed_modal(texts: list[str], model_name: str, max_batch_tokens: int, batch_
     for start in range(0, len(texts), UPSERT_BATCH):
         ids = list(range(start, min(start + UPSERT_BATCH, len(texts))))
         yield ids, vectors[ids]
+
+
+def text_digest(text: str) -> str:
+    """Short hash of a chunk text; scripts/colab_embed.ipynb stores the same one next to each vector."""
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+
+
+def embed_file(chunks: list[dict], vectors_file: Path, model_name: str):
+    """Yield fixed-size slices of vectors computed elsewhere, matched to chunks by chunk_id.
+
+    A stale vector would return the wrong Dieu without any error, so a missing vector, a
+    different model or a changed text stops the run instead."""
+    import numpy as np
+
+    data = np.load(vectors_file, allow_pickle=False)
+    stored_model = str(data["model"])
+    if stored_model != model_name:
+        raise SystemExit(
+            f"{vectors_file} was embedded with {stored_model}, but this run uses {model_name}: "
+            "queries and chunks must use the same model."
+        )
+    stored_ids = data["chunk_ids"].tolist()  # read each array once: every access re-reads the .npz
+    stored_hashes = data["text_hash"].tolist()
+    stored_vectors = data["vectors"].astype(np.float32)
+    row = {chunk_id: i for i, chunk_id in enumerate(stored_ids)}
+
+    missing = [c["chunk_id"] for c in chunks if c["chunk_id"] not in row]
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} chunks have no vector in {vectors_file} (e.g. {missing[:3]}). "
+            "Run scripts/colab_embed.ipynb again on the current chunks.jsonl."
+        )
+    stale = [
+        c["chunk_id"] for c in chunks if stored_hashes[row[c["chunk_id"]]] != text_digest(c["text"])
+    ]
+    if stale:
+        raise SystemExit(
+            f"{len(stale)} chunks changed since {vectors_file} was made (e.g. {stale[:3]}). "
+            "Run scripts/colab_embed.ipynb again on the current chunks.jsonl."
+        )
+
+    print(f"Using {len(chunks)} precomputed vectors from {vectors_file} ({stored_model})")
+    ordered = stored_vectors[[row[c["chunk_id"]] for c in chunks]]
+    for start in range(0, len(chunks), UPSERT_BATCH):
+        ids = list(range(start, min(start + UPSERT_BATCH, len(chunks))))
+        yield ids, ordered[ids]
 
 
 def upsert_with_retry(client: QdrantClient, collection: str, points: list[PointStruct]) -> None:
@@ -221,7 +277,13 @@ def main() -> None:
     parser.add_argument("--model", default=MODEL_NAME)
     parser.add_argument("--collection", default=COLLECTION)
     parser.add_argument("--qdrant-url", default=QDRANT_URL)
-    parser.add_argument("--backend", choices=["local", "modal"], default=BACKEND)
+    parser.add_argument("--backend", choices=["local", "modal", "file"], default=BACKEND)
+    parser.add_argument(
+        "--vectors-file",
+        type=Path,
+        default=VECTORS_PATH,
+        help="--backend file: .npz with chunk_ids, text_hash, vectors, model (scripts/colab_embed.ipynb)",
+    )
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Max chunks per batch")
     parser.add_argument(
         "--max-batch-tokens",
@@ -243,6 +305,11 @@ def main() -> None:
         help="rebuild even when the collection holds chunks from another source (PDF); they are dropped",
     )
     args = parser.parse_args()
+    if args.backend == "file" and not args.vectors_file.exists():
+        raise SystemExit(
+            f"{args.vectors_file} not found. Run scripts/colab_embed.ipynb on Colab and put the "
+            "downloaded vectors.npz there, or pass --vectors-file."
+        )
     max_batch_tokens = args.max_batch_tokens or (
         MODAL_MAX_BATCH_TOKENS if args.backend == "modal" else DEFAULT_MAX_BATCH_TOKENS
     )
@@ -281,9 +348,13 @@ def main() -> None:
             return
     texts = [c["text"] for c in chunks]
 
-    embed = embed_modal if args.backend == "modal" else embed_local
+    if args.backend == "file":
+        batches = embed_file(chunks, args.vectors_file, args.model)
+    else:
+        embed = embed_modal if args.backend == "modal" else embed_local
+        batches = embed(texts, args.model, max_batch_tokens, args.batch_size)
     done = 0
-    for batch_ids, vectors in embed(texts, args.model, max_batch_tokens, args.batch_size):
+    for batch_ids, vectors in batches:
         if done == 0 and recreate:
             dim = len(vectors[0])
             print(f"Embedding dimension: {dim}")

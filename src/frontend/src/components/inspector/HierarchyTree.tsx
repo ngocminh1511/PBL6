@@ -1,14 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useChatStore } from '../../stores/chatStore';
+import { EvidenceItem } from '../../lib/types';
 
 export const HierarchyTree: React.FC = () => {
   const [viewMode, setViewMode] = useState<'tree' | 'json'>('tree');
-  const { selectedCitation } = useChatStore();
+  const { selectedCitation, selectedEvidences, setSelectedCitation } = useChatStore();
 
-  const isDiemASelected = selectedCitation?.includes('Điểm a') || selectedCitation?.includes('Khoản 1');
-  const isDiemDSelected = selectedCitation?.includes('Điểm d') || selectedCitation?.includes('đặc thù');
+  const defaultSampleEvidence: EvidenceItem = useMemo(
+    () => ({
+      chunk_id: 'sample_bll_d35',
+      mapc: '20.2.LĐ.3.35',
+      ten: 'Quyền đơn phương chấm dứt hợp đồng lao động của người lao động',
+      text: '1. Người lao động có quyền đơn phương chấm dứt hợp đồng lao động nhưng phải báo trước cho người sử dụng lao động:\na) Ít nhất 45 ngày nếu làm việc theo hợp đồng lao động không xác định thời hạn;\nd) Đối với một số ngành, nghề, công việc đặc thù thì thời hạn báo trước thực hiện theo quy định của Chính phủ (Nghị định 145/2020/NĐ-CP Điều 7).',
+      source: 'vector',
+      score: 0.95,
+      document_id: '45-2019-qh14',
+      meta_dieu: '35',
+      meta_khoan: '1',
+      meta_de_muc: 'Bộ luật Lao động 2019',
+      citation: 'Điều 35 Bộ luật Lao động 2019',
+      amendments: [],
+    }),
+    []
+  );
+
+  const availableEvidences = selectedEvidences.length > 0 ? selectedEvidences : [defaultSampleEvidence];
+
+  const currentEvidence = useMemo(() => {
+    if (selectedCitation) {
+      const normalized = selectedCitation.toLowerCase();
+      const match = availableEvidences.find((e) => {
+        const cit = (e.citation || '').toLowerCase();
+        const ten = (e.ten || '').toLowerCase();
+        return cit.includes(normalized) || normalized.includes(cit) || ten.includes(normalized);
+      });
+      if (match) return match;
+    }
+    return availableEvidences[0];
+  }, [availableEvidences, selectedCitation]);
+
+  const docTitle = currentEvidence.meta_de_muc || (currentEvidence.document_id ? `Văn bản ${currentEvidence.document_id}` : 'Bộ luật Lao động 45/2019/QH14');
+  const articleTitle = currentEvidence.citation || `Điều ${currentEvidence.meta_dieu || 'Pháp điển'}`;
+  const clauseNumber = currentEvidence.meta_khoan || '1';
 
   return (
     <div className="flex-1 overflow-y-auto p-space-md flex flex-col gap-space-md">
@@ -23,10 +58,19 @@ export const HierarchyTree: React.FC = () => {
           </span>
         </div>
         <div className="relative">
-          <select className="w-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm p-2.5 rounded-xl appearance-none focus:outline-none shadow-xs font-medium cursor-pointer border border-outline-variant/40">
-            <option>Bộ luật Lao động 45/2019/QH14 (Hiệu lực: Còn)</option>
-            <option>Nghị định 145/2020/NĐ-CP (Hướng dẫn BLLĐ)</option>
-            <option>Luật Bảo hiểm xã hội 58/2014/QH13</option>
+          <select
+            value={currentEvidence.chunk_id}
+            onChange={(e) => {
+              const found = availableEvidences.find((ev) => ev.chunk_id === e.target.value);
+              if (found) setSelectedCitation(found.citation);
+            }}
+            className="w-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm p-2.5 rounded-xl appearance-none focus:outline-none shadow-xs font-medium cursor-pointer border border-outline-variant/40"
+          >
+            {availableEvidences.map((ev, i) => (
+              <option key={ev.chunk_id || i} value={ev.chunk_id}>
+                {ev.citation} - {ev.meta_de_muc || ev.ten}
+              </option>
+            ))}
           </select>
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[18px] text-on-surface-variant pointer-events-none">
             expand_more
@@ -60,99 +104,78 @@ export const HierarchyTree: React.FC = () => {
       {viewMode === 'tree' ? (
         /* Hierarchical Tree Visualization */
         <div className="p-space-md rounded-2xl bg-surface-container-lowest flex flex-col gap-space-sm shadow-xs border border-outline-variant/30">
-          {/* Level 1: Chương */}
+          {/* Level 1: Văn bản / Chương */}
           <div className="flex items-center gap-2 text-on-surface-variant font-label-statute text-label-statute">
             <span className="material-symbols-outlined text-[16px] text-secondary">folder_open</span>
-            <span className="font-bold text-on-surface">CHƯƠNG III: HỢP ĐỒNG LAO ĐỘNG</span>
+            <span className="font-bold text-on-surface uppercase">{docTitle}</span>
           </div>
 
           {/* Level 2: Mục */}
           <div className="pl-4 flex flex-col gap-space-xs border-l-2 border-indigo-200 ml-2">
             <div className="flex items-center gap-1.5 text-on-surface-variant font-label-statute text-label-statute">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              <span>Mục 3: Chấm dứt hợp đồng lao động</span>
+              <span>Bộ Pháp Điển Điện Tử • Chủ đề 20 Lao động</span>
             </div>
 
-            {/* Level 3: Điều 35 */}
+            {/* Level 3: Điều luật */}
             <div className="pl-3 flex flex-col gap-space-xs">
-              <div className="p-2 rounded-lg bg-surface-container font-headline-sm text-headline-sm text-on-surface flex items-center justify-between border border-secondary/30">
-                <span>Điều 35. Quyền đơn phương chấm dứt HĐLĐ của NLĐ</span>
-                <span className="font-label-statute text-label-statute bg-secondary text-white px-1.5 py-0.5 rounded">
+              <div className="p-2.5 rounded-lg bg-surface-container font-headline-sm text-headline-sm text-on-surface flex items-center justify-between border border-secondary/30">
+                <span className="font-bold text-indigo-950">
+                  {articleTitle}: {currentEvidence.ten}
+                </span>
+                <span className="font-label-statute text-label-statute bg-secondary text-white px-1.5 py-0.5 rounded shrink-0">
                   Có hiệu lực
                 </span>
               </div>
 
-              {/* Level 4: Khoản 1 */}
+              {/* Level 4: Khoản */}
               <div className="pl-3 flex flex-col gap-space-xs text-on-surface font-body-sm text-body-sm">
                 <p className="font-medium text-on-surface pt-1">
-                  1. Người lao động có quyền đơn phương chấm dứt hợp đồng lao động nhưng phải báo trước cho người sử dụng lao động như sau:
+                  Khoản {clauseNumber}. Nội dung trích xuất quy chuẩn:
                 </p>
 
-                {/* Level 5: Điểm a */}
-                <div
-                  className={`p-2.5 rounded-xl flex flex-col gap-1 transition-all ${
-                    isDiemASelected
-                      ? 'bg-secondary-fixed/40 border-2 border-secondary shadow-sm'
-                      : 'bg-surface-container-high'
-                  }`}
-                >
+                {/* Level 5: Text nội dung & Dẫn chiếu */}
+                <div className="p-3 rounded-xl bg-secondary-fixed/30 border-2 border-secondary shadow-sm flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
                     <span className="font-label-statute text-label-statute font-bold text-on-surface">
-                      Điểm a (Bình thường)
+                      Đoạn quy phạm (Chunk ID: {currentEvidence.chunk_id})
                     </span>
                     <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
-                      ĐANG TRÍCH DẪN
+                      ĐANG ĐỐI SOÁT
                     </span>
                   </div>
-                  <p className="font-body-sm text-body-sm text-on-surface">
-                    "a) Ít nhất 45 ngày nếu làm việc theo hợp đồng lao động không xác định thời hạn;"
+                  <p className="font-body-sm text-body-sm text-on-surface leading-relaxed whitespace-pre-line">
+                    "{currentEvidence.text}"
                   </p>
                   <div className="flex items-center gap-2 font-label-code text-label-statute text-outline pt-1 text-[11px]">
-                    <span>Mã đoạn Vector:</span>
-                    <span className="text-secondary bg-surface-container-low px-1 rounded">BLLD_D35_K1_Da</span>
-                    <span>• Kích thước: 1536</span>
-                  </div>
-                </div>
-
-                {/* Level 5: Điểm d (WITH REFERS_TO) */}
-                <div
-                  className={`p-2.5 rounded-xl flex flex-col gap-1.5 transition-all ${
-                    isDiemDSelected
-                      ? 'bg-amber-50 border-2 border-amber-500 shadow-sm'
-                      : 'bg-surface-container-high'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-label-statute text-label-statute font-bold text-on-surface">
-                      Điểm d (Đặc thù)
+                    <span>Nguồn truy xuất:</span>
+                    <span className="text-secondary bg-surface-container-low px-1.5 py-0.5 rounded font-bold font-mono">
+                      {currentEvidence.source}
                     </span>
-                    <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
-                      DẪN CHIẾU ĐỒ THỊ
-                    </span>
+                    <span>• Điểm tương đồng: {(currentEvidence.score || 0.95).toFixed(3)}</span>
                   </div>
-                  <p className="font-body-sm text-body-sm text-on-surface">
-                    "d) Đối với một số ngành, nghề, công việc đặc thù thì thời hạn báo trước thực hiện theo quy định của Chính phủ."
-                  </p>
 
-                  {/* Explainable Graph Edge: REFERS_TO */}
-                  <div className="p-2 rounded-lg bg-surface-container-lowest border border-amber-300 flex flex-col gap-1 shadow-xs">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-[16px] text-amber-600">trending_flat</span>
-                        <span className="font-label-code text-label-statute text-amber-700 font-bold">
-                          CẠNH ĐỒ THỊ: THAM CHIẾU (REFERS_TO)
+                  {/* Refers to badge if present */}
+                  {(currentEvidence.source.includes('REFERS_TO') || currentEvidence.source.includes('graph')) && (
+                    <div className="mt-2 p-2 rounded-lg bg-surface-container-lowest border border-amber-300 flex flex-col gap-1 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px] text-amber-600">trending_flat</span>
+                          <span className="font-label-code text-label-statute text-amber-700 font-bold">
+                            CẠNH ĐỒ THỊ: THAM CHIẾU (REFERS_TO)
+                          </span>
+                        </div>
+                        <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px]">
+                          1-Hop Traversal
                         </span>
                       </div>
-                      <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px]">
-                        Đã đối chiếu & Liên kết
-                      </span>
+                      <div className="font-label-code text-label-statute text-on-surface flex items-center gap-1 text-[11px]">
+                        <span>──▶</span>
+                        <strong className="text-secondary">{currentEvidence.citation}</strong>
+                        <span>(Liên kết đồ thị tri thức Neo4j)</span>
+                      </div>
                     </div>
-                    <div className="font-label-code text-label-statute text-on-surface flex items-center gap-1 text-[11px]">
-                      <span>──▶</span>
-                      <strong className="text-secondary">NĐ 145/2020/NĐ-CP</strong>
-                      <span>(Điều 7, Khoản 2: Thành viên tổ bay, điều hành bay...)</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -164,35 +187,33 @@ export const HierarchyTree: React.FC = () => {
           <pre className="leading-relaxed">
             {JSON.stringify(
               {
-                node_id: 'VN_BLLD_2019_D35_K1_Dd',
-                statute_type: 'Diem',
-                identifier: 'Điểm d, Khoản 1, Điều 35',
+                node_id: currentEvidence.chunk_id,
+                statute_type: 'ArticleComponent',
+                identifier: currentEvidence.citation,
+                title: currentEvidence.ten,
                 document: {
-                  code: '45/2019/QH14',
-                  title: 'Bộ luật Lao động 2019',
-                  effective_date: '2021-01-01',
+                  id: currentEvidence.document_id || 'BLLD2019',
+                  title: docTitle,
+                  status: 'active',
                 },
                 hierarchy_ancestry: [
-                  { level: 'VanBan', id: 'BLLD2019' },
-                  { level: 'Chuong', id: 'Chuong_III', title: 'Hợp đồng lao động' },
-                  { level: 'Muc', id: 'Muc_3', title: 'Chấm dứt HĐLĐ' },
-                  { level: 'Dieu', id: 'Dieu_35', title: 'Quyền đơn phương chấm dứt...' },
-                  { level: 'Khoan', id: 'Khoan_1' },
+                  { level: 'VanBan', title: docTitle },
+                  { level: 'ChuDe', id: '20', title: 'Lao động' },
+                  { level: 'Dieu', id: currentEvidence.meta_dieu, title: currentEvidence.ten },
+                  { level: 'Khoan', id: clauseNumber },
                 ],
                 graph_edges: [
-                  { type: 'PART_OF', target: 'VN_BLLD_2019_D35_K1', direction: 'OUTGOING' },
+                  { type: 'PART_OF', target: docTitle, direction: 'OUTGOING' },
                   {
                     type: 'REFERS_TO',
-                    target: 'VN_ND_145_2020_D7_K2',
-                    target_title: 'Nghị định 145/2020/NĐ-CP Điều 7 Khoản 2',
-                    semantic_relationship: 'QUY_DINH_CHI_TIET_NGANH_NGHE_DAC_THU',
+                    target: currentEvidence.citation,
+                    source: currentEvidence.source,
                   },
                 ],
                 vector_embedding: {
                   engine: 'qdrant',
-                  collection: 'legal_ld_v5_bge',
-                  model: 'BAAI/bge-m3',
-                  dimensions: 1024,
+                  score: currentEvidence.score,
+                  source: currentEvidence.source,
                 },
               },
               null,
@@ -204,4 +225,3 @@ export const HierarchyTree: React.FC = () => {
     </div>
   );
 };
-

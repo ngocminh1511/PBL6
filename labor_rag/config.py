@@ -13,8 +13,10 @@ Layout:
 import os
 from pathlib import Path
 
-# Redirect Hugging Face cache to D: drive where there is plenty of disk space
-os.environ.setdefault("HF_HOME", r"D:\PBL6_v2\hf_cache")
+# Redirect Hugging Face cache to D: drive where there is plenty of disk space,
+# but only on machines that have one; elsewhere Hugging Face keeps its default cache.
+if Path("D:/").exists():
+    os.environ.setdefault("HF_HOME", r"D:\PBL6_v2\hf_cache")
 os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 ROOT_DIR = Path(__file__).resolve().parents[1]

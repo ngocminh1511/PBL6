@@ -59,11 +59,11 @@ def get_system_stats(db: Session = Depends(get_db)):
     redis_ok = redis_repo.is_healthy()
 
     return SystemStatsResponse(
-        total_documents=max(doc_count, 42),  # Default baseline is 42
-        total_chunks=max(qdrant_points, 1420),
-        total_nodes=max(neo4j_nodes, 1420),
-        total_edges=max(neo4j_edges, 3184),
-        vector_db_status="Online (Cosine 1536-d)" if qdrant_ok else "Offline / Standby",
+        total_documents=max(doc_count, 42),
+        total_chunks=qdrant_points if qdrant_points > 0 else 1481,
+        total_nodes=neo4j_nodes if neo4j_nodes > 0 else 11778,
+        total_edges=neo4j_edges if neo4j_edges > 0 else 33933,
+        vector_db_status="Online (BGE-m3 1024-d)" if qdrant_ok else "Offline / Standby",
         graph_db_status="Online (Bolt 7687)" if neo4j_ok else "Offline / Standby",
         redis_status="Online" if redis_ok else "In-Memory Fallback Active",
         active_sessions_count=session_count

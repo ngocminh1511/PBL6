@@ -58,6 +58,10 @@ class RetrievalService:
                 for a in e.amendments
             ]
 
+            cit = getattr(e, "citation", "")
+            if not cit or not cit.strip():
+                cit = e.ten if e.ten else (f"Điều {e.meta_dieu}" if e.meta_dieu else e.chunk_id)
+
             items.append(
                 EvidenceItem(
                     chunk_id=e.chunk_id,
@@ -70,7 +74,7 @@ class RetrievalService:
                     meta_dieu=e.meta_dieu,
                     meta_khoan=e.meta_khoan,
                     meta_de_muc=e.meta_de_muc,
-                    citation=e.citation,
+                    citation=cit,
                     amendments=amendments_items
                 )
             )
@@ -89,10 +93,17 @@ class RetrievalService:
         import json
         from pathlib import Path
         from labor_rag.retrieval.hybrid_retrieve import Evidence
+        from labor_rag.config import ROOT_DIR
 
-        fallback_path = Path("d:/PBL6_v2/PBL6/data/processed/lao_dong_v5_full/chunks.jsonl")
+        candidate_paths = [
+            ROOT_DIR / "data" / "processed" / "lao_dong_v5" / "chunks.jsonl",
+            ROOT_DIR / "data" / "processed" / "lao_dong_v4" / "chunks.jsonl",
+            Path("data/processed/lao_dong_v4/chunks.jsonl"),
+        ]
+
+        fallback_path = next((p for p in candidate_paths if p.exists()), None)
         results = []
-        if fallback_path.exists():
+        if fallback_path:
             terms = [w.lower() for w in query.split() if len(w) > 3]
             try:
                 with open(fallback_path, "r", encoding="utf-8") as f:
@@ -103,13 +114,16 @@ class RetrievalService:
                         if match_count > 0:
                             results.append((match_count, data))
                 results.sort(key=lambda x: x[0], reverse=True)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[RetrievalService] Fallback read error: {e}")
 
         if results:
             evidences = []
             for score, payload in results[:top_k]:
-                evidences.append(Evidence.from_payload(payload, "vector:fallback", score=min(0.75 + score * 0.05, 0.95)))
+                ev = Evidence.from_payload(payload, "vector:fallback", score=min(0.75 + score * 0.05, 0.95))
+                if not ev.meta_dieu and payload.get("citation"):
+                    setattr(ev, "_citation", payload.get("citation"))
+                evidences.append(ev)
             return evidences
 
         # Default sample evidence if no file read
