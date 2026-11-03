@@ -45,7 +45,11 @@ if hasattr(sys.stderr, "reconfigure"):
 from labor_rag.config import EVALUATION_DIR, FINETUNE_DIR, LAO_DONG_DIR
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_SYNTHETIC = FINETUNE_DIR / "synthetic_queries.jsonl"
+DEFAULT_SYNTHETIC = (
+    FINETUNE_DIR / "vilegalexpert_queries.jsonl"
+    if (FINETUNE_DIR / "vilegalexpert_queries.jsonl").exists()
+    else FINETUNE_DIR / "synthetic_queries.jsonl"
+)
 DEFAULT_KG_PAIRS = FINETUNE_DIR / "kg_positive_pairs.jsonl"
 DEFAULT_HARD_NEGS = FINETUNE_DIR / "hard_negatives.jsonl"
 DEFAULT_BENCHMARK = (

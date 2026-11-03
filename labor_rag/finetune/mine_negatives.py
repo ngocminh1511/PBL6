@@ -45,7 +45,11 @@ from labor_rag.config import FINETUNE_DIR, LAO_DONG_DIR
 from labor_rag.ingest.chunk_schema import article_id
 
 DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
-DEFAULT_QUERIES = FINETUNE_DIR / "synthetic_queries.jsonl"
+DEFAULT_QUERIES = (
+    FINETUNE_DIR / "vilegalexpert_queries.jsonl"
+    if (FINETUNE_DIR / "vilegalexpert_queries.jsonl").exists()
+    else FINETUNE_DIR / "synthetic_queries.jsonl"
+)
 DEFAULT_OUTPUT = FINETUNE_DIR / "hard_negatives.jsonl"
 DEFAULT_MODEL = "BAAI/bge-m3"
 

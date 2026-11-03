@@ -164,6 +164,18 @@ def build_ir_evaluator(val_records: list[dict[str, Any]], chunks: list[dict[str,
         show_progress_bar=False,
     )
 
+def extract_primary_score(result: Any) -> float:
+    if isinstance(result, (int, float)):
+        return float(result)
+    if isinstance(result, dict):
+        for key in ["cosine_ndcg@10", "cos_sim_ndcg@10", "ndcg@10", "cosine_mrr@10"]:
+            if key in result:
+                return float(result[key])
+        for v in result.values():
+            if isinstance(v, (int, float)):
+                return float(v)
+    return 0.0
+
 
 def train_model(
     model_name: str = DEFAULT_MODEL,
@@ -202,8 +214,9 @@ def train_model(
 
     # Pre-training baseline evaluation
     print("\nRunning initial baseline evaluation on validation set...")
-    baseline_score = evaluator(model, output_path=str(output_dir))
-    print(f"Baseline validation score: {baseline_score:.4f}\n")
+    baseline_raw = evaluator(model, output_path=str(output_dir))
+    baseline_score = extract_primary_score(baseline_raw)
+    print(f"Baseline validation score (nDCG@10): {baseline_score:.4f}\n")
 
     if dry_run:
         print("[DRY-RUN] Verification complete! Data loaded, model loaded, evaluator ran successfully.")
@@ -284,11 +297,12 @@ def train_model(
     # Final evaluation
     print("\n" + "=" * 60)
     print("FINAL EVALUATION:")
-    final_score = evaluator(model)
-    print(f"Baseline validation score: {baseline_score:.4f}")
-    print(f"Final validation score:    {final_score:.4f}")
+    final_raw = evaluator(model)
+    final_score = extract_primary_score(final_raw)
+    print(f"Baseline validation score (nDCG@10): {baseline_score:.4f}")
+    print(f"Final validation score (nDCG@10):    {final_score:.4f}")
     diff = final_score - baseline_score
-    print(f"Delta:                    {'+' if diff >= 0 else ''}{diff:.4f}")
+    print(f"Delta:                              {'+' if diff >= 0 else ''}{diff:.4f}")
     print("=" * 60)
 
 
