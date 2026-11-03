@@ -1,7 +1,7 @@
 # Thiếu sót đã biết
 
 Cập nhật: 2026-10-12. Chunk chuyển sang cấu trúc v5 (`data/processed/lao_dong_v5`, xem docs/structural_jsonl.md);
-`lao_dong_v4` giữ lại để so sánh.
+bản `lao_dong_v4` cũ đã xóa (còn trong lịch sử git).
 Các con số dưới đây lấy từ lần dựng ABox cho toàn bộ 45 chủ đề có dữ liệu
 (`python -m labor_rag.ingest.build_abox --chu-de 1 ... 45`): 65.997 Điều, 1,44 triệu triple, SHACL 0 vi phạm.
 

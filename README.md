@@ -25,7 +25,7 @@ PBL6/
 │   ├── raw/bophapdien/     # Bộ Pháp điển gốc: jsonData.js, linh_vuc/*.html, linh_vuc_index.json
 │   ├── interim/            # chu_de.json, de_muc.json, testset_cache/, ocr/ (output OCR)
 │   ├── models/vietocr/     # config + weights VietOCR, tự tải ở lần OCR đầu tiên
-│   └── processed/lao_dong_v5/   # JSONL chiếu từ ABox Lao động: chunks v5 (Qdrant) + KG (Neo4j); lao_dong_v4/ là bản cũ
+│   └── processed/lao_dong_v5/   # JSONL chiếu từ ABox Lao động: chunks v5 (Qdrant) + KG (Neo4j), dựng trên schema ontology v4
 ├── scripts/                # Script chạy một lần: validate ABox, sắp xếp dữ liệu thô
 ├── tests/                  # Competency-question tests cho ABox, unit test OCR
 ├── notebooks/              # Phân tích dataset, benchmark embedding

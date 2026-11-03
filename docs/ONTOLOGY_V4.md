@@ -2,8 +2,9 @@
 
 The Turtle ABox (`ontology/abox/abox_lao_dong.ttl`, chu de 20 "Lao dong",
 1,407 Dieu) is the canonical legal representation. The JSONL files under
-`data/processed/lao_dong_v4` are a versioned projection for Neo4j and Qdrant;
-they do not replace the ABox. Every script below defaults to these paths.
+`data/processed/lao_dong_v5` (dataset v5, built on schema v4) are a versioned
+projection for Neo4j and Qdrant; they do not replace the ABox. Every script
+below defaults to these paths.
 
 ## Build and validate
 
@@ -27,12 +28,12 @@ docker compose up -d
 & .\labor_rag\venv\Scripts\python.exe -m labor_rag.ingest.embed_and_index
 ```
 
-This loads Neo4j dataset `lao_dong_v4` and Qdrant collection `legal_ld_v4_bkai`.
+This loads Neo4j dataset `lao_dong_v5` and Qdrant collection `legal_ld_v5_bge`.
 
 ## Run retrieval
 
-`labor_rag.app.chat` defaults to `QDRANT_COLLECTION=legal_ld_v4_bkai` and
-`DATASET_ID=lao_dong_v4`; override them in `.env` if needed.
+`labor_rag.app.chat` defaults to `QDRANT_COLLECTION=legal_ld_v5_bge` and
+`DATASET_ID=lao_dong_v5`; override them in `.env` if needed.
 
 ```powershell
 & .\labor_rag\venv\Scripts\python.exe -m labor_rag.app.chat

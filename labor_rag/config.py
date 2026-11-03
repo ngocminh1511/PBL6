@@ -6,7 +6,6 @@ Layout:
   data/interim/               chu_de.json, de_muc.json, testset_cache/, ocr/ (OCR output)
   data/models/vietocr/        VietOCR config + weights, downloaded on first OCR run
   data/processed/lao_dong_v5/ JSONL projection of the Lao dong ABox, chunk schema v5 (tracked in git)
-  data/processed/lao_dong_v4/ previous projection (mapc as chunk_id), kept for comparison
   ontology/                   schema/, abox/, reports/
   labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
   data/finetune/<source>/, data/processed/finetune/<source>/   fine-tune sources (gitignored)
@@ -25,7 +24,6 @@ RAW_DIR = DATA_DIR / "raw"
 BOPHAPDIEN_DIR = RAW_DIR / "bophapdien"
 INTERIM_DIR = DATA_DIR / "interim"
 PROCESSED_DIR = DATA_DIR / "processed"
-LAO_DONG_V4_DIR = PROCESSED_DIR / "lao_dong_v4"
 # Chunk schema v5: docs/structural_jsonl.md
 LAO_DONG_DIR = PROCESSED_DIR / "lao_dong_v5"
 LAO_DONG_DATASET_ID = "lao_dong_v5"
