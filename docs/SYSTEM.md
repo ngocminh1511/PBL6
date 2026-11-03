@@ -37,7 +37,7 @@ Nguyên tắc chung:
 | Graph DB | Neo4j (Aura), dataset `lao_dong_v5` |
 | LLM | qua `labor_rag/generation/llm_client.py` (cấu hình trong `.env`) |
 | Lưu file phụ lục | Local, đồng bộ chủ động lên Cloudflare R2 |
-| Giao diện | FastAPI `labor_rag/app/api.py` + trang tĩnh `labor_rag/app/static/`; REPL `labor_rag/app/chat.py` |
+| Giao diện | Next.js `src/frontend` + FastAPI `src/backend/app`; CLI `labor_rag/app/chat.py` cùng gọi `labor_rag/services` |
 
 ---
 
@@ -370,7 +370,7 @@ python -m labor_rag.ingest.embed_and_index [--backend modal] [--upsert | --recre
 
 ## 9. Trả lời một câu hỏi
 
-`labor_rag/app/chat.py` (`LaborLawChat`) điều phối:
+`labor_rag/services/chat.py` (`ChatPipeline`) điều phối; API và `LaborLawChat` cùng gọi service này:
 
 1. **Viết lại câu hỏi** (`retrieval/query_rewrite.py`): dùng ngữ cảnh hội thoại để câu hỏi đứng độc lập.
 2. **Truy hồi lai** (`retrieval/hybrid_retrieve.py`, `HybridRetriever`):
@@ -407,7 +407,8 @@ giao quyền. Mở rộng tự do thì bùng nổ và lạc đề. Truy vấn `R
 ### 9.2. Giao diện và API
 
 ```powershell
-python -m labor_rag.app.api      # http://127.0.0.1:8000, tài liệu API ở /docs
+python run_backend.py           # http://127.0.0.1:8000, tài liệu API ở /docs
+npm --prefix src/frontend run dev  # http://localhost:3000/appendices
 python -m labor_rag.app.chat     # REPL
 ```
 
@@ -416,10 +417,14 @@ python -m labor_rag.app.chat     # REPL
 | `GET /api/appendices`, `/api/appendices/{id}`, `/api/appendices/{id}/view` | Danh sách, chi tiết, HTML phụ lục đã tách |
 | `GET /api/files/{artifact_id}` | Tải/xem file nguồn (local hoặc presigned R2); PDF hỗ trợ range request |
 | `POST /api/retrieve` | Kiểm tra truy hồi, **không** gọi LLM: Qdrant tìm vector → Neo4j tìm phụ lục liên kết → Qdrant lấy nội dung phụ lục. Trả về thời gian từng bước, Cypher, ID chunk, vị trí nguồn |
-| `POST /api/chat` | Luồng đầy đủ có LLM |
+| `POST /api/chat/ask` | Luồng đầy đủ có LLM, phụ lục, phiên và lịch sử PostgreSQL |
+| `POST /api/chat` | Adapter định dạng cũ gọi cùng pipeline và phiên PostgreSQL |
+| `GET /api/documents/{id}/ast`, `/{id}/graph` | Cây dữ liệu thật và đồ thị một bước Neo4j |
+| `POST /api/documents/upload`, `/api/documents/tasks/{id}/progress` | Pipeline nạp chung, nguồn R2 và tiến độ PostgreSQL |
+| `GET/PUT /api/admin/config` | Kiểm tra/lưu cấu hình; từ chối thay đổi khi có tác vụ đang chạy |
 | `GET /api/health[?probe=true]` | Trạng thái, kiểm tra lại kết nối cloud |
 
-Đường dẫn file chỉ được giải quyết từ ID trong manifest. Khi Neo4j lỗi, kết quả vector vẫn trả về và báo thiếu liên kết.
+Đường dẫn file được giải quyết từ ID trong manifest phụ lục hoặc registry upload PostgreSQL. Khi Neo4j lỗi, kết quả vector vẫn trả về và báo thiếu liên kết.
 Backend embedding lấy `QUERY_EMBEDDING_BACKEND`, rồi `EMBEDDING_BACKEND`.
 
 ---
@@ -537,3 +542,26 @@ lượt, và kiểm định thống kê giữa các cấu hình.
 - `data/processed/lao_dong_v5/` được git theo dõi và từng bị xóa nhầm khi merge (`c0ece55`, khôi phục ở `5d28985`): kiểm
   tra thư mục này mỗi lần merge `develop`.
 - Script in tiếng Việt trên Windows cần `sys.stdout.reconfigure(encoding="utf-8")`.
+
+
+## 12. Hợp đồng module sau hợp nhất
+
+- `labor_rag` không phụ thuộc FastAPI, SQLAlchemy hay `src/backend`; không mở client khi import.
+- Backend sở hữu phiên, tài khoản, registry upload, tác vụ và overrides cấu hình trong PostgreSQL; Redis chỉ là cache.
+- API giữ metadata `Evidence`: amendment, version_date, appendix_id, artifact_ids, locator và source_url.
+  `attachments` và `warnings` được lưu cùng lịch sử chat. Schema HTTP và TypeScript được cập nhật cùng thay đổi.
+- Catalog/projection phiên bản hóa vẫn là nguồn đọc. Upload ghi trung gian vào `data/interim/ingestion`, nguồn và ABox vào R2,
+  rồi MERGE Neo4j và upsert Qdrant theo quy tắc phiên bản. Không replace toàn dataset.
+- Migration `001_unified_backend` bổ sung cột JSON và bảng registry còn thiếu, ghi revision để chạy idempotent.
+- Khởi động bằng cloud trong `.env`; admin overrides được nạp sau cấu hình môi trường. Credential không trả ra UI.
+  `COLLECTION_MODELS` khai báo các cặp model/collection đã index. Đổi cấu hình kiểm tra kết nối và số chiều,
+  lưu thành công rồi đóng client cũ; tác vụ đang chạy hoặc version cấu hình cũ trả 409.
+- `DEMO_MODE=true` cho phép dùng demo và quản trị không có màn hình đăng nhập. Tắt demo thì API kiểm tra JWT/quyền;
+  cung cấp `JWT_SECRET` qua môi trường. Trang phụ lục, file và retrieval là công cụ đọc công khai.
+- Thiếu PostgreSQL chỉ ảnh hưởng chức năng có persistence; công cụ phụ lục/retrieval không cần SQL/Redis/LLM.
+  Redis lỗi làm bỏ cache. Lỗi Qdrant/Neo4j/R2 được báo theo giai đoạn; không sinh bằng chứng hoặc số liệu mẫu.
+- Frontend gọi `/api` qua proxy Next.js. `/appendices?appendix_id=...&chunk_id=...` mở đúng vị trí trích dẫn trong iframe.
+- `graph_only` giữ hành vi hiện có: vector chọn seed trước rồi mở rộng đồ thị. Benchmark fine-tuning chấm retrieval
+  bằng nhãn; ứng dụng hỏi đáp dùng thêm LLM rewrite/rerank/generation.
+- Chạy một backend process và một ingestion worker. Chưa có queue phân tán hoặc transaction chung cho graph/vector:
+  lỗi giữa các bước làm task failed, có thể nạp lại bằng ID ổn định; không báo thành công giả.

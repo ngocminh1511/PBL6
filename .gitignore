@@ -42,3 +42,8 @@ docs/reports/appendix_inventory/samples/
 *.log
 .qdrant/
 .neo4j/
+
+# Editable installs and per-environment settings
+*.egg-info/
+**/.env.*
+!**/.env.example

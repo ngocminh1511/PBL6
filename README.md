@@ -3,6 +3,67 @@
 Hệ thống hỏi đáp pháp luật lao động: Bộ Pháp điển điện tử → Ontology v4 (RDF) →
 Neo4j (đồ thị) + Qdrant (vector) → truy hồi lai → LLM trả lời kèm trích dẫn.
 
+## Chạy ứng dụng sau khi hợp nhất
+
+Ứng dụng dùng **Next.js → một backend FastAPI → thư viện `labor_rag`**.
+Nút **Phụ lục & kiểm tra truy hồi** mở `/appendices`, không yêu cầu đăng nhập.
+Trang chat dùng pipeline đầy đủ có LLM và phụ lục; công cụ retrieval chỉ chạy embedding, Qdrant và Neo4j.
+
+Từ thư mục gốc, cài Python và dùng `.env` hiện có (chỉ sao chép `.env.example` ở lần thiết lập đầu):
+
+```powershell
+pip install -e ".[api,rag,ocr,dev]"
+python run_backend.py
+```
+
+Mở terminal khác:
+
+```powershell
+npm --prefix src/frontend ci
+npm --prefix src/frontend run dev
+```
+
+Frontend: http://localhost:3000 · Phụ lục: http://localhost:3000/appendices · API: http://127.0.0.1:8000/docs.
+`BACKEND_ORIGIN` là biến phía server của Next.js, không có hậu tố `/api`; browser luôn gọi `/api` cùng origin.
+
+Mặc định dùng Qdrant/Neo4j cloud, Modal và R2 đã cấu hình trong `.env`. Bổ sung PostgreSQL và Redis cloud:
+
+```dotenv
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/lexgraph_db?sslmode=require
+REDIS_URL=rediss://default:PASSWORD@HOST:PORT/0
+DEMO_MODE=true
+EMBEDDING_BACKEND=modal
+QUERY_EMBEDDING_BACKEND=modal
+```
+
+Thiếu PostgreSQL: công cụ phụ lục/retrieval vẫn hoạt động; chat có lưu lịch sử, upload và lưu cấu hình trả `503`.
+Thiếu Redis: ứng dụng không cache, lịch sử vẫn lưu PostgreSQL. Không tự chuyển sang SQLite hoặc embedding local.
+SQLite chỉ dùng khi đặt `DATABASE_URL=sqlite:///...` rõ ràng cho kiểm thử/local.
+
+Cấu hình quản trị được kiểm tra rồi lưu PostgreSQL và áp dụng đồng bộ. Tác vụ đang chạy hoặc version cấu hình cũ làm thao tác lưu trả `409`.
+Thứ tự cấu hình: mặc định → `.env` → biến môi trường → overrides đã lưu PostgreSQL.
+Khóa bí mật và kết nối PostgreSQL/Redis luôn lấy từ môi trường. Collection khác model cần index trước và đăng ký:
+
+```dotenv
+COLLECTION_MODELS={"legal_ld_v5_bge":"BAAI/bge-m3"}
+```
+
+Khởi động có migration **bổ sung** theo revision trong `app_schema_versions`; dữ liệu cũ được giữ nguyên.
+Không tự nạp tài liệu mẫu, recreate collection hoặc xóa dataset. Upload dùng một worker; tác vụ gián đoạn do restart
+được đánh dấu thất bại để nạp lại. Chạy **một process backend** trong phiên bản này.
+
+Docker ứng dụng kết nối cloud: `docker compose --profile app up --build`.
+Dịch vụ local tùy chọn: `docker compose --profile local up -d` rồi đặt URL local rõ ràng trong `.env`.
+Compose giữ tên project `labor_rag` và các volume Neo4j/Qdrant cũ. Không chạy stack cũ trong `src` trên cùng cổng.
+`.env` không được đưa vào image; Compose truyền biến môi trường lúc chạy.
+
+```powershell
+python -m pytest tests/test_unified_backend.py tests/test_retrieval_inspect.py tests/test_appendices.py tests/test_r2_storage.py -q
+npm --prefix src/frontend run build
+```
+
+Quy ước module: [AGENTS.md](AGENTS.md). Thuật toán và benchmark: [docs/SYSTEM.md](docs/SYSTEM.md).
+
 ## Cấu trúc thư mục
 
 ```
@@ -13,9 +74,14 @@ PBL6/
 │   │                       # ontology_to_jsonl, load_neo4j, embed_and_index
 │   ├── retrieval/          # Query rewrite, hybrid retrieval, rerank
 │   ├── generation/         # LLM client, sinh câu trả lời, kiểm tra trích dẫn
-│   ├── app/                # chat.py – REPL end-to-end
+│   ├── services/           # Pipeline chat/upload và embedding dùng chung
+│   ├── settings.py         # Cấu hình dùng chung API/CLI
+│   ├── app/                # chat.py – REPL gọi service chung
 │   ├── ocr/                # PDF/ảnh người dùng tải lên → text (PyMuPDF + VietOCR) → cấu trúc Điều/Khoản/Điểm
 │   └── evaluation/         # Benchmark embedding, benchmarks/<dataset_id>/ (bộ câu hỏi đóng băng), results/
+├── src/
+│   ├── backend/            # FastAPI: HTTP, phiên, persistence, cấu hình
+│   └── frontend/           # Next.js: chat, văn bản, phụ lục, quản trị
 ├── ontology/
 │   ├── schema/             # TBox v4 + SHACL shapes
 │   ├── abox/               # ABox đã sinh (nguồn chuẩn của dữ liệu pháp lý)
@@ -30,7 +96,8 @@ PBL6/
 ├── tests/                  # Competency-question tests cho ABox, unit test OCR
 ├── notebooks/              # Phân tích dataset, benchmark embedding
 ├── docs/                   # SYSTEM.md (cách hệ thống hoạt động); references/ (paper, slide – không lên git)
-├── docker-compose.yml      # Neo4j + Qdrant
+├── docker-compose.yml      # Profile app/cloud và local tùy chọn
+├── pyproject.toml          # Nguồn khai báo dependency Python
 ├── requirements.txt        # mọi thư viện; OCR cần cài thêm vietocr, torchvision (xem mục OCR)
 └── .env.example
 ```
@@ -42,7 +109,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 Copy-Item .env.example .env   # rồi điền API key
-docker compose up -d
+docker compose --profile local up -d
 ```
 
 Mọi lệnh đều chạy từ **thư mục gốc repo**.
