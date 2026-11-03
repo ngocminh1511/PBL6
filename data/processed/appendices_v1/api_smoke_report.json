@@ -1,0 +1,362 @@
+{
+  "checked_at": "2026-11-02T17:31:38.981459+00:00",
+  "home": 200,
+  "data": {
+    "documents": 42,
+    "appendices": 208,
+    "chunks": 98,
+    "usable_appendices": 79,
+    "needs_review": 95,
+    "missing_documents": [
+      {
+        "document_id": "09-2016-ttlt-bldtbxh-btc",
+        "document": "09/2016/TTLT-BLĐTBXH-BTC",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": [
+          "VanBanGoc_TT09BLDTBXH-BTC_2.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      },
+      {
+        "document_id": "11-2017-tt-bldtbxh",
+        "document": "11/2017/TT-BLĐTBXH",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": [
+          "VanBanGoc_TT 11 BLDTBXH.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      },
+      {
+        "document_id": "152-2020-nd-cp",
+        "document": "152/2020/NĐ-CP",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [
+          "1",
+          "2"
+        ],
+        "errors": [
+          "VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      },
+      {
+        "document_id": "16-2022-tt-bldtbxh",
+        "document": "16/2022/TT-BLĐTBXH",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": []
+      },
+      {
+        "document_id": "23-2021-nd-cp",
+        "document": "23/2021/NĐ-CP",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [
+          "1",
+          "2"
+        ],
+        "errors": [
+          "VanBanGoc_23.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      },
+      {
+        "document_id": "28-2015-nd-cp",
+        "document": "28/2015/NĐ-CP",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": []
+      },
+      {
+        "document_id": "29-2021-tt-byt",
+        "document": "29/2021/TT-BYT",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [
+          "4",
+          "5"
+        ],
+        "errors": []
+      },
+      {
+        "document_id": "61-2015-nd-cp",
+        "document": "61/2015/NĐ-CP",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": []
+      },
+      {
+        "document_id": "24-2017-tt-bldtbxh",
+        "document": "24/2017/TT-BLĐTBXH",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": [
+          "VanBanGoc_TT 24 2017 BLÐTBXH.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      },
+      {
+        "document_id": "74-2019-nd-cp",
+        "document": "74/2019/NĐ-CP",
+        "download_status": "downloaded",
+        "appendices": 0,
+        "extraction_status": "needs_review",
+        "missing_labels": [],
+        "errors": [
+          "VanBanGoc_74.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+        ]
+      }
+    ]
+  },
+  "file_hash_verified": true,
+  "chat": {
+    "standalone_query": "Danh mục công việc nhẹ trong Phụ lục II của Thông tư 09/2020/TT-BLĐTBXH gồm những gì?",
+    "evidence": [
+      {
+        "chunk_id": "09-2020-tt-bldtbxh:pl2",
+        "mapc": null,
+        "ten": "DANH MỤC CÔNG VIỆC NHẸ NGƯỜI TỪ ĐỦ 13 TUỔI ĐẾN CHƯA ĐỦ 15 TUỔI ĐƯỢC LÀM",
+        "text": "Phụ lục II — 09/2020/TT-BLĐTBXH\nDANH MỤC CÔNG VIỆC NHẸ NGƯỜI TỪ ĐỦ 13 TUỔI ĐẾN CHƯA ĐỦ 15 TUỔI ĐƯỢC LÀM\nPhụ lục II\nDANH MỤC CÔNG VIỆC NHẸ NGƯỜI TỪ ĐỦ 13 TUỔI ĐẾN CHƯA ĐỦ 15 TUỔI ĐƯỢC LÀM\n(Ban hành kèm theo Thông tư số 09/2020/TT-BLĐTBXH ngày 12 tháng 11 năm 2020 của Bộ trưởng Bộ Lao động - Thương binh và Xã hội)\n1. Biểu diễn nghệ thuật.\n2. Vận động viên thể thao.\n3. Lập trình phần mềm.\n4. Các nghề truyền thống: chấm men gốm; cưa vỏ trai; làm giấy dó; làm nón lá; chấm nón; dệt chiếu; làm trống; dệt thổ cẩm; thêu thổ cẩm; làm bún gạo; làm miến; làm giá đỗ; làm bánh đa; dệt tơ tằm; se sợi hoa sen; vẽ tranh sơn mài, se nhang, làm vàng mã (trừ các công đoạn có sử dụng hóa chất độc hại như sơn ta, hóa chất tẩy rửa, hóa chất dùng để ướp màu, hóa chất tạo mùi, tạo tàn nhang cong...).\n5. Các nghề thủ công mỹ nghệ: thêu ren; mộc mỹ nghệ; làm lược sừng; làm tranh dân gian (tranh Đông Hồ, tranh Hàng Trống….); nặn tò he; làm tranh khắc gỗ, biểu tranh lụa; nhặt vỏ sò, điệp để gắn trên tranh mỹ nghệ; mài đánh bóng tranh mỹ nghệ; xâu chuỗi tràng hạt kết cườm, đánh bóng trang sức mỹ nghệ; làm rối búp bê; làm thiếp mừng các sản phẩm từ giấy nghệ thuật trang trí trên thiếp mừng; làm khung tranh mô hình giấy, hộp giấy, túi giấy.\n6. Đan lát, làm các đồ gia dụng, đồ thủ công mỹ nghệ từ nguyên liệu tự nhiên như: mây, tre, nứa, dừa, chuối, bèo lục bình, đay, cói, quế, guột, đót, lá nón.\n7. Gói nem, gói kẹo, gói bánh (trừ việc vận hành hoặc sử dụng các máy, thiết bị, dụng cụ đóng gói).\n8. Nuôi tằm.\n9. Làm cỏ vườn rau sạch; thu hoạch rau, củ, quả sạch theo mùa.\n10. Chăn thả gia súc tại nông trại.\n11. Phụ gỡ lưới cá, đan lưới cá, phơi khô thủy sản.\n12. Cắt chỉ, đơm nút, thùa khuyết, đóng gói vào hộp các sản phẩm dệt thủ công.",
+        "source": "vector",
+        "score": 0.6787076,
+        "document_id": "09-2020-tt-bldtbxh",
+        "meta_dieu": null,
+        "meta_khoan": null,
+        "meta_de_muc": "09/2020/TT-BLĐTBXH",
+        "version_date": "2021-03-15",
+        "amendments": [],
+        "change": null,
+        "chunk_type": "appendix",
+        "appendix_id": "09-2020-tt-bldtbxh:pl2",
+        "appendix_number": "II",
+        "document_number": "09/2020/TT-BLĐTBXH",
+        "artifact_ids": [
+          "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+          "sha256:5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+          "sha256:ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f"
+        ],
+        "locator": {
+          "block_ids": [
+            "b0000",
+            "b0001",
+            "b0002",
+            "b0003",
+            "b0004",
+            "b0005",
+            "b0006",
+            "b0007",
+            "b0008",
+            "b0009",
+            "b0010",
+            "b0011",
+            "b0012",
+            "b0013",
+            "b0014"
+          ],
+          "start": 0,
+          "end": 1624,
+          "text_sha256": "d420d93e34f45054de136aeafbc7596c32f8e87210ebfb22eef8b95938733030"
+        },
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien--152670",
+        "citation": "Phụ lục II 09/2020/TT-BLĐTBXH",
+        "view_url": "/api/appendices/09-2020-tt-bldtbxh%3Apl2/view?chunk_id=09-2020-tt-bldtbxh%3Apl2"
+      },
+      {
+        "chunk_id": "09-2020-tt-bldtbxh:d8",
+        "mapc": "20.2.TT.1.8",
+        "ten": "Danh mục công việc nhẹ người từ đủ 13 tuổi đến chưa đủ 15 tuổi được làm",
+        "text": "Lao động > Thông tư số 09/2020/TT-BLĐTBXH > Chương XI. NHỮNG QUY ĐỊNH RIÊNG ĐỐI VỚI LAO ĐỘNG CHƯA THÀNH NIÊN VÀ MỘT SỐ LAO ĐỘNG KHÁC > Mục 1. LAO ĐỘNG CHƯA THÀNH NIÊN\nĐiều 8. Danh mục công việc nhẹ người từ đủ 13 tuổi đến chưa đủ 15 tuổi được làm\nBan hành kèm theo Thông tư này Phụ lục II - Danh mục công việc nhẹ người từ đủ 13 tuổi đến chưa đủ 15 tuổi được làm.\nPhu luc ban hành kem theo TT so 09_2020_TT-BLDTBXH.doc",
+        "source": "vector",
+        "score": 0.64442754,
+        "document_id": "09-2020-tt-bldtbxh",
+        "meta_dieu": "8",
+        "meta_khoan": null,
+        "meta_de_muc": "Thông tư số 09/2020/TT-BLĐTBXH",
+        "version_date": "2021-03-15",
+        "amendments": [],
+        "change": null,
+        "chunk_type": "article",
+        "appendix_id": null,
+        "appendix_number": null,
+        "document_number": null,
+        "artifact_ids": [],
+        "locator": {},
+        "source_url": null,
+        "citation": "Điều 8 Thông tư số 09/2020/TT-BLĐTBXH"
+      },
+      {
+        "chunk_id": "09-2020-tt-bldtbxh:d1",
+        "mapc": "20.2.TT.1.1",
+        "ten": "Phạm vi điều chỉnh",
+        "text": "Lao động > Thông tư số 09/2020/TT-BLĐTBXH > Chương I. NHỮNG QUY ĐỊNH CHUNG\nĐiều 1. Phạm vi điều chỉnh\nThông tư này quy định chi tiết và hướng dẫn thi hành một số điều, khoản sau đây của Bộ luật Lao động về lao động chưa thành niên:\n1. Sử dụng người chưa đủ 15 tuổi làm việc theo quy định tại khoản 4 Điều 145.\n2. Danh mục công việc nhẹ người từ đủ 13 tuổi đến chưa đủ 15 tuổi được làm theo quy định tại khoản 3 Điều 143.\n3. Danh mục nghề, công việc người từ đủ 15 tuổi đến chưa đủ 18 tuổi có thể được làm thêm giờ, làm việc vào ban đêm theo quy định tại khoản 2 Điều 146.\n4. Danh mục công việc, nơi làm việc gây tổn hại đến sự phát triển thể lực, trí lực, nhân cách của người chưa thành niên theo quy định khoản 3 Điều 147.",
+        "source": "vector",
+        "score": 0.5938486,
+        "document_id": "09-2020-tt-bldtbxh",
+        "meta_dieu": "1",
+        "meta_khoan": null,
+        "meta_de_muc": "Thông tư số 09/2020/TT-BLĐTBXH",
+        "version_date": "2021-03-15",
+        "amendments": [],
+        "change": null,
+        "chunk_type": "article",
+        "appendix_id": null,
+        "appendix_number": null,
+        "document_number": null,
+        "artifact_ids": [],
+        "locator": {},
+        "source_url": null,
+        "citation": "Điều 1 Thông tư số 09/2020/TT-BLĐTBXH"
+      },
+      {
+        "chunk_id": "45-2019-qh14:d143",
+        "mapc": "20.2.LQ.143",
+        "ten": "Lao động chưa thành niên",
+        "text": "3. Người từ đủ 13 tuổi đến chưa đủ 15 tuổi chỉ được làm công việc nhẹ theo danh mục do Bộ trưởng Bộ Lao động - Thương binh và Xã hội ban hành.",
+        "source": "graph:IMPLEMENTS",
+        "score": 0.0,
+        "document_id": "45-2019-qh14",
+        "meta_dieu": "143",
+        "meta_khoan": "3",
+        "meta_de_muc": "Bộ luật số 45/2019/QH14",
+        "version_date": "2021-01-01",
+        "amendments": [],
+        "change": null,
+        "chunk_type": "article",
+        "appendix_id": null,
+        "appendix_number": null,
+        "document_number": null,
+        "artifact_ids": [],
+        "locator": {},
+        "source_url": null,
+        "citation": "Điều 143 khoản 3 Bộ luật số 45/2019/QH14"
+      },
+      {
+        "chunk_id": "45-2019-qh14:d145",
+        "mapc": "20.2.LQ.145",
+        "ten": "Sử dụng người chưa đủ 15 tuổi làm việc",
+        "text": "4. Bộ trưởng Bộ Lao động - Thương binh và Xã hội quy định chi tiết Điều này.",
+        "source": "graph:IMPLEMENTS",
+        "score": 0.0,
+        "document_id": "45-2019-qh14",
+        "meta_dieu": "145",
+        "meta_khoan": "4",
+        "meta_de_muc": "Bộ luật số 45/2019/QH14",
+        "version_date": "2021-01-01",
+        "amendments": [],
+        "change": null,
+        "chunk_type": "article",
+        "appendix_id": null,
+        "appendix_number": null,
+        "document_number": null,
+        "artifact_ids": [],
+        "locator": {},
+        "source_url": null,
+        "citation": "Điều 145 khoản 4 Bộ luật số 45/2019/QH14"
+      }
+    ],
+    "answer": "Danh mục công việc nhẹ người từ đủ 13 tuổi đến chưa đủ 15 tuổi được làm bao gồm các công việc sau đây [Phụ lục II 09/2020/TT-BLĐTBXH]:\n\n1. Biểu diễn nghệ thuật.\n2. Vận động viên thể thao.\n3. Lập trình phần mềm.\n4. Các nghề truyền thống: chấm men gốm; cưa vỏ trai; làm giấy dó; làm nón lá; chấm nón; dệt chiếu; làm trống; dệt thổ cẩm; thêu thổ cẩm; làm bún gạo; làm miến; làm giá đỗ; làm bánh đa; dệt tơ tằm; se sợi hoa sen; vẽ tranh sơn mài, se nhang, làm vàng mã (trừ các công đoạn có sử dụng hóa chất độc hại như sơn ta, hóa chất tẩy rửa, hóa chất dùng để ướp màu, hóa chất tạo mùi, tạo tàn nhang cong...).\n5. Các nghề thủ công mỹ nghệ: thêu ren; mộc mỹ nghệ; làm lược sừng; làm tranh dân gian (tranh Đông Hồ, tranh Hàng Trống….); nặn tò he; làm tranh khắc gỗ, biểu tranh lụa; nhặt vỏ sò, điệp để gắn trên tranh mỹ nghệ; mài đánh bóng tranh mỹ nghệ; xâu chuỗi tràng hạt kết cườm, đánh bóng trang sức mỹ nghệ; làm rối búp bê; làm thiếp mừng các sản phẩm từ giấy nghệ thuật trang trí trên thiếp mừng; làm khung tranh mô hình giấy, hộp giấy, túi giấy.\n6. Đan lát, làm các đồ gia dụng, đồ thủ công mỹ nghệ từ nguyên liệu tự nhiên như: mây, tre, nứa, dừa, chuối, bèo lục bình, đay, cói, quế, guột, đót, lá nón.\n7. Gói nem, gói kẹo, gói bánh (trừ việc vận hành hoặc sử dụng các máy, thiết bị, dụng cụ đóng gói).\n8. Nuôi tằm.\n9. Làm cỏ vườn rau sạch; thu hoạch rau, củ, quả sạch theo mùa.\n10. Chăn thả gia súc tại nông trại.\n11. Phụ gỡ lưới cá, đan lưới cá, phơi khô thủy sản.\n12. Cắt chỉ, đơm nút, thùa khuyết, đóng gói vào hộp các sản phẩm dệt thủ công.",
+    "citation_check": {
+      "verified": [
+        "Phụ lục II 09/2020/TT-BLĐTBXH"
+      ],
+      "unverified": [],
+      "all_verified": true
+    },
+    "attachments": [
+      {
+        "appendix_id": "09-2020-tt-bldtbxh:pl2",
+        "key": "2",
+        "number": "II",
+        "title": "DANH MỤC CÔNG VIỆC NHẸ NGƯỜI TỪ ĐỦ 13 TUỔI ĐẾN CHƯA ĐỦ 15 TUỔI ĐƯỢC LÀM",
+        "virtual_form": false,
+        "forms": [],
+        "kind": "reference",
+        "content_hash": "d799082de7a768be",
+        "text_sha256": "d420d93e34f45054de136aeafbc7596c32f8e87210ebfb22eef8b95938733030",
+        "document_id": "09-2020-tt-bldtbxh",
+        "document_number": "09/2020/TT-BLĐTBXH",
+        "article_ids": [
+          {
+            "mapc": "20.2.TT.1.8",
+            "document_id": "09-2020-tt-bldtbxh",
+            "article_number": "8",
+            "basis": "explicit_text_reference"
+          }
+        ],
+        "artifact_ids": [
+          "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+          "sha256:5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+          "sha256:ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f"
+        ],
+        "content_artifact_id": "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien--152670",
+        "review_status": "auto_accepted",
+        "download_status": "downloaded",
+        "effective_from_date": "2021-03-15",
+        "effective_to_date": null,
+        "version_date": "2021-03-15",
+        "still_valid": true,
+        "effect_status": "Hết hiệu lực một phần",
+        "application_note": "Bị bãi bỏ một phần nội dung tại Thông tư số 08/2023/TT-BLĐTBXH",
+        "replaces_appendix_ids": [],
+        "review_notes": "",
+        "extraction_status": "extracted",
+        "view_url": "/api/appendices/09-2020-tt-bldtbxh%3Apl2/view",
+        "files": [
+          {
+            "artifact_id": "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+            "file_name": "vbpl_content.html",
+            "format": "html",
+            "bytes": 89334,
+            "role": "document_html",
+            "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien--152670",
+            "download_url": "/api/files/sha256%3Accda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85?download=true",
+            "view_url": "/api/files/sha256%3Accda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+            "label": "File nguồn; có thể chứa toàn văn và nhiều phụ lục",
+            "available": true
+          },
+          {
+            "artifact_id": "sha256:5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+            "file_name": "VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf",
+            "format": "pdf",
+            "bytes": 2713463,
+            "role": "original",
+            "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf/download",
+            "download_url": "/api/files/sha256%3A5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1?download=true",
+            "view_url": "/api/files/sha256%3A5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+            "label": "File nguồn; có thể chứa toàn văn và nhiều phụ lục",
+            "available": true
+          },
+          {
+            "artifact_id": "sha256:ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+            "file_name": "thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc",
+            "format": "doc",
+            "bytes": 251392,
+            "role": "original",
+            "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc/download",
+            "download_url": "/api/files/sha256%3Aebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f?download=true",
+            "view_url": "/api/files/sha256%3Aebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+            "label": "File nguồn; có thể chứa toàn văn và nhiều phụ lục",
+            "available": true
+          }
+        ]
+      }
+    ],
+    "warnings": [],
+    "session_id": "47df37575054427fad4206802c6d1033"
+  },
+  "citation_view_verified": true
+}

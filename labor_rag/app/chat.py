@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 from labor_rag.generation.answer import generate_answer
 from labor_rag.generation.citation_verify import verify_citations
@@ -19,8 +20,10 @@ from labor_rag.retrieval.rerank import rerank
 
 
 class LaborLawChat:
-    def __init__(self) -> None:
-        self.retriever = HybridRetriever()
+    def __init__(self, retriever=None) -> None:
+        self.retriever = retriever or HybridRetriever()
+        from labor_rag.appendices.runtime import AppendixCatalog
+        self.appendices = AppendixCatalog()
         self.history: list[dict] = []
 
     def close(self) -> None:
@@ -30,7 +33,8 @@ class LaborLawChat:
         standalone_query = rewrite_query(self.history, question)
         evidences = self.retriever.retrieve(standalone_query, top_k=top_k)
         pruned = rerank(standalone_query, evidences, top_n=rerank_top_n)
-        answer = generate_answer(standalone_query, pruned)
+        pruned = self.appendices.augment(standalone_query, pruned, limit=6)
+        answer = generate_answer(standalone_query, pruned, context_notes=self.appendices.last_warnings)
         citation_check = verify_citations(answer, pruned)
 
         self.history.append({"role": "user", "content": question})
@@ -41,6 +45,8 @@ class LaborLawChat:
             "evidence": pruned,
             "answer": answer,
             "citation_check": citation_check,
+            "attachments": self.appendices.last_attachments,
+            "warnings": self.appendices.last_warnings + ([self.retriever.graph_warning] if getattr(self.retriever, "graph_warning", None) else []),
         }
 
 

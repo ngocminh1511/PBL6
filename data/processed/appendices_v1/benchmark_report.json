@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-11-02T17:24:57.539402+00:00",
+  "evaluation": "appendix_id_retrieval_without_validity_filter",
+  "note": "Separate appendix-ID gold set; frozen article benchmark unchanged. Baseline lacks appendix IDs even where an article already contains appendix text. These scores measure appendix-ID retrieval, not answer quality or absence of legal content in the baseline.",
+  "summary": {
+    "baseline": {
+      "questions": 7,
+      "hit_at_5": 0.0,
+      "hit_at_10": 0.0,
+      "mrr_at_10": 0.0
+    },
+    "extended": {
+      "questions": 7,
+      "hit_at_5": 1.0,
+      "hit_at_10": 1.0,
+      "mrr_at_10": 0.7619047619047619
+    }
+  },
+  "rows": [
+    {
+      "id": "ap01",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "09-2020-tt-bldtbxh:d8",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:d6",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d7",
+        "09-2020-tt-bldtbxh:d5",
+        "09-2020-tt-bldtbxh:d4",
+        "09-2020-tt-bldtbxh:d13",
+        "45-2019-qh14:d147"
+      ]
+    },
+    {
+      "id": "ap02",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "09-2020-tt-bldtbxh:d9",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d8",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d10",
+        "10-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:d13",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d11",
+        "45-2019-qh14:d8"
+      ]
+    },
+    {
+      "id": "ap03",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "09-2020-tt-bldtbxh:d9",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d5",
+        "09-2020-tt-bldtbxh:d4",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d6",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d8",
+        "09-2020-tt-bldtbxh:d7",
+        "09-2020-tt-bldtbxh:d13"
+      ]
+    },
+    {
+      "id": "ap04",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "09-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d8",
+        "45-2019-qh14:d146",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d4",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d6",
+        "09-2020-tt-bldtbxh:d13",
+        "09-2020-tt-bldtbxh:d7"
+      ]
+    },
+    {
+      "id": "ap05",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "135-2020-nd-cp:d4",
+        "135-2020-nd-cp:d5",
+        "135-2020-nd-cp:d7",
+        "135-2020-nd-cp:d3",
+        "135-2020-nd-cp:d1",
+        "135-2020-nd-cp:d6",
+        "45-2019-qh14:d169",
+        "19-2021-tt-bldtbxh:d1",
+        "19-2021-tt-bldtbxh:d3",
+        "97-2022-nd-cp:d3"
+      ]
+    },
+    {
+      "id": "ap06",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "135-2020-nd-cp:d5",
+        "135-2020-nd-cp:d7",
+        "135-2020-nd-cp:d1",
+        "19-2021-tt-bldtbxh:d1",
+        "135-2020-nd-cp:d4",
+        "135-2020-nd-cp:d3",
+        "45-2019-qh14:d169",
+        "19-2021-tt-bldtbxh:d3",
+        "97-2022-nd-cp:d3",
+        "19-2021-tt-bldtbxh:d4"
+      ]
+    },
+    {
+      "id": "ap07",
+      "scope": "baseline",
+      "first_rank": null,
+      "hit_at_5": false,
+      "hit_at_10": false,
+      "results": [
+        "97-2022-nd-cp:d14:p13",
+        "97-2022-nd-cp:d14:p2",
+        "97-2022-nd-cp:d14:p3",
+        "97-2022-nd-cp:d14:p4",
+        "97-2022-nd-cp:d2",
+        "152-2020-nd-cp:d5",
+        "01-2022-tt-bldtbxh:d5",
+        "97-2022-nd-cp:d14:p1",
+        "01-2022-tt-bldtbxh:d11",
+        "145-2020-nd-cp:d1"
+      ]
+    },
+    {
+      "id": "ap01",
+      "scope": "extended",
+      "first_rank": 1,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "09-2020-tt-bldtbxh:pl2",
+        "09-2020-tt-bldtbxh:d8",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:pl5",
+        "09-2020-tt-bldtbxh:d6",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d7",
+        "09-2020-tt-bldtbxh:d5",
+        "09-2020-tt-bldtbxh:d4"
+      ]
+    },
+    {
+      "id": "ap02",
+      "scope": "extended",
+      "first_rank": 2,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "09-2020-tt-bldtbxh:d9",
+        "09-2020-tt-bldtbxh:pl3",
+        "09-2020-tt-bldtbxh:pl4",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d8",
+        "09-2020-tt-bldtbxh:pl2",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d10",
+        "10-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:d13"
+      ]
+    },
+    {
+      "id": "ap03",
+      "scope": "extended",
+      "first_rank": 2,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "09-2020-tt-bldtbxh:d9",
+        "09-2020-tt-bldtbxh:pl4",
+        "09-2020-tt-bldtbxh:pl3",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:d5",
+        "09-2020-tt-bldtbxh:d4",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d6",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d8"
+      ]
+    },
+    {
+      "id": "ap04",
+      "scope": "extended",
+      "first_rank": 3,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "09-2020-tt-bldtbxh:d10",
+        "09-2020-tt-bldtbxh:d1",
+        "09-2020-tt-bldtbxh:pl5",
+        "09-2020-tt-bldtbxh:d8",
+        "45-2019-qh14:d146",
+        "09-2020-tt-bldtbxh:d3",
+        "09-2020-tt-bldtbxh:d4",
+        "09-2020-tt-bldtbxh:pl2",
+        "45-2019-qh14:d147",
+        "09-2020-tt-bldtbxh:d6"
+      ]
+    },
+    {
+      "id": "ap05",
+      "scope": "extended",
+      "first_rank": 1,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "135-2020-nd-cp:pl1",
+        "135-2020-nd-cp:d4",
+        "135-2020-nd-cp:pl2",
+        "135-2020-nd-cp:d5",
+        "135-2020-nd-cp:d7",
+        "135-2020-nd-cp:d3",
+        "135-2020-nd-cp:d1",
+        "135-2020-nd-cp:d6",
+        "45-2019-qh14:d169",
+        "19-2021-tt-bldtbxh:d1"
+      ]
+    },
+    {
+      "id": "ap06",
+      "scope": "extended",
+      "first_rank": 1,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "135-2020-nd-cp:pl2",
+        "135-2020-nd-cp:pl1",
+        "135-2020-nd-cp:d5",
+        "135-2020-nd-cp:d7",
+        "135-2020-nd-cp:d1",
+        "19-2021-tt-bldtbxh:d1",
+        "135-2020-nd-cp:d4",
+        "135-2020-nd-cp:d3",
+        "45-2019-qh14:d169",
+        "19-2021-tt-bldtbxh:d3"
+      ]
+    },
+    {
+      "id": "ap07",
+      "scope": "extended",
+      "first_rank": 1,
+      "hit_at_5": true,
+      "hit_at_10": true,
+      "results": [
+        "97-2022-nd-cp:pl1",
+        "97-2022-nd-cp:d14:p13",
+        "97-2022-nd-cp:d14:p2",
+        "97-2022-nd-cp:d14:p3",
+        "97-2022-nd-cp:d14:p4",
+        "97-2022-nd-cp:d2",
+        "21-2021-tt-bldtbxh:pl12",
+        "152-2020-nd-cp:d5",
+        "01-2022-tt-bldtbxh:d5",
+        "97-2022-nd-cp:d14:p1"
+      ]
+    }
+  ]
+}

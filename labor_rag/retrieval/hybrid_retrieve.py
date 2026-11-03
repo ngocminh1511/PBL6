@@ -59,6 +59,13 @@ class Evidence:
     version_date: str | None = None
     amendments: list["Evidence"] = field(default_factory=list)  # parts that amend this Dieu after version_date
     change: str | None = None  # on an amendment: "sửa đổi, bổ sung khoản 2"
+    chunk_type: str = "article"
+    appendix_id: str | None = None
+    appendix_number: str | None = None
+    document_number: str | None = None
+    artifact_ids: list[str] = field(default_factory=list)
+    locator: dict = field(default_factory=dict)
+    source_url: str | None = None
 
     @property
     def citation(self) -> str:
@@ -79,6 +86,13 @@ class Evidence:
             meta_khoan=payload.get("meta_khoan"),
             meta_de_muc=payload.get("meta_de_muc"),
             version_date=payload.get("version_date"),
+            chunk_type=payload.get("chunk_type", "article"),
+            appendix_id=payload.get("appendix_id"),
+            appendix_number=payload.get("appendix_number"),
+            document_number=payload.get("document_number"),
+            artifact_ids=payload.get("artifact_ids", []),
+            locator=payload.get("locator", {}),
+            source_url=payload.get("source_url"),
         )
 
 
@@ -198,14 +212,22 @@ def in_force(today: date | None = None) -> Filter:
     )
 
 
+class ModalQueryEncoder:
+    def encode(self, query: str, normalize_embeddings: bool = True):
+        from labor_rag.ingest.embed_and_index import embed_modal
+        return next(embed_modal([query], MODEL_NAME, 32768, 1))[1][0]
+
+
 class HybridRetriever:
-    def __init__(self, collection: str | None = None) -> None:
-        self.model = SentenceTransformer(MODEL_NAME)
+    def __init__(self, collection: str | None = None, *, embedding_backend: str | None = None) -> None:
+        backend = embedding_backend or os.getenv("QUERY_EMBEDDING_BACKEND", "local")
+        self.model = ModalQueryEncoder() if backend == "modal" else SentenceTransformer(MODEL_NAME)
         self.collection = collection or os.getenv("QDRANT_COLLECTION", COLLECTION)
         self.qdrant = QdrantClient(
             url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
         )
-        self.neo4j = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
+        self.neo4j = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH, connection_timeout=8, max_transaction_retry_time=2)
+        self.graph_warning: str | None = None
 
     def close(self) -> None:
         self.neo4j.close()
@@ -351,10 +373,15 @@ class HybridRetriever:
     def retrieve(self, query: str, top_k: int = 8, graph_limit_per_node: int = 3) -> list[Evidence]:
         vector_hits = self.vector_search(query, top_k=top_k)
         seed_mapcs = [e.mapc for e in vector_hits if e.mapc]
-        graph_hits = self.graph_expand(seed_mapcs, limit_per_node=graph_limit_per_node)
-        self.hydrate_from_qdrant(graph_hits)
-        # Khoan-level references first: they carry only the khoan cited.
-        reference_hits = self.reference_expand(vector_hits, limit_per_node=graph_limit_per_node)
+        from neo4j.exceptions import Neo4jError, ServiceUnavailable, SessionExpired
+        self.graph_warning = None
+        try:
+            graph_hits = self.graph_expand(seed_mapcs, limit_per_node=graph_limit_per_node) if seed_mapcs else []
+            self.hydrate_from_qdrant(graph_hits)
+            reference_hits = self.reference_expand(vector_hits, limit_per_node=graph_limit_per_node)
+        except (Neo4jError, ServiceUnavailable, SessionExpired) as exc:
+            self.graph_warning = f"Neo4j unavailable: {type(exc).__name__}; vector retrieval remains available."
+            graph_hits, reference_hits = [], []
 
         seen = {article_id(e.chunk_id) for e in vector_hits}
         merged = list(vector_hits)
@@ -362,7 +389,11 @@ class HybridRetriever:
             if e.text and article_id(e.chunk_id) not in seen:
                 merged.append(e)
                 seen.add(article_id(e.chunk_id))
-        self.attach_amendments(merged)
+        if not self.graph_warning:
+            try:
+                self.attach_amendments(merged)
+            except (Neo4jError, ServiceUnavailable, SessionExpired) as exc:
+                self.graph_warning = f"Amendment lookup unavailable: {type(exc).__name__}"
         return merged
 
 

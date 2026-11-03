@@ -14,6 +14,7 @@ CITE_RE = re.compile(r"Điều\s+(\d+[a-zđ]?)(?![\w.])")
 # A document number named right after the Dieu: "Điều 35 khoản 2 Nghị định số 145/2020/NĐ-CP".
 SO_HIEU_RE = re.compile(r"\d+/\d{4}/[\wĐđ-]+")
 SO_HIEU_WINDOW = 120
+APPENDIX_RE = re.compile(r"Phụ\s*lục\s+(\d+[ab]?|[IVXLCDM]+[ab]?)(?!\w)", re.IGNORECASE)
 
 
 def verify_citations(answer: str, evidences: list[Evidence]) -> dict:
@@ -22,6 +23,22 @@ def verify_citations(answer: str, evidences: list[Evidence]) -> dict:
     retrieved_dieu = {dieu for _, dieu in retrieved}
 
     cited: dict[str, bool] = {}
+    from scripts.inventory_appendices import canonical_label
+    retrieved_appendices = {(e.document_id, canonical_label(e.appendix_number)) for e in evidences
+                            if e.appendix_id and e.appendix_number and re.fullmatch(r"\d+[ab]?|[IVXLCDM]+[ab]?",e.appendix_number,re.I)}
+    for match in APPENDIX_RE.finditer(answer):
+        label = match[1]
+        tail = re.split(r"Phụ\s*lục|Điều\s+\d",answer[match.end():match.end()+SO_HIEU_WINDOW],maxsplit=1,flags=re.I)[0]
+        number = SO_HIEU_RE.search(tail)
+        key = canonical_label(label)
+        if number:
+            title = f"Phụ lục {label} {number[0]}"
+            ok = (make_document_id(number[0]),key) in retrieved_appendices
+        else:
+            title = f"Phụ lục {label}"
+            matches = {doc for doc,value in retrieved_appendices if value==key}
+            ok = len(matches)==1
+        cited[title] = cited.get(title,False) or ok
     for match in CITE_RE.finditer(answer):
         dieu = match.group(1)
         # Only look up to the next "Điều" so one citation's document is not
