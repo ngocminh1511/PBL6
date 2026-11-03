@@ -1,5 +1,5 @@
 """Turn an OCR'd legal document (PDF/image, or a saved OCR tree) into chunk
-schema v5 (docs/structural_jsonl.md), the same layout as the Phap dien chunks.
+schema v5 (docs/SYSTEM.md, sections 4-5), the same layout as the Phap dien chunks.
 
 One chunk per Dieu, ids from the document number + the Dieu number, long
 Dieu split by chunk_schema.split_article. When the document is already in

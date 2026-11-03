@@ -29,7 +29,7 @@ PBL6/
 ├── scripts/                # Script chạy một lần: validate ABox, sắp xếp dữ liệu thô
 ├── tests/                  # Competency-question tests cho ABox, unit test OCR
 ├── notebooks/              # Phân tích dataset, benchmark embedding
-├── docs/                   # ONTOLOGY_V4.md, KNOWN_ISSUES.md; references/ (paper, slide – không lên git)
+├── docs/                   # SYSTEM.md (cách hệ thống hoạt động); references/ (paper, slide – không lên git)
 ├── docker-compose.yml      # Neo4j + Qdrant
 ├── requirements.txt
 ├── requirements-ocr.txt    # phụ thuộc riêng của labor_rag/ocr (xem mục OCR)
@@ -51,7 +51,7 @@ Mọi lệnh đều chạy từ **thư mục gốc repo**.
 ## Pipeline (ontology v4, chủ đề Lao động)
 
 Dữ liệu là toàn bộ chủ đề 20 "Lao động" của Bộ pháp điển: các đề mục 20.2–20.5, tổng cộng 1.407 Điều.
-Đề mục 20.1 rỗng trong nguồn. Xem chi tiết trong [docs/ONTOLOGY_V4.md](docs/ONTOLOGY_V4.md).
+Đề mục 20.1 rỗng trong nguồn. Xem chi tiết trong [docs/SYSTEM.md](docs/SYSTEM.md).
 
 ```
 jsonData.js ─ parse_jsondata ─► data/interim/chu_de.json, de_muc.json
@@ -61,7 +61,7 @@ abox_lao_dong.ttl ─ ontology_to_jsonl ─► data/processed/lao_dong_v5/
     └── kg_nodes/kg_edges.jsonl ─ load_neo4j      ─► Neo4j  (dataset lao_dong_v5)
 ```
 
-`chunks.jsonl` theo cấu trúc v5 ([docs/structural_jsonl.md](docs/structural_jsonl.md)): `chunk_id` là
+`chunks.jsonl` theo cấu trúc v5 ([docs/SYSTEM.md](docs/SYSTEM.md), mục 4): `chunk_id` là
 `{số hiệu văn bản}:d{số Điều trong văn bản gốc}` (vd `45-2019-qh14:d35`), Điều dài hơn 1024 token bge-m3
 được cắt theo khoản thành `...:p1`, `...:p2`. `mapc` vẫn giữ để nối Neo4j và chấm bộ test.
 
@@ -81,7 +81,7 @@ python -m labor_rag.ingest.embed_and_index
 
 PDF (văn bản gốc hoặc VBHN, kể cả bản scan) được OCR rồi chuyển thành chunk v5 cùng định danh với Pháp điển,
 sau đó gộp vào collection đang có: với mỗi Điều, bản có `version_date` mới hơn được giữ
-(chi tiết: [docs/structural_jsonl.md](docs/structural_jsonl.md), mục 7–8). Cần `requirements-ocr.txt` và
+(chi tiết: [docs/SYSTEM.md](docs/SYSTEM.md), mục 4.7 và 5). Cần `requirements-ocr.txt` và
 `data/processed/lao_dong_v5` đã sinh (để tra `mapc`).
 
 ```powershell
@@ -131,7 +131,7 @@ Collection nào thiếu hoặc lệch text sẽ được benchmark tạo lại b
 Mỗi phiên bản dữ liệu (`data/processed/<dataset_id>`, ví dụ `lao_dong_v5`) có benchmark riêng, đóng băng trong
 `labor_rag/evaluation/benchmarks/<dataset_id>/`. Manifest ghi sha256 của chunks, KG, TBox và ABox.
 Benchmark **không chạy** nếu chunks hoặc bộ câu hỏi đã đổi so với lúc đóng băng. Thiết kế và metric:
-[docs/BENCHMARK.md](docs/BENCHMARK.md).
+[docs/SYSTEM.md](docs/SYSTEM.md), mục 10.
 
 ```powershell
 # đóng băng một bộ câu hỏi (relevance {mapc: grade 1-3}) cho một phiên bản dữ liệu

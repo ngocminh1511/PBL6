@@ -5,7 +5,7 @@ stages are kept out so that the effect of the embedding model is measured
 directly.  Each model has its own Qdrant collection ``<prefix>_<model>``.
 
 A run normally targets a frozen benchmark version (benchmark_version.py,
-docs/BENCHMARK.md): the chunks, questions and collection prefix come from
+docs/SYSTEM.md, section 10): the chunks, questions and collection prefix come from
 benchmarks/<dataset_id>/manifest.json, and the run stops if the data no longer
 matches it.  Results go to results/<dataset_id>/<testset>/<run_id>/.
 
@@ -176,7 +176,7 @@ def validate_questions(
             if mapc not in mapc_set:
                 errors.append(f"{question_id}: unknown gold mapc {mapc}")
             elif "://" in mapc:
-                # The repeated codes get their node URI as mapc (KNOWN_ISSUES 5),
+                # The repeated codes get their node URI as mapc (docs/SYSTEM.md, section 11),
                 # which is not stable across versions.
                 errors.append(f"{question_id}: gold {mapc} has no stable mapc (repeated Dieu code)")
             try:

@@ -1,4 +1,4 @@
-"""Chunk schema v5 (docs/structural_jsonl.md): ids, text and splitting.
+"""Chunk schema v5 (docs/SYSTEM.md, section 4): ids, text and splitting.
 
 Shared by every chunk producer (Phap dien via ontology_to_jsonl, PDF/OCR later)
 so the same Dieu of the same document always gets the same chunk_id.

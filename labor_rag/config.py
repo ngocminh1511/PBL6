@@ -23,7 +23,7 @@ RAW_DIR = DATA_DIR / "raw"
 BOPHAPDIEN_DIR = RAW_DIR / "bophapdien"
 INTERIM_DIR = DATA_DIR / "interim"
 PROCESSED_DIR = DATA_DIR / "processed"
-# Chunk schema v5: docs/structural_jsonl.md
+# Chunk schema v5: docs/SYSTEM.md, section 4
 LAO_DONG_DIR = PROCESSED_DIR / "lao_dong_v5"
 LAO_DONG_DATASET_ID = "lao_dong_v5"
 
@@ -40,7 +40,7 @@ VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
-# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/BENCHMARK.md)
+# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/SYSTEM.md, section 10)
 BENCHMARKS_DIR = EVALUATION_DIR / "benchmarks"
 RESULTS_DIR = EVALUATION_DIR / "results"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"

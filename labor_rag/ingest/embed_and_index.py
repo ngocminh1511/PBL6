@@ -3,7 +3,7 @@ with a sentence-embedding model (bge-m3 by default) and upsert into Qdrant.
 
 Point ids are uuid5(chunk_id), so re-indexing a document overwrites its own
 points; the whole chunk is the payload, with indexes on the fields that
-retrieval filters on (docs/structural_jsonl.md, sections 5.3 and 6).
+retrieval filters on (docs/SYSTEM.md, sections 4.5 and 4.6).
 
 Qdrant is QDRANT_URL (+ QDRANT_API_KEY for Qdrant Cloud), read from .env;
 the default is the local qdrant container from docker-compose.yml.

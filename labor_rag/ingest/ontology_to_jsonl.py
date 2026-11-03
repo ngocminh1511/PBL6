@@ -3,7 +3,7 @@
 The ABox remains the source of truth; chunks.jsonl is what gets embedded and
 kg_nodes/kg_edges.jsonl what gets loaded into Neo4j.
 
-chunks.jsonl follows chunk schema v5 (docs/structural_jsonl.md): one chunk
+chunks.jsonl follows chunk schema v5 (docs/SYSTEM.md, section 4): one chunk
 per Dieu, identified by the source document number + the article number in
 that document, with long Dieu split at MAX_TOKENS bge-m3 tokens.
 
@@ -561,7 +561,7 @@ def main() -> int:
                     "chunk_id": make_chunk_id(document_id, meta_dieu, index if len(parts) > 1 else None),
                     "document_id": document_id,
                     # The Dieu node id in kg_nodes: the codification number, or
-                    # the URI for the few repeated codes (KNOWN_ISSUES), so it
+                    # the URI for the few repeated codes (docs/SYSTEM.md, section 11), so it
                     # stays unique and joins the chunk to Neo4j.
                     "mapc": node["id"],
                     "source": "phap_dien",

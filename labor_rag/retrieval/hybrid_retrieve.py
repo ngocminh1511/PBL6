@@ -5,7 +5,7 @@ hit's khoan refer to in their text, e.g. "theo quy định tại khoản 3 Đi�
 của Bộ luật Lao động": only that khoan's text is added, not the whole Dieu). Corresponds to the "Vector
 Retrieval + Graph Retrieval -> Hybrid Retrieval" stage of the pipeline.
 
-Chunks follow schema v5 (docs/structural_jsonl.md): a long Dieu is stored as
+Chunks follow schema v5 (docs/SYSTEM.md, section 4): a long Dieu is stored as
 parts "<doc>:d35:p1", ":p2", ...; vector hits are grouped per Dieu and only
 provisions in force today are searched.
 
@@ -15,7 +15,7 @@ AmendmentEvent -[:AMENDING_COMPONENT]-> the amending Dieu or khoan) dated
 after the Dieu's version_date, i.e. not consolidated into its text yet. Their
 chunks are attached as Evidence.amendments, so they stay with the Dieu
 through reranking and the prompt can put them first
-(docs/structural_jsonl.md, section 10).
+(docs/SYSTEM.md, sections 6 and 9).
 """
 from __future__ import annotations
 

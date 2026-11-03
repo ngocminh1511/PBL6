@@ -21,7 +21,7 @@ SYSTEM = (
 
 
 def render(evidence: Evidence) -> str:
-    # "[Điều 35 khoản 4-5 Nghị định số 145/2020/NĐ-CP] Trợ cấp thôi việc" (docs/structural_jsonl.md, section 9)
+    # "[Điều 35 khoản 4-5 Nghị định số 145/2020/NĐ-CP] Trợ cấp thôi việc" (docs/SYSTEM.md, section 4.8)
     lines = [f"[{evidence.citation}] {evidence.ten}", f"Nội dung: {evidence.text}"]
     for amendment in evidence.amendments:
         change = f" ({amendment.change})" if amendment.change else ""
