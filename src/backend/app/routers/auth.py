@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from src.backend.app.models.database import User
 from src.backend.app.models.schemas import UserRegister, UserLogin, UserResponse, TokenResponse
@@ -9,7 +9,7 @@ from src.backend.app.dependencies import get_current_user
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=TokenResponse)
-def register(req: UserRegister, db: Session = Depends(get_db)):
+def register(req: UserRegister, request: Request, db: Session = Depends(get_db)):
     user_repo = UserRepository(db)
     if user_repo.get_by_username(req.username):
         raise HTTPException(status_code=400, detail="Tên người dùng đã tồn tại")
@@ -24,17 +24,17 @@ def register(req: UserRegister, db: Session = Depends(get_db)):
         role=req.role or "lawyer"
     )
     user = user_repo.create(user)
-    token = create_access_token(user.username)
+    token = create_access_token(user.username, config=request.app.state.runtime.settings)
     return TokenResponse(access_token=token, user=UserResponse.model_validate(user))
 
 @router.post("/login", response_model=TokenResponse)
-def login(req: UserLogin, db: Session = Depends(get_db)):
+def login(req: UserLogin, request: Request, db: Session = Depends(get_db)):
     user_repo = UserRepository(db)
     user = user_repo.get_by_username(req.username)
-    if not user or not verify_password(req.password, user.hashed_password):
+    if not user or not user.is_active or not verify_password(req.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Tên đăng nhập hoặc mật khẩu không chính xác")
 
-    token = create_access_token(user.username)
+    token = create_access_token(user.username, config=request.app.state.runtime.settings)
     return TokenResponse(access_token=token, user=UserResponse.model_validate(user))
 
 @router.get("/me", response_model=UserResponse)

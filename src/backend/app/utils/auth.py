@@ -1,76 +1,47 @@
-from datetime import datetime, timedelta
-from typing import Optional, Any
+"""Password compatibility and JWT helpers; demo tokens use a process-local key."""
+from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
-import json
-import base64
-
+import secrets
+import bcrypt
+from jose import jwt, JWTError
+from fastapi import HTTPException
 from src.backend.app.config import settings
 
-try:
-    import bcrypt
-    def verify_password(plain_password: str, hashed_password: str) -> bool:
-        try:
-            return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
-        except Exception:
-            # Fallback check if it was hashed with standard library fallback
-            salt = hashed_password[:16]
-            expected = hashed_password[16:]
-            actual = hashlib.pbkdf2_hmac('sha256', plain_password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
-            return hmac.compare_digest(expected, actual)
+_DEMO_SIGNING_KEY = secrets.token_urlsafe(48)
 
-    def get_password_hash(password: str) -> str:
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-except Exception:
-    # Standard library fallback hash
-    def verify_password(plain_password: str, hashed_password: str) -> bool:
+def signing_key(config):
+    if config.JWT_SECRET:
+        return config.JWT_SECRET
+    if config.DEMO_MODE:
+        return _DEMO_SIGNING_KEY
+    raise HTTPException(503, "Cần cấu hình JWT_SECRET.")
+
+def get_password_hash(password):
+    if len(password.encode("utf-8")) > 72:
+        raise HTTPException(422, "Mật khẩu tối đa 72 byte UTF-8.")
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode()
+
+def verify_password(password, hashed):
+    if hashed.startswith(("$2a$", "$2b$", "$2y$")):
         try:
-            salt = hashed_password[:16]
-            expected = hashed_password[16:]
-            actual = hashlib.pbkdf2_hmac('sha256', plain_password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
-            return hmac.compare_digest(expected, actual)
-        except Exception:
+            return bcrypt.checkpw(password.encode("utf-8"), hashed.encode())
+        except ValueError:
             return False
+    # Preserve pre-merge accounts created by the old standard-library fallback.
+    if len(hashed) == 80:
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode(), hashed[:16].encode(), 100000).hex()
+        return hmac.compare_digest(hashed[16:], actual)
+    return False
 
-    def get_password_hash(password: str) -> str:
-        salt = hashlib.md5(str(datetime.utcnow().timestamp()).encode()).hexdigest()[:16]
-        hashed = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
-        return salt + hashed
+def create_access_token(subject, expires_delta=None, *, config=None):
+    config = config or settings
+    expires = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES))
+    return jwt.encode({"sub": str(subject), "exp": expires}, signing_key(config), algorithm=config.JWT_ALGORITHM)
 
-try:
-    from jose import jwt, JWTError
-    def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] = None) -> str:
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
-        else:
-            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode = {"exp": expire, "sub": str(subject)}
-        return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
-
-    def decode_access_token(token: str) -> Optional[str]:
-        try:
-            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
-            return payload.get("sub")
-        except JWTError:
-            return None
-except ImportError:
-    # Standard HMAC-SHA256 token fallback
-    def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] = None) -> str:
-        exp = (datetime.utcnow() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))).timestamp()
-        data = json.dumps({"sub": str(subject), "exp": exp})
-        b64_data = base64.urlsafe_b64encode(data.encode()).decode()
-        sig = hmac.new(settings.JWT_SECRET.encode(), b64_data.encode(), hashlib.sha256).hexdigest()
-        return f"{b64_data}.{sig}"
-
-    def decode_access_token(token: str) -> Optional[str]:
-        try:
-            b64_data, sig = token.split(".")
-            expected_sig = hmac.new(settings.JWT_SECRET.encode(), b64_data.encode(), hashlib.sha256).hexdigest()
-            if not hmac.compare_digest(sig, expected_sig):
-                return None
-            data = json.loads(base64.urlsafe_b64decode(b64_data.encode()).decode())
-            if datetime.utcnow().timestamp() > data.get("exp", 0):
-                return None
-            return data.get("sub")
-        except Exception:
-            return None
+def decode_access_token(token, *, config=None):
+    config = config or settings
+    try:
+        return jwt.decode(token, signing_key(config), algorithms=[config.JWT_ALGORITHM]).get("sub")
+    except JWTError:
+        return None

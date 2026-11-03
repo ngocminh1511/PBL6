@@ -1,84 +1,47 @@
+"""Optional cloud cache. Failure disables caching, never changes persistence."""
 import json
-import hashlib
-from typing import Optional, List, Dict, Any
-try:
-    import redis
-except ImportError:
-    redis = None
-from src.backend.app.config import settings
 
-class RedisRepository:
-    def __init__(self):
-        self.enabled = settings.REDIS_ENABLED and redis is not None
+class Cache:
+    def __init__(self, settings):
         self.client = None
-        self._memory_cache = {}  # In-memory fallback if Redis is unreachable or module not installed
-        
-        if self.enabled and redis is not None:
+        self.status = "disabled" if not settings.REDIS_ENABLED else "not_configured"
+        if settings.REDIS_ENABLED and settings.REDIS_URL:
             try:
-                self.client = redis.Redis.from_url(
-                    settings.REDIS_URL, decode_responses=True, socket_connect_timeout=2
-                )
+                import redis
+                self.client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True,
+                    socket_connect_timeout=2, socket_timeout=2)
                 self.client.ping()
+                self.status = "connected"
             except Exception:
-                # Fallback to local memory cache
+                self.status = "unavailable"
+                if self.client:
+                    self.client.close()
                 self.client = None
 
-    def is_healthy(self) -> bool:
+    def get(self, key):
+        if self.client:
+            try:
+                value = self.client.get("pbl6:" + key)
+                return json.loads(value) if value is not None else None
+            except Exception:
+                self.status = "unavailable"
+        return None
+
+    def set(self, key, value, ttl):
+        if self.client:
+            try:
+                self.client.setex("pbl6:" + key, ttl, json.dumps(value))
+            except Exception:
+                self.status = "unavailable"
+
+    def flush(self):
         if not self.client:
-            return False
-        try:
-            return self.client.ping()
-        except Exception:
-            return False
+            return 0
+        count = 0
+        for key in self.client.scan_iter(match="pbl6:*", count=100):
+            count += self.client.delete(key)
+        return count
 
-    def get_embedding_cache(self, text: str) -> Optional[List[float]]:
-        key = f"embed:{hashlib.sha256(text.strip().lower().encode('utf-8')).hexdigest()}"
+    def close(self):
         if self.client:
-            try:
-                val = self.client.get(key)
-                if val:
-                    return json.loads(val)
-            except Exception:
-                pass
-        return self._memory_cache.get(key)
-
-    def set_embedding_cache(self, text: str, vector: List[float]):
-        key = f"embed:{hashlib.sha256(text.strip().lower().encode('utf-8')).hexdigest()}"
-        if self.client:
-            try:
-                self.client.setex(key, settings.EMBEDDING_CACHE_TTL, json.dumps(vector))
-                return
-            except Exception:
-                pass
-        self._memory_cache[key] = vector
-
-    def get_session_context(self, session_id: str) -> Optional[List[Dict[str, str]]]:
-        key = f"session_ctx:{session_id}"
-        if self.client:
-            try:
-                val = self.client.get(key)
-                if val:
-                    return json.loads(val)
-            except Exception:
-                pass
-        return self._memory_cache.get(key)
-
-    def set_session_context(self, session_id: str, history: List[Dict[str, str]]):
-        key = f"session_ctx:{session_id}"
-        if self.client:
-            try:
-                self.client.setex(key, settings.SESSION_CACHE_TTL, json.dumps(history))
-                return
-            except Exception:
-                pass
-        self._memory_cache[key] = history
-
-    def flush_cache(self):
-        if self.client:
-            try:
-                self.client.flushdb()
-            except Exception:
-                pass
-        self._memory_cache.clear()
-
-redis_repo = RedisRepository()
+            self.client.close()
