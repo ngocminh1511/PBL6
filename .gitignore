@@ -5,6 +5,18 @@
 *.py[cod]
 .ipynb_checkpoints/
 
+# Node dependencies & Next.js build output
+**/node_modules/
+node_modules/
+**/.next/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.pnp
+.pnp.js
+
 # Local credentials and environment files
 .vscode/
 .env
@@ -18,7 +30,6 @@ data/*
 data/processed/*
 !data/processed/appendices_v1/
 data/raw/appendix/
-!data/processed/lao_dong_v4/
 !data/processed/lao_dong_v5/
 !data/processed/lao_dong_v5/finetune/
 

@@ -390,6 +390,10 @@ python -m labor_rag.ingest.embed_and_index [--backend modal] [--upsert | --recre
 5. **Kiểm tra trích dẫn** (`generation/citation_verify.py`): đối chiếu Điều và Phụ lục được trích (cả số và văn bản)
    với bằng chứng thật.
 
+Vector và đồ thị bổ sung cho nhau: vector tìm các Điều "hạt giống", nên nếu hạt giống sai thì đồ thị cũng mở rộng sang
+nhánh sai; đồ thị lấy được các Điều dẫn chiếu, văn bản hướng dẫn (ví dụ NĐ 145/2020) mà câu hỏi không có từ khóa tương
+đồng, điều vector không tự tìm ra.
+
 ### 9.1. Mở rộng 2 bước có rào chắn
 
 Điều khoản giao quyền ("Bộ trưởng quy định danh mục tại điểm h khoản 1 … Điều này") dừng ở 1 bước thì LLM chỉ thấy câu
