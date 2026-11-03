@@ -67,7 +67,7 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
                 2. Truy vấn kết hợp (Vector kNN + Đồ thị tri thức)
               </span>
               <span className="font-metric-num text-metric-num text-on-tertiary-container bg-tertiary-fixed px-1.5 rounded">
-                Tích hợp thành công
+                Kết quả truy hồi
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-space-xs">
@@ -80,7 +80,7 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
                   </span>
                 </div>
                 <span className="font-body-sm text-body-sm text-on-surface-variant text-[11px]">
-                  Cosine Sim: {trace.step2_hybrid_retrieval.vector_score_range} • BGE-m3 Embedding
+                  Cosine Sim: {trace.step2_hybrid_retrieval.vector_score_range}
                 </span>
               </div>
               {/* Graph Pillar */}
@@ -88,13 +88,13 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
                 <div className="flex items-center justify-between font-label-statute text-label-statute">
                   <span className="text-on-surface font-semibold">Duyệt Đồ thị (Neo4j)</span>
                   <span className="font-label-statute text-label-statute text-on-secondary-fixed bg-secondary-fixed px-1 rounded">
-                    {trace.step2_hybrid_retrieval.graph_hops_count} Bước nhảy [REFERS_TO]
+                    {trace.step2_hybrid_retrieval.graph_hops_count} chứng cứ đồ thị
                   </span>
                 </div>
                 <span className="font-label-code text-label-code text-on-surface truncate text-[11px]">
                   {trace.step2_hybrid_retrieval.refers_to_targets.length > 0
                     ? trace.step2_hybrid_retrieval.refers_to_targets.join(' • ')
-                    : 'Duyệt cấu trúc phân cấp CONTAINS/PART_OF'}
+                    : 'Không có chứng cứ đồ thị được trả về'}
                 </span>
               </div>
             </div>
@@ -105,14 +105,14 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
             <div className="p-space-xs rounded-lg bg-surface-container-lowest flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="font-label-statute text-label-statute text-on-surface-variant uppercase font-bold">
-                  3. Tái xếp hạng (Cross-Encoder)
+                  3. Tái xếp hạng bằng LLM
                 </span>
                 <span className="font-body-sm text-body-sm text-on-surface">
                   Giữ {trace.step3_rerank.retained_count} đoạn • Loại {trace.step3_rerank.pruned_count} đoạn
                 </span>
               </div>
               <span className="font-metric-num text-metric-num px-2 py-0.5 rounded bg-error-container text-on-error-container font-mono text-[11px]">
-                Loại theo ngưỡng điểm
+                Chọn theo mức liên quan
               </span>
             </div>
 

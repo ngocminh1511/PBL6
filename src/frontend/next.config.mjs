@@ -1,20 +1,11 @@
 /** @type {import('next').NextConfig} */
+const origin = (process.env.BACKEND_ORIGIN || 'http://127.0.0.1:8000').replace(/\/$/, '');
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    unoptimized: true,
-  },
+  images: { unoptimized: true },
+  experimental: { cpus: 2 },
   async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*` 
-          : 'http://localhost:8000/api/:path*',
-      },
-    ];
+    return [{ source: '/api/:path*', destination: origin + '/api/:path*' }];
   },
 };
-
 export default nextConfig;
-

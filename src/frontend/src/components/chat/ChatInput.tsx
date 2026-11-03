@@ -66,6 +66,7 @@ export const ChatInput: React.FC = () => {
           placeholder="Đặt câu hỏi nối tiếp về các trường hợp ngoại lệ, chế tài bồi thường, hoặc tra cứu thêm điều khoản..."
           rows={2}
           disabled={isSending}
+          maxLength={4000}
           className="w-full bg-transparent border-0 focus:outline-none resize-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant px-1"
         />
 
@@ -86,7 +87,7 @@ export const ChatInput: React.FC = () => {
               <span className="material-symbols-outlined text-[20px]">mic</span>
             </button>
             <span className="font-label-code text-label-code text-on-surface-variant px-2 py-0.5 rounded bg-surface-container text-[11px]">
-              Ngữ cảnh: BLLĐ 2019 + NĐ 145
+              Phạm vi: dữ liệu Lao động
             </span>
           </div>
 

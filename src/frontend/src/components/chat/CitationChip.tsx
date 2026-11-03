@@ -1,17 +1,24 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useChatStore } from '../../stores/chatStore';
 
 interface CitationChipProps {
   citation: string;
   isGraphRef?: boolean;
+  href?: string;
 }
 
-export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef }) => {
+export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef, href }) => {
+  const router = useRouter();
   const { setSelectedCitation, setInspectorTab } = useChatStore();
 
   const handleClick = () => {
+    if (href) {
+      router.push(href);
+      return;
+    }
     setSelectedCitation(citation);
     setInspectorTab(isGraphRef ? 'tab-graph' : 'tab-hierarchy');
   };
