@@ -293,11 +293,11 @@ def _collection_has_expected_chunks(
             collection_name=collection,
             offset=offset,
             limit=256,
-            with_payload=["chunk_id", "text"],
+            with_payload=["chunk_id", "text", "chunk_type"],
             with_vectors=False,
         )
         for point in points:
-            if point.payload and point.payload.get("chunk_id") is not None:
+            if point.payload and point.payload.get("chunk_type") != "appendix" and point.payload.get("chunk_id") is not None:
                 found[str(point.payload["chunk_id"])] = _text_digest(point.payload.get("text"))
         if offset is None:
             break
@@ -363,7 +363,7 @@ def ensure_collection_index(
     reusable = (
         not rebuild
         and info is not None
-        and points_count == len(chunks)
+        and points_count >= len(chunks)
         and _collection_dimension(info) == dimension
         and _collection_has_expected_chunks(client, collection, expected)
     )
@@ -371,10 +371,18 @@ def ensure_collection_index(
         return {
             "action": "reused",
             "index_time_seconds": 0.0,
-            "indexed_points": points_count,
+            "indexed_points": len(chunks),
+            "corpus_total_points": points_count,
+            "corpus_scope": "baseline",
             "dimension": dimension,
         }
 
+    if info is not None:
+        # An old benchmark must not erase additive appendix data, even on --rebuild.
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
+        addon,_ = client.scroll(collection_name=collection,scroll_filter=Filter(must=[FieldCondition(key="chunk_type",match=MatchValue(value="appendix"))]),limit=1,with_payload=False,with_vectors=False)
+        if addon:
+            raise ValueError("Collection contains appendices; use a separate benchmark collection prefix to rebuild")
     # legal_ld_v5_bge is also the chatbot's collection, so a rebuilt one gets
     # the same payload indexes as embed_and_index creates.
     from labor_rag.ingest.embed_and_index import PAYLOAD_INDEXES
@@ -409,15 +417,17 @@ def ensure_collection_index(
 
 
 def _query_points(client: QdrantClient, collection: str, vector: list[float], top_k: int) -> list[Any]:
+    from labor_rag.retrieval.corpus import corpus_filter
     if hasattr(client, "query_points"):
         response = client.query_points(
             collection_name=collection,
             query=vector,
             limit=top_k,
             with_payload=True,
+            query_filter=corpus_filter("baseline"),
         )
         return list(response.points)
-    return list(client.search(collection_name=collection, query_vector=vector, limit=top_k, with_payload=True))
+    return list(client.search(collection_name=collection, query_vector=vector, limit=top_k, with_payload=True,query_filter=corpus_filter("baseline")))
 
 
 def retrieve_once(

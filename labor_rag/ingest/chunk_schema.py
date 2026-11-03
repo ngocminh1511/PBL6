@@ -67,13 +67,13 @@ def point_id(chunk_id: str) -> str:
 
 def article_id(chunk_id: str) -> str:
     """Key shared by every part of one Dieu: '45-2019-qh14:d35:p2' -> '45-2019-qh14:d35'."""
-    return chunk_id.split(":p", 1)[0]
+    return re.sub(r":p\d+$", "", chunk_id)
 
 
 def part_number(chunk_id: str) -> int:
     """'...:d35:p2' -> 2; 0 for a Dieu that was not split."""
-    _, _, part = chunk_id.partition(":p")
-    return int(part) if part.isdigit() else 0
+    match = re.search(r":p(\d+)$", chunk_id)
+    return int(match[1]) if match else 0
 
 
 def join_parts(texts: list[str]) -> str:
@@ -111,6 +111,8 @@ def heading_number(heading: str | None) -> str | None:
 
 def citation(chunk: dict) -> str:
     """'Điều 35 khoản 4-5 Nghị định số 145/2020/NĐ-CP'."""
+    if chunk.get("appendix_id"):
+        return f"Phụ lục {chunk.get('appendix_number') or ''} {chunk.get('document_number') or chunk.get('meta_de_muc') or chunk.get('document_id')}".strip()
     parts = [f"Điều {chunk.get('meta_dieu')}" if chunk.get("meta_dieu") else None]
     if chunk.get("meta_khoan"):
         parts.append(f"khoản {chunk['meta_khoan']}")

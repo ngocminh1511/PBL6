@@ -1,0 +1,11 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vld: <https://example.org/vn-legal/document#> .
+@prefix vlp: <https://example.org/vn-legal/provenance#> .
+
+<https://example.org/vn-legal/ontology/appendix/v1> a owl:Ontology ;
+    rdfs:comment "Appendix metadata extension; the original v4 TBox remains unchanged."@en .
+vld:appendixKind a owl:DatatypeProperty ; rdfs:domain vld:Appendix ; rdfs:range xsd:string .
+vld:appendixIdentifier a owl:DatatypeProperty ; rdfs:domain vld:Appendix ; rdfs:range xsd:string .
+vlp:artifactIdentifier a owl:DatatypeProperty ; rdfs:domain vlp:SourceArtifact ; rdfs:range xsd:string .

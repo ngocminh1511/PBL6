@@ -81,6 +81,7 @@ MODAL_APP = "labor-rag-embed"
 
 
 PAYLOAD_INDEXES = {
+    "chunk_type": PayloadSchemaType.KEYWORD,
     "document_id": PayloadSchemaType.KEYWORD,
     "mapc": PayloadSchemaType.KEYWORD,
     "meta_dieu": PayloadSchemaType.KEYWORD,

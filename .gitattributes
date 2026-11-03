@@ -1,1 +1,9 @@
 data/raw/** -text
+
+# Preserve byte-level hashes for generated appendix data and source previews.
+data/processed/appendices_v1/** -text whitespace=cr-at-eol
+ontology/abox/appendices/** -text whitespace=cr-at-eol
+# Source table literals deliberately retain blank cells and trailing spaces.
+data/processed/appendices_v1/normalized/*.html whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof linguist-generated
+ontology/abox/appendices/*.ttl whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof linguist-generated
+data/processed/appendices_v1/*.jsonl linguist-generated
