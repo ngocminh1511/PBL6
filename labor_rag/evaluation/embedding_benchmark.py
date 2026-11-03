@@ -58,7 +58,6 @@ from sentence_transformers import SentenceTransformer
 
 from labor_rag.config import (
     EVALUATION_DIR,
-    FINETUNE_MODELS_DIR,
     LAO_DONG_DATASET_ID,
     LAO_DONG_DIR,
     RESULTS_DIR,
@@ -99,11 +98,6 @@ MODELS: list[dict[str, str]] = [
         "collection": "legal_ld_v5_bge",
     },
     {
-        "key": "bge_ft",
-        "model": str(FINETUNE_MODELS_DIR),
-        "collection": "legal_ld_v5_bge_ft",
-    },
-    {
         "key": "mpnet",
         "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
         "collection": "legal_ld_v5_mpnet",
@@ -111,7 +105,7 @@ MODELS: list[dict[str, str]] = [
 ]
 
 
-COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|bge_ft|mpnet)$")
+COLLECTION_RE = re.compile(r"^legal_[a-z0-9_]+_(bkai|bge|mpnet)$")
 DEFAULT_COLLECTION_PREFIX = "legal_ld_v5"
 # Reported metrics, in column order.  Recall@1 equals HitRate@1 for single-gold
 # questions and adds little, so it is left out.
