@@ -1,0 +1,37 @@
+{
+  "checked_at": "2026-11-02T17:45:55.551440+00:00",
+  "status": "verified",
+  "bucket": "pbl6-legal-files",
+  "objects_verified": 324,
+  "source_files": 116,
+  "normalized_files": 208,
+  "bytes": 115989491,
+  "api_checks": [
+    {
+      "format": "pdf",
+      "api_status": 307,
+      "r2_status": 200,
+      "sha256_matches": true,
+      "disposition": "inline",
+      "pdf_range_verified": true,
+      "explicit_download_verified": true
+    },
+    {
+      "format": "doc",
+      "api_status": 307,
+      "r2_status": 200,
+      "sha256_matches": true,
+      "disposition": "attachment"
+    },
+    {
+      "format": "html",
+      "api_status": 307,
+      "r2_status": 200,
+      "sha256_matches": true,
+      "disposition": "attachment"
+    }
+  ],
+  "graph_and_chunk_files_unchanged": true,
+  "local_backups_verified": 116,
+  "automatic_upload": false
+}
