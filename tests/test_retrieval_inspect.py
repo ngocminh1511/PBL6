@@ -9,7 +9,7 @@ from neo4j.exceptions import ServiceUnavailable
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
-from labor_rag.app.api import create_app
+from src.backend.app.main import create_app
 from labor_rag.appendices.runtime import AppendixCatalog
 from labor_rag.ingest.chunk_schema import point_id
 from labor_rag.retrieval.inspect import APPENDIX_PATHS, RetrievalInspector

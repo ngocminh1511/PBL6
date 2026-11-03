@@ -15,7 +15,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, Tag, NavigableString, Comment
 
 from labor_rag.ingest.chunk_schema import MAX_TOKENS, TokenCounter, ascii_fold, content_hash, make_document_id, split_sentences
-from scripts.inventory_appendices import canonical_label
+from labor_rag.appendices.labels import canonical_label
 from .catalog import INTERIM_DIR, INVENTORY_DIR, PROCESSED_DIR, RAW_DIR, ROOT_DIR, load_manifest, local_path, now, read_json, register_bytes, relative, sha256, write_json, write_jsonl
 
 HEADING = re.compile(r"^ph[ụu]\s*l[ụu]c\s*(?:s[ốo]\s*)?([IVXLCDM]+[ab]?|\d+[ab]?)?(?:\s*[.:–—-]\s*(.*))?$", re.I)

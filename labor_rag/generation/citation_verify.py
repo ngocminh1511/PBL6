@@ -23,7 +23,7 @@ def verify_citations(answer: str, evidences: list[Evidence]) -> dict:
     retrieved_dieu = {dieu for _, dieu in retrieved}
 
     cited: dict[str, bool] = {}
-    from scripts.inventory_appendices import canonical_label
+    from labor_rag.appendices.labels import canonical_label
     retrieved_appendices = {(e.document_id, canonical_label(e.appendix_number)) for e in evidences
                             if e.appendix_id and e.appendix_number and re.fullmatch(r"\d+[ab]?|[IVXLCDM]+[ab]?",e.appendix_number,re.I)}
     for match in APPENDIX_RE.finditer(answer):

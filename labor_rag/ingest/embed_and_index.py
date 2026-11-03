@@ -60,7 +60,6 @@ from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
-sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
 
 CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
@@ -216,6 +215,8 @@ def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict])
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
     parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="graph projection to read validity from")

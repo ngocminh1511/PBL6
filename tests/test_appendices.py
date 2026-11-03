@@ -10,7 +10,7 @@ from labor_rag.appendices import catalog as storage
 from labor_rag.appendices.collect import Collector, decode_flight, public_document
 from labor_rag.appendices.extract import normalize_sections, make_chunks, article_links, sanitized
 from labor_rag.appendices.runtime import AppendixCatalog
-from labor_rag.app.api import create_app
+from src.backend.app.main import create_app
 from labor_rag.generation.citation_verify import verify_citations
 from labor_rag.ingest.chunk_schema import article_id, part_number
 from labor_rag.retrieval.hybrid_retrieve import Evidence

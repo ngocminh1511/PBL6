@@ -10,7 +10,7 @@ from labor_rag.appendices import catalog as local
 from labor_rag.appendices.object_storage import ObjectIntegrityError, R2Store, StorageConfig
 from labor_rag.appendices.sync_r2 import run
 from labor_rag.appendices.runtime import AppendixCatalog
-from labor_rag.app.api import create_app
+from src.backend.app.main import create_app
 
 
 class S3:

@@ -17,18 +17,34 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+from contextlib import contextmanager
+from contextvars import ContextVar
+from labor_rag.settings import Settings
+
+_request_settings = ContextVar("llm_settings", default=None)
+
+@contextmanager
+def use_settings(settings):
+    token = _request_settings.set(settings)
+    try:
+        yield
+    finally:
+        _request_settings.reset(token)
+
+
 def complete(system: str, user: str, max_tokens: int = 1024) -> str:
-    provider = os.environ.get("LLM_PROVIDER", "gemini")
+    config = _request_settings.get() or Settings()
+    provider = config.LLM_PROVIDER
 
     if provider == "gemini":
         from google import genai
         from google.genai import types
 
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = config.GEMINI_API_KEY
         if not api_key:
             raise RuntimeError("Set GEMINI_API_KEY to use LLM_PROVIDER=gemini.")
         client = genai.Client(api_key=api_key)
-        model = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+        model = config.GEMINI_MODEL
         resp = client.models.generate_content(
             model=model,
             contents=user,
@@ -46,14 +62,14 @@ def complete(system: str, user: str, max_tokens: int = 1024) -> str:
     if provider == "anthropic":
         import anthropic
 
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        api_key = config.ANTHROPIC_API_KEY
         if not api_key:
             raise RuntimeError(
                 "Set ANTHROPIC_API_KEY (or LLM_PROVIDER=openai + OPENAI_API_KEY) "
                 "to use the LLM-backed pipeline stages."
             )
         client = anthropic.Anthropic(api_key=api_key)
-        model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+        model = config.ANTHROPIC_MODEL
         resp = client.messages.create(
             model=model,
             max_tokens=max_tokens,
@@ -65,11 +81,11 @@ def complete(system: str, user: str, max_tokens: int = 1024) -> str:
     if provider == "openai":
         from openai import OpenAI
 
-        api_key = os.environ.get("OPENAI_API_KEY")
+        api_key = config.OPENAI_API_KEY
         if not api_key:
             raise RuntimeError("Set OPENAI_API_KEY to use LLM_PROVIDER=openai.")
         client = OpenAI(api_key=api_key)
-        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        model = config.OPENAI_MODEL
         resp = client.chat.completions.create(
             model=model,
             max_tokens=max_tokens,

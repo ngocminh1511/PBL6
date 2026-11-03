@@ -24,6 +24,7 @@ from bs4 import BeautifulSoup
 
 from labor_rag.ingest.build_abox import BROKEN_NUMBER_RE, SOURCE_RE, normalize_number
 from labor_rag.ingest.chunk_schema import ascii_fold, make_document_id
+from labor_rag.appendices.labels import canonical_label
 from labor_rag.ingest.parse_demuc_html import (
     _content_blocks,
     _structural_class,
@@ -44,23 +45,6 @@ FORM_RE = re.compile(r"m[ẫa]u\s+(?:s[ốo]\s+)?(?P<label>\d+[a-z]?)(?!\w)", re
 
 def compact(value: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFC", value)).strip()
-
-
-def canonical_label(value: str) -> str:
-    """Unify Arabic/Roman numbering (01 / I), retaining a suffix such as Ib."""
-    value = value.strip()
-    if value[0].isdigit():
-        match = re.fullmatch(r"(\d+)([abAB]?)", value)
-        return str(int(match[1])) + match[2].lower()
-    suffix = value[-1].lower() if value[-1].lower() in "ab" else ""
-    roman = value[:-1] if suffix else value
-    values = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
-    total, previous = 0, 0
-    for ch in reversed(roman.upper()):
-        current = values[ch]
-        total += -current if current < previous else current
-        previous = max(previous, current)
-    return str(total) + suffix
 
 
 def base_url(value: str) -> str:

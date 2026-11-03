@@ -50,7 +50,6 @@ from labor_rag.ingest.chunk_schema import (
     split_article,
 )
 
-sys.stdout.reconfigure(encoding="utf-8")
 
 VLD = "https://example.org/vn-legal/document#"
 VLPD = "https://example.org/vn-legal/phapdien#"
@@ -366,6 +365,8 @@ def repo_relative(path: Path) -> str:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH, help="the Phap dien ABox")
     parser.add_argument(
@@ -387,6 +388,10 @@ def main() -> int:
         help="TH2/B: 'full' (đầy đủ ngữ cảnh + Điều n. Tên + nội dung, mặc định) | TH1/A: 'minimal' (chỉ Điều n. Tên + nội dung)",
     )
     args = parser.parse_args()
+    return project(args)
+
+
+def project(args):
 
     pdf_aboxes = sorted(args.pdf_abox_dir.glob("*.ttl")) if args.pdf_abox_dir.exists() else []
     graph = Graph()

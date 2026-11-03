@@ -56,10 +56,15 @@ class RetrievalStageError(RuntimeError):
 
 
 class RetrievalInspector:
-    def __init__(self, catalog: AppendixCatalog, retriever=None):
+    def __init__(self, catalog: AppendixCatalog, retriever=None, *, settings=None):
         self.catalog = catalog
-        self.backend = os.getenv("QUERY_EMBEDDING_BACKEND") or os.getenv("EMBEDDING_BACKEND", "local")
-        self.retriever = retriever or HybridRetriever(embedding_backend=self.backend)
+        from labor_rag.settings import Settings
+        self.settings = settings or Settings()
+        self.backend = self.settings.query_backend
+        self.retriever = retriever or HybridRetriever(settings=self.settings)
+        self.dataset_id = getattr(self.retriever, "dataset_id", self.settings.DATASET_ID)
+        self.database = getattr(self.retriever, "database", self.settings.NEO4J_DATABASE)
+        self.model_name = getattr(self.retriever, "model_name", self.settings.EMBEDDING_MODEL)
 
     def close(self):
         self.retriever.close()
@@ -97,14 +102,14 @@ class RetrievalInspector:
                  for hit in vector_hits if hit["document_id"] and hit["meta_dieu"]]
         direct_ids = sorted({hit["appendix_id"] for hit in vector_hits if hit["appendix_id"]})
         graph = {"status": "skipped", "paths": [], "provenance": [],
-                 "cypher": APPENDIX_PATHS.strip(), "parameters": {"dataset": DATASET_ID, "seeds": seeds, "direct_ids": direct_ids}}
+                 "cypher": APPENDIX_PATHS.strip(), "parameters": {"dataset": self.dataset_id, "seeds": seeds, "direct_ids": direct_ids}}
 
         def graph_lookup():
-            with self.retriever.neo4j.session(database=NEO4J_DATABASE) as session:
+            with self.retriever.neo4j.session(database=self.database) as session:
                 paths = [dict(row) for row in session.run(APPENDIX_PATHS, **graph["parameters"])]
                 ids = sorted(set(direct_ids) | {row["appendix_id"] for row in paths})
                 provenance = [dict(row) for row in session.run(
-                    APPENDIX_PROVENANCE, dataset=DATASET_ID, appendix_ids=ids)] if ids else []
+                    APPENDIX_PROVENANCE, dataset=self.dataset_id, appendix_ids=ids)] if ids else []
                 return paths, provenance
 
         if seeds or direct_ids:
@@ -165,7 +170,7 @@ class RetrievalInspector:
         appendices.sort(key=lambda a: (-(a["vector_score"] if a["vector_score"] is not None else -1), a["appendix_id"]))
         timings["total"] = round((perf_counter() - started) * 1000, 2)
         return {"mode": "retrieval_only", "llm_used": False, "question": question,
-                "embedding": {"backend": self.backend, "model": MODEL_NAME, "dimensions": len(vector)},
+                "embedding": {"backend": self.backend, "model": self.model_name, "dimensions": len(vector)},
                 "collection": self.retriever.collection, "vector_hits": vector_hits, "graph": graph,
                 "appendices": appendices, "appendix_fetch_status": fetch_status,
                 "timings_ms": timings, "warnings": warnings}

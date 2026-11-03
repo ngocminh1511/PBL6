@@ -218,18 +218,25 @@ class ModalQueryEncoder:
 
 
 class HybridRetriever:
-    def __init__(self, collection: str | None = None, *, embedding_backend: str | None = None) -> None:
-        backend = embedding_backend or os.getenv("QUERY_EMBEDDING_BACKEND", "local")
-        if backend == "modal":
-            self.model = ModalQueryEncoder()
-        else:
-            from sentence_transformers import SentenceTransformer
-            self.model = SentenceTransformer(MODEL_NAME)
-        self.collection = collection or os.getenv("QDRANT_COLLECTION", COLLECTION)
-        self.qdrant = QdrantClient(
-            url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
-        )
-        self.neo4j = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH, connection_timeout=8, max_transaction_retry_time=2)
+    def __init__(self, collection: str | None = None, *, embedding_backend: str | None = None,
+                 settings=None, model=None) -> None:
+        from labor_rag.settings import Settings
+        from labor_rag.services.embedding import EmbeddingProvider
+        self.settings = settings or Settings()
+        config = self.settings
+        if not config.QDRANT_URL or not config.NEO4J_URI:
+            raise ValueError("Configure QDRANT_URL and NEO4J_URI before retrieval.")
+        self.database = config.NEO4J_DATABASE
+        self.dataset_id = config.DATASET_ID
+        self.model_name = config.EMBEDDING_MODEL
+        self.backend = embedding_backend or config.query_backend
+        self.model = model or EmbeddingProvider(config, backend=self.backend)
+        self.collection = collection or config.QDRANT_COLLECTION
+        self.qdrant = QdrantClient(url=config.QDRANT_URL, api_key=config.QDRANT_API_KEY or None,
+                                   timeout=config.QDRANT_TIMEOUT)
+        self.neo4j = GraphDatabase.driver(config.NEO4J_URI,
+            auth=(config.NEO4J_USER, config.NEO4J_PASSWORD), connection_timeout=8,
+            max_transaction_retry_time=2)
         self.graph_warning: str | None = None
 
     def close(self) -> None:
@@ -261,12 +268,12 @@ class HybridRetriever:
         RETURN DISTINCT b.id AS mapc, b.ten AS ten
         LIMIT $limit
         """
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
             rows = session.run(
                 query,
                 mapcs=mapcs,
                 limit=limit_per_node * len(mapcs),
-                dataset_id=DATASET_ID,
+                dataset_id=getattr(self, "dataset_id", DATASET_ID),
             )
             return [
                 Evidence(
@@ -326,8 +333,8 @@ class HybridRetriever:
         ]
         if not keys:
             return []
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
-            rows = [dict(row) for row in session.run(REFERENCED_COMPONENTS, keys=keys, dataset_id=DATASET_ID)]
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
+            rows = [dict(row) for row in session.run(REFERENCED_COMPONENTS, keys=keys, dataset_id=getattr(self, "dataset_id", DATASET_ID))]
         document_ids = sorted({row["document_id"] for row in rows if row["document_id"]})
         payloads = self.in_force_payloads(document_ids) if document_ids else []
         found: list[Evidence] = []
@@ -353,8 +360,8 @@ class HybridRetriever:
         ]
         if not keys:
             return []
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
-            return [dict(row) for row in session.run(PENDING_AMENDMENTS, keys=keys, dataset_id=DATASET_ID)]
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
+            return [dict(row) for row in session.run(PENDING_AMENDMENTS, keys=keys, dataset_id=getattr(self, "dataset_id", DATASET_ID))]
 
     def attach_amendments(self, evidences: list[Evidence]) -> None:
         """Fill Evidence.amendments with the chunks (in force) of the pending amendments."""
