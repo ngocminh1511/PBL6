@@ -26,7 +26,6 @@ from datetime import date
 from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
 from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCondition, MatchAny, MatchValue, PayloadField
-from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 from labor_rag.ingest.chunk_schema import article_id, citation, join_parts, make_chunk_id, part_number
@@ -221,7 +220,11 @@ class ModalQueryEncoder:
 class HybridRetriever:
     def __init__(self, collection: str | None = None, *, embedding_backend: str | None = None) -> None:
         backend = embedding_backend or os.getenv("QUERY_EMBEDDING_BACKEND", "local")
-        self.model = ModalQueryEncoder() if backend == "modal" else SentenceTransformer(MODEL_NAME)
+        if backend == "modal":
+            self.model = ModalQueryEncoder()
+        else:
+            from sentence_transformers import SentenceTransformer
+            self.model = SentenceTransformer(MODEL_NAME)
         self.collection = collection or os.getenv("QDRANT_COLLECTION", COLLECTION)
         self.qdrant = QdrantClient(
             url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
@@ -231,6 +234,7 @@ class HybridRetriever:
 
     def close(self) -> None:
         self.neo4j.close()
+        self.qdrant.close()
 
     def vector_search(self, query: str, top_k: int = 8) -> list[Evidence]:
         """Top-k Dieu: parts of one Dieu count once, with their best score."""

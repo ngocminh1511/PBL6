@@ -11,7 +11,24 @@ python -m pip install -r requirements-appendix.txt
 python -m labor_rag.app.api
 ```
 
-Mở <http://127.0.0.1:8000>. Tài liệu API ở `/docs`. Danh sách, xem và tải file dùng catalog trên máy, hoạt động độc lập với chat. Chat khởi tạo dịch vụ cloud khi nhận câu hỏi đầu tiên; backend embedding lấy `QUERY_EMBEDDING_BACKEND` nếu có, tiếp theo là `EMBEDDING_BACKEND`.
+Mở <http://127.0.0.1:8000>. Tài liệu API ở `/docs`. Danh sách, xem và tải file dùng catalog trên máy. Ô **Kiểm tra truy hồi phụ lục** dùng `POST /api/retrieve`, không gọi LLM để viết lại câu hỏi, rerank hay tạo câu trả lời. Backend embedding lấy `QUERY_EMBEDDING_BACKEND` nếu có, tiếp theo là `EMBEDDING_BACKEND`. Với Modal, lượt đầu vẫn có thể phải đợi container và model khởi động.
+
+Kết quả kiểm tra có ba phần:
+
+1. **Qdrant tìm vector**: câu hỏi được embedding bằng model đã dùng khi index. Trả tối đa `top_k` chunk còn hiệu lực, giữ nguyên thứ tự và điểm tương đồng; nhiều chunk có thể thuộc cùng một điều/phụ lục.
+2. **Neo4j truy vấn ontology**: từ điều luật tìm được, đi qua tối đa hai cạnh `CITES_COMPONENT`/`IMPLEMENTS_COMPONENT` để tìm node `Appendix`. Có thể đi ngược cạnh để đối chiếu văn bản hướng dẫn, nhưng giao diện giữ đúng chiều cạnh lưu trong graph. Chỉ đi qua các node thành phần luật trong cùng dataset, không lan sang mọi phụ lục chỉ vì cùng văn bản. Các phụ lục tìm trực tiếp bằng vector cũng được đối chiếu quan hệ với điều luật. `CONTAINS` cho biết văn bản ban hành; `SOURCE_COMPONENT` liên kết file nguồn với phụ lục.
+3. **Qdrant lấy nội dung**: dùng các `appendix_id` vừa tìm được để lấy toàn bộ chunk phụ lục còn hiệu lực qua payload filter, không embedding lại tài liệu. Metadata và URL xem/tải lấy từ catalog local; nội dung chunk trong kết quả lấy từ Qdrant. Biểu mẫu không embedding nội dung nên có thể chỉ có metadata và file nguồn. Phụ lục chưa đủ điều kiện rà soát/hiệu lực chỉ hiện metadata.
+
+Giao diện hiển thị thời gian từng bước, Cypher với tham số, ID chunk, nội dung gốc, vị trí nguồn và JSON kết quả. Điểm vector đo độ tương đồng, không phải xác suất câu trả lời đúng. Khi Neo4j lỗi, kết quả vector vẫn được giữ và liên kết graph được báo chưa lấy được; không suy ra quan hệ từ JSONL thay thế.
+
+Ví dụ gọi trực tiếp từ PowerShell khi API đang chạy:
+
+```powershell
+$payload = @{ question = "công việc tổn hại đến sự phát triển thể lực là"; top_k = 8 } | ConvertTo-Json
+Invoke-RestMethod -Uri http://127.0.0.1:8000/api/retrieve -Method Post -ContentType "application/json; charset=utf-8" -Body ([System.Text.Encoding]::UTF8.GetBytes($payload)) | ConvertTo-Json -Depth 20
+```
+
+`/api/chat` vẫn là endpoint riêng cho luồng có LLM; giao diện kiểm tra truy hồi không gọi endpoint này.
 
 Notebook thu thập riêng: [appendix_collection.ipynb](../notebooks/appendix_collection.ipynb). Mở kernel mới và chạy toàn bộ cell an toàn với `ENABLE_NETWORK`, `RUN_SAMPLE`, `RUN_BATCH` mặc định `False`. Notebook không nạp DB hoặc gọi embedding. Bật các cờ cần thiết khi muốn tải thêm.
 

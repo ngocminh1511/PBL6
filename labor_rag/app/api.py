@@ -1,4 +1,4 @@
-"""Local appendix viewer and cloud-backed chat. Run: python -m labor_rag.app.api."""
+"""Appendix viewer, retrieval inspection and chat. Run: python -m labor_rag.app.api."""
 from __future__ import annotations
 
 import os
@@ -6,7 +6,9 @@ import threading
 import uuid
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from hashlib import sha256
 from pathlib import Path
+from time import perf_counter
 from urllib.parse import quote
 
 from dotenv import load_dotenv
@@ -28,10 +30,16 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(default=None, max_length=80, pattern=r"^[a-zA-Z0-9_-]+$")
 
 
-def create_app(catalog: AppendixCatalog | None = None, chat_factory=None, storage_factory=None) -> FastAPI:
+class RetrievalRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=4000)
+    top_k: int = Field(default=8, ge=1, le=20)
+
+
+def create_app(catalog: AppendixCatalog | None = None, chat_factory=None, storage_factory=None, retrieval_factory=None) -> FastAPI:
     catalog = catalog or AppendixCatalog()
     chats, lock = {}, threading.Lock()
     storage=None
+    inspector, retrieval_lock = None, threading.Lock()
 
     def storage_client():
         nonlocal storage
@@ -45,6 +53,8 @@ def create_app(catalog: AppendixCatalog | None = None, chat_factory=None, storag
         yield
         for chat in chats.values():
             chat.close()
+        if inspector is not None:
+            inspector.close()
         if storage is not None:
             storage.close()
 
@@ -115,6 +125,28 @@ def create_app(catalog: AppendixCatalog | None = None, chat_factory=None, storag
                             filename=artifact["file_name"],content_disposition_type="inline" if inline else "attachment",
                             headers={"X-Content-Type-Options":"nosniff","Content-Security-Policy":"sandbox",
                                      "X-Storage-Backend":"local-fallback" if remote else "local"})
+
+    @app.post("/api/retrieve")
+    def retrieve(body: RetrievalRequest):
+        nonlocal inspector
+        question = body.question.strip()
+        if not question:
+            raise HTTPException(422, "Câu hỏi không được để trống.")
+        before = perf_counter()
+        from labor_rag.retrieval.inspect import RetrievalInspector, RetrievalStageError
+        with retrieval_lock:
+            try:
+                if inspector is None:
+                    inspector = retrieval_factory() if retrieval_factory else RetrievalInspector(catalog)
+                initialization_ms = round((perf_counter() - before) * 1000, 2)
+                result = inspector.inspect(question, top_k=body.top_k)
+            except RetrievalStageError as exc:
+                raise HTTPException(503, f"Bước {exc.stage} chưa hoàn tất ({exc.error_type}).") from None
+            except Exception as exc:
+                raise HTTPException(503, f"Truy hồi chưa hoàn tất ({type(exc).__name__}).") from None
+        result["timings_ms"]["initialization"] = initialization_ms
+        result["timings_ms"]["total"] += initialization_ms
+        return result
 
     @app.post("/api/chat")
     def chat(body: ChatRequest):
@@ -194,7 +226,11 @@ def create_app(catalog: AppendixCatalog | None = None, chat_factory=None, storag
 
     @app.get("/",include_in_schema=False)
     def home():
-        return FileResponse(STATIC/"index.html")
+        html = (STATIC / "index.html").read_text(encoding="utf-8")
+        for name in ["app.js", "style.css"]:
+            version = sha256((STATIC / name).read_bytes()).hexdigest()[:12]
+            html = html.replace(f"/static/{name}", f"/static/{name}?v={version}")
+        return HTMLResponse(html, headers={"Cache-Control": "no-store"})
 
     return app
 

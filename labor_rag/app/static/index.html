@@ -7,7 +7,7 @@
   <script src="/static/app.js" defer></script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">§</span><span>Pháp luật lao động<small>Không gian kiểm thử phụ lục</small></span></a><span class="local-badge"><i></i> File lưu trên máy</span></header>
+<header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">§</span><span>Pháp luật lao động<small>Không gian kiểm thử phụ lục</small></span></a><span class="local-badge"><i></i><span id="storage-label">File lưu trên máy</span></span></header>
 <main>
   <section class="intro"><div><p class="eyebrow">DỮ LIỆU BỔ SUNG PHÁP ĐIỂN</p><h1>Tra cứu phụ lục. Mở đúng nguồn.</h1><p>Tìm danh mục, quy trình và biểu mẫu theo văn bản ban hành.</p></div><button id="health-probe" class="secondary">Kiểm tra kết nối</button></section>
   <section id="health" class="health" aria-live="polite">Đang đọc dữ liệu…</section>
@@ -21,7 +21,7 @@
     </div>
     <div class="viewer panel"><div class="panel-heading"><h2>Nội dung &amp; nguồn</h2><a id="open-source" target="_blank" rel="noopener" hidden>Mở nguồn ↗</a></div><div id="preview-empty" class="preview-empty"><div aria-hidden="true">§</div><h3>Chọn một phụ lục để xem</h3><p>Bảng và đoạn được trích dẫn sẽ xuất hiện tại đây.</p></div><div id="preview" hidden><div class="preview-meta"><p id="preview-doc" class="eyebrow"></p><h3 id="preview-title"></h3><p id="preview-status"></p><div id="related" class="related"></div><div id="downloads" class="downloads"></div></div><iframe id="frame" title="Nội dung phụ lục" sandbox="allow-scripts"></iframe></div></div>
   </section>
-  <section class="chat panel"><div class="panel-heading"><div><h2>Hỏi đáp cùng nguồn</h2><p>Câu trả lời sử dụng bằng chứng đã truy hồi. Mở trích dẫn để đối chiếu và tải file.</p></div><span class="small-label">Neo4j · Qdrant · Modal · LLM</span></div><div id="messages" class="messages" aria-live="polite"><p class="chat-hint">Ví dụ: Người từ đủ 13 đến chưa đủ 15 tuổi được làm những công việc nào?</p></div><form id="chat-form"><label class="sr-only" for="question">Câu hỏi pháp luật</label><textarea id="question" rows="2" maxlength="4000" placeholder="Nhập câu hỏi về phụ lục hoặc biểu mẫu…" required></textarea><button id="send" type="submit">Gửi câu hỏi <span aria-hidden="true">↗</span></button></form></section>
+  <section class="chat panel"><div class="panel-heading"><div><h2>Kiểm tra truy hồi phụ lục</h2><p>Xem kết quả Qdrant, các liên kết ontology trong Neo4j và nội dung phụ lục lấy được.</p></div><span class="small-label">Chế độ không dùng LLM</span></div><div id="messages" class="messages" aria-live="polite"><p class="chat-hint">Luồng kiểm tra: câu hỏi → embedding → Qdrant tìm đoạn gần nghĩa → Neo4j tìm liên kết điều–phụ lục → Qdrant lấy các chunk phụ lục. Ví dụ: công việc tổn hại đến sự phát triển thể lực là</p></div><form id="retrieval-form"><label class="sr-only" for="question">Câu hỏi cần truy hồi</label><textarea id="question" rows="2" maxlength="4000" placeholder="Nhập câu hỏi để xem dữ liệu truy hồi gốc…" required></textarea><button id="send" type="submit">Truy hồi dữ liệu <span aria-hidden="true">↗</span></button></form></section>
 </main>
 <footer>Phụ lục được thu thập bổ sung từ nguồn văn bản. File nguồn có thể chứa toàn văn và nhiều phụ lục. <a href="/docs" target="_blank" rel="noopener">Tài liệu API ↗</a></footer>
 </body></html>
