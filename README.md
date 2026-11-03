@@ -31,8 +31,7 @@ PBL6/
 ├── notebooks/              # Phân tích dataset, benchmark embedding
 ├── docs/                   # SYSTEM.md (cách hệ thống hoạt động); references/ (paper, slide – không lên git)
 ├── docker-compose.yml      # Neo4j + Qdrant
-├── requirements.txt
-├── requirements-ocr.txt    # phụ thuộc riêng của labor_rag/ocr (xem mục OCR)
+├── requirements.txt        # mọi thư viện; OCR cần cài thêm vietocr, torchvision (xem mục OCR)
 └── .env.example
 ```
 
@@ -81,7 +80,7 @@ python -m labor_rag.ingest.embed_and_index
 
 PDF (văn bản gốc hoặc VBHN, kể cả bản scan) được OCR rồi chuyển thành chunk v5 cùng định danh với Pháp điển,
 sau đó gộp vào collection đang có: với mỗi Điều, bản có `version_date` mới hơn được giữ
-(chi tiết: [docs/SYSTEM.md](docs/SYSTEM.md), mục 4.7 và 5). Cần `requirements-ocr.txt` và
+(chi tiết: [docs/SYSTEM.md](docs/SYSTEM.md), mục 4.7 và 5). Cần các gói OCR (mục OCR) và
 `data/processed/lao_dong_v5` đã sinh (để tra `mapc`).
 
 ```powershell
@@ -186,7 +185,6 @@ giữa từ để không bị VietOCR bóp ngang (ảnh đầu vào bị giới 
 Cài đặt (một lần, sau `requirements.txt`):
 
 ```powershell
-pip install -r requirements-ocr.txt
 pip install vietocr==0.3.13 --no-deps
 pip install torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu132   # cùng bản build với torch
 ```

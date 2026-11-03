@@ -219,7 +219,7 @@ Nội dung: {text}
 
 ## 5. Nạp PDF (OCR)
 
-Code: `labor_rag/ocr/` (VietOCR, `requirements-ocr.txt`), `labor_rag/ingest/pdf_to_chunks.py`, `pdf_abox.py`,
+Code: `labor_rag/ocr/` (VietOCR; cài thêm `vietocr`, `torchvision` theo đầu `requirements.txt`), `labor_rag/ingest/pdf_to_chunks.py`, `pdf_abox.py`,
 `amending.py`. Đầu vào là cây `LegalDocument` của OCR.
 
 ```powershell
