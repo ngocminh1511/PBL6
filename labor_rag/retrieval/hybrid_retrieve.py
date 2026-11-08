@@ -5,7 +5,7 @@ hit's khoan refer to in their text, e.g. "theo quy định tại khoản 3 Đi�
 của Bộ luật Lao động": only that khoan's text is added, not the whole Dieu). Corresponds to the "Vector
 Retrieval + Graph Retrieval -> Hybrid Retrieval" stage of the pipeline.
 
-Chunks follow schema v5 (docs/structural_jsonl.md): a long Dieu is stored as
+Chunks follow schema v5 (docs/SYSTEM.md, section 4): a long Dieu is stored as
 parts "<doc>:d35:p1", ":p2", ...; vector hits are grouped per Dieu and only
 provisions in force today are searched.
 
@@ -15,7 +15,7 @@ AmendmentEvent -[:AMENDING_COMPONENT]-> the amending Dieu or khoan) dated
 after the Dieu's version_date, i.e. not consolidated into its text yet. Their
 chunks are attached as Evidence.amendments, so they stay with the Dieu
 through reranking and the prompt can put them first
-(docs/structural_jsonl.md, section 10).
+(docs/SYSTEM.md, sections 6 and 9).
 """
 from __future__ import annotations
 
@@ -26,7 +26,6 @@ from datetime import date
 from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
 from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCondition, MatchAny, MatchValue, PayloadField
-from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 from labor_rag.ingest.chunk_schema import article_id, citation, join_parts, make_chunk_id, part_number
@@ -59,6 +58,13 @@ class Evidence:
     version_date: str | None = None
     amendments: list["Evidence"] = field(default_factory=list)  # parts that amend this Dieu after version_date
     change: str | None = None  # on an amendment: "sửa đổi, bổ sung khoản 2"
+    chunk_type: str = "article"
+    appendix_id: str | None = None
+    appendix_number: str | None = None
+    document_number: str | None = None
+    artifact_ids: list[str] = field(default_factory=list)
+    locator: dict = field(default_factory=dict)
+    source_url: str | None = None
 
     @property
     def citation(self) -> str:
@@ -79,6 +85,13 @@ class Evidence:
             meta_khoan=payload.get("meta_khoan"),
             meta_de_muc=payload.get("meta_de_muc"),
             version_date=payload.get("version_date"),
+            chunk_type=payload.get("chunk_type", "article"),
+            appendix_id=payload.get("appendix_id"),
+            appendix_number=payload.get("appendix_number"),
+            document_number=payload.get("document_number"),
+            artifact_ids=payload.get("artifact_ids", []),
+            locator=payload.get("locator", {}),
+            source_url=payload.get("source_url"),
         )
 
 
@@ -198,17 +211,37 @@ def in_force(today: date | None = None) -> Filter:
     )
 
 
+class ModalQueryEncoder:
+    def encode(self, query: str, normalize_embeddings: bool = True):
+        from labor_rag.ingest.embed_and_index import embed_modal
+        return next(embed_modal([query], MODEL_NAME, 32768, 1))[1][0]
+
+
 class HybridRetriever:
-    def __init__(self, collection: str | None = None) -> None:
-        self.model = SentenceTransformer(MODEL_NAME)
-        self.collection = collection or os.getenv("QDRANT_COLLECTION", COLLECTION)
-        self.qdrant = QdrantClient(
-            url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None, timeout=int(os.getenv("QDRANT_TIMEOUT", "60"))
-        )
-        self.neo4j = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
+    def __init__(self, collection: str | None = None, *, embedding_backend: str | None = None,
+                 settings=None, model=None) -> None:
+        from labor_rag.settings import Settings
+        from labor_rag.services.embedding import EmbeddingProvider
+        self.settings = settings or Settings()
+        config = self.settings
+        if not config.QDRANT_URL or not config.NEO4J_URI:
+            raise ValueError("Configure QDRANT_URL and NEO4J_URI before retrieval.")
+        self.database = config.NEO4J_DATABASE
+        self.dataset_id = config.DATASET_ID
+        self.model_name = config.EMBEDDING_MODEL
+        self.backend = embedding_backend or config.query_backend
+        self.model = model or EmbeddingProvider(config, backend=self.backend)
+        self.collection = collection or config.QDRANT_COLLECTION
+        self.qdrant = QdrantClient(url=config.QDRANT_URL, api_key=config.QDRANT_API_KEY or None,
+                                   timeout=config.QDRANT_TIMEOUT)
+        self.neo4j = GraphDatabase.driver(config.NEO4J_URI,
+            auth=(config.NEO4J_USER, config.NEO4J_PASSWORD), connection_timeout=8,
+            max_transaction_retry_time=2)
+        self.graph_warning: str | None = None
 
     def close(self) -> None:
         self.neo4j.close()
+        self.qdrant.close()
 
     def vector_search(self, query: str, top_k: int = 8) -> list[Evidence]:
         """Top-k Dieu: parts of one Dieu count once, with their best score."""
@@ -235,12 +268,12 @@ class HybridRetriever:
         RETURN DISTINCT b.id AS mapc, b.ten AS ten
         LIMIT $limit
         """
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
             rows = session.run(
                 query,
                 mapcs=mapcs,
                 limit=limit_per_node * len(mapcs),
-                dataset_id=DATASET_ID,
+                dataset_id=getattr(self, "dataset_id", DATASET_ID),
             )
             return [
                 Evidence(
@@ -300,8 +333,8 @@ class HybridRetriever:
         ]
         if not keys:
             return []
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
-            rows = [dict(row) for row in session.run(REFERENCED_COMPONENTS, keys=keys, dataset_id=DATASET_ID)]
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
+            rows = [dict(row) for row in session.run(REFERENCED_COMPONENTS, keys=keys, dataset_id=getattr(self, "dataset_id", DATASET_ID))]
         document_ids = sorted({row["document_id"] for row in rows if row["document_id"]})
         payloads = self.in_force_payloads(document_ids) if document_ids else []
         found: list[Evidence] = []
@@ -327,8 +360,8 @@ class HybridRetriever:
         ]
         if not keys:
             return []
-        with self.neo4j.session(database=NEO4J_DATABASE) as session:
-            return [dict(row) for row in session.run(PENDING_AMENDMENTS, keys=keys, dataset_id=DATASET_ID)]
+        with self.neo4j.session(database=getattr(self, "database", NEO4J_DATABASE)) as session:
+            return [dict(row) for row in session.run(PENDING_AMENDMENTS, keys=keys, dataset_id=getattr(self, "dataset_id", DATASET_ID))]
 
     def attach_amendments(self, evidences: list[Evidence]) -> None:
         """Fill Evidence.amendments with the chunks (in force) of the pending amendments."""
@@ -351,10 +384,15 @@ class HybridRetriever:
     def retrieve(self, query: str, top_k: int = 8, graph_limit_per_node: int = 3) -> list[Evidence]:
         vector_hits = self.vector_search(query, top_k=top_k)
         seed_mapcs = [e.mapc for e in vector_hits if e.mapc]
-        graph_hits = self.graph_expand(seed_mapcs, limit_per_node=graph_limit_per_node)
-        self.hydrate_from_qdrant(graph_hits)
-        # Khoan-level references first: they carry only the khoan cited.
-        reference_hits = self.reference_expand(vector_hits, limit_per_node=graph_limit_per_node)
+        from neo4j.exceptions import Neo4jError, ServiceUnavailable, SessionExpired
+        self.graph_warning = None
+        try:
+            graph_hits = self.graph_expand(seed_mapcs, limit_per_node=graph_limit_per_node) if seed_mapcs else []
+            self.hydrate_from_qdrant(graph_hits)
+            reference_hits = self.reference_expand(vector_hits, limit_per_node=graph_limit_per_node)
+        except (Neo4jError, ServiceUnavailable, SessionExpired) as exc:
+            self.graph_warning = f"Neo4j unavailable: {type(exc).__name__}; vector retrieval remains available."
+            graph_hits, reference_hits = [], []
 
         seen = {article_id(e.chunk_id) for e in vector_hits}
         merged = list(vector_hits)
@@ -362,7 +400,11 @@ class HybridRetriever:
             if e.text and article_id(e.chunk_id) not in seen:
                 merged.append(e)
                 seen.add(article_id(e.chunk_id))
-        self.attach_amendments(merged)
+        if not self.graph_warning:
+            try:
+                self.attach_amendments(merged)
+            except (Neo4jError, ServiceUnavailable, SessionExpired) as exc:
+                self.graph_warning = f"Amendment lookup unavailable: {type(exc).__name__}"
         return merged
 
 

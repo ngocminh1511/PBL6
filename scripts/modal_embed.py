@@ -49,9 +49,17 @@ class Embedder:
 
     @modal.enter()
     def load(self) -> None:
+        import os
         from sentence_transformers import SentenceTransformer
 
-        self.model = SentenceTransformer(self.model_name, device="cuda")
+        model_path = self.model_name
+        if "bge-m3-legal-vietnamese" in self.model_name or self.model_name in ("finetuned", "custom"):
+            model_path = "/cache/bge-m3-finetuned"
+        elif not os.path.exists(model_path) and os.path.exists(f"/cache/{model_path}"):
+            model_path = f"/cache/{model_path}"
+
+        print(f"Loading SentenceTransformer from: {model_path} on cuda...")
+        self.model = SentenceTransformer(model_path, device="cuda")
         hf_cache.commit()  # keep downloaded weights for the next cold start
 
     @modal.method()

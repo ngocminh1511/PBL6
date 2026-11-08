@@ -3,7 +3,7 @@
 A benchmark version is a test set frozen against one projection of the
 ontology (data/processed/<dataset_id>/).  The manifest records the sha256 of
 the files it was frozen on, so a run on changed data stops instead of mixing
-results across versions (docs/BENCHMARK.md, section 3).
+results across versions (docs/SYSTEM.md, section 10.1).
 
   labor_rag/evaluation/benchmarks/<dataset_id>/
     manifest.json             data hashes + one entry per frozen test set

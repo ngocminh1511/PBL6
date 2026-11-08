@@ -1,0 +1,70 @@
+{
+  "input": "data\\raw\\bophapdien\\linh_vuc\\lao_dong",
+  "files": [
+    {
+      "source_file": "an_toan_ve_sinh_lao_dong.html",
+      "bytes": 510572,
+      "sha256": "212499f81a9c5ba5488ee37df3fa350201aec1e9945fed9a4d7c3f26682e02a6",
+      "articles": 350,
+      "attachment_links": 2,
+      "articles_with_links": 2
+    },
+    {
+      "source_file": "giao_duc_nghe_nghiep.html",
+      "bytes": 618,
+      "sha256": "d2075b330f438ea8eee3e5c9254cd321483db309963b2df04d1ede09770d5dd5",
+      "articles": 0,
+      "attachment_links": 0,
+      "articles_with_links": 0
+    },
+    {
+      "source_file": "lao_dong.html",
+      "bytes": 1339458,
+      "sha256": "ee1d819f6c5650adbadbd7ac6306ad6c08630794987759ef118b87ee64376471",
+      "articles": 477,
+      "attachment_links": 39,
+      "articles_with_links": 32
+    },
+    {
+      "source_file": "nguoi_lao_dong_viet_nam_di_lam_viec_o_nuoc_ngoai_theo_hop_dong.html",
+      "bytes": 447749,
+      "sha256": "3d79e846a2d3e19f1eb485c6e71260f1a146438201c6512eb72dccfedfdf19ec",
+      "articles": 187,
+      "attachment_links": 31,
+      "articles_with_links": 31
+    },
+    {
+      "source_file": "viec_lam.html",
+      "bytes": 979386,
+      "sha256": "0d9a8ebacebb6fdc8d8a0f8d5981965f1cdeb7e6670a63941a411d9cbb82b2a7",
+      "articles": 393,
+      "attachment_links": 84,
+      "articles_with_links": 56
+    }
+  ],
+  "articles": 1407,
+  "attachment_links": 156,
+  "unique_attachment_urls": 156,
+  "articles_with_links": 121,
+  "attachment_documents": 32,
+  "extensions": {
+    ".doc": 110,
+    ".docx": 46
+  },
+  "attachment_owner_documents": 30,
+  "filename_groups": 91,
+  "filename_document_mismatches": 1,
+  "candidate_documents": 38,
+  "text_only_documents": 6,
+  "form_only_additional_documents": [
+    "28/2015/NĐ-CP"
+  ],
+  "numbered_appendices_detected": 88,
+  "documents_without_numbered_appendices": 18,
+  "excluded_reference_counts": {
+    "contract_appendix": 8,
+    "employer_internal_rules_appendix": 1,
+    "repeal_reference_only": 1,
+    "individual_benefit_decision_appendix": 1
+  }
+}

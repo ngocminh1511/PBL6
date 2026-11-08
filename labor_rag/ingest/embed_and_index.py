@@ -3,7 +3,7 @@ with a sentence-embedding model (bge-m3 by default) and upsert into Qdrant.
 
 Point ids are uuid5(chunk_id), so re-indexing a document overwrites its own
 points; the whole chunk is the payload, with indexes on the fields that
-retrieval filters on (docs/structural_jsonl.md, sections 5.3 and 6).
+retrieval filters on (docs/SYSTEM.md, sections 4.5 and 4.6).
 
 Qdrant is QDRANT_URL (+ QDRANT_API_KEY for Qdrant Cloud), read from .env;
 the default is the local qdrant container from docker-compose.yml.
@@ -60,7 +60,6 @@ from labor_rag.ingest.batching import DEFAULT_MAX_BATCH_TOKENS, length_batches
 from labor_rag.ingest.chunk_schema import point_id
 from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
-sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
 
 CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
@@ -81,6 +80,7 @@ MODAL_APP = "labor-rag-embed"
 
 
 PAYLOAD_INDEXES = {
+    "chunk_type": PayloadSchemaType.KEYWORD,
     "document_id": PayloadSchemaType.KEYWORD,
     "mapc": PayloadSchemaType.KEYWORD,
     "meta_dieu": PayloadSchemaType.KEYWORD,
@@ -215,6 +215,8 @@ def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict])
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
     parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="graph projection to read validity from")

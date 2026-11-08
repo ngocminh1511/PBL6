@@ -1,0 +1,2 @@
+# Run from the repository root; definitions live in pyproject.toml.
+-e .[api,rag,ocr]
