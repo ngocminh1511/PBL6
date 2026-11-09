@@ -37,20 +37,39 @@ class Corpus:
         owned = {n["id"]: n for n in self.nodes if n.get("document_id") == document_id}
         children = defaultdict(list)
         child_ids = set()
+        source_of = {}
         for edge in self.edges:
-            if edge["type"] == "CONTAINS" and edge["source"] in owned and edge["target"] in owned:
+            if edge["source"] not in owned or edge["target"] not in owned:
+                continue
+            if edge["type"] == "CONTAINS":
                 children[edge["source"]].append(edge["target"])
                 child_ids.add(edge["target"])
+            elif edge["type"] == "DERIVED_FROM" and owned[edge["source"]].get("label") == "Dieu":
+                source_of[edge["target"]] = edge["source"]
+        # A Dieu and the source article it derives from are one article: its khoan sit under it.
+        for article, dieu in source_of.items():
+            children[dieu].extend(children.pop(article, []))
+
+        def number_key(identity):
+            node = owned[identity]
+            return tuple((0, int(v), "") if str(v or "").isdigit() else (1, 0, str(v or ""))
+                         for v in (node.get("article_number"), node.get("clause_number"), node.get("point_number"))) + (identity,)
+
+        def title(node):
+            if node.get("label") == "SourceComponent" and (node.get("clause_number") or node.get("point_number")):
+                return (node.get("text") or "")[:90]
+            return node.get("ten") or node.get("article_number") or node["id"]
 
         def build(identity, visited):
             node = owned[identity]
             if identity in visited:
                 return None
-            return {"id": identity, "type": node.get("label", "component"),
-                "title": node.get("ten") or node.get("article_number") or identity,
+            return {"id": identity, "type": node.get("label", "component"), "title": title(node),
                 "text": node.get("text") or node.get("source_quote") or "",
-                "children": [item for key in sorted(set(children[identity]))
+                "article_number": node.get("article_number"), "clause_number": node.get("clause_number"),
+                "point_number": node.get("point_number"),
+                "children": [item for key in sorted(set(children[identity]), key=number_key)
                     if (item := build(key, visited | {identity})) is not None]}
-        roots = sorted(set(owned) - child_ids)
+        roots = sorted(set(owned) - child_ids - set(source_of), key=number_key)
         return {"id": document_id, "type": "document", "title": document["title"],
                 "children": [build(key, set()) for key in roots]}
