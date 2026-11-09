@@ -6,7 +6,6 @@ Layout:
   data/interim/               chu_de.json, de_muc.json, testset_cache/, ocr/ (OCR output)
   data/models/vietocr/        VietOCR config + weights, downloaded on first OCR run
   data/processed/lao_dong_v5/ JSONL projection of the Lao dong ABox, chunk schema v5 (tracked in git)
-  data/processed/lao_dong_v4/ previous projection (mapc as chunk_id), kept for comparison
   ontology/                   schema/, abox/, reports/
   labor_rag/evaluation/benchmarks/<dataset_id>/   frozen test sets per data version
 """
@@ -14,9 +13,11 @@ import os
 from pathlib import Path
 
 # Redirect Hugging Face cache to D: drive where there is plenty of disk space,
-# but only on machines that have one; elsewhere Hugging Face keeps its default cache.
+# but only on machines that have one; elsewhere keep cache inside project directory.
 if Path("D:/").exists():
     os.environ.setdefault("HF_HOME", r"D:\PBL6_v2\hf_cache")
+else:
+    os.environ.setdefault("HF_HOME", str(Path(__file__).resolve().parents[1] / "data/models/huggingface"))
 os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -26,8 +27,7 @@ RAW_DIR = DATA_DIR / "raw"
 BOPHAPDIEN_DIR = RAW_DIR / "bophapdien"
 INTERIM_DIR = DATA_DIR / "interim"
 PROCESSED_DIR = DATA_DIR / "processed"
-LAO_DONG_V4_DIR = PROCESSED_DIR / "lao_dong_v4"
-# Chunk schema v5: docs/structural_jsonl.md
+# Chunk schema v5: docs/SYSTEM.md, section 4
 LAO_DONG_DIR = PROCESSED_DIR / "lao_dong_v5"
 LAO_DONG_DATASET_ID = "lao_dong_v5"
 
@@ -44,10 +44,7 @@ VIETOCR_DIR = DATA_DIR / "models" / "vietocr"
 
 EVALUATION_DIR = ROOT_DIR / "labor_rag" / "evaluation"
 ANNOTATION_DIR = EVALUATION_DIR / "annotation"
-# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/BENCHMARK.md)
+# One frozen benchmark per data version: benchmarks/<dataset_id>/ (docs/SYSTEM.md, section 10)
 BENCHMARKS_DIR = EVALUATION_DIR / "benchmarks"
 RESULTS_DIR = EVALUATION_DIR / "results"
 TESTSET_CACHE_DIR = INTERIM_DIR / "testset_cache"
-
-FINETUNE_DIR = LAO_DONG_DIR / "finetune"
-FINETUNE_MODELS_DIR = DATA_DIR / "models" / "bge-m3-legal"

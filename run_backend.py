@@ -1,12 +1,4 @@
-import sys
-from pathlib import Path
-
-# Thêm thư mục gốc dự án (D:\PBL6_v2\PBL6) vào sys.path
-ROOT_DIR = Path(__file__).resolve().parent
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-
+"""Run the unified backend from the repository root."""
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("src.backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
-
+    uvicorn.run("src.backend.app.main:app", host="127.0.0.1", port=8000, reload=True)

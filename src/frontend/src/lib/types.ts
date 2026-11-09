@@ -27,7 +27,17 @@ export interface EvidenceItem {
   meta_khoan?: string;
   meta_de_muc?: string;
   citation: string;
-  amendments: AmendmentItem[];
+  amendments: EvidenceItem[];
+  version_date?: string;
+  change?: string;
+  chunk_type?: string;
+  appendix_id?: string;
+  appendix_number?: string;
+  document_number?: string;
+  artifact_ids?: string[];
+  locator?: Record<string, unknown>;
+  source_url?: string;
+  view_url?: string;
 }
 
 export interface StepQueryRewriteTrace {
@@ -63,6 +73,8 @@ export interface PipelineTrace {
   step2_hybrid_retrieval: StepRetrievalTrace;
   step3_rerank: StepRerankTrace;
   step4_verification: StepVerificationTrace;
+  timings_ms?: Record<string, number>;
+  config_version?: number;
 }
 
 export interface CitationCheckResult {
@@ -82,6 +94,8 @@ export interface ChatMessage {
   citation_check?: CitationCheckResult;
   execution_time_ms?: number;
   created_at: string;
+  attachments?: AppendixItem[];
+  warnings?: string[];
 }
 
 export interface ChatSession {
@@ -119,6 +133,7 @@ export interface DocumentRecord {
 }
 
 export interface IngestionTask {
+  result?: { document_ids: string[]; artifact_ids: string[]; warnings: string[]; reused_chunks?: number };
   id: string;
   document_id?: string;
   file_name: string;
@@ -135,10 +150,17 @@ export interface IngestionTask {
 export interface DocumentAST {
   document_id: string;
   title: string;
-  ast_tree: any;
+  ast_tree: ASTNode;
 }
 
 export interface AdminConfig {
+  config_version: number;
+  demo_mode: boolean;
+  dataset_id: string;
+  query_embedding_backend: 'local' | 'modal';
+  available_collections: Record<string, string>;
+  anthropic_model: string;
+  openai_model: string;
   embedding_model: string;
   embedding_backend: 'local' | 'modal';
   vector_db: string;
@@ -152,13 +174,98 @@ export interface AdminConfig {
 }
 
 export interface SystemStats {
-  total_documents: number;
-  total_chunks: number;
-  total_nodes: number;
-  total_edges: number;
+  total_documents: number | null;
+  total_chunks: number | null;
+  total_nodes: number | null;
+  total_edges: number | null;
   vector_db_status: string;
   graph_db_status: string;
   redis_status: string;
-  active_sessions_count: number;
+  active_sessions_count: number | null;
 }
 
+
+export interface FileReference {
+  artifact_id: string;
+  file_name: string;
+  format: string;
+  view_url: string;
+  download_url: string;
+  available?: boolean;
+}
+export interface AppendixItem {
+  appendix_id: string;
+  document_id: string;
+  document_number: string;
+  number: string;
+  title: string;
+  kind: string;
+  review_status: string;
+  effect_status?: string;
+  source_url?: string;
+  view_url: string;
+  text?: string;
+  files: FileReference[];
+  article_ids?: { document_id: string; article_number: string }[];
+}
+export interface AppendixList {
+  total: number;
+  items: AppendixItem[];
+  documents: { document_id: string; document: string; download_status: string; extraction_status: string; appendices: number }[];
+}
+export interface RetrievedChunk extends Omit<EvidenceItem, 'score'> {
+  score: number | null;
+  rank?: number;
+}
+export interface GraphNode {
+  id: string;
+  title?: string;
+  document_id?: string;
+  article_number?: string;
+  appendix_id?: string;
+  appendix_number?: string;
+}
+export interface GraphEdge { source: string; target: string; type: string }
+export interface GraphPath {
+  seed_chunk_id?: string;
+  appendix_id?: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+export interface GraphResponse {
+  status: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  warnings: string[];
+}
+export interface RetrievalResult {
+  mode: string;
+  llm_used: boolean;
+  question: string;
+  embedding: { model: string; backend: string; dimensions: number };
+  collection: string;
+  vector_hits: RetrievedChunk[];
+  graph: { status: string; paths: GraphPath[]; provenance: GraphPath[]; cypher: string; parameters: Record<string, unknown> };
+  appendices: (Partial<AppendixItem> & { appendix_id: string; chunks: RetrievedChunk[]; retrieved_via: string[]; eligible_for_retrieval: boolean })[];
+  appendix_fetch_status: string;
+  timings_ms: Record<string, number>;
+  warnings: string[];
+}
+export interface HealthResponse {
+  embedding?: { model: string; backend: string };
+  demo_mode: boolean;
+  config_version: number;
+  data: { documents: number; appendices: number; chunks: number; needs_review: number };
+  storage: { backend: string; r2: { connection: string }; r2_verified_files: number };
+  qdrant: { connection: string; status?: string };
+  neo4j: { connection: string; status?: string };
+  postgres: { connection: string };
+  redis: { connection: string };
+}
+export interface ASTNode {
+  id: string;
+  type: string;
+  title: string;
+  text?: string;
+  children?: ASTNode[];
+}

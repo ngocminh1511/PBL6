@@ -12,7 +12,7 @@ from labor_rag.retrieval.hybrid_retrieve import Evidence
 
 SYSTEM = (
     "Bạn là chuyên gia pháp luật lao động Việt Nam. Nhiệm vụ: chọn ra các điều luật "
-    "liên quan trực tiếp nhất để trả lời câu hỏi, xếp theo độ liên quan giảm dần."
+    "và phụ lục liên quan trực tiếp nhất để trả lời câu hỏi, xếp theo độ liên quan giảm dần."
 )
 
 

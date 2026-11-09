@@ -164,7 +164,7 @@
       "https://example.org/vn-legal/time#ReplacementEvent",
       "https://example.org/vn-legal/time#SigningEvent",
       "https://example.org/vn-legal/time#SuspensionEvent",
-      "nfcee808b5f62411998dd33b0aac62ce6b1"
+      "n0352b9fe6e474e09862d391b4ad0758eb1"
     ],
     "object_properties": [
       "https://example.org/vn-legal/authority#hasCompetenceRule",

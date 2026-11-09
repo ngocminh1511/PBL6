@@ -14,6 +14,7 @@ export const DocumentTable: React.FC = () => {
     setSelectedDomain,
     setUploadModalOpen,
     totalDocuments,
+    hasMore, nextCursor, fetchDocuments, isLoading,
   } = useDocumentStore();
 
   return (
@@ -67,23 +68,23 @@ export const DocumentTable: React.FC = () => {
                   : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
               }`}
             >
-              Lao động (24)
+              Lao động ({totalDocuments})
             </button>
             <button
-              onClick={() => setSelectedDomain('bhxh')}
+              disabled title="Lĩnh vực chưa có dữ liệu"
               className={`px-2.5 py-1 rounded font-label-statute text-label-statute transition-all ${
                 selectedDomain === 'bhxh'
                   ? 'bg-secondary text-on-secondary shadow-sm'
                   : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
               }`}
             >
-              Bảo hiểm xã hội (18)
+              BHXH (chưa nạp)
             </button>
           </div>
 
           <div className="flex items-center gap-1 font-label-statute text-label-statute text-on-surface-variant">
             <span>Loại VB:</span>
-            <select className="bg-surface-container text-on-surface px-2 py-1 rounded font-label-statute text-label-statute outline-none border border-outline-variant/30">
+            <select disabled title="Bộ lọc loại văn bản chưa được triển khai" className="bg-surface-container text-on-surface px-2 py-1 rounded font-label-statute text-label-statute outline-none border border-outline-variant/30">
               <option>Tất cả loại hình</option>
               <option>Bộ luật / Luật</option>
               <option>Nghị định</option>
@@ -110,12 +111,13 @@ export const DocumentTable: React.FC = () => {
               <tr className="bg-surface-container text-on-surface-variant font-label-statute text-label-statute uppercase tracking-wider text-[11px]">
                 <th className="py-2.5 px-space-md">Số hiệu / Tên văn bản</th>
                 <th className="py-2.5 px-space-sm text-center">Phân cấp Đỉnh (Nodes)</th>
-                <th className="py-2.5 px-space-sm text-center">Tham chiếu (REFERS_TO)</th>
+                <th className="py-2.5 px-space-sm text-center">Quan hệ (Edges)</th>
                 <th className="py-2.5 px-space-sm">Vector Nhúng</th>
                 <th className="py-2.5 px-space-md text-right">Trạng thái Cây</th>
               </tr>
             </thead>
             <tbody className="font-body-md text-body-md divide-y divide-outline-variant/20">
+              {!documents.length && <tr><td colSpan={5} className="p-space-lg text-center text-on-surface-variant">{isLoading ? 'Đang tải văn bản…' : 'Chưa có văn bản phù hợp.'}</td></tr>}
               {documents.map((doc) => {
                 const isSelected = doc.id === selectedDocId;
                 return (
@@ -149,7 +151,7 @@ export const DocumentTable: React.FC = () => {
                             )}
                           </div>
                           <span className="font-body-sm text-body-sm text-on-surface-variant truncate text-[11px]">
-                            Hiệu lực: {doc.effective_from_date || '01/01/2021'} • Lĩnh vực:{' '}
+                            Hiệu lực: {doc.effective_from_date || 'Chưa xác định'} • Lĩnh vực:{' '}
                             {doc.domain === 'lao_dong' ? 'Lao động' : doc.domain}
                           </span>
                         </div>
@@ -158,7 +160,7 @@ export const DocumentTable: React.FC = () => {
 
                     <td className="py-3 px-space-sm text-center">
                       <div className="font-metric-num text-metric-num text-on-surface">
-                        {doc.nodes_count || 817} Đỉnh AST
+                        {doc.nodes_count ?? 0} Đỉnh AST
                       </div>
                       <div className="font-label-statute text-label-statute text-outline text-[10px]">
                         Điều • Khoản • Điểm
@@ -167,17 +169,17 @@ export const DocumentTable: React.FC = () => {
 
                     <td className="py-3 px-space-sm text-center">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-metric-num text-label-code text-[11px]">
-                        {doc.edges_count || 142} Cạnh
+                        {doc.edges_count ?? 0} Cạnh
                       </span>
                     </td>
 
                     <td className="py-3 px-space-sm">
                       <div className="flex flex-col">
                         <span className="font-metric-num text-label-code text-on-surface text-[12px]">
-                          {doc.chunks_count || 412} Đoạn (Chunks)
+                          {doc.chunks_count ?? 0} Đoạn (Chunks)
                         </span>
                         <span className="font-label-statute text-label-statute text-outline text-[10px]">
-                          BAAI/bge-m3
+                          Chunk của văn bản
                         </span>
                       </div>
                     </td>
@@ -185,7 +187,7 @@ export const DocumentTable: React.FC = () => {
                     <td className="py-3 px-space-md text-right">
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container-lowest text-on-tertiary-container font-label-statute text-label-statute shadow-xs text-[11px]">
                         <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
-                        100% Phân giải
+                        {doc.status === 'completed' ? 'Đã lập chỉ mục' : 'Corpus có sẵn'}
                       </span>
                     </td>
                   </tr>
@@ -201,20 +203,9 @@ export const DocumentTable: React.FC = () => {
             Hiển thị danh mục văn bản số hóa (Phân trang con trỏ Cursor)
           </span>
           <div className="flex items-center gap-space-xs">
-            <button className="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface text-body-sm transition-colors text-[12px]">
-              Trước
-            </button>
-            <button className="px-2.5 py-1 rounded bg-secondary text-on-secondary font-metric-num text-body-sm text-[12px]">
-              1
-            </button>
-            <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-metric-num text-body-sm text-[12px]">
-              2
-            </button>
-            <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-metric-num text-body-sm text-[12px]">
-              3
-            </button>
-            <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high text-body-sm text-[12px]">
-              Sau
+            <button disabled={!hasMore || isLoading} onClick={() => fetchDocuments(nextCursor || undefined)}
+              className="px-3 py-1.5 rounded-lg bg-secondary text-on-secondary font-body-sm text-body-sm disabled:opacity-40">
+              {isLoading ? 'Đang tải…' : hasMore ? 'Tải thêm văn bản' : 'Đã hiển thị hết'}
             </button>
           </div>
         </div>

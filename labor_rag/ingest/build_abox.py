@@ -38,7 +38,6 @@ from labor_rag.ingest.chunk_schema import make_document_id
 from labor_rag.ingest.references import DocumentIndex, read_article, split_clauses
 from labor_rag.ingest.parse_demuc_html import iter_dieu, load_linh_vuc_index, parse_demuc_nodes
 
-sys.stdout.reconfigure(encoding="utf-8")
 
 VLC = Namespace("https://example.org/vn-legal/core#") # Namespace của TBox
 VLD = Namespace("https://example.org/vn-legal/document#")
@@ -619,6 +618,8 @@ def resolve_de_muc(args: argparse.Namespace) -> list[dict]:
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument("--de-muc", nargs="+", help="De muc codes (20.5) or ids")

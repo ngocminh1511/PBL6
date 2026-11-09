@@ -1,4 +1,4 @@
-"""Read what a newly loaded document changes in the others (docs/structural_jsonl.md, section 10).
+"""Read what a newly loaded document changes in the others (docs/SYSTEM.md, sections 5-6).
 
 An amending Dieu ("Điều 1. Sửa đổi, bổ sung một số điều của Nghị định số
 145/2020/NĐ-CP") lists one change per khoan:

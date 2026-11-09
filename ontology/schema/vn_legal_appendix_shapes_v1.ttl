@@ -1,0 +1,14 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vld: <https://example.org/vn-legal/document#> .
+@prefix vlp: <https://example.org/vn-legal/provenance#> .
+
+vld:CollectedAppendixShape a sh:NodeShape ; sh:targetSubjectsOf vld:appendixIdentifier ;
+    sh:property [ sh:path vld:locatedInDocument ; sh:minCount 1 ; sh:maxCount 1 ; sh:class vld:LegalDocument ] ;
+    sh:property [ sh:path vld:appendixIdentifier ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+    sh:property [ sh:path vld:appendixKind ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("reference"^^xsd:string "form"^^xsd:string "mixed"^^xsd:string "unknown"^^xsd:string) ] ;
+    sh:property [ sh:path vld:heading ; sh:minCount 1 ] .
+vlp:AppendixArtifactShape a sh:NodeShape ; sh:targetSubjectsOf vlp:artifactIdentifier ;
+    sh:property [ sh:path vlp:artifactIdentifier ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+    sh:property [ sh:path vlp:checksum ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern "^[0-9a-f]{64}$" ] ;
+    sh:property [ sh:path vlp:sourceComponent ; sh:minCount 1 ; sh:class vld:Appendix ] .

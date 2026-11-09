@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { ChatSession, ChatMessage, EvidenceItem, RetrievalMode } from '../lib/types';
-import { api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 
 interface ChatState {
   sessions: ChatSession[];
+  error: string | null;
   activeSessionId: string | null;
   messages: ChatMessage[];
   isLoading: boolean;
@@ -34,6 +35,7 @@ interface ChatState {
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
+  error: null,
   activeSessionId: null,
   messages: [],
   isLoading: false,
@@ -50,7 +52,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   selectedEvidences: [],
 
   fetchSessions: async (cursor) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const data = await api.listSessions(cursor);
       set((state) => ({
@@ -67,7 +69,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to fetch sessions:', e);
-      set({ isLoading: false });
+      set({ isLoading: false, error: errorMessage(e) });
     }
   },
 
@@ -86,13 +88,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }));
       return session.id;
     } catch (e) {
-      console.error('Failed to create session:', e);
+      set({ error: errorMessage(e) });
       return '';
     }
   },
 
   selectSession: async (sessionId: string) => {
-    set({ activeSessionId: sessionId, isLoading: true });
+    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedCitation: null, error: null });
     try {
       const data = await api.getSession(sessionId);
       set({
@@ -107,7 +109,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to select session:', e);
-      set({ isLoading: false });
+      set({ isLoading: false, error: errorMessage(e) });
     }
   },
 
@@ -127,6 +129,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({
       messages: [...messages, tempUserMsg],
       isSending: true,
+      error: null,
     });
 
     try {
@@ -152,7 +155,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       get().fetchSessions();
     } catch (e) {
       console.error('Failed to send message:', e);
-      set({ isSending: false });
+      set(state => ({ isSending: false, error: errorMessage(e), messages: state.messages.filter(message => message.id !== tempUserMsg.id) }));
     }
   },
 

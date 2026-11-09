@@ -26,6 +26,9 @@ export default function ChatPage() {
 
   const activeSession = sessions.find((s) => s.id === activeSessionId);
 
+  const error = useChatStore(state => state.error);
+  const evidenceCount = useChatStore(state => state.selectedEvidences.length);
+
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-row overflow-hidden bg-surface text-on-surface">
       {/* ==================== CỘT TRÁI: LEGAL CONTEXT & SESSIONS (280px) ==================== */}
@@ -38,10 +41,10 @@ export default function ChatPage() {
           <div className="flex items-center gap-space-sm min-w-0">
             <div className="w-2 h-2 rounded-full bg-secondary shrink-0"></div>
             <h1 className="font-headline-md text-headline-md text-on-surface truncate">
-              {activeSession ? activeSession.title : 'Đơn phương chấm dứt HĐLĐ không xác định thời hạn & Ngành đặc thù'}
+              {activeSession ? activeSession.title : 'Phiên hỏi đáp mới'}
             </h1>
             <span className="font-label-statute text-label-statute px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-mono shrink-0">
-              #VN-LEG-2026-88
+              {activeSessionId || 'Chưa tạo phiên'}
             </span>
           </div>
 
@@ -63,6 +66,7 @@ export default function ChatPage() {
           </div>
         </header>
 
+        {error && <p role="alert" className="p-3 bg-red-50 text-red-800 text-sm">{error}</p>}
         {/* Scrollable Multi-turn Message Stream */}
         <div className="flex-1 overflow-y-auto px-space-lg py-space-md flex flex-col gap-space-lg">
           {isLoading && messages.length === 0 ? (
@@ -151,7 +155,7 @@ export default function ChatPage() {
                 : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            Bằng chứng (4/6)
+            Bằng chứng ({evidenceCount})
           </button>
         </nav>
 

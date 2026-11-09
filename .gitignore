@@ -18,6 +18,8 @@ dist/
 .pnp.js
 
 # Local credentials and environment files
+.vscode/
+.env
 **/.env
 !.env.example
 
@@ -26,14 +28,23 @@ data/*
 !data/raw/
 !data/processed/
 data/processed/*
-!data/processed/lao_dong_v4/
+!data/processed/appendices_v1/
+data/raw/appendix/
 !data/processed/lao_dong_v5/
 !data/processed/lao_dong_v5/finetune/
+!data/finetune/ViLegalExpert
 
 # Reference papers/slides (large binaries)
 docs/references/
+# Downloaded access-check samples remain local; source URLs are in the reports.
+docs/reports/appendix_inventory/samples/
 
 # Local service/runtime state
 *.log
 .qdrant/
 .neo4j/
+
+# Editable installs and per-environment settings
+*.egg-info/
+**/.env.*
+!**/.env.example

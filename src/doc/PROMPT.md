@@ -1,3 +1,5 @@
+> Thiết kế tham khảo ban đầu. Xem `../../AGENTS.md` và `../../docs/SYSTEM.md` cho kiến trúc hiện tại.
+
 ## PROMPT for AI
 Hãy tạo cho tôi 1 web app cho hệ thống của tôi cho toàn pipeline hệ thống hỏi đáp luật pháp . Toàn bộ source code sẽ được lưu ở src/ .  
 1. Kiến trúc hệ thống 

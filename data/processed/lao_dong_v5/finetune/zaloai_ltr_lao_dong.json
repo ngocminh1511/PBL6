@@ -1,0 +1,1100 @@
+[
+  {
+    "question_id": "5a86cb1005b80737e3227fb2eae4f287",
+    "question": "trách_nhiệm cung_cấp thông_tin liên_quan đến tình_hình sử_dụng lao_động của giám_đốc doanh_nghiệp được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "26",
+        "title": "cung_cấp thông_tin thị_trường lao_động",
+        "text": "cơ_quan tổ_chức doanh_nghiệp và cá_nhân có trách_nhiệm cung_cấp chính_xác và kịp_thời thông_tin thị_trường lao_động theo quy_định của pháp_luật",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "26",
+        "chunk_id": "38-2013-qh13:d26",
+        "chunk_ids": [
+          "38-2013-qh13:d26"
+        ],
+        "mapc": "20.4.LQ.26",
+        "citation": "Điều 26 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "c695b358bda3d9fa441c6157a6b122f2",
+    "question": "đi làm 5 tháng được hưởng bao_nhiêu tháng trợ_cấp thất_nghiệp",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "50",
+        "title": "mức thời_gian thời_điểm hưởng trợ_cấp thất_nghiệp",
+        "text": "mức hưởng trợ_cấp thất_nghiệp hằng tháng bằng 00 mức bình_quân tiền_lương tháng đóng bảo_hiểm_thất_nghiệp của 00 tháng liền kề trước khi thất_nghiệp nhưng tối_đa không quá 00 lần mức lương cơ_sở đối_với người lao_động thuộc đối_tượng thực_hiện chế_độ tiền_lương do nhà_nước quy_định hoặc không quá 00 lần mức lương tối_thiểu vùng theo quy_định của bộ_luật lao_động đối_với người lao_động đóng bảo_hiểm_thất_nghiệp theo chế_độ tiền_lương do người sử_dụng lao_động quyết_định tại thời_điểm chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc thời_gian hưởng trợ_cấp thất_nghiệp được tính theo số tháng đóng bảo_hiểm_thất_nghiệp cứ đóng đủ 00 tháng đến đủ 00 tháng thì được hưởng 00 tháng trợ_cấp thất_nghiệp sau đó cứ đóng đủ thêm 00 tháng thì được hưởng thêm 00 tháng trợ_cấp thất_nghiệp nhưng tối_đa không quá 00 tháng thời_điểm hưởng trợ_cấp thất_nghiệp được tính từ ngày thứ 00 kể từ ngày nộp đủ hồ_sơ hưởng trợ_cấp thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "50",
+        "chunk_id": "38-2013-qh13:d50",
+        "chunk_ids": [
+          "38-2013-qh13:d50"
+        ],
+        "mapc": "20.4.LQ.50",
+        "citation": "Điều 50 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "53",
+        "title": "tạm dừng tiếp_tục chấm_dứt hưởng trợ_cấp thất_nghiệp",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp bị tạm dừng hưởng trợ_cấp thất_nghiệp khi không thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người lao_động bị tạm dừng hưởng trợ_cấp thất_nghiệp nếu vẫn còn thời_gian được hưởng theo quyết_định thì tiếp_tục hưởng trợ_cấp thất_nghiệp khi thực_hiện thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người đang hưởng trợ_cấp thất_nghiệp bị chấm_dứt hưởng trợ_cấp thất_nghiệp trong các trường_hợp sau đây hết thời_hạn hưởng trợ_cấp thất_nghiệp tìm được việc_làm thực_hiện nghĩa_vụ quân_sự nghĩa_vụ công_an hưởng lương hưu hằng tháng sau 00 lần từ_chối nhận việc_làm do trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp giới_thiệu mà không có_lý_do chính_đáng không thực_hiện thông_báo tìm_kiếm việc_làm hằng tháng của luật này trong 00 tháng liên_tục ra nước_ngoài để định_cư đi lao_động ở nước_ngoài theo hợp_đồng đi học_tập có thời_hạn từ đủ 00 tháng trở lên bị xử_phạt vi_phạm hành_chính về hành_vi vi_phạm_pháp_luật bảo_hiểm_thất_nghiệp chết chấp_hành_quyết_định áp_dụng biện_pháp đưa vào trường giáo_dưỡng cơ_sở giáo_dục bắt_buộc cơ_sở cai_nghiện bắt_buộc bị tòa_án tuyên_bố mất_tích bị tạm giam chấp_hành_hình_phạt tù người lao_động bị chấm_dứt hưởng trợ_cấp thất_nghiệp thuộc các trường_hợp quy_định và n được bảo_lưu thời_gian đóng bảo_hiểm_thất_nghiệp làm căn_cứ để tính thời_gian hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo khi đủ điều_kiện quy_định của luật này thời_gian bảo_lưu được tính bằng tổng_thời_gian đóng bảo_hiểm_thất_nghiệp trừ đi thời_gian đóng đã hưởng trợ_cấp thất_nghiệp theo nguyên_tắc mỗi tháng đã hưởng trợ_cấp thất_nghiệp tương_ứng 00 tháng đã đóng bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "53",
+        "chunk_id": "38-2013-qh13:d53",
+        "chunk_ids": [
+          "38-2013-qh13:d53"
+        ],
+        "mapc": "20.4.LQ.53",
+        "citation": "Điều 53 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "52",
+        "title": "thông_báo về việc tìm_kiếm việc_làm",
+        "text": "trong thời_gian hưởng trợ_cấp thất_nghiệp hằng tháng người lao_động phải trực_tiếp thông_báo với trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp về việc tìm_kiếm việc_làm trừ các trường_hợp sau đây người lao_động ốm_đau thai_sản tai_nạn có giấy xác_nhận của cơ_sở khám bệnh chữa bệnh có thẩm_quyền theo quy_định của pháp_luật về khám bệnh chữa bệnh trường_hợp bất_khả_kháng đối_với trường_hợp quy_định thì người lao_động có trách_nhiệm thông_báo cho trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp bộ lao_động thương_binh và xã_hội hướng_dẫn thực_hiện điều này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "52",
+        "chunk_id": "38-2013-qh13:d52",
+        "chunk_ids": [
+          "38-2013-qh13:d52"
+        ],
+        "mapc": "20.4.LQ.52",
+        "citation": "Điều 52 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "46",
+        "title": "hưởng trợ_cấp thất_nghiệp",
+        "text": "trong thời_hạn 00 tháng kể từ ngày chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc người lao_động nộp hồ_sơ hưởng trợ_cấp thất_nghiệp tại trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm thành_lập trong thời_hạn 00 ngày kể từ ngày trung_tâm dịch_vụ_việc_làm tiếp_nhận đủ hồ_sơ cơ_quan nhà_nước có thẩm_quyền ra quyết_định hưởng trợ_cấp thất_nghiệp trường_hợp không đủ điều_kiện để hưởng chế_độ trợ_cấp thất_nghiệp thì phải trả_lời bằng văn_bản cho người lao_động tổ_chức bảo_hiểm xã_hội thực_hiện việc chi_trả trợ_cấp thất_nghiệp cho người lao_động trong thời_hạn 00 ngày kể từ ngày nhận được quyết_định hưởng trợ_cấp thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "46",
+        "chunk_id": "38-2013-qh13:d46",
+        "chunk_ids": [
+          "38-2013-qh13:d46"
+        ],
+        "mapc": "20.4.LQ.46",
+        "citation": "Điều 46 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "e76ba1bc63f2c48cda7d4e1a400d5660",
+    "question": "đóng bhtn dưới 01 năm có được hưởng trợ_cấp thất_nghiệp không",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "49",
+        "title": "điều_kiện hưởng",
+        "text": "người lao_động quy_định của luật này đang đóng bảo_hiểm_thất_nghiệp được hưởng trợ_cấp thất_nghiệp khi có đủ các điều_kiện sau đây chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc trừ các trường_hợp sau đây người lao_động đơn_phương chấm_dứt hợp_đồng lao_động hợp_đồng làm_việc trái pháp_luật hưởng lương hưu trợ_cấp mất_sức lao_động hằng tháng đã đóng bảo_hiểm_thất_nghiệp từ đủ 00 tháng trở lên trong thời_gian 00 tháng trước khi chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc đối_với trường_hợp quy_định của luật này đã đóng bảo_hiểm_thất_nghiệp từ đủ 00 tháng trở lên trong thời_gian 00 tháng trước khi chấm_dứt hợp_đồng lao_động đối_với trường_hợp quy_định của luật này đã nộp hồ_sơ hưởng trợ_cấp thất_nghiệp tại trung_tâm dịch_vụ_việc_làm của luật này chưa tìm được việc_làm sau 00 ngày kể từ ngày nộp hồ_sơ hưởng bảo_hiểm_thất_nghiệp trừ các trường_hợp sau đây thực_hiện nghĩa_vụ quân_sự nghĩa_vụ công_an đi học_tập có thời_hạn từ đủ 00 tháng trở lên chấp_hành_quyết_định áp_dụng biện_pháp đưa vào trường giáo_dưỡng cơ_sở giáo_dục bắt_buộc cơ_sở cai_nghiện bắt_buộc bị tạm giam chấp_hành_hình_phạt tù ra nước_ngoài định_cư đi lao_động ở nước_ngoài theo hợp_đồng chết",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "49",
+        "chunk_id": "38-2013-qh13:d49",
+        "chunk_ids": [
+          "38-2013-qh13:d49"
+        ],
+        "mapc": "20.4.LQ.49",
+        "citation": "Điều 49 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "53",
+        "title": "tạm dừng tiếp_tục chấm_dứt hưởng trợ_cấp thất_nghiệp",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp bị tạm dừng hưởng trợ_cấp thất_nghiệp khi không thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người lao_động bị tạm dừng hưởng trợ_cấp thất_nghiệp nếu vẫn còn thời_gian được hưởng theo quyết_định thì tiếp_tục hưởng trợ_cấp thất_nghiệp khi thực_hiện thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người đang hưởng trợ_cấp thất_nghiệp bị chấm_dứt hưởng trợ_cấp thất_nghiệp trong các trường_hợp sau đây hết thời_hạn hưởng trợ_cấp thất_nghiệp tìm được việc_làm thực_hiện nghĩa_vụ quân_sự nghĩa_vụ công_an hưởng lương hưu hằng tháng sau 00 lần từ_chối nhận việc_làm do trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp giới_thiệu mà không có_lý_do chính_đáng không thực_hiện thông_báo tìm_kiếm việc_làm hằng tháng của luật này trong 00 tháng liên_tục ra nước_ngoài để định_cư đi lao_động ở nước_ngoài theo hợp_đồng đi học_tập có thời_hạn từ đủ 00 tháng trở lên bị xử_phạt vi_phạm hành_chính về hành_vi vi_phạm_pháp_luật bảo_hiểm_thất_nghiệp chết chấp_hành_quyết_định áp_dụng biện_pháp đưa vào trường giáo_dưỡng cơ_sở giáo_dục bắt_buộc cơ_sở cai_nghiện bắt_buộc bị tòa_án tuyên_bố mất_tích bị tạm giam chấp_hành_hình_phạt tù người lao_động bị chấm_dứt hưởng trợ_cấp thất_nghiệp thuộc các trường_hợp quy_định và n được bảo_lưu thời_gian đóng bảo_hiểm_thất_nghiệp làm căn_cứ để tính thời_gian hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo khi đủ điều_kiện quy_định của luật này thời_gian bảo_lưu được tính bằng tổng_thời_gian đóng bảo_hiểm_thất_nghiệp trừ đi thời_gian đóng đã hưởng trợ_cấp thất_nghiệp theo nguyên_tắc mỗi tháng đã hưởng trợ_cấp thất_nghiệp tương_ứng 00 tháng đã đóng bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "53",
+        "chunk_id": "38-2013-qh13:d53",
+        "chunk_ids": [
+          "38-2013-qh13:d53"
+        ],
+        "mapc": "20.4.LQ.53",
+        "citation": "Điều 53 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "50",
+        "title": "mức thời_gian thời_điểm hưởng trợ_cấp thất_nghiệp",
+        "text": "mức hưởng trợ_cấp thất_nghiệp hằng tháng bằng 00 mức bình_quân tiền_lương tháng đóng bảo_hiểm_thất_nghiệp của 00 tháng liền kề trước khi thất_nghiệp nhưng tối_đa không quá 00 lần mức lương cơ_sở đối_với người lao_động thuộc đối_tượng thực_hiện chế_độ tiền_lương do nhà_nước quy_định hoặc không quá 00 lần mức lương tối_thiểu vùng theo quy_định của bộ_luật lao_động đối_với người lao_động đóng bảo_hiểm_thất_nghiệp theo chế_độ tiền_lương do người sử_dụng lao_động quyết_định tại thời_điểm chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc thời_gian hưởng trợ_cấp thất_nghiệp được tính theo số tháng đóng bảo_hiểm_thất_nghiệp cứ đóng đủ 00 tháng đến đủ 00 tháng thì được hưởng 00 tháng trợ_cấp thất_nghiệp sau đó cứ đóng đủ thêm 00 tháng thì được hưởng thêm 00 tháng trợ_cấp thất_nghiệp nhưng tối_đa không quá 00 tháng thời_điểm hưởng trợ_cấp thất_nghiệp được tính từ ngày thứ 00 kể từ ngày nộp đủ hồ_sơ hưởng trợ_cấp thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "50",
+        "chunk_id": "38-2013-qh13:d50",
+        "chunk_ids": [
+          "38-2013-qh13:d50"
+        ],
+        "mapc": "20.4.LQ.50",
+        "citation": "Điều 50 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "45",
+        "title": "thời_gian đóng bảo_hiểm_thất_nghiệp",
+        "text": "thời_gian đóng bảo_hiểm_thất_nghiệp để xét hưởng bảo_hiểm_thất_nghiệp là tổng_các khoảng thời_gian đã đóng bảo_hiểm_thất_nghiệp liên_tục hoặc không liên_tục được cộng dồn từ khi bắt_đầu đóng bảo_hiểm_thất_nghiệp cho đến khi người lao_động chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc theo quy_định của pháp_luật mà chưa hưởng trợ_cấp thất_nghiệp sau khi chấm_dứt hưởng trợ_cấp thất_nghiệp thời_gian đóng bảo_hiểm_thất_nghiệp trước đó của người lao_động không được tính để hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo thời_gian đóng bảo_hiểm_thất_nghiệp cho lần hưởng bảo_hiểm_thất_nghiệp tiếp_theo được tính lại từ đầu trừ trường_hợp chấm_dứt hưởng trợ_cấp thất_nghiệp và n của luật này thời_gian người lao_động đóng bảo_hiểm_thất_nghiệp không được tính để hưởng trợ_cấp mất việc_làm hoặc trợ_cấp thôi_việc theo quy_định của pháp_luật về lao_động pháp_luật về viên_chức",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "45",
+        "chunk_id": "38-2013-qh13:d45",
+        "chunk_ids": [
+          "38-2013-qh13:d45"
+        ],
+        "mapc": "20.4.LQ.45",
+        "citation": "Điều 45 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "57",
+        "title": "mức đóng nguồn hình_thành và sử_dụng quỹ bảo_hiểm_thất_nghiệp",
+        "text": "mức đóng và trách_nhiệm đóng bảo_hiểm_thất_nghiệp được quy_định như sau người lao_động đóng bằng 0 tiền_lương tháng người sử_dụng lao_động đóng bằng 0 quỹ tiền_lương tháng của những người lao_động đang tham_gia_bảo_hiểm_thất_nghiệp nhà_nước hỗ_trợ tối_đa 0 quỹ tiền_lương tháng đóng bảo_hiểm_thất_nghiệp của những người lao_động đang tham_gia_bảo_hiểm_thất_nghiệp và do ngân_sách trung_ương bảo_đảm nguồn hình_thành quỹ bảo_hiểm_thất_nghiệp bao_gồm các khoản đóng và hỗ_trợ tiền sinh lời của hoạt_động đầu_tư từ quỹ nguồn thu hợp_pháp khác quỹ bảo_hiểm_thất_nghiệp được sử_dụng như sau chi_trả trợ_cấp thất_nghiệp hỗ_trợ đào_tạo bồi_dưỡng nâng cao_trình_độ kỹ_năng nghề để duy_trì việc_làm cho người lao_động hỗ_trợ học nghề hỗ_trợ tư_vấn giới_thiệu việc_làm đóng bảo_hiểm y_tế cho người hưởng trợ_cấp thất_nghiệp chi_phí quản_lý bảo_hiểm_thất_nghiệp thực_hiện theo quy_định của luật bảo_hiểm xã_hội đầu_tư để bảo_toàn và tăng_trưởng quỹ",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "57",
+        "chunk_id": "38-2013-qh13:d57",
+        "chunk_ids": [
+          "38-2013-qh13:d57"
+        ],
+        "mapc": "20.4.LQ.57",
+        "citation": "Điều 57 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "51",
+        "title": "bảo_hiểm y_tế",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp được hưởng chế_độ bảo_hiểm y_tế theo quy_định của pháp_luật về bảo_hiểm y_tế tổ_chức bảo_hiểm xã_hội đóng bảo_hiểm y_tế cho người đang hưởng trợ_cấp thất_nghiệp từ quỹ bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "51",
+        "chunk_id": "38-2013-qh13:d51",
+        "chunk_ids": [
+          "38-2013-qh13:d51"
+        ],
+        "mapc": "20.4.LQ.51",
+        "citation": "Điều 51 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "46",
+        "title": "hưởng trợ_cấp thất_nghiệp",
+        "text": "trong thời_hạn 00 tháng kể từ ngày chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc người lao_động nộp hồ_sơ hưởng trợ_cấp thất_nghiệp tại trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm thành_lập trong thời_hạn 00 ngày kể từ ngày trung_tâm dịch_vụ_việc_làm tiếp_nhận đủ hồ_sơ cơ_quan nhà_nước có thẩm_quyền ra quyết_định hưởng trợ_cấp thất_nghiệp trường_hợp không đủ điều_kiện để hưởng chế_độ trợ_cấp thất_nghiệp thì phải trả_lời bằng văn_bản cho người lao_động tổ_chức bảo_hiểm xã_hội thực_hiện việc chi_trả trợ_cấp thất_nghiệp cho người lao_động trong thời_hạn 00 ngày kể từ ngày nhận được quyết_định hưởng trợ_cấp thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "46",
+        "chunk_id": "38-2013-qh13:d46",
+        "chunk_ids": [
+          "38-2013-qh13:d46"
+        ],
+        "mapc": "20.4.LQ.46",
+        "citation": "Điều 46 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "41",
+        "title": "nguyên_tắc bảo_hiểm_thất_nghiệp",
+        "text": "bảo_đảm chia_sẻ rủi_ro giữa những người tham_gia_bảo_hiểm_thất_nghiệp mức đóng bảo_hiểm_thất_nghiệp được tính trên cơ_sở tiền_lương của người lao_động mức hưởng bảo_hiểm_thất_nghiệp được tính trên cơ_sở mức đóng thời_gian đóng bảo_hiểm_thất_nghiệp việc thực_hiện bảo_hiểm_thất_nghiệp phải đơn_giản dễ_dàng thuận_tiện bảo_đảm kịp_thời và đầy_đủ quyền_lợi của người tham_gia quỹ bảo_hiểm_thất_nghiệp được quản_lý tập_trung thống_nhất công_khai minh_bạch bảo_đảm an_toàn và được nhà_nước bảo_hộ",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "41",
+        "chunk_id": "38-2013-qh13:d41",
+        "chunk_ids": [
+          "38-2013-qh13:d41"
+        ],
+        "mapc": "20.4.LQ.41",
+        "citation": "Điều 41 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "62df949409f8a868d9808a9a10cce237",
+    "question": "trình_tự thủ_tục cấp giấy_phép cho doanh_nghiệp hoạt_động dịch_vụ_việc_làm được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "18",
+        "title": "trình_tự thủ_tục cấp giấy_phép",
+        "text": "doanh_nghiệp gửi 00 bộ hồ_sơ đến sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chính để đề_nghị cấp giấy_phép sau khi kiểm_tra đủ giấy_tờ quy_định sở lao_động thương_binh và xã_hội cấp giấy biên_nhận ghi rõ ngày tháng năm nhận hồ_sơ đề_nghị cấp giấy_phép trong thời_hạn 00 ngày làm_việc kể từ ngày nhận được hồ_sơ đảm_bảo theo quy_định cơ_quan nhà_nước có thẩm_quyền xem_xét cấp giấy_phép đối_với doanh_nghiệp trường_hợp không cấp giấy_phép thì có văn_bản trả_lời doanh_nghiệp và nêu rõ lý_do",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "18",
+        "chunk_id": "23-2021-nd-cp:d18",
+        "chunk_ids": [
+          "23-2021-nd-cp:d18"
+        ],
+        "mapc": "20.4.NĐ.6.18",
+        "citation": "Điều 18 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "1",
+        "title": "phạm_vi điều_chỉnh",
+        "text": "nghị_định này quy_định chi_tiết của luật việc_làm về trung_tâm dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm gồm điều_kiện trình_tự thủ_tục thẩm_quyền thành_lập tổ_chức lại giải_thể và tổ_chức hoạt_động của trung_tâm dịch_vụ_việc_làm điều_kiện trình_tự thủ_tục cấp gia_hạn cấp lại thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm hoạt_động của doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "1",
+        "chunk_id": "23-2021-nd-cp:d1",
+        "chunk_ids": [
+          "23-2021-nd-cp:d1"
+        ],
+        "mapc": "20.4.NĐ.6.1",
+        "citation": "Điều 1 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "35",
+        "title": "thẩm_quyền và trách_nhiệm của ủy_ban nhân_dân cấp tỉnh",
+        "text": "thực_hiện quản_lý nhà_nước về hoạt_động dịch_vụ_việc_làm tại địa_phương chủ_tịch ủy_ban nhân_dân cấp tỉnh quyết_định thành_lập tổ_chức lại giải_thể quy_định chức_năng nhiệm_vụ quyền_hạn và cơ_cấu tổ_chức của các trung_tâm dịch_vụ_việc_làm quy_định rà_soát sắp_xếp kiện_toàn các trung_tâm dịch_vụ_việc_làm trên địa_bàn đảm_bảo các tiêu_chuẩn điều_kiện và duy_trì trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm thành_lập để thực_hiện chính_sách việc_làm phát_triển thị_trường lao_động và bảo_hiểm_thất_nghiệp bố_trí kinh_phí từ ngân_sách nhà_nước cho trung_tâm dịch_vụ_việc_làm thuộc thẩm_quyền quản_lý theo quy_định của chính_phủ về cơ_chế tự_chủ tài_chính của đơn_vị sự_nghiệp quyết_định giao điều_chỉnh số_lượng người làm_việc hưởng lương từ ngân_sách nhà_nước đối_với trung_tâm tự bảo_đảm một phần chi thường_xuyên và trung_tâm do ngân_sách nhà_nước bảo_đảm chi thường_xuyên thuộc phạm_vi quản_lý trong trong tổng_số người làm_việc được hội_đồng nhân_dân cấp tỉnh phê_duyệt và số_lượng người làm_việc hưởng lương từ nguồn thu sự_nghiệp đối_với trung_tâm tự bảo_đảm một phần chi thường_xuyên tổ_chức cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm hoặc ủy quyền cho sở lao_động thương_binh và xã_hội cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm của doanh_nghiệp tuyên_truyền phổ_biến hướng_dẫn thanh_tra kiểm_tra giám_sát tình_hình thực_hiện pháp_luật về hoạt_động dịch_vụ_việc_làm trên địa_bàn công_bố doanh_nghiệp được cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm trên trang thông_tin điện_tử theo_dõi tổng_hợp và báo_cáo định_kỳ 00 tháng và hằng năm về tình_hình hoạt_động dịch_vụ_việc_làm trên địa_bàn quản_lý theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này gửi bộ lao_động thương_binh và xã_hội báo_cáo 00 tháng gửi trước ngày 00 và báo_cáo năm gửi trước ngày 00 năm báo_cáo thời_gian chốt số_liệu báo_cáo theo quy_định của chính_phủ quy_định về chế_độ báo_cáo của cơ_quan hành_chính nhà_nước",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "35",
+        "chunk_id": "23-2021-nd-cp:d35",
+        "chunk_ids": [
+          "23-2021-nd-cp:d35"
+        ],
+        "mapc": "20.4.NĐ.6.35",
+        "citation": "Điều 35 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "39",
+        "title": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "text": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm là doanh_nghiệp được thành_lập và hoạt_động theo quy_định của pháp_luật về doanh_nghiệp và phải có giấy_phép hoạt_động dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm cấp tỉnh cấp doanh_nghiệp được cấp giấy_phép hoạt_động dịch_vụ_việc_làm khi có đủ điều_kiện về cơ_sở vật_chất trang thiết_bị nhân_lực và tiền ký_quỹ doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thành_lập chi_nhánh hoạt_động dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thu phí theo quy_định của pháp_luật về phí lệ_phí chính_phủ quy_định chi_tiết điều này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "39",
+        "chunk_id": "38-2013-qh13:d39",
+        "chunk_ids": [
+          "38-2013-qh13:d39"
+        ],
+        "mapc": "20.4.LQ.39",
+        "citation": "Điều 39 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "60",
+        "title": "điều_khoản chuyển_tiếp",
+        "text": "doanh_nghiệp được cấp giấy_phép hoạt_động giới_thiệu việc_làm trước ngày luật này có hiệu_lực thi_hành thì được tiếp_tục hoạt_động dịch_vụ_việc_làm cho đến hết thời_hạn của giấy_phép đã được cấp trung_tâm giới_thiệu việc_làm được thành_lập trước ngày luật này có hiệu_lực thi_hành tiếp_tục hoạt_động dịch_vụ_việc_làm thì đổi tên thành trung_tâm dịch_vụ_việc_làm tổ_chức đánh_giá kỹ_năng nghề đã được cấp giấy chứng_nhận hoạt_động đánh_giá cấp chứng_chỉ kỹ_năng nghề quốc_gia trước ngày luật này có hiệu_lực thi_hành thì tiếp_tục hoạt_động cho đến hết thời_hạn của giấy chứng_nhận đã được cấp thời_gian người lao_động đã đóng bảo_hiểm_thất_nghiệp theo quy_định cửa luật bảo_hiểm xã_hội trước ngày luật này có hiệu_lực thi_hành mà chưa hưởng trợ_cấp thất_nghiệp được cộng để tính thời_gian đã đóng bảo_hiểm_thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "60",
+        "chunk_id": "38-2013-qh13:d60",
+        "chunk_ids": [
+          "38-2013-qh13:d60"
+        ],
+        "mapc": "20.4.LQ.60",
+        "citation": "Điều 60 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "29",
+        "title": "chi_nhánh của doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "text": "doanh_nghiệp có quyền được thành_lập chi_nhánh hoạt_động dịch_vụ_việc_làm trong nước theo quy_định của luật doanh_nghiệp và đáp_ứng điều_kiện quy_định trong thời_hạn 00 ngày làm_việc kể từ ngày quyết_định giao nhiệm_vụ cho chi_nhánh doanh_nghiệp phải thông_báo cho sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chính và sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chi_nhánh đối_với trường_hợp địa_điểm chi_nhánh khác tỉnh so với nơi doanh_nghiệp đã được cấp giấy_phép kèm theo giấy_tờ chứng_minh điều_kiện quy_định nghĩa_vụ của chi_nhánh hoạt_động dịch_vụ_việc_làm niêm_yết công_khai quyết_định của doanh_nghiệp giao nhiệm_vụ cho chi_nhánh hoạt_động dịch_vụ_việc_làm và bản_sao được chứng_thực_từ bản_chính giấy_phép hoạt_động dịch_vụ_việc_làm của doanh_nghiệp tại trụ_sở chi_nhánh báo_cáo sở lao_động thương_binh và xã_hội nơi đặt trụ_sở chi_nhánh định_kỳ 00 tháng hàng năm hoặc đột_xuất về kết_quả hoạt_động dịch_vụ_việc_làm của chi_nhánh theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này thời_hạn hoạt_động dịch_vụ_việc_làm của chi_nhánh không vượt quá thời_hạn giấy_phép của doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "29",
+        "chunk_id": "23-2021-nd-cp:d29",
+        "chunk_ids": [
+          "23-2021-nd-cp:d29"
+        ],
+        "mapc": "20.4.NĐ.6.29",
+        "citation": "Điều 29 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "16",
+        "title": "giấy_phép hoạt_động dịch_vụ_việc_làm",
+        "text": "nội_dung giấy_phép hoạt_động dịch_vụ_việc_làm theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này thời_hạn của giấy_phép được quy_định như sau thời_hạn giấy_phép tối_đa là 00 tháng giấy_phép được gia_hạn nhiều lần mỗi lần gia_hạn tối_đa là 00 tháng thời_hạn giấy_phép được cấp lại bằng thời_hạn còn lại của giấy_phép đã được cấp trước đó",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "16",
+        "chunk_id": "23-2021-nd-cp:d16",
+        "chunk_ids": [
+          "23-2021-nd-cp:d16"
+        ],
+        "mapc": "20.4.NĐ.6.16",
+        "citation": "Điều 16 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "a6290e79475810cbe8242999b21b070a",
+    "question": "có giới_hạn_mức hưởng trợ_cấp thất_nghiệp hàng tháng không",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "50",
+        "title": "mức thời_gian thời_điểm hưởng trợ_cấp thất_nghiệp",
+        "text": "mức hưởng trợ_cấp thất_nghiệp hằng tháng bằng 00 mức bình_quân tiền_lương tháng đóng bảo_hiểm_thất_nghiệp của 00 tháng liền kề trước khi thất_nghiệp nhưng tối_đa không quá 00 lần mức lương cơ_sở đối_với người lao_động thuộc đối_tượng thực_hiện chế_độ tiền_lương do nhà_nước quy_định hoặc không quá 00 lần mức lương tối_thiểu vùng theo quy_định của bộ_luật lao_động đối_với người lao_động đóng bảo_hiểm_thất_nghiệp theo chế_độ tiền_lương do người sử_dụng lao_động quyết_định tại thời_điểm chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc thời_gian hưởng trợ_cấp thất_nghiệp được tính theo số tháng đóng bảo_hiểm_thất_nghiệp cứ đóng đủ 00 tháng đến đủ 00 tháng thì được hưởng 00 tháng trợ_cấp thất_nghiệp sau đó cứ đóng đủ thêm 00 tháng thì được hưởng thêm 00 tháng trợ_cấp thất_nghiệp nhưng tối_đa không quá 00 tháng thời_điểm hưởng trợ_cấp thất_nghiệp được tính từ ngày thứ 00 kể từ ngày nộp đủ hồ_sơ hưởng trợ_cấp thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "50",
+        "chunk_id": "38-2013-qh13:d50",
+        "chunk_ids": [
+          "38-2013-qh13:d50"
+        ],
+        "mapc": "20.4.LQ.50",
+        "citation": "Điều 50 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "53",
+        "title": "tạm dừng tiếp_tục chấm_dứt hưởng trợ_cấp thất_nghiệp",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp bị tạm dừng hưởng trợ_cấp thất_nghiệp khi không thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người lao_động bị tạm dừng hưởng trợ_cấp thất_nghiệp nếu vẫn còn thời_gian được hưởng theo quyết_định thì tiếp_tục hưởng trợ_cấp thất_nghiệp khi thực_hiện thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người đang hưởng trợ_cấp thất_nghiệp bị chấm_dứt hưởng trợ_cấp thất_nghiệp trong các trường_hợp sau đây hết thời_hạn hưởng trợ_cấp thất_nghiệp tìm được việc_làm thực_hiện nghĩa_vụ quân_sự nghĩa_vụ công_an hưởng lương hưu hằng tháng sau 00 lần từ_chối nhận việc_làm do trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp giới_thiệu mà không có_lý_do chính_đáng không thực_hiện thông_báo tìm_kiếm việc_làm hằng tháng của luật này trong 00 tháng liên_tục ra nước_ngoài để định_cư đi lao_động ở nước_ngoài theo hợp_đồng đi học_tập có thời_hạn từ đủ 00 tháng trở lên bị xử_phạt vi_phạm hành_chính về hành_vi vi_phạm_pháp_luật bảo_hiểm_thất_nghiệp chết chấp_hành_quyết_định áp_dụng biện_pháp đưa vào trường giáo_dưỡng cơ_sở giáo_dục bắt_buộc cơ_sở cai_nghiện bắt_buộc bị tòa_án tuyên_bố mất_tích bị tạm giam chấp_hành_hình_phạt tù người lao_động bị chấm_dứt hưởng trợ_cấp thất_nghiệp thuộc các trường_hợp quy_định và n được bảo_lưu thời_gian đóng bảo_hiểm_thất_nghiệp làm căn_cứ để tính thời_gian hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo khi đủ điều_kiện quy_định của luật này thời_gian bảo_lưu được tính bằng tổng_thời_gian đóng bảo_hiểm_thất_nghiệp trừ đi thời_gian đóng đã hưởng trợ_cấp thất_nghiệp theo nguyên_tắc mỗi tháng đã hưởng trợ_cấp thất_nghiệp tương_ứng 00 tháng đã đóng bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "53",
+        "chunk_id": "38-2013-qh13:d53",
+        "chunk_ids": [
+          "38-2013-qh13:d53"
+        ],
+        "mapc": "20.4.LQ.53",
+        "citation": "Điều 53 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "46",
+        "title": "hưởng trợ_cấp thất_nghiệp",
+        "text": "trong thời_hạn 00 tháng kể từ ngày chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc người lao_động nộp hồ_sơ hưởng trợ_cấp thất_nghiệp tại trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm thành_lập trong thời_hạn 00 ngày kể từ ngày trung_tâm dịch_vụ_việc_làm tiếp_nhận đủ hồ_sơ cơ_quan nhà_nước có thẩm_quyền ra quyết_định hưởng trợ_cấp thất_nghiệp trường_hợp không đủ điều_kiện để hưởng chế_độ trợ_cấp thất_nghiệp thì phải trả_lời bằng văn_bản cho người lao_động tổ_chức bảo_hiểm xã_hội thực_hiện việc chi_trả trợ_cấp thất_nghiệp cho người lao_động trong thời_hạn 00 ngày kể từ ngày nhận được quyết_định hưởng trợ_cấp thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "46",
+        "chunk_id": "38-2013-qh13:d46",
+        "chunk_ids": [
+          "38-2013-qh13:d46"
+        ],
+        "mapc": "20.4.LQ.46",
+        "citation": "Điều 46 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "b95b669e9a2605c992188b90bdf9d8c7",
+    "question": "việc cải_thiện điều_kiện lao_động xây_dựng văn_hóa an_toàn lao_động được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "20",
+        "title": "cải_thiện điều_kiện lao_động xây_dựng văn_hóa an_toàn lao_động",
+        "text": "người sử_dụng lao_động phải thường_xuyên phối_hợp với ban chấp_hành công_đoàn cơ_sở để tổ_chức cho người lao_động tham_gia hoạt_động cải_thiện điều_kiện lao_động xây_dựng văn_hóa an_toàn lao_động tại nơi làm_việc khuyến_khích người sử_dụng lao_động áp_dụng các tiêu_chuẩn kỹ_thuật hệ_thống quản_lý tiên_tiến hiện_đại và áp_dụng công_nghệ tiên_tiến công_nghệ_cao công_nghệ thân_thiện với môi_trường vào hoạt_động_sản_xuất kinh_doanh nhằm cải_thiện điều_kiện lao_động bảo_đảm an_toàn vệ_sinh lao_động cho người lao_động",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "20",
+        "chunk_id": "84-2015-qh13:d20",
+        "chunk_ids": [
+          "84-2015-qh13:d20"
+        ],
+        "mapc": "20.5.LQ.20",
+        "citation": "Điều 20 Luật số 84/2015/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "10",
+        "title": "quyền trách_nhiệm của công_đoàn cơ_sở trong công_tác an_toàn vệ_sinh lao_động",
+        "text": "tham_gia với người sử_dụng lao_động xây_dựng và giám_sát việc thực_hiện kế_hoạch quy_định nội_quy quy_trình biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động cải_thiện điều_kiện lao_động đại_diện cho tập_thể người lao_động thương_lượng ký_kết và giám_sát việc thực_hiện điều_khoản về an_toàn vệ_sinh lao_động trong thỏa_ước lao_động tập_thể có trách_nhiệm giúp_đỡ người lao_động khiếu_nại khởi_kiện khi quyền lợi_ích hợp_pháp chính_đáng bị xâm_phạm đối_thoại với người sử_dụng lao_động để giải_quyết các vấn_đề liên_quan đến quyền nghĩa_vụ của người lao_động người sử_dụng lao_động về an_toàn vệ_sinh lao_động tham_gia phối_hợp với người sử_dụng lao_động tổ_chức kiểm_tra công_tác an_toàn vệ_sinh lao_động giám_sát và yêu_cầu người sử_dụng lao_động thực_hiện đúng các quy_định về an_toàn vệ_sinh lao_động tham_gia phối_hợp với người sử_dụng lao_động điều_tra tai_nạn lao_động và giám_sát việc giải_quyết chế_độ đào_tạo nghề và bố_trí công_việc cho người bị tai_nạn lao_động bệnh nghề_nghiệp kiến_nghị với người sử_dụng lao_động cơ_quan tổ_chức có thẩm_quyền thực_hiện các biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động khắc_phục hậu_quả sự_cố kỹ_thuật gây mất an_toàn vệ_sinh lao_động tai_nạn lao_động và xử_lý hành_vi vi_phạm_pháp_luật về an_toàn vệ_sinh lao_động tuyên_truyền vận_động người lao_động người sử_dụng lao_động thực_hiện tốt các quy_định của pháp_luật tiêu_chuẩn quy_chuẩn quy_trình biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động tại nơi làm_việc phối_hợp với người sử_dụng lao_động tổ_chức tập_huấn huấn_luyện an_toàn vệ_sinh lao_động cho cán_bộ công_đoàn và người lao_động yêu_cầu người có trách_nhiệm thực_hiện ngay biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động kể_cả trường_hợp phải tạm ngừng hoạt_động nếu cần_thiết khi phát_hiện nơi làm_việc có nguy_cơ gây nguy_hiểm đến sức_khỏe tính_mạng của người lao_động tham_gia đoàn điều_tra tai_nạn lao_động cấp cơ_sở của luật này tham_gia phối_hợp với người sử_dụng lao_động để ứng_cứu khắc_phục hậu_quả sự_cố kỹ_thuật gây mất an_toàn vệ_sinh lao_động tai_nạn lao_động trường_hợp người sử_dụng lao_động không thực_hiện nghĩa_vụ khai_báo của luật này thì công_đoàn cơ_sở có trách_nhiệm thông_báo ngay với cơ_quan quản_lý nhà_nước có thẩm_quyền của luật này để tiến_hành điều_tra phối_hợp với người sử_dụng lao_động tổ_chức các phong_trào thi_đua phong_trào quần_chúng làm công_tác an_toàn vệ_sinh lao_động và xây_dựng văn_hóa an_toàn lao_động tại nơi làm_việc quản_lý hướng_dẫn hoạt_động của mạng_lưới an_toàn vệ_sinh_viên những cơ_sở sản_xuất kinh_doanh chưa thành_lập_công_đoàn cơ_sở thì công_đoàn cấp trên trực_tiếp cơ_sở thực_hiện quyền trách_nhiệm quy_định tại điều này khi được người lao_động ở đó yêu_cầu",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "10",
+        "chunk_id": "84-2015-qh13:d10",
+        "chunk_ids": [
+          "84-2015-qh13:d10"
+        ],
+        "mapc": "20.5.LQ.10",
+        "citation": "Điều 10 Luật số 84/2015/QH13"
+      },
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "9",
+        "title": "quyền trách_nhiệm của tổ_chức công_đoàn trong công_tác an_toàn vệ_sinh lao_động",
+        "text": "tham_gia với cơ_quan nhà_nước xây_dựng chính_sách pháp_luật về an_toàn vệ_sinh lao_động kiến_nghị cơ_quan nhà_nước có thẩm_quyền xây_dựng sửa_đổi bổ_sung chính_sách pháp_luật có liên_quan đến quyền nghĩa_vụ của người lao_động về an_toàn vệ_sinh lao_động tham_gia phối_hợp với cơ_quan nhà_nước thanh_tra kiểm_tra giám_sát việc thực_hiện chính_sách pháp_luật về an_toàn vệ_sinh lao_động có liên_quan đến quyền nghĩa_vụ của người lao_động tham_gia xây_dựng hướng_dẫn thực_hiện giám_sát việc thực_hiện kế_hoạch quy_chế nội_quy và các biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động cải_thiện điều_kiện lao_động cho người lao_động tại nơi làm_việc tham_gia điều_tra tai_nạn lao_động theo quy_định của pháp_luật yêu_cầu cơ_quan tổ_chức doanh_nghiệp cá_nhân có trách_nhiệm thực_hiện ngay biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động thực_hiện các biện_pháp khắc_phục kể_cả trường_hợp phải tạm ngừng hoạt_động khi phát_hiện nơi làm_việc có yếu_tố có hại hoặc yếu_tố nguy_hiểm đến sức_khỏe tính_mạng của con_người trong quá_trình lao_động vận_động người lao_động chấp_hành quy_định nội_quy quy_trình biện_pháp_bảo_đảm an_toàn vệ_sinh lao_động đại_diện tập_thể người lao_động khởi_kiện khi quyền của tập_thể người lao_động về an_toàn vệ_sinh lao_động bị xâm_phạm đại_diện cho người lao_động khởi_kiện khi quyền của người lao_động về an_toàn vệ_sinh lao_động bị xâm_phạm và được người lao_động ủy quyền nghiên_cứu ứng_dụng khoa_học công_nghệ đào_tạo huấn_luyện về an_toàn vệ_sinh lao_động kiến_nghị các giải_pháp chăm_lo cải_thiện điều_kiện lao_động phòng_ngừa tai_nạn lao_động bệnh nghề_nghiệp cho người lao_động phối_hợp với cơ_quan nhà_nước tổ_chức phong_trào thi_đua về an_toàn vệ_sinh lao_động tổ_chức phong_trào quần_chúng làm công_tác an_toàn vệ_sinh lao_động tổ_chức và hướng_dẫn hoạt_động của mạng_lưới an_toàn vệ_sinh_viên khen_thưởng công_tác an_toàn vệ_sinh lao_động theo quy_định của tổng_liên_đoàn lao_động việt_nam",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "9",
+        "chunk_id": "84-2015-qh13:d9",
+        "chunk_ids": [
+          "84-2015-qh13:d9"
+        ],
+        "mapc": "20.5.LQ.9",
+        "citation": "Điều 9 Luật số 84/2015/QH13"
+      },
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "88",
+        "title": "hội_đồng quốc_gia về an_toàn vệ_sinh lao_động hội_đồng an_toàn vệ_sinh lao_động cấp tỉnh",
+        "text": "hội_đồng quốc_gia về an_toàn vệ_sinh lao_động là tổ_chức tư_vấn cho chính_phủ trong việc xây_dựng mới hoặc sửa_đổi bổ_sung chính_sách pháp_luật về an_toàn vệ_sinh lao_động hội_đồng do thủ_tướng chính_phủ thành_lập bao_gồm đại_diện bộ lao_động thương_binh và xã_hội bộ y_tế tổng_liên_đoàn lao_động việt_nam hội nông_dân việt_nam tổ_chức đại_diện người sử_dụng lao_động các bộ ngành có liên_quan và một_số chuyên_gia nhà khoa_học về lĩnh_vực an_toàn vệ_sinh lao_động hội_đồng an_toàn vệ_sinh lao_động cấp tỉnh là tổ_chức tư_vấn cho ủy_ban nhân_dân trong việc tổ_chức thực_hiện chính_sách pháp_luật về an_toàn vệ_sinh lao_động tại địa_phương hội_đồng do chủ_tịch ủy_ban nhân_dân cấp tỉnh_thành_lập bao_gồm đại_diện sở lao_động thương_binh và xã_hội sở y_tế liên_đoàn lao_động hội nông_dân một_số doanh_nghiệp cơ_quan tổ_chức và chuyên_gia nhà khoa_học về lĩnh_vực an_toàn vệ_sinh lao_động tại địa_phương hằng năm hội_đồng an_toàn vệ_sinh lao_động có trách_nhiệm tổ_chức đối_thoại nhằm chia_sẻ thông_tin tăng_cường sự hiểu_biết giữa người sử_dụng lao_động người lao_động tổ_chức công_đoàn tổ_chức đại_diện người sử_dụng lao_động và các cơ_quan nhà_nước để thúc_đẩy việc cải_thiện các điều_kiện làm_việc công_bằng an_toàn cho người lao_động nâng cao hiệu_quả xây_dựng thực_hiện chính_sách pháp_luật về an_toàn vệ_sinh lao_động chính_phủ quy_định chi_tiết việc thành_lập chức_năng nhiệm_vụ tổ_chức và hoạt_động của hội_đồng quốc_gia về an_toàn vệ_sinh lao_động và hội_đồng an_toàn vệ_sinh lao_động cấp tỉnh",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "88",
+        "chunk_id": "84-2015-qh13:d88",
+        "chunk_ids": [
+          "84-2015-qh13:d88"
+        ],
+        "mapc": "20.5.LQ.88",
+        "citation": "Điều 88 Luật số 84/2015/QH13"
+      },
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "11",
+        "title": "quyền trách_nhiệm của hội nông_dân việt_nam",
+        "text": "tham_gia với cơ_quan nhà_nước xây_dựng chính_sách pháp_luật về an_toàn vệ_sinh lao_động cho nông_dân kiến_nghị với cơ_quan nhà_nước có thẩm_quyền xây_dựng sửa_đổi bổ_sung chính_sách pháp_luật có liên_quan đến quyền nghĩa_vụ của người lao_động là nông_dân về an_toàn vệ_sinh lao_động tham_gia phối_hợp với cơ_quan nhà_nước trong việc thanh_tra kiểm_tra giám_sát việc thực_hiện chế_độ chính_sách pháp_luật về an_toàn vệ_sinh lao_động có liên_quan đến quyền và nghĩa_vụ của người lao_động là nông_dân tham_gia điều_tra tai_nạn lao_động khi người bị tai_nạn lao_động là nông_dân tham_gia hoạt_động tuyên_truyền huấn_luyện về an_toàn vệ_sinh lao_động cho nông_dân phối_hợp với cơ_quan nhà_nước trong việc chăm_lo cải_thiện điều_kiện lao_động phòng_ngừa tai_nạn lao_động và bệnh nghề_nghiệp cho nông_dân vận_động nông_dân tham_gia phong_trào bảo_đảm an_toàn vệ_sinh lao_động cho nông_dân theo quy_định của pháp_luật",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "11",
+        "chunk_id": "84-2015-qh13:d11",
+        "chunk_ids": [
+          "84-2015-qh13:d11"
+        ],
+        "mapc": "20.5.LQ.11",
+        "citation": "Điều 11 Luật số 84/2015/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "f7603bc13936c749e71cefac89b61411",
+    "question": "thông_báo về việc thành_lập trung_tâm dịch_vụ_việc_làm được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "5",
+        "title": "thông_báo về thành_lập tổ_chức lại giải_thể và hoạt_động trung_tâm dịch_vụ_việc_làm",
+        "text": "trong thời_hạn 00 ngày làm_việc kể từ ngày ký ban_hành_quyết_định về thành_lập tổ_chức lại giải_thể trung_tâm dịch_vụ_việc_làm cơ_quan ban_hành_quyết_định có trách_nhiệm gửi 00 bản tới bộ lao_động thương_binh và xã_hội để theo_dõi quản_lý đối_với trung_tâm dịch_vụ_việc_làm quy_định thì cơ_quan ban_hành_quyết_định có trách_nhiệm gửi thêm 00 bản quyết_định tới ủy_ban nhân_dân tỉnh thành_phố trực_thuộc trung_ương sau đây gọi chung là cấp tỉnh nơi trung_tâm dịch_vụ_việc_làm đặt trụ_sở trước 00 ngày làm_việc kể từ ngày bắt_đầu hoạt_động trung_tâm dịch_vụ_việc_làm có trách_nhiệm thông_báo bằng văn_bản tới sở lao_động thương_binh và xã_hội nơi trung_tâm dịch_vụ_việc_làm đặt trụ_sở và thông_tin công_khai trên phương_tiện thông_tin đại_chúng về quyết_định thành_lập tổ_chức lại địa_điểm trụ_sở số điện_thoại website của trung_tâm dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "5",
+        "chunk_id": "23-2021-nd-cp:d5",
+        "chunk_ids": [
+          "23-2021-nd-cp:d5"
+        ],
+        "mapc": "20.4.NĐ.6.5",
+        "citation": "Điều 5 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "37",
+        "title": "trung_tâm dịch_vụ_việc_làm",
+        "text": "trung_tâm dịch_vụ_việc_làm là đơn_vị sự_nghiệp công_lập bao_gồm trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước thành_lập trung_tâm dịch_vụ_việc_làm do tổ_chức chính_trị xã_hội thành_lập trung_tâm dịch_vụ_việc_làm được thành_lập phải phù_hợp với quy_hoạch do thủ_tướng chính_phủ_phê_duyệt và có đủ điều_kiện về cơ_sở vật_chất trang thiết_bị nhân_lực theo quy_định bộ_trưởng thủ_trưởng cơ_quan ngang bộ chủ_tịch ủy_ban nhân_dân tỉnh thành_phố trực_thuộc trung_ương sau đây gọi chung là cấp tỉnh quyết_định thành_lập trung_tâm dịch_vụ_việc_làm quy_định người đứng đầu tổ_chức chính_trị xã_hội cấp trung_ương quyết_định thành_lập trung_tâm dịch_vụ_việc_làm quy_định chính_phủ quy_định chi_tiết điều_kiện thành_lập tổ_chức và hoạt_động của trung_tâm dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "37",
+        "chunk_id": "38-2013-qh13:d37",
+        "chunk_ids": [
+          "38-2013-qh13:d37"
+        ],
+        "mapc": "20.4.LQ.37",
+        "citation": "Điều 37 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "3",
+        "title": "điều_kiện thành_lập tổ_chức lại và giải_thể",
+        "text": "điều_kiện thành_lập có mục_tiêu chức_năng nhiệm_vụ cung_cấp dịch_vụ sự_nghiệp công về việc_làm phù_hợp với quy_hoạch mạng_lưới trung_tâm dịch_vụ_việc_làm đã được cấp có thẩm_quyền phê_duyệt có trụ_sở làm_việc hoặc đề_án cấp đất xây_dựng trụ_sở làm_việc đã được cấp có thẩm_quyền phê_duyệt trường_hợp xây_dựng trụ_sở mới có trang thiết_bị để thực_hiện các nhiệm_vụ phù_hợp với tiêu_chuẩn định mức máy_móc thiết_bị chuyên_dùng do cấp có thẩm_quyền ban_hành có ít_nhất 00 người làm_việc là viên_chức cơ_quan có thẩm_quyền thành_lập đảm_bảo kinh_phí cho các hoạt_động dịch_vụ sự_nghiệp công về việc_làm theo quy_định của pháp_luật điều_kiện tổ_chức lại và giải_thể điều_kiện tổ_chức lại giải_thể trung_tâm dịch_vụ_việc_làm thực_hiện theo quy_định của chính_phủ về thành_lập tổ_chức lại giải_thể đơn_vị sự_nghiệp công_lập trung_tâm dịch_vụ_việc_làm được thành_lập mới tổ_chức lại phải thực_hiện phương_án về trụ_sở làm_việc trang thiết_bị và nhân_sự trong thời_hạn 00 ngày kể từ ngày có quyết_định thành_lập trường_hợp cần_thiết thành_lập mới trung_tâm dịch_vụ_việc_làm thì trung_tâm dịch_vụ_việc_làm phải tự đảm_bảo_toàn_bộ chi thường_xuyên và chi đầu_tư",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "3",
+        "chunk_id": "23-2021-nd-cp:d3",
+        "chunk_ids": [
+          "23-2021-nd-cp:d3"
+        ],
+        "mapc": "20.4.NĐ.6.3",
+        "citation": "Điều 3 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "60",
+        "title": "điều_khoản chuyển_tiếp",
+        "text": "doanh_nghiệp được cấp giấy_phép hoạt_động giới_thiệu việc_làm trước ngày luật này có hiệu_lực thi_hành thì được tiếp_tục hoạt_động dịch_vụ_việc_làm cho đến hết thời_hạn của giấy_phép đã được cấp trung_tâm giới_thiệu việc_làm được thành_lập trước ngày luật này có hiệu_lực thi_hành tiếp_tục hoạt_động dịch_vụ_việc_làm thì đổi tên thành trung_tâm dịch_vụ_việc_làm tổ_chức đánh_giá kỹ_năng nghề đã được cấp giấy chứng_nhận hoạt_động đánh_giá cấp chứng_chỉ kỹ_năng nghề quốc_gia trước ngày luật này có hiệu_lực thi_hành thì tiếp_tục hoạt_động cho đến hết thời_hạn của giấy chứng_nhận đã được cấp thời_gian người lao_động đã đóng bảo_hiểm_thất_nghiệp theo quy_định cửa luật bảo_hiểm xã_hội trước ngày luật này có hiệu_lực thi_hành mà chưa hưởng trợ_cấp thất_nghiệp được cộng để tính thời_gian đã đóng bảo_hiểm_thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "60",
+        "chunk_id": "38-2013-qh13:d60",
+        "chunk_ids": [
+          "38-2013-qh13:d60"
+        ],
+        "mapc": "20.4.LQ.60",
+        "citation": "Điều 60 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "6",
+        "title": "tên của trung_tâm dịch_vụ_việc_làm",
+        "text": "trung_tâm dịch_vụ_việc_làm là đơn_vị sự_nghiệp công_lập có tư_cách pháp_nhân con_dấu và tài_khoản riêng trung_tâm dịch_vụ_việc_làm có tên gọi bằng tiếng việt và tiếng nước_ngoài biểu_tượng riêng nếu có tên và biểu_tượng của trung_tâm dịch_vụ_việc_làm đáp_ứng các điều_kiện sau tên của trung_tâm dịch_vụ_việc_làm bao_gồm trung_tâm dịch_vụ_việc làm kèm theo tên địa_phương hoặc tên khác do cơ_quan quyết_định thành_lập đề_xuất không vi_phạm truyền_thống lịch_sử văn_hóa đạo_đức và thuần_phong mỹ_tục của dân_tộc không trùng_lắp hoặc gây nhầm_lẫn với tên hoặc biểu_tượng của đơn_vị khác đã được thành_lập trước đó",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "6",
+        "chunk_id": "23-2021-nd-cp:d6",
+        "chunk_ids": [
+          "23-2021-nd-cp:d6"
+        ],
+        "mapc": "20.4.NĐ.6.6",
+        "citation": "Điều 6 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "36",
+        "title": "quy_định chuyển_tiếp",
+        "text": "các doanh_nghiệp đã được cấp cấp lại gia_hạn giấy_phép trước ngày nghị_định này có hiệu_lực thi_hành thực_hiện như sau được tiếp_tục thực_hiện hoạt_động dịch_vụ_việc_làm cho đến khi giấy_phép hết hạn và không bị thu_hồi giấy_phép do không đảm_bảo điều_kiện nếu thuộc một trong các trường_hợp bị thu_hồi giấy_phép hoặc không đảm_bảo một trong các điều_kiện quy_định thì sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chính thực_hiện thu_hồi doanh_nghiệp đã nộp đủ hồ_sơ_cấp cấp lại gia_hạn giấy_phép và đảm_bảo các điều_kiện cấp giấy_phép theo quy_định tại ngày 00 của chính_phủ quy_định điều_kiện thủ_tục cấp giấy_phép hoạt_động dịch_vụ_việc_làm của doanh_nghiệp hoạt_động dịch_vụ_việc_làm sau đây viết tắt là ngày 00 của chính_phủ sửa_đổi bổ_sung các nghị_định liên_quan đến điều_kiện đầu_tư kinh_doanh và thủ_tục hành_chính thuộc phạm_vi quản_lý nhà_nước của bộ lao_động thương_binh và xã_hội sau đây viết tắt là trước ngày nghị_định này có hiệu_lực thì được cấp cấp lại gia_hạn theo quy_định tại và trung_tâm dịch_vụ_việc_làm thành_lập và hoạt_động theo quy_định tại ngày 00 của chính_phủ quy_định thành_lập và hoạt_động của trung_tâm dịch_vụ_việc_làm thì được tiếp_tục hoạt_động trường_hợp trung_tâm dịch_vụ_việc_làm không đảm_bảo điều_kiện quy_định thì phải bổ_sung đầy_đủ điều_kiện trong thời_hạn 00 tháng trường_hợp không bổ_sung đầy_đủ thì phải chấm_dứt hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "36",
+        "chunk_id": "23-2021-nd-cp:d36",
+        "chunk_ids": [
+          "23-2021-nd-cp:d36"
+        ],
+        "mapc": "20.4.NĐ.6.36",
+        "citation": "Điều 36 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "35",
+        "title": "thẩm_quyền và trách_nhiệm của ủy_ban nhân_dân cấp tỉnh",
+        "text": "thực_hiện quản_lý nhà_nước về hoạt_động dịch_vụ_việc_làm tại địa_phương chủ_tịch ủy_ban nhân_dân cấp tỉnh quyết_định thành_lập tổ_chức lại giải_thể quy_định chức_năng nhiệm_vụ quyền_hạn và cơ_cấu tổ_chức của các trung_tâm dịch_vụ_việc_làm quy_định rà_soát sắp_xếp kiện_toàn các trung_tâm dịch_vụ_việc_làm trên địa_bàn đảm_bảo các tiêu_chuẩn điều_kiện và duy_trì trung_tâm dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm thành_lập để thực_hiện chính_sách việc_làm phát_triển thị_trường lao_động và bảo_hiểm_thất_nghiệp bố_trí kinh_phí từ ngân_sách nhà_nước cho trung_tâm dịch_vụ_việc_làm thuộc thẩm_quyền quản_lý theo quy_định của chính_phủ về cơ_chế tự_chủ tài_chính của đơn_vị sự_nghiệp quyết_định giao điều_chỉnh số_lượng người làm_việc hưởng lương từ ngân_sách nhà_nước đối_với trung_tâm tự bảo_đảm một phần chi thường_xuyên và trung_tâm do ngân_sách nhà_nước bảo_đảm chi thường_xuyên thuộc phạm_vi quản_lý trong trong tổng_số người làm_việc được hội_đồng nhân_dân cấp tỉnh phê_duyệt và số_lượng người làm_việc hưởng lương từ nguồn thu sự_nghiệp đối_với trung_tâm tự bảo_đảm một phần chi thường_xuyên tổ_chức cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm hoặc ủy quyền cho sở lao_động thương_binh và xã_hội cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm của doanh_nghiệp tuyên_truyền phổ_biến hướng_dẫn thanh_tra kiểm_tra giám_sát tình_hình thực_hiện pháp_luật về hoạt_động dịch_vụ_việc_làm trên địa_bàn công_bố doanh_nghiệp được cấp gia_hạn cấp lại hoặc thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm trên trang thông_tin điện_tử theo_dõi tổng_hợp và báo_cáo định_kỳ 00 tháng và hằng năm về tình_hình hoạt_động dịch_vụ_việc_làm trên địa_bàn quản_lý theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này gửi bộ lao_động thương_binh và xã_hội báo_cáo 00 tháng gửi trước ngày 00 và báo_cáo năm gửi trước ngày 00 năm báo_cáo thời_gian chốt số_liệu báo_cáo theo quy_định của chính_phủ quy_định về chế_độ báo_cáo của cơ_quan hành_chính nhà_nước",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "35",
+        "chunk_id": "23-2021-nd-cp:d35",
+        "chunk_ids": [
+          "23-2021-nd-cp:d35"
+        ],
+        "mapc": "20.4.NĐ.6.35",
+        "citation": "Điều 35 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "bb7e95af33b1eb617f7c97645eca063f",
+    "question": "khái_niệm cơ_sở phục_hồi chức_năng lao_động được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "88/2020/nđ-cp",
+        "article_id": "3",
+        "title": "giải_thích từ_ngữ",
+        "text": "trong nghị_định này các từ_ngữ dưới đây được hiểu như sau cơ_sở khám bệnh chữa bệnh nghề_nghiệp là cơ_sở y_tế có đủ điều_kiện hoạt_động khám điều_trị bệnh nghề_nghiệp theo quy_định của pháp_luật về khám bệnh chữa bệnh phục_hồi chức_năng lao_động là quá_trình phục_hồi chức_năng cho người lao_động thuộc đối_tượng quy_định tại nghị_định này cơ_sở phục_hồi chức_năng lao_động là cơ_sở y_tế có đủ điều_kiện hoạt_động phục_hồi chức_năng theo quy_định của pháp_luật về khám bệnh chữa bệnh bản_sao hợp_lệ là bản_sao từ sổ gốc hoặc được chứng_thực sao từ bản_chính hoặc bản_sao đã được đối_chiếu với bản_chính",
+        "mapping_status": "mapped",
+        "document_id": "88-2020-nd-cp",
+        "normalized_article_id": "3",
+        "chunk_id": "88-2020-nd-cp:d3",
+        "chunk_ids": [
+          "88-2020-nd-cp:d3"
+        ],
+        "mapc": "20.5.NĐ.4.3",
+        "citation": "Điều 3 Nghị định số 88/2020/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "56",
+        "title": "hỗ_trợ các hoạt_động phòng_ngừa chia_sẻ rủi_ro về tai_nạn lao_động bệnh nghề_nghiệp",
+        "text": "hằng năm quỹ bảo_hiểm tai_nạn lao_động bệnh nghề_nghiệp dành tối_đa 00 nguồn thu để hỗ_trợ các hoạt_động phòng_ngừa chia_sẻ rủi_ro về tai_nạn lao_động bệnh nghề_nghiệp các hoạt_động phòng_ngừa chia_sẻ rủi_ro về tai_nạn lao_động bệnh nghề_nghiệp được hỗ_trợ bao_gồm khám bệnh chữa bệnh nghề_nghiệp phục_hồi chức_năng lao_động điều_tra lại các vụ tai_nạn lao_động bệnh nghề_nghiệp theo yêu_cầu của cơ_quan bảo_hiểm xã_hội huấn_luyện về an_toàn vệ_sinh lao_động cho người tham_gia_bảo_hiểm tai_nạn lao_động bệnh nghề_nghiệp và thuộc đối_tượng quy_định của luật này việc hỗ_trợ các hoạt_động quy_định không bao_gồm phần chi_phí do quỹ bảo_hiểm y_tế đã chi_trả theo quy_định của luật bảo_hiểm y_tế hoặc chi_phí do người sử_dụng lao_động đã hỗ_trợ của luật này chính_phủ quy_định chi_tiết điều_kiện hỗ_trợ hồ_sơ mức hỗ_trợ thời_gian hỗ_trợ trình_tự thủ_tục hỗ_trợ cơ_quan có thẩm_quyền quyết_định việc hỗ_trợ việc tổ_chức thực_hiện chính_sách hỗ_trợ quy_định của luật này và phải bảo_đảm cân_đối quỹ bảo_hiểm tai_nạn lao_động bệnh nghề_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "56",
+        "chunk_id": "84-2015-qh13:d56",
+        "chunk_ids": [
+          "84-2015-qh13:d56"
+        ],
+        "mapc": "20.5.LQ.56",
+        "citation": "Điều 56 Luật số 84/2015/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "14cbd7a4a6e60cde8b88e51167103ca4",
+    "question": "nlđ chưa thành_niên được khám sức_khỏe định_kỳ bao_nhiêu lần trong năm",
+    "relevant_articles": [
+      {
+        "law_id": "84/2015/qh13",
+        "article_id": "21",
+        "title": "khám sức_khỏe và điều_trị bệnh nghề_nghiệp cho người lao_động",
+        "text": "hằng năm người sử_dụng lao_động phải tổ_chức khám sức_khỏe ít_nhất một lần cho người lao_động đối_với người lao_động làm nghề công_việc nặng_nhọc độc_hại nguy_hiểm hoặc đặc_biệt nặng_nhọc độc_hại nguy_hiểm người lao_động là người khuyết_tật người lao_động chưa thành_niên người lao_động cao_tuổi được khám sức_khỏe ít_nhất 00 tháng_một lần khi khám sức_khỏe lao_động nữ phải được khám chuyên_khoa phụ_sản người làm_việc trong môi_trường lao_động tiếp_xúc với các yếu_tố có nguy_cơ gây bệnh nghề_nghiệp phải được khám phát_hiện bệnh nghề_nghiệp người sử_dụng lao_động tổ_chức khám sức_khỏe cho người lao_động trước khi bố_trí làm_việc và trước khi chuyển sang làm nghề công_việc nặng_nhọc độc_hại nguy_hiểm hơn hoặc sau khi bị tai_nạn lao_động bệnh nghề_nghiệp đã phục_hồi_sức_khỏe tiếp_tục trở_lại làm_việc trừ trường_hợp đã được hội_đồng y_khoa khám giám_định mức suy_giảm khả_năng lao_động người sử_dụng lao_động tổ_chức khám sức_khỏe cho người lao_động khám phát_hiện bệnh nghề_nghiệp tại cơ_sở khám bệnh chữa bệnh bảo_đảm yêu_cầu điều_kiện chuyên_môn kỹ_thuật người sử_dụng lao_động đưa người lao_động được chẩn_đoán mắc bệnh nghề_nghiệp đến cơ_sở khám bệnh chữa bệnh đủ điều_kiện chuyên_môn kỹ_thuật để điều_trị theo phác_đồ điều_trị bệnh nghề_nghiệp do bộ_trưởng bộ y_tế quy_định chi_phí cho hoạt_động khám sức_khỏe khám phát_hiện bệnh nghề_nghiệp điều_trị bệnh nghề_nghiệp cho người lao_động do người sử_dụng lao_động chi_trả quy_định và 0 điều này được hạch_toán vào chi_phí được trừ khi xác_định thu_nhập chịu thuế theo luật thuế thu_nhập doanh_nghiệp và hạch_toán vào chi_phí hoạt_động thường_xuyên đối_với cơ_quan hành_chính đơn_vị sự_nghiệp không có hoạt_động dịch_vụ",
+        "mapping_status": "mapped",
+        "document_id": "84-2015-qh13",
+        "normalized_article_id": "21",
+        "chunk_id": "84-2015-qh13:d21",
+        "chunk_ids": [
+          "84-2015-qh13:d21"
+        ],
+        "mapc": "20.5.LQ.21",
+        "citation": "Điều 21 Luật số 84/2015/QH13"
+      }
+    ],
+    "non_relevant_articles": [],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "78d8d26a82de7006023acc72d3f62710",
+    "question": "việc nộp tiền ký_quỹ đối_với doanh_nghiệp hoạt_động dịch_vụ_việc_làm được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "24",
+        "title": "nộp tiền ký_quỹ",
+        "text": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm nộp tiền ký_quỹ theo quy_định của ngân_hàng nhận ký_quỹ và tuân_thủ quy_định của pháp_luật doanh_nghiệp được hưởng lãi_suất từ tiền ký_quỹ theo thỏa_thuận với ngân_hàng nhận ký_quỹ và phù_hợp quy_định của pháp_luật ngân_hàng nhận ký_quỹ có trách_nhiệm cấp giấy chứng_nhận tiền ký_quỹ hoạt_động dịch_vụ_việc_làm theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này sau khi doanh_nghiệp hoàn_thành thủ_tục ký_quỹ trường_hợp thay_đổi một trong các thông_tin trên giấy chứng_nhận tiền ký_quỹ hoạt_động dịch_vụ_việc_làm gồm tên doanh_nghiệp địa_chỉ trụ_sở chính thì doanh_nghiệp gửi thông_tin tới ngân_hàng nhận ký_quỹ",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "24",
+        "chunk_id": "23-2021-nd-cp:d24",
+        "chunk_ids": [
+          "23-2021-nd-cp:d24"
+        ],
+        "mapc": "20.4.NĐ.6.24",
+        "citation": "Điều 24 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "26",
+        "title": "rút_tiền ký_quỹ",
+        "text": "cơ_quan nhà_nước có thẩm_quyền cấp gia_hạn cấp lại thu_hồi giấy_phép nơi doanh_nghiệp đặt trụ_sở chính quyết_định cho phép doanh_nghiệp rút_tiền ký_quỹ trong các trường_hợp sau doanh_nghiệp không được cấp giấy_phép doanh_nghiệp bị thu_hồi giấy_phép hoặc không được gia_hạn cấp lại giấy_phép doanh_nghiệp đã thực_hiện ký_quỹ tại một ngân_hàng nhận ký_quỹ khác doanh_nghiệp gặp khó_khăn không đủ khả_năng bồi_thường cho người lao_động người sử_dụng lao_động do vi_phạm_quy_định về dịch_vụ_việc_làm sau thời_hạn 00 ngày kể từ ngày đến thời_hạn bồi_thường theo quy_định của pháp_luật hồ_sơ đề_nghị rút_tiền ký_quỹ gửi đến sở lao_động thương_binh và xã_hội gồm văn_bản đề_nghị rút_tiền ký_quỹ của doanh_nghiệp giấy chứng_nhận tiền ký_quỹ hoạt_động dịch_vụ_việc_làm tại ngân_hàng nhận ký_quỹ khác đối_với trường_hợp rút_tiền ký_quỹ quy_định báo_cáo việc hoàn_thành nghĩa_vụ và văn_bản chứng_minh việc hoàn_thành nghĩa_vụ đối_với trường_hợp rút_tiền ký_quỹ quy_định phương_án sử_dụng số tiền rút từ tài_khoản ký_quỹ gồm lý_do mục_đích rút_tiền ký_quỹ danh_sách người lao_động người sử_dụng lao_động số tiền thời_gian phương_thức thanh_toán đối_với trường_hợp rút_tiền ký_quỹ quy_định hồ_sơ rút_tiền ký_quỹ gửi ngân_hàng nhận ký_quỹ gồm văn_bản đề_nghị rút_tiền ký_quỹ của doanh_nghiệp quy_định văn_bản đồng_ý về việc rút_tiền ký_quỹ của cơ_quan nhà_nước có thẩm_quyền theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này chứng_từ rút_tiền ký_quỹ theo quy_định của ngân_hàng nhận ký_quỹ nếu có trình_tự thủ_tục rút_tiền ký_quỹ như sau doanh_nghiệp gửi 00 bộ hồ_sơ quy_định đến sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chính sở lao_động thương_binh và xã_hội tiếp_nhận hồ_sơ kiểm_tra và cấp giấy biên_nhận ghi rõ ngày tháng năm nhận đủ hồ_sơ trong thời_hạn 00 ngày làm_việc kể từ ngày nhận đủ hồ_sơ đề_nghị rút_tiền ký_quỹ của doanh_nghiệp sở lao_động thương_binh và xã_hội kiểm_tra xác_thực hồ_sơ việc hoàn_thành các nghĩa_vụ của doanh_nghiệp hoạt_động dịch_vụ_việc_làm trong trường_hợp quy_định và trình cơ_quan nhà_nước có thẩm_quyền ban_hành_văn_bản đồng_ý về việc rút_tiền ký_quỹ phương_án sử_dụng tiền ký_quỹ nếu có gửi doanh_nghiệp và ngân_hàng nhận ký_quỹ trường_hợp không đồng_ý về việc rút_tiền ký_quỹ thì có văn_bản trả_lời doanh_nghiệp và nêu rõ lý_do sau khi có văn_bản đồng_ý về việc rút_tiền ký_quỹ của cơ_quan nhà_nước có thẩm_quyền doanh_nghiệp nộp hồ_sơ tại ngân_hàng nhận ký_quỹ ngân_hàng nhận ký_quỹ tiếp_nhận và kiểm_tra hồ_sơ rút_tiền ký_quỹ của doanh_nghiệp nếu đúng quy_định thì ngân_hàng nhận ký_quỹ cho doanh_nghiệp thực_hiện rút_tiền ký_quỹ trong thời_hạn 00 ngày làm_việc kể từ ngày tiếp_nhận hồ_sơ rút_tiền ký_quỹ trường_hợp rút_tiền ký_quỹ thì việc thanh_toán bồi_thường cho người lao_động người sử_dụng lao_động do ngân_hàng nhận ký_quỹ trực_tiếp chi_trả theo phương_án đã được cơ_quan nhà_nước có thẩm_quyền đồng_ý sau khi trừ chi_phí dịch_vụ ngân_hàng",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "26",
+        "chunk_id": "23-2021-nd-cp:d26",
+        "chunk_ids": [
+          "23-2021-nd-cp:d26"
+        ],
+        "mapc": "20.4.NĐ.6.26",
+        "citation": "Điều 26 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "27",
+        "title": "trách_nhiệm của ngân_hàng nhận ký_quỹ",
+        "text": "thực_hiện đúng các quy_định về mở tài_khoản ký_quỹ nộp tiền ký_quỹ rút_tiền ký_quỹ sử_dụng tài_khoản ký_quỹ của doanh_nghiệp hoạt_động dịch_vụ_việc_làm và các quy_định liên_quan đến tài_khoản này thực_hiện đầy_đủ trách_nhiệm của ngân_hàng nhận ký_quỹ theo quy_định tại nghị_định này",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "27",
+        "chunk_id": "23-2021-nd-cp:d27",
+        "chunk_ids": [
+          "23-2021-nd-cp:d27"
+        ],
+        "mapc": "20.4.NĐ.6.27",
+        "citation": "Điều 27 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "39",
+        "title": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "text": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm là doanh_nghiệp được thành_lập và hoạt_động theo quy_định của pháp_luật về doanh_nghiệp và phải có giấy_phép hoạt_động dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm cấp tỉnh cấp doanh_nghiệp được cấp giấy_phép hoạt_động dịch_vụ_việc_làm khi có đủ điều_kiện về cơ_sở vật_chất trang thiết_bị nhân_lực và tiền ký_quỹ doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thành_lập chi_nhánh hoạt_động dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thu phí theo quy_định của pháp_luật về phí lệ_phí chính_phủ quy_định chi_tiết điều này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "39",
+        "chunk_id": "38-2013-qh13:d39",
+        "chunk_ids": [
+          "38-2013-qh13:d39"
+        ],
+        "mapc": "20.4.LQ.39",
+        "citation": "Điều 39 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "17",
+        "title": "hồ_sơ đề_nghị cấp giấy_phép",
+        "text": "văn_bản đề_nghị cấp giấy_phép của doanh_nghiệp theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này 00 bản_sao được chứng_thực_từ bản_chính hoặc bản_sao xuất_trình bản_gốc để đối_chiếu giấy chứng_nhận quyền sở_hữu hoặc hợp_đồng thuê địa_điểm giấy chứng_nhận tiền ký_quỹ hoạt_động dịch_vụ_việc_làm theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này bản lý_lịch tự_thuật của người đại_diện theo pháp_luật của doanh_nghiệp theo mẫu_số 00 phụ_lục ii ban_hành kèm theo nghị_định này phiếu lý_lịch tư_pháp số 0 theo quy_định pháp_luật về lý_lịch tư_pháp của người đại_diện theo pháp_luật của doanh_nghiệp trường_hợp người đại_diện là người nước_ngoài không thuộc đối_tượng cấp phiếu lý_lịch tư_pháp số 0 thì được thay_thế bằng phiếu lý_lịch tư_pháp hoặc văn_bản xác_nhận không phải là người đang trong thời_gian chấp_hành_hình_phạt hoặc chưa được xóa_án tích hoặc đang trong thời_gian bị truy_cứu trách_nhiệm hình_sự của nước_ngoài các văn_bản nêu tại khoản này được cấp trước ngày nộp hồ_sơ không quá 00 tháng văn_bản bằng tiếng nước_ngoài thì phải được dịch ra tiếng việt chứng_thực và được hợp_pháp_hóa lãnh_sự theo quy_định của pháp_luật 00 bản_sao chứng_thực_từ bản_chính hoặc bản_sao xuất_trình bản_gốc để đối_chiếu bằng_cấp chuyên_môn hoặc một trong các văn_bản chứng_minh thời_gian trực_tiếp làm chuyên_môn hoặc quản_lý_dịch_vụ_việc_làm hoặc cung_ứng lao_động của người đại_diện theo pháp_luật của doanh_nghiệp như sau bản_sao được chứng_thực_từ bản_chính hoặc bản_sao xuất_trình bản_gốc đế đối_chiếu hợp_đồng lao_động hoặc hợp_đồng làm_việc hoặc quyết_định tuyển_dụng bổ_nhiệm giao nhiệm_vụ của người đại_diện theo pháp_luật của doanh_nghiệp bản_sao được chứng_thực_từ bản_chính hoặc bản_sao xuất_trình bản_gốc để đối_chiếu quyết_định bổ_nhiệm đối_với người làm_việc theo chế_độ bổ_nhiệm hoặc văn_bản công_nhận kết_quả bầu đối_với người làm_việc theo chế_độ bầu_cử của người đại_diện theo pháp_luật của doanh_nghiệp hoặc bản_sao giấy chứng_nhận đăng_ký doanh_nghiệp đối_với trường_hợp là người đại_diện theo pháp_luật của doanh_nghiệp hoạt_động dịch_vụ_việc_làm các văn_bản quy_định khoản này là văn_bản của nước_ngoài thì phải được dịch ra tiếng việt chứng_thực và được hợp_pháp_hóa lãnh_sự theo quy_định pháp_luật",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "17",
+        "chunk_id": "23-2021-nd-cp:d17",
+        "chunk_ids": [
+          "23-2021-nd-cp:d17"
+        ],
+        "mapc": "20.4.NĐ.6.17",
+        "citation": "Điều 17 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "23",
+        "title": "ký_quỹ và sử_dụng tiền ký_quỹ",
+        "text": "doanh_nghiệp thực_hiện ký_quỹ theo mức quy_định tại ngân_hàng thương_mại của việt_nam hoặc chi_nhánh ngân_hàng nước_ngoài thành_lập và hoạt_động hợp_pháp tại việt_nam sau đây gọi là ngân_hàng nhận ký_quỹ tiền ký_quỹ của doanh_nghiệp được sử_dụng trong trường_hợp_doanh_nghiệp không thực_hiện hoặc thực_hiện không đầy_đủ nghĩa_vụ trong hoạt_động dịch_vụ_việc_làm theo yêu_cầu của cơ_quan nhà_nước có thẩm_quyền trong thời_hạn 00 ngày kể từ ngày rút_tiền ký_quỹ để thanh_toán đối_với trường_hợp quy_định doanh_nghiệp phải nộp bổ_sung tiền ký_quỹ bảo_đảm trong thời_hạn không quá 00 ngày kể từ ngày hết hạn quy_định mà doanh_nghiệp không bổ_sung đầy_đủ tiền ký_quỹ thì ngân_hàng nhận ký_quỹ có trách_nhiệm thông_báo bằng văn_bản cho sở lao_động thương_binh và xã_hội nơi doanh_nghiệp đặt trụ_sở chính trong thời_hạn 00 ngày kể từ ngày nhận được thông_báo của ngân_hàng nhận ký_quỹ sở lao_động thương_binh và xã_hội trình cơ_quan nhà_nước có thẩm_quyền thu_hồi giấy_phép của doanh_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "23",
+        "chunk_id": "23-2021-nd-cp:d23",
+        "chunk_ids": [
+          "23-2021-nd-cp:d23"
+        ],
+        "mapc": "20.4.NĐ.6.23",
+        "citation": "Điều 23 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "25",
+        "title": "quản_lý tiền ký_quỹ",
+        "text": "ngân_hàng nhận ký_quỹ có trách_nhiệm tạm khóa toàn_bộ số tiền ký_quỹ của doanh_nghiệp quản_lý tiền ký_quỹ theo đúng các quy_định tại nghị_định này và quy_định của pháp_luật về ký_quỹ ngân_hàng nhận ký_quỹ thực_hiện cho doanh_nghiệp rút_tiền ký_quỹ theo đúng quy_định và yêu_cầu doanh_nghiệp nộp bổ_sung tiền ký_quỹ ngân_hàng nhận ký_quỹ không được cho doanh_nghiệp rút_tiền ký_quỹ khi chưa có ý_kiến chấp_thuận bằng văn_bản của cơ_quan nhà_nước có thẩm_quyền cấp gia_hạn cấp lại thu_hồi giấy_phép nơi doanh_nghiệp đặt trụ_sở chính",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "25",
+        "chunk_id": "23-2021-nd-cp:d25",
+        "chunk_ids": [
+          "23-2021-nd-cp:d25"
+        ],
+        "mapc": "20.4.NĐ.6.25",
+        "citation": "Điều 25 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "bdb8632d97fd440b7801ed912392a169",
+    "question": "làm_sao để xác_định tháng hưởng bảo_hiểm_thất_nghiệp",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "50",
+        "title": "mức thời_gian thời_điểm hưởng trợ_cấp thất_nghiệp",
+        "text": "mức hưởng trợ_cấp thất_nghiệp hằng tháng bằng 00 mức bình_quân tiền_lương tháng đóng bảo_hiểm_thất_nghiệp của 00 tháng liền kề trước khi thất_nghiệp nhưng tối_đa không quá 00 lần mức lương cơ_sở đối_với người lao_động thuộc đối_tượng thực_hiện chế_độ tiền_lương do nhà_nước quy_định hoặc không quá 00 lần mức lương tối_thiểu vùng theo quy_định của bộ_luật lao_động đối_với người lao_động đóng bảo_hiểm_thất_nghiệp theo chế_độ tiền_lương do người sử_dụng lao_động quyết_định tại thời_điểm chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc thời_gian hưởng trợ_cấp thất_nghiệp được tính theo số tháng đóng bảo_hiểm_thất_nghiệp cứ đóng đủ 00 tháng đến đủ 00 tháng thì được hưởng 00 tháng trợ_cấp thất_nghiệp sau đó cứ đóng đủ thêm 00 tháng thì được hưởng thêm 00 tháng trợ_cấp thất_nghiệp nhưng tối_đa không quá 00 tháng thời_điểm hưởng trợ_cấp thất_nghiệp được tính từ ngày thứ 00 kể từ ngày nộp đủ hồ_sơ hưởng trợ_cấp thất_nghiệp của luật này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "50",
+        "chunk_id": "38-2013-qh13:d50",
+        "chunk_ids": [
+          "38-2013-qh13:d50"
+        ],
+        "mapc": "20.4.LQ.50",
+        "citation": "Điều 50 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "53",
+        "title": "tạm dừng tiếp_tục chấm_dứt hưởng trợ_cấp thất_nghiệp",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp bị tạm dừng hưởng trợ_cấp thất_nghiệp khi không thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người lao_động bị tạm dừng hưởng trợ_cấp thất_nghiệp nếu vẫn còn thời_gian được hưởng theo quyết_định thì tiếp_tục hưởng trợ_cấp thất_nghiệp khi thực_hiện thông_báo về việc tìm_kiếm việc_làm hằng tháng của luật này người đang hưởng trợ_cấp thất_nghiệp bị chấm_dứt hưởng trợ_cấp thất_nghiệp trong các trường_hợp sau đây hết thời_hạn hưởng trợ_cấp thất_nghiệp tìm được việc_làm thực_hiện nghĩa_vụ quân_sự nghĩa_vụ công_an hưởng lương hưu hằng tháng sau 00 lần từ_chối nhận việc_làm do trung_tâm dịch_vụ_việc_làm nơi đang hưởng trợ_cấp thất_nghiệp giới_thiệu mà không có_lý_do chính_đáng không thực_hiện thông_báo tìm_kiếm việc_làm hằng tháng của luật này trong 00 tháng liên_tục ra nước_ngoài để định_cư đi lao_động ở nước_ngoài theo hợp_đồng đi học_tập có thời_hạn từ đủ 00 tháng trở lên bị xử_phạt vi_phạm hành_chính về hành_vi vi_phạm_pháp_luật bảo_hiểm_thất_nghiệp chết chấp_hành_quyết_định áp_dụng biện_pháp đưa vào trường giáo_dưỡng cơ_sở giáo_dục bắt_buộc cơ_sở cai_nghiện bắt_buộc bị tòa_án tuyên_bố mất_tích bị tạm giam chấp_hành_hình_phạt tù người lao_động bị chấm_dứt hưởng trợ_cấp thất_nghiệp thuộc các trường_hợp quy_định và n được bảo_lưu thời_gian đóng bảo_hiểm_thất_nghiệp làm căn_cứ để tính thời_gian hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo khi đủ điều_kiện quy_định của luật này thời_gian bảo_lưu được tính bằng tổng_thời_gian đóng bảo_hiểm_thất_nghiệp trừ đi thời_gian đóng đã hưởng trợ_cấp thất_nghiệp theo nguyên_tắc mỗi tháng đã hưởng trợ_cấp thất_nghiệp tương_ứng 00 tháng đã đóng bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "53",
+        "chunk_id": "38-2013-qh13:d53",
+        "chunk_ids": [
+          "38-2013-qh13:d53"
+        ],
+        "mapc": "20.4.LQ.53",
+        "citation": "Điều 53 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "45",
+        "title": "thời_gian đóng bảo_hiểm_thất_nghiệp",
+        "text": "thời_gian đóng bảo_hiểm_thất_nghiệp để xét hưởng bảo_hiểm_thất_nghiệp là tổng_các khoảng thời_gian đã đóng bảo_hiểm_thất_nghiệp liên_tục hoặc không liên_tục được cộng dồn từ khi bắt_đầu đóng bảo_hiểm_thất_nghiệp cho đến khi người lao_động chấm_dứt hợp_đồng lao_động hoặc hợp_đồng làm_việc theo quy_định của pháp_luật mà chưa hưởng trợ_cấp thất_nghiệp sau khi chấm_dứt hưởng trợ_cấp thất_nghiệp thời_gian đóng bảo_hiểm_thất_nghiệp trước đó của người lao_động không được tính để hưởng trợ_cấp thất_nghiệp cho lần tiếp_theo thời_gian đóng bảo_hiểm_thất_nghiệp cho lần hưởng bảo_hiểm_thất_nghiệp tiếp_theo được tính lại từ đầu trừ trường_hợp chấm_dứt hưởng trợ_cấp thất_nghiệp và n của luật này thời_gian người lao_động đóng bảo_hiểm_thất_nghiệp không được tính để hưởng trợ_cấp mất việc_làm hoặc trợ_cấp thôi_việc theo quy_định của pháp_luật về lao_động pháp_luật về viên_chức",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "45",
+        "chunk_id": "38-2013-qh13:d45",
+        "chunk_ids": [
+          "38-2013-qh13:d45"
+        ],
+        "mapc": "20.4.LQ.45",
+        "citation": "Điều 45 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "51",
+        "title": "bảo_hiểm y_tế",
+        "text": "người đang hưởng trợ_cấp thất_nghiệp được hưởng chế_độ bảo_hiểm y_tế theo quy_định của pháp_luật về bảo_hiểm y_tế tổ_chức bảo_hiểm xã_hội đóng bảo_hiểm y_tế cho người đang hưởng trợ_cấp thất_nghiệp từ quỹ bảo_hiểm_thất_nghiệp",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "51",
+        "chunk_id": "38-2013-qh13:d51",
+        "chunk_ids": [
+          "38-2013-qh13:d51"
+        ],
+        "mapc": "20.4.LQ.51",
+        "citation": "Điều 51 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "41",
+        "title": "nguyên_tắc bảo_hiểm_thất_nghiệp",
+        "text": "bảo_đảm chia_sẻ rủi_ro giữa những người tham_gia_bảo_hiểm_thất_nghiệp mức đóng bảo_hiểm_thất_nghiệp được tính trên cơ_sở tiền_lương của người lao_động mức hưởng bảo_hiểm_thất_nghiệp được tính trên cơ_sở mức đóng thời_gian đóng bảo_hiểm_thất_nghiệp việc thực_hiện bảo_hiểm_thất_nghiệp phải đơn_giản dễ_dàng thuận_tiện bảo_đảm kịp_thời và đầy_đủ quyền_lợi của người tham_gia quỹ bảo_hiểm_thất_nghiệp được quản_lý tập_trung thống_nhất công_khai minh_bạch bảo_đảm an_toàn và được nhà_nước bảo_hộ",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "41",
+        "chunk_id": "38-2013-qh13:d41",
+        "chunk_ids": [
+          "38-2013-qh13:d41"
+        ],
+        "mapc": "20.4.LQ.41",
+        "citation": "Điều 41 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "8b5915c242e22df4be2039097893237c",
+    "question": "dịch_vụ_việc_làm gồm có những hoạt_động nào",
+    "relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "36",
+        "title": "dịch_vụ_việc_làm",
+        "text": "dịch_vụ_việc_làm bao_gồm tư_vấn giới_thiệu việc_làm cung_ứng và tuyển lao_động theo yêu_cầu của người sử_dụng lao_động thu_thập cung_cấp thông_tin về thị_trường lao_động tổ_chức dịch_vụ_việc_làm bao_gồm trung_tâm dịch_vụ_việc_làm và doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "36",
+        "chunk_id": "38-2013-qh13:d36",
+        "chunk_ids": [
+          "38-2013-qh13:d36"
+        ],
+        "mapc": "20.4.LQ.36",
+        "citation": "Điều 36 Luật số 38/2013/QH13"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "1",
+        "title": "phạm_vi điều_chỉnh",
+        "text": "nghị_định này quy_định chi_tiết của luật việc_làm về trung_tâm dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm gồm điều_kiện trình_tự thủ_tục thẩm_quyền thành_lập tổ_chức lại giải_thể và tổ_chức hoạt_động của trung_tâm dịch_vụ_việc_làm điều_kiện trình_tự thủ_tục cấp gia_hạn cấp lại thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm hoạt_động của doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "1",
+        "chunk_id": "23-2021-nd-cp:d1",
+        "chunk_ids": [
+          "23-2021-nd-cp:d1"
+        ],
+        "mapc": "20.4.NĐ.6.1",
+        "citation": "Điều 1 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "2",
+        "title": "đối_tượng áp_dụng",
+        "text": "trung_tâm dịch_vụ_việc_làm của luật việc_làm gồm trung_tâm dịch_vụ_việc_làm do bộ_trưởng thủ_trưởng cơ_quan ngang bộ quyết_định thành_lập trung_tâm dịch_vụ_việc_làm do chủ_tịch ủy_ban nhân_dân tỉnh thành_phố trực_thuộc trung_ương quyết_định thành_lập trung_tâm dịch_vụ_việc_làm do người đứng đầu tổ_chức chính_trị xã_hội cấp trung_ương quyết_định thành_lập doanh_nghiệp hoạt_động dịch_vụ_việc_làm của luật việc_làm cơ_quan tổ_chức và cá_nhân khác có liên_quan trực_tiếp đến việc thực_hiện quy_định tại nghị_định này",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "2",
+        "chunk_id": "23-2021-nd-cp:d2",
+        "chunk_ids": [
+          "23-2021-nd-cp:d2"
+        ],
+        "mapc": "20.4.NĐ.6.2",
+        "citation": "Điều 2 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "39",
+        "title": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "text": "doanh_nghiệp hoạt_động dịch_vụ_việc_làm là doanh_nghiệp được thành_lập và hoạt_động theo quy_định của pháp_luật về doanh_nghiệp và phải có giấy_phép hoạt_động dịch_vụ_việc_làm do cơ_quan quản_lý nhà_nước về việc_làm cấp tỉnh cấp doanh_nghiệp được cấp giấy_phép hoạt_động dịch_vụ_việc_làm khi có đủ điều_kiện về cơ_sở vật_chất trang thiết_bị nhân_lực và tiền ký_quỹ doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thành_lập chi_nhánh hoạt_động dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm được thu phí theo quy_định của pháp_luật về phí lệ_phí chính_phủ quy_định chi_tiết điều này",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "39",
+        "chunk_id": "38-2013-qh13:d39",
+        "chunk_ids": [
+          "38-2013-qh13:d39"
+        ],
+        "mapc": "20.4.LQ.39",
+        "citation": "Điều 39 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "12",
+        "title": "quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm",
+        "text": "trung_tâm dịch_vụ_việc_làm tiếp_nhận lập hồ_sơ các cơ_quan tổ_chức và cá_nhân đến đăng_ký dịch_vụ_việc_làm theo các mẫu_số 00 00 a 00 00 00a phụ_lục i ban_hành kèm theo nghị_định này trung_tâm dịch_vụ_việc_làm thực_hiện theo_dõi tình_trạng việc_làm cho người lao_động được giới_thiệu hoặc cung_ứng tối_thiểu 00 tháng hoặc trong thời_gian thực_hiện hợp_đồng lao_động đối_với những trường_hợp thực_hiện hợp_đồng lao_động dưới 00 tháng theo mẫu_số 00 phụ_lục 00 ban_hành kèm theo nghị_định này thực_hiện ứng_dụng công_nghệ thông_tin trong việc tổ_chức cung_cấp các dịch_vụ và quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm đảm_bảo theo các quy_định của pháp_luật và hướng_dẫn của bộ lao_động thương_binh và xã_hội",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "12",
+        "chunk_id": "23-2021-nd-cp:d12",
+        "chunk_ids": [
+          "23-2021-nd-cp:d12"
+        ],
+        "mapc": "20.4.NĐ.6.12",
+        "citation": "Điều 12 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "6",
+        "title": "nội_dung quản_lý nhà_nước về việc_làm",
+        "text": "ban_hành và tổ_chức thực_hiện văn_bản quy_phạm_pháp_luật về việc_làm tuyên_truyền phổ_biến và giáo_dục pháp_luật về việc_làm quản_lý lao_động thông_tin thị_trường lao_động đánh_giá cấp chứng_chỉ kỹ_năng nghề quốc_gia và bảo_hiểm_thất_nghiệp quản_lý tổ_chức và hoạt_động của trung_tâm dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm kiểm_tra thanh_tra giải_quyết khiếu_nại tố_cáo và xử_lý vi_phạm_pháp_luật về việc_làm hợp_tác quốc_tế về việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "6",
+        "chunk_id": "38-2013-qh13:d6",
+        "chunk_ids": [
+          "38-2013-qh13:d6"
+        ],
+        "mapc": "20.4.LQ.6",
+        "citation": "Điều 6 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "70c14ba55a5e3cb604a083822d17ba92",
+    "question": "quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "12",
+        "title": "quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm",
+        "text": "trung_tâm dịch_vụ_việc_làm tiếp_nhận lập hồ_sơ các cơ_quan tổ_chức và cá_nhân đến đăng_ký dịch_vụ_việc_làm theo các mẫu_số 00 00 a 00 00 00a phụ_lục i ban_hành kèm theo nghị_định này trung_tâm dịch_vụ_việc_làm thực_hiện theo_dõi tình_trạng việc_làm cho người lao_động được giới_thiệu hoặc cung_ứng tối_thiểu 00 tháng hoặc trong thời_gian thực_hiện hợp_đồng lao_động đối_với những trường_hợp thực_hiện hợp_đồng lao_động dưới 00 tháng theo mẫu_số 00 phụ_lục 00 ban_hành kèm theo nghị_định này thực_hiện ứng_dụng công_nghệ thông_tin trong việc tổ_chức cung_cấp các dịch_vụ và quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm đảm_bảo theo các quy_định của pháp_luật và hướng_dẫn của bộ lao_động thương_binh và xã_hội",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "12",
+        "chunk_id": "23-2021-nd-cp:d12",
+        "chunk_ids": [
+          "23-2021-nd-cp:d12"
+        ],
+        "mapc": "20.4.NĐ.6.12",
+        "citation": "Điều 12 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "6",
+        "title": "nội_dung quản_lý nhà_nước về việc_làm",
+        "text": "ban_hành và tổ_chức thực_hiện văn_bản quy_phạm_pháp_luật về việc_làm tuyên_truyền phổ_biến và giáo_dục pháp_luật về việc_làm quản_lý lao_động thông_tin thị_trường lao_động đánh_giá cấp chứng_chỉ kỹ_năng nghề quốc_gia và bảo_hiểm_thất_nghiệp quản_lý tổ_chức và hoạt_động của trung_tâm dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm kiểm_tra thanh_tra giải_quyết khiếu_nại tố_cáo và xử_lý vi_phạm_pháp_luật về việc_làm hợp_tác quốc_tế về việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "6",
+        "chunk_id": "38-2013-qh13:d6",
+        "chunk_ids": [
+          "38-2013-qh13:d6"
+        ],
+        "mapc": "20.4.LQ.6",
+        "citation": "Điều 6 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "36",
+        "title": "dịch_vụ_việc_làm",
+        "text": "dịch_vụ_việc_làm bao_gồm tư_vấn giới_thiệu việc_làm cung_ứng và tuyển lao_động theo yêu_cầu của người sử_dụng lao_động thu_thập cung_cấp thông_tin về thị_trường lao_động tổ_chức dịch_vụ_việc_làm bao_gồm trung_tâm dịch_vụ_việc_làm và doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "36",
+        "chunk_id": "38-2013-qh13:d36",
+        "chunk_ids": [
+          "38-2013-qh13:d36"
+        ],
+        "mapc": "20.4.LQ.36",
+        "citation": "Điều 36 Luật số 38/2013/QH13"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "1",
+        "title": "phạm_vi điều_chỉnh",
+        "text": "nghị_định này quy_định chi_tiết của luật việc_làm về trung_tâm dịch_vụ_việc_làm doanh_nghiệp hoạt_động dịch_vụ_việc_làm gồm điều_kiện trình_tự thủ_tục thẩm_quyền thành_lập tổ_chức lại giải_thể và tổ_chức hoạt_động của trung_tâm dịch_vụ_việc_làm điều_kiện trình_tự thủ_tục cấp gia_hạn cấp lại thu_hồi giấy_phép hoạt_động dịch_vụ_việc_làm hoạt_động của doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "1",
+        "chunk_id": "23-2021-nd-cp:d1",
+        "chunk_ids": [
+          "23-2021-nd-cp:d1"
+        ],
+        "mapc": "20.4.NĐ.6.1",
+        "citation": "Điều 1 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "11",
+        "title": "quy_chế hoạt_động của trung_tâm dịch_vụ_việc_làm",
+        "text": "quy_chế hoạt_động của trung_tâm dịch_vụ_việc_làm phải có các nội_dung chủ_yếu sau đây tên địa_chỉ trụ_sở số điện_thoại website mục_tiêu nhiệm_vụ của trung_tâm nhiệm_vụ và trách_nhiệm của lãnh_đạo các phòng thuộc trung_tâm trách_nhiệm xây_dựng và quản_lý cơ_sở dữ_liệu về lao_động việc_làm quy_trình cung_cấp dịch_vụ_việc_làm cơ_chế quản_lý_tài_sản tài_chính cơ_chế phối_hợp công_tác những quy_định có tính_chất hành_chính và những vấn_đề liên_quan khác phù_hợp với đặc_điểm của trung_tâm trung_tâm dịch_vụ_việc_làm xây_dựng quy_chế hoạt_động của trung_tâm và trình thủ_trưởng cơ_quan trực_tiếp_quản_lý ký ban_hành quy_chế hoạt_động của trung_tâm dịch_vụ_việc_làm được niêm_yết công_khai tại trụ_sở của trung_tâm giám_đốc trung_tâm dịch_vụ_việc_làm có trách_nhiệm tổ_chức thực_hiện quy_chế hoạt_động của trung_tâm",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "11",
+        "chunk_id": "23-2021-nd-cp:d11",
+        "chunk_ids": [
+          "23-2021-nd-cp:d11"
+        ],
+        "mapc": "20.4.NĐ.6.11",
+        "citation": "Điều 11 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  },
+  {
+    "question_id": "3f0df75e4a835d623d79fd3291330ff2",
+    "question": "số_lượng người làm_việc đối_với trung_tâm dịch_vụ_việc_làm được quy_định như thế_nào",
+    "relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "9",
+        "title": "số_lượng người làm_việc",
+        "text": "số_lượng người làm_việc của trung_tâm dịch_vụ_việc_làm được xác_định trên cơ_sở vị_trí việc_làm khối_lượng công_việc của từng vị_trí việc_làm định mức kinh_tế kỹ_thuật theo chức_năng nhiệm_vụ quy_định bộ_trưởng bộ lao_động thương_binh và xã_hội hướng_dẫn về vị_trí việc_làm lãnh_đạo quản_lý và chức_danh nghề_nghiệp chuyên_ngành cơ_cấu viên_chức theo chức_danh nghề_nghiệp và định mức số_lượng người làm_việc trong trung_tâm dịch_vụ_việc_làm sau khi có ý_kiến của bộ_trưởng bộ nội_vụ",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "9",
+        "chunk_id": "23-2021-nd-cp:d9",
+        "chunk_ids": [
+          "23-2021-nd-cp:d9"
+        ],
+        "mapc": "20.4.NĐ.6.9",
+        "citation": "Điều 9 Nghị định số 23/2021/NĐ-CP"
+      }
+    ],
+    "non_relevant_articles": [
+      {
+        "law_id": "23/2021/nđ-cp",
+        "article_id": "12",
+        "title": "quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm",
+        "text": "trung_tâm dịch_vụ_việc_làm tiếp_nhận lập hồ_sơ các cơ_quan tổ_chức và cá_nhân đến đăng_ký dịch_vụ_việc_làm theo các mẫu_số 00 00 a 00 00 00a phụ_lục i ban_hành kèm theo nghị_định này trung_tâm dịch_vụ_việc_làm thực_hiện theo_dõi tình_trạng việc_làm cho người lao_động được giới_thiệu hoặc cung_ứng tối_thiểu 00 tháng hoặc trong thời_gian thực_hiện hợp_đồng lao_động đối_với những trường_hợp thực_hiện hợp_đồng lao_động dưới 00 tháng theo mẫu_số 00 phụ_lục 00 ban_hành kèm theo nghị_định này thực_hiện ứng_dụng công_nghệ thông_tin trong việc tổ_chức cung_cấp các dịch_vụ và quản_lý hoạt_động dịch_vụ_việc_làm tại trung_tâm dịch_vụ_việc_làm đảm_bảo theo các quy_định của pháp_luật và hướng_dẫn của bộ lao_động thương_binh và xã_hội",
+        "mapping_status": "mapped",
+        "document_id": "23-2021-nd-cp",
+        "normalized_article_id": "12",
+        "chunk_id": "23-2021-nd-cp:d12",
+        "chunk_ids": [
+          "23-2021-nd-cp:d12"
+        ],
+        "mapc": "20.4.NĐ.6.12",
+        "citation": "Điều 12 Nghị định số 23/2021/NĐ-CP"
+      },
+      {
+        "law_id": "38/2013/qh13",
+        "article_id": "36",
+        "title": "dịch_vụ_việc_làm",
+        "text": "dịch_vụ_việc_làm bao_gồm tư_vấn giới_thiệu việc_làm cung_ứng và tuyển lao_động theo yêu_cầu của người sử_dụng lao_động thu_thập cung_cấp thông_tin về thị_trường lao_động tổ_chức dịch_vụ_việc_làm bao_gồm trung_tâm dịch_vụ_việc_làm và doanh_nghiệp hoạt_động dịch_vụ_việc_làm",
+        "mapping_status": "mapped",
+        "document_id": "38-2013-qh13",
+        "normalized_article_id": "36",
+        "chunk_id": "38-2013-qh13:d36",
+        "chunk_ids": [
+          "38-2013-qh13:d36"
+        ],
+        "mapc": "20.4.LQ.36",
+        "citation": "Điều 36 Luật số 38/2013/QH13"
+      }
+    ],
+    "source_relevant_article_count": 1,
+    "source_non_relevant_article_count": 10
+  }
+]
