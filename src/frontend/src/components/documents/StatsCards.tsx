@@ -5,18 +5,20 @@ import { api } from '../../lib/api';
 import { SystemStats } from '../../lib/types';
 
 export const StatsCards: React.FC = () => {
+  const [model, setModel] = useState('—');
   const [stats, setStats] = useState<SystemStats | null>(null);
 
   useEffect(() => {
-    api.getSystemStats().then(setStats).catch(console.error);
+    api.getSystemStats().then(setStats).catch(() => setStats(null));
+    api.health().then(health => setModel(health.embedding?.model || '—')).catch(() => setModel('—'));
   }, []);
 
-  const totalDocs = stats?.total_documents ?? 42;
-  const totalNodes = stats?.total_nodes ?? 1420;
-  const totalEdges = stats?.total_edges ?? 3184;
-  const totalChunks = stats?.total_chunks ?? 1481;
-  const vectorStatus = stats?.vector_db_status ?? 'Trực tuyến (Cosine 1536-d)';
-  const graphStatus = stats?.graph_db_status ?? 'Trực tuyến (AuraDB)';
+  const totalDocs = stats?.total_documents ?? '—';
+  const totalNodes = stats?.total_nodes ?? '—';
+  const totalEdges = stats?.total_edges ?? '—';
+  const totalChunks = stats?.total_chunks ?? '—';
+  const vectorStatus = stats?.vector_db_status ?? 'Chưa kiểm tra';
+  const graphStatus = stats?.graph_db_status ?? 'Chưa kiểm tra';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md w-full">
@@ -37,11 +39,11 @@ export const StatsCards: React.FC = () => {
         <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 text-[12px]">
           <div className="flex items-center justify-between font-label-code text-on-surface">
             <span>• Pháp luật Lao động</span>
-            <span className="font-metric-num text-secondary">24 văn bản</span>
+            <span className="font-metric-num text-secondary">{totalDocs} văn bản</span>
           </div>
           <div className="flex items-center justify-between font-label-code text-on-surface-variant">
             <span>• Luật BHXH & Y tế</span>
-            <span className="font-metric-num text-on-surface">18 văn bản</span>
+            <span className="font-metric-num text-on-surface">Chưa nạp</span>
           </div>
         </div>
       </div>
@@ -66,15 +68,15 @@ export const StatsCards: React.FC = () => {
             <div className="text-[10px] text-on-surface-variant">VB</div>
           </div>
           <div className="bg-surface-container-low py-1 rounded">
-            <div className="font-metric-num text-secondary">386</div>
+            <div className="font-metric-num text-secondary">—</div>
             <div className="text-[10px] text-on-surface-variant">Điều</div>
           </div>
           <div className="bg-surface-container-low py-1 rounded">
-            <div className="font-metric-num text-on-surface">712</div>
+            <div className="font-metric-num text-on-surface">—</div>
             <div className="text-[10px] text-on-surface-variant">Khoản</div>
           </div>
           <div className="bg-surface-container-low py-1 rounded">
-            <div className="font-metric-num text-on-tertiary-container">280</div>
+            <div className="font-metric-num text-on-tertiary-container">—</div>
             <div className="text-[10px] text-on-surface-variant">Điểm</div>
           </div>
         </div>
@@ -97,13 +99,13 @@ export const StatsCards: React.FC = () => {
         <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 font-label-code text-[11px]">
           <div className="flex items-center justify-between text-on-surface">
             <span>CONTAINS / PART_OF:</span>
-            <span className="font-metric-num">1,378 / 1,378</span>
+            <span className="font-metric-num">— / —</span>
           </div>
           <div className="flex items-center justify-between text-secondary">
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>REFERS_TO liên VB:
             </span>
-            <span className="font-metric-num font-bold">428 Cạnh</span>
+            <span className="font-metric-num font-bold">Chưa thống kê</span>
           </div>
         </div>
       </div>
@@ -120,7 +122,7 @@ export const StatsCards: React.FC = () => {
         </div>
         <div className="my-space-sm flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+            <span className={"w-2.5 h-2.5 rounded-full " + (stats?.vector_db_status === "connected" ? "bg-on-tertiary-container" : "bg-outline")}></span>
             <span className="font-headline-sm text-headline-sm text-on-surface font-semibold">{vectorStatus}</span>
           </div>
           <span className="font-label-code text-label-code text-on-surface-variant">
@@ -134,7 +136,7 @@ export const StatsCards: React.FC = () => {
           </div>
           <div className="flex items-center justify-between text-on-surface-variant">
             <span>Embedding:</span>
-            <span className="font-metric-num font-bold text-on-surface">BGE-M3 (1024-d)</span>
+            <span className="font-metric-num font-bold text-on-surface">{model}</span>
           </div>
         </div>
       </div>

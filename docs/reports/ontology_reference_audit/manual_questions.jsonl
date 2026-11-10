@@ -1,0 +1,18 @@
+{"id":"manual01","question":"Người giúp việc gia đình bị tai nạn khi đang làm việc thì chủ nhà phải chi trả và bồi thường những khoản nào?","expected_targets":["84-2015-qh13:d38","84-2015-qh13:d39"]}
+{"id":"manual02","question":"Tôi nhận việc về làm tại nhà và bị tai nạn, không thuộc diện tham gia bảo hiểm tai nạn lao động. Bên giao việc phải giải quyết quyền lợi cho tôi như thế nào?","expected_targets":["84-2015-qh13:d38"]}
+{"id":"manual03","question":"Người giúp việc gia đình đơn phương chấm dứt hợp đồng trái pháp luật thì phải bồi thường cho chủ nhà những gì?","expected_targets":["45-2019-qh14:d40"]}
+{"id":"manual04","question":"Chủ nhà đơn phương chấm dứt hợp đồng trái pháp luật với người giúp việc gia đình thì phải trả những khoản gì?","expected_targets":["45-2019-qh14:d41"]}
+{"id":"manual05","question":"Người giúp việc gia đình làm vỡ đồ của chủ nhà thì mức bồi thường và khấu trừ lương được tính ra sao?","expected_targets":["45-2019-qh14:d129","45-2019-qh14:d102"]}
+{"id":"manual06","question":"Muốn sa thải người giúp việc gia đình thì chủ nhà phải tuân thủ những nguyên tắc và thủ tục nào?","expected_targets":["45-2019-qh14:d122"]}
+{"id":"manual07","question":"Hợp đồng bằng văn bản với người giúp việc gia đình phải có những nội dung chủ yếu nào?","expected_targets":["45-2019-qh14:d21"]}
+{"id":"manual08","question":"Hội nghị người lao động hằng năm do ai tổ chức và được bàn những vấn đề gì?","expected_targets":["45-2019-qh14:d64"]}
+{"id":"manual09","question":"Nếu hợp đồng lao động bị vô hiệu từng phần mà hai bên không sửa đổi được thì tiền lương và trợ cấp được giải quyết thế nào?","expected_targets":["145-2020-nd-cp:d8"]}
+{"id":"manual10","question":"Hợp đồng lao động bị vô hiệu toàn bộ do người ký không đúng thẩm quyền, hai bên không ký lại thì trợ cấp thôi việc được tính thế nào?","expected_targets":["145-2020-nd-cp:d8","45-2019-qh14:d46"]}
+{"id":"manual11","question":"Hợp đồng lao động vô hiệu toàn bộ do công việc bị pháp luật cấm, nếu không ký hợp đồng mới thì thời gian làm việc để tính khoản tiền chi trả được xác định ra sao?","expected_targets":["145-2020-nd-cp:d8"]}
+{"id":"manual12","question":"Tôi là người giúp việc gia đình, nghỉ việc đúng luật sau nhiều năm làm việc thì chủ nhà có phải trả trợ cấp và mức tính ra sao?","expected_targets":["45-2019-qh14:d46"]}
+{"id":"manual13","question":"Cuộc họp xử lý bồi thường thiệt hại do người lao động làm hỏng tài sản phải có những ai tham gia?","expected_targets":["45-2019-qh14:d122"]}
+{"id":"manual14","question":"Hội nghị người lao động trong doanh nghiệp phải thảo luận những nội dung gì?","expected_targets":["45-2019-qh14:d64"]}
+{"id":"manual15","question":"Người lao động nhận việc gia công tại nhà không thuộc diện đóng bảo hiểm tai nạn lao động thì được bên giao việc bảo đảm các quyền lợi gì khi bị tai nạn?","expected_targets":["84-2015-qh13:d38"]}
+{"id":"control01","question":"Người lao động làm hỏng dụng cụ do sơ suất, công ty được khấu trừ lương hằng tháng tối đa bao nhiêu?","expected_targets":["45-2019-qh14:d102"]}
+{"id":"control02","question":"Doanh nghiệp được tạm đình chỉ công việc người lao động trong bao lâu nếu vụ việc phức tạp và phải hoàn trả tiền lương thế nào?","expected_targets":["45-2019-qh14:d128"]}
+{"id":"control03","question":"Người làm nghề độc hại đã đủ năm năm tại cùng công ty thì được nghỉ phép hằng năm bao nhiêu ngày?","expected_targets":["45-2019-qh14:d113","45-2019-qh14:d114"]}

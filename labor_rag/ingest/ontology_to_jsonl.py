@@ -3,7 +3,7 @@
 The ABox remains the source of truth; chunks.jsonl is what gets embedded and
 kg_nodes/kg_edges.jsonl what gets loaded into Neo4j.
 
-chunks.jsonl follows chunk schema v5 (docs/structural_jsonl.md): one chunk
+chunks.jsonl follows chunk schema v5 (docs/SYSTEM.md, section 4): one chunk
 per Dieu, identified by the source document number + the article number in
 that document, with long Dieu split at MAX_TOKENS bge-m3 tokens.
 
@@ -50,7 +50,6 @@ from labor_rag.ingest.chunk_schema import (
     split_article,
 )
 
-sys.stdout.reconfigure(encoding="utf-8")
 
 VLD = "https://example.org/vn-legal/document#"
 VLPD = "https://example.org/vn-legal/phapdien#"
@@ -366,6 +365,8 @@ def repo_relative(path: Path) -> str:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--abox", type=Path, default=LAO_DONG_ABOX_PATH, help="the Phap dien ABox")
     parser.add_argument(
@@ -387,6 +388,10 @@ def main() -> int:
         help="TH2/B: 'full' (đầy đủ ngữ cảnh + Điều n. Tên + nội dung, mặc định) | TH1/A: 'minimal' (chỉ Điều n. Tên + nội dung)",
     )
     args = parser.parse_args()
+    return project(args)
+
+
+def project(args):
 
     pdf_aboxes = sorted(args.pdf_abox_dir.glob("*.ttl")) if args.pdf_abox_dir.exists() else []
     graph = Graph()
@@ -561,7 +566,7 @@ def main() -> int:
                     "chunk_id": make_chunk_id(document_id, meta_dieu, index if len(parts) > 1 else None),
                     "document_id": document_id,
                     # The Dieu node id in kg_nodes: the codification number, or
-                    # the URI for the few repeated codes (KNOWN_ISSUES), so it
+                    # the URI for the few repeated codes (docs/SYSTEM.md, section 11), so it
                     # stays unique and joins the chunk to Neo4j.
                     "mapc": node["id"],
                     "source": "phap_dien",

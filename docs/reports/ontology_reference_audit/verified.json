@@ -1,0 +1,639 @@
+{
+  "generated_at": "2026-11-03T11:06:02.416940+00:00",
+  "dataset": "lao_dong_v5",
+  "collection": "legal_ld_v5_bge",
+  "as_of": "2026-11-03",
+  "top_k": 8,
+  "llm_used": false,
+  "embedding_calls_during_verification": 0,
+  "note": "Confirms missing source information, not a legal opinion or universal superiority of graph retrieval. Markers check returned text; relevance still requires manual reading.",
+  "cases": [
+    {
+      "id": "manual08",
+      "question": "Hội nghị người lao động hằng năm do ai tổ chức và được bàn những vấn đề gì?",
+      "target_article": "45-2019-qh14:d64",
+      "target_rank_in_top50_raw_deduplicated": null,
+      "vector_top_k": [
+        {
+          "article_id": "145-2020-nd-cp:d47",
+          "chunk_id": "145-2020-nd-cp:d47",
+          "rank": 1,
+          "raw_rank": 1,
+          "score": 0.6408797,
+          "title": "Hội nghị người lao động",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 47. Hội nghị người lao động\n1. Hội nghị người lao động do người sử dụng lao động phối hợp với tổ chức đại diện người lao động tại cơ sở (nếu có) và nhóm đại diện đối thoại của người lao động (nếu có) tổ chức hằng năm theo hình thức hội nghị toàn thể hoặc hội nghị đại biểu.\n2. Nội dung hội nghị người lao động thực hiện theo quy định tại Điều 64 của Bộ luật Lao động và các nội dung khác do hai bên thỏa thuận.\n3. Hình thức tổ chức hội nghị, nội dung, thành phần tham gia, thời gian, địa điểm, quy trình, trách nhiệm tổ chức thực hiện và hình thức phổ biến kết quả hội nghị người lao động thực hiện theo quy chế dân chủ ở cơ sở tại nơi làm việc quy định tại Điều 48 Nghị định này."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d39",
+          "chunk_id": "145-2020-nd-cp:d39",
+          "rank": 2,
+          "raw_rank": 2,
+          "score": 0.57173336,
+          "title": "Tổ chức đối thoại định kỳ tại nơi làm việc",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 39. Tổ chức đối thoại định kỳ tại nơi làm việc\n1. Người sử dụng lao động có trách nhiệm phối hợp với tổ chức đại diện người lao động tại cơ sở, nhóm đại diện đối thoại của người lao động tổ chức đối thoại định kỳ theo quy định tại điểm a khoản 2 Điều 63 của Bộ luật Lao động và quy chế dân chủ ở cơ sở tại nơi làm việc.\n2. Thành phần tham gia đối thoại định kỳ là đại diện hai bên theo quy định tại khoản 3 Điều 38 Nghị định này. Thời gian, địa điểm, cách thức tổ chức đối thoại định kỳ do hai bên sắp xếp phù hợp với điều kiện thực tế và theo quy chế dân chủ ở cơ sở tại nơi làm việc.\n3. Chậm nhất 05 ngày làm việc trước ngày bắt đầu tổ chức đối thoại định kỳ, các bên có trách nhiệm gửi nội dung đối thoại cho bên tham gia đối thoại.\n4. Đối thoại định kỳ chỉ được tiến hành khi bên người sử dụng lao động có sự tham gia của người đại diện theo pháp luật hoặc người được ủy quyền và bên người lao động có sự tham gia của trên 70% tổng số thành viên đại diện quy định tại khoản 3 Điều 38 Nghị định này. Diễn biến đối thoại phải được ghi thành biên bản và có chữ ký của người đại diện theo pháp luật của người sử dụng lao động hoặc người được ủy quyền và chữ ký của người đại diện từng tổ chức đại diện người lao động (nếu có) và của người đại diện cho nhóm đại diện đối thoại của người lao động (nếu có).\n5. Chậm nhất 03 ngày làm việc kể từ khi kết thúc đối thoại, người sử dụng lao động có trách nhiệm công bố công khai tại nơi làm việc những nội dung chính của đối thoại; tổ chức đại diện người lao động (nếu có), nhóm đại diện đối thoại của người lao động (nếu có) phổ biến những nội dung chính của đối thoại đến người lao động là thành viên."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d97",
+          "chunk_id": "145-2020-nd-cp:d97",
+          "rank": 3,
+          "raw_rank": 3,
+          "score": 0.56938815,
+          "title": "Quản lý hòa giải viên lao động",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương XIV. GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG > Mục 1. NHỮNG QUY ĐỊNH CHUNG VỀ GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG\nĐiều 97. Quản lý hòa giải viên lao động\n1. Bộ Lao động - Thương binh và Xã hội:\na) Xây dựng, trình cơ quan có thẩm quyền ban hành hoặc ban hành theo thẩm quyền các văn bản pháp luật về hòa giải viên lao động;\nb) Tuyên truyền, hướng dẫn, thanh tra, kiểm tra, giám sát việc thực hiện các quy định về hòa giải lao động;\nc) Xây dựng nội dung, chương trình và tổ chức tập huấn, bồi dưỡng, nâng cao năng lực chuyên môn nghiệp vụ đối với hòa giải viên lao động.\n2. Chủ tịch Ủy ban nhân dân cấp tỉnh:\na) Bổ nhiệm, bổ nhiệm lại, miễn nhiệm và quản lý hoạt động của hòa giải viên lao động trên địa bàn cấp tỉnh.\nĐối với những tỉnh, thành phố trực thuộc trung ương có nhiều doanh nghiệp, lao động, phát sinh nhiều tranh chấp lao động có thể xem xét, bổ nhiệm một số hòa giải viên lao động chuyên trách thuộc Sở Lao động - Thương binh và Xã hội. Hòa giải viên lao động chuyên trách có nhiệm vụ tham gia giải quyết tranh chấp lao động, tranh chấp về hợp đồng đào tạo nghề, hỗ trợ phát triển quan hệ lao động và giúp Sở Lao động - Thương binh và Xã hội quản lý công tác hòa giải lao động trên địa bàn. Tiêu chuẩn tuyển chọn, bổ nhiệm, nhiệm vụ của hòa giải viên lao động chuyên trách thực hiện theo quy chế quản lý hòa giải viên lao động;\nb) Ban hành quy chế quản lý hòa giải viên lao động, phân cấp quản lý hòa giải viên lao động thuộc Sở Lao động - Thương binh và Xã hội và Phòng Lao động - Thương binh và Xã hội;\nc) Chỉ đạo việc xây dựng và thực hiện chế độ, chính sách, thi đua, khen thưởng đối với hòa giải viên lao động theo quy định.\n3. Sở Lao động - Thương binh và Xã hội:\na) Xây dựng, trình Chủ tịch Ủy ban nhân dân cấp tỉnh quy chế quản lý hòa giải viên lao động;\nb) Tham mưu, giúp Chủ tịch Ủy ban nhân dân cấp tỉnh quản lý hòa giải viên lao động trên địa bàn;\nc) Lập và thực hiện kế hoạch tuyển chọn, bổ nhiệm hòa giải viên lao động hằng năm;\nd) Cử hòa giải viên lao động thực hiện nhiệm vụ giải quyết tranh chấp và hỗ trợ phát triển quan hệ lao động theo phân cấp quản lý; bảo đảm điều kiện làm việc đối với hòa giải viên lao động; đánh giá hoạt động và mức độ hoàn thành nhiệm vụ của hòa giải viên lao động; thực hiện chế độ bồi dưỡng, thi đua, khen thưởng đối với hòa giải viên lao động theo quy định; thực hiện quản lý hồ sơ hòa giải viên lao động, hồ sơ các vụ việc giải quyết tranh chấp và các tài liệu liên quan khác;\nđ) Chủ trì, phối hợp với đơn vị chuyên môn của Bộ Lao động - Thương binh và Xã hội tổ chức tập huấn, bồi dưỡng chuyên môn nghiệp vụ cho hòa giải viên lao động trên địa bàn;\ne) Thực hiện thanh tra, kiểm tra, giám sát công tác hòa giải lao động theo quy định của pháp luật;\ng) Hằng năm, tổng hợp tình hình hòa giải lao động báo cáo Chủ tịch Ủy ban nhân dân cấp tỉnh và Bộ Lao động - Thương binh và Xã hội.\n4. Phòng Lao động - Thương binh và Xã hội:\na) Thực hiện quản lý hòa giải viên lao động trên địa bàn cấp huyện theo phân cấp;\nb) Lập và thực hiện kế hoạch tuyển chọn, bổ nhiệm hòa giải viên lao động hằng năm theo phân cấp;\nc) Cử hòa giải viên lao động thực hiện nhiệm vụ giải quyết tranh chấp và hỗ trợ phát triển quan hệ lao động theo phân cấp quản lý; bảo đảm điều kiện làm việc cho hòa giải viên lao động; đánh giá hoạt động và mức độ hoàn thành nhiệm vụ của hòa giải viên lao động, thực hiện chế độ bồi dưỡng, thi đua, khen thưởng đối với hòa giải viên lao động; quản lý, lưu trữ hồ sơ các vụ việc giải quyết tranh chấp và các tài liệu liên quan khác;\nd) Cử hòa giải viên lao động tham gia các lớp tập huấn, bồi dưỡng chuyên môn nghiệp vụ do Bộ Lao động - Thương binh và Xã hội, Sở Lao động - Thương binh và Xã hội tổ chức;\nđ) Hằng năm, tổng hợp tình hình hòa giải lao động trên địa bàn báo cáo Sở Lao động - Thương binh và Xã hội."
+        },
+        {
+          "article_id": "45-2019-qh14:d185",
+          "chunk_id": "45-2019-qh14:d185",
+          "rank": 4,
+          "raw_rank": 4,
+          "score": 0.5584703,
+          "title": "Hội đồng trọng tài lao động",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương XIV. GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG > Mục 1. NHỮNG QUY ĐỊNH CHUNG VỀ GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG\nĐiều 185. Hội đồng trọng tài lao động\n1. Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định thành lập Hội đồng trọng tài lao động, bổ nhiệm Chủ tịch, thư ký và các trọng tài viên lao động của Hội đồng trọng tài lao động. Nhiệm kỳ của Hội đồng trọng tài lao động là 05 năm.\n2. Số lượng trọng tài viên lao động của Hội đồng trọng tài lao động do Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định, ít nhất là 15 người, bao gồm số lượng ngang nhau do các bên đề cử, cụ thể như sau:\na) Tối thiểu 05 thành viên do cơ quan chuyên môn về lao động thuộc Ủy ban nhân dân cấp tỉnh đề cử, trong đó có Chủ tịch Hội đồng là đại diện lãnh đạo và thư ký Hội đồng là công chức của cơ quan chuyên môn về lao động thuộc Ủy ban nhân dân cấp tỉnh;\nb) Tối thiểu 05 thành viên do công đoàn cấp tỉnh đề cử;\nc) Tối thiểu 05 thành viên do các tổ chức đại diện của người sử dụng lao động trên địa bàn tỉnh thống nhất đề cử.\n3. Tiêu chuẩn và chế độ làm việc của trọng tài viên lao động được quy định như sau:\na) Trọng tài viên lao động là người hiểu biết pháp luật, có kinh nghiệm trong lĩnh vực quan hệ lao động, có uy tín và công tâm;\nb) Khi đề cử trọng tài viên lao động theo quy định tại khoản 2 Điều này, cơ quan chuyên môn về lao động thuộc Ủy ban nhân dân cấp tỉnh, công đoàn cấp tỉnh, tổ chức đại diện của người sử dụng lao động có thể cử người của cơ quan, tổ chức mình hoặc cử người khác đáp ứng đầy đủ các tiêu chuẩn đối với trọng tài viên lao động theo quy định;\nc) Thư ký Hội đồng trọng tài lao động thực hiện nhiệm vụ thường trực của Hội đồng trọng tài lao động. Trọng tài viên lao động làm việc theo chế độ chuyên trách hoặc kiêm nhiệm.\n4. Khi có yêu cầu giải quyết tranh chấp lao động theo quy định tại các điều 189, 193 và 197 của Bộ luật này, Hội đồng trọng tài lao động quyết định thành lập Ban trọng tài lao động để giải quyết tranh chấp như sau:\na) Đại diện mỗi bên tranh chấp chọn 01 trọng tài viên trong số danh sách trọng tài viên lao động;\nb) Trọng tài viên lao động do các bên lựa chọn theo quy định tại điểm a khoản này thống nhất lựa chọn 01 trọng tài viên lao động khác làm Trưởng Ban trọng tài lao động;\nc) Trường hợp các bên tranh chấp cùng lựa chọn một trọng tài viên để giải quyết tranh chấp lao động thì Ban trọng tài lao động chỉ gồm 01 trọng tài viên lao động đã được lựa chọn.\n5. Ban trọng tài lao động làm việc theo nguyên tắc tập thể và quyết định theo đa số, trừ trường hợp quy định tại điểm c khoản 4 Điều này.\n6. Chính phủ quy định chi tiết về tiêu chuẩn, điều kiện, trình tự, thủ tục bổ nhiệm, miễn nhiệm, chế độ và điều kiện hoạt động của trọng tài viên lao động, Hội đồng trọng tài lao động; tổ chức và hoạt động của Hội đồng trọng tài lao động; việc thành lập và hoạt động của Ban trọng tài lao động quy định tại Điều này."
+        },
+        {
+          "article_id": "45-2019-qh14:d63",
+          "chunk_id": "45-2019-qh14:d63",
+          "rank": 5,
+          "raw_rank": 5,
+          "score": 0.55744064,
+          "title": "Tổ chức đối thoại tại nơi làm việc",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 63. Tổ chức đối thoại tại nơi làm việc\n1. Đối thoại tại nơi làm việc là việc chia sẻ thông tin, tham khảo, thảo luận, trao đổi ý kiến giữa người sử dụng lao động với người lao động hoặc tổ chức đại diện người lao động về những vấn đề liên quan đến quyền, lợi ích và mối quan tâm của các bên tại nơi làm việc nhằm tăng cường sự hiểu biết, hợp tác, cùng nỗ lực hướng tới giải pháp các bên cùng có lợi.\n2. Người sử dụng lao động phải tổ chức đối thoại tại nơi làm việc trong trường hợp sau đây:\na) Định kỳ ít nhất 01 năm một lần;\nb) Khi có yêu cầu của một hoặc các bên;\nc) Khi có vụ việc quy định tại điểm a khoản 1 Điều 36, các điều 42, 44, 93, 104, 118 và khoản 1 Điều 128 của Bộ luật này.\n3. Khuyến khích người sử dụng lao động và người lao động hoặc tổ chức đại diện người lao động tiến hành đối thoại ngoài những trường hợp quy định tại khoản 2 Điều này.\n4. Chính phủ quy định việc tổ chức đối thoại và thực hiện quy chế dân chủ ở cơ sở tại nơi làm việc."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d101",
+          "chunk_id": "145-2020-nd-cp:d101",
+          "rank": 6,
+          "raw_rank": 6,
+          "score": 0.55603707,
+          "title": "Thành lập Hội đồng trọng tài lao động",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương XIV. GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG > Mục 1. NHỮNG QUY ĐỊNH CHUNG VỀ GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG\nĐiều 101. Thành lập Hội đồng trọng tài lao động\n1. Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định thành lập Hội đồng trọng tài lao động với nhiệm kỳ 05 năm, bao gồm các trọng tài viên lao động được bổ nhiệm theo quy định tại Điều 99 Nghị định này, trong đó:\na) Chủ tịch Hội đồng là lãnh đạo Sở Lao động - Thương binh và Xã hội được bổ nhiệm trọng tài viên lao động, làm việc theo chế độ kiêm nhiệm;\nb) Thư ký Hội đồng là công chức Sở Lao động - Thương binh và Xã hội được bổ nhiệm trọng tài viên lao động, là thường trực của Hội đồng, làm việc theo chế độ chuyên trách;\nc) Thành viên khác của Hội đồng là các trọng tài viên lao động còn lại, làm việc theo chế độ kiêm nhiệm;\nd) Hội đồng trọng tài lao động được sử dụng con dấu riêng.\n2. Hội đồng trọng tài lao động có trách nhiệm:\na) Giải quyết tranh chấp lao động theo quy định tại các Điều 189, 193 và 197 của Bộ luật Lao động;\nb) Giải quyết tranh chấp lao động tập thể về lợi ích ở nơi sử dụng lao động không được đình công theo quy định tại Mục 3 Chương này;\nc) Giải quyết tranh chấp lao động khác theo quy định của pháp luật;\nd) Hỗ trợ phát triển quan hệ lao động trên địa bàn tỉnh theo quy chế hoạt động của Hội đồng trọng tài lao động;\nđ) Định kỳ hằng năm báo cáo Chủ tịch Ủy ban nhân dân cấp tỉnh và thông báo cho Sở Lao động - Thương binh và Xã hội, Liên đoàn Lao động cấp tỉnh và tổ chức đại diện người sử dụng lao động trên địa bàn tỉnh kết quả hoạt động của Hội đồng trọng tài lao động.\n3. Chủ tịch Hội đồng trọng tài lao động có trách nhiệm:\na) Ban hành quy chế hoạt động của Hội đồng trọng tài lao động sau khi lấy ý kiến Sở Lao động - Thương binh và Xã hội, Liên đoàn Lao động cấp tỉnh và tổ chức đại diện người sử dụng lao động trên địa bàn tỉnh;\nb) Phân công nhiệm vụ cụ thể cho các trọng tài viên lao động và điều hành các hoạt động của Hội đồng trọng tài lao động;\nc) Quyết định thành lập Ban trọng tài lao động; tham gia và thực hiện nhiệm vụ của Ban trọng tài lao động theo quy định tại Điều 102 Nghị định này;\nd) Hằng năm, chủ trì họp Hội đồng trọng tài lao động để đánh giá kết quả hoàn thành nhiệm vụ của từng trọng tài viên lao động theo quy chế hoạt động của Hội đồng trọng tài lao động, tổng hợp báo cáo Chủ tịch Ủy ban nhân dân cấp tỉnh.\n4. Thư ký Hội đồng trọng tài lao động có trách nhiệm:\na) Làm nhiệm vụ thường trực, thực hiện các công việc hành chính, tổ chức, hậu cần bảo đảm các hoạt động của Hội đồng trọng tài lao động;\nb) Giúp Hội đồng trọng tài lao động lập kế hoạch công tác, tổ chức các cuộc họp giải quyết tranh chấp lao động của Ban trọng tài lao động;\nc) Tiếp nhận yêu cầu giải quyết tranh chấp lao động, tham mưu, đề xuất cho Chủ tịch Hội đồng trọng tài lao động lựa chọn và thành lập Ban trọng tài lao động;\nd) Tham gia và thực hiện nhiệm vụ của Ban trọng tài lao động theo quy định tại Điều 102 Nghị định này;\nđ) Phân loại, lưu trữ hồ sơ giải quyết tranh chấp lao động theo quy định;\ne) Thực hiện các công việc khác theo phân công của Chủ tịch Hội đồng trọng tài lao động và quy chế hoạt động của Hội đồng trọng tài lao động.\n5. Trọng tài viên lao động có trách nhiệm:\na) Tham gia và thực hiện nhiệm vụ của Ban trọng tài lao động theo quy định tại Điều 102 Nghị định này;\nb) Thực hiện các nhiệm vụ khác theo quy chế hoạt động của Hội đồng trọng tài lao động và phân công của Chủ tịch Hội đồng trọng tài lao động."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d37",
+          "chunk_id": "145-2020-nd-cp:d37",
+          "rank": 7,
+          "raw_rank": 7,
+          "score": 0.55553484,
+          "title": "Trách nhiệm tổ chức đối thoại tại nơi làm việc",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 37. Trách nhiệm tổ chức đối thoại tại nơi làm việc\n1. Người sử dụng lao động có trách nhiệm phối hợp với tổ chức đại diện người lao động tại cơ sở (nếu có) để tổ chức đối thoại tại nơi làm việc theo quy định tại khoản 2 Điều 63 của Bộ luật Lao động.\nỞ nơi làm việc có người lao động không tham gia là thành viên của tổ chức đại diện người lao động tại cơ sở thì người sử dụng lao động có trách nhiệm phối hợp với tổ chức đại diện người lao động tại cơ sở (nếu có) hướng dẫn, hỗ trợ, tạo điều kiện để những người lao động này tự lựa chọn thành viên đại diện cho họ (sau đây gọi là nhóm đại diện đối thoại của người lao động) để tham gia đối thoại với người sử dụng lao động theo quy định tại khoản 2 Điều 63 của Bộ luật Lao động, số lượng thành viên nhóm đại diện đối thoại của người lao động xác định theo quy định tại khoản 2 Điều 38 Nghị định này.\n2. Người sử dụng lao động có trách nhiệm quy định cụ thể trong quy chế dân chủ ở cơ sở tại nơi làm việc các nội dung chủ yếu sau để tổ chức đối thoại tại nơi làm việc theo quy định tại khoản 2 Điều 63 của Bộ luật Lao động:\na) Nguyên tắc đối thoại tại nơi làm việc;\nb) Số lượng, thành phần tham gia đối thoại của mỗi bên theo quy định tại Điều 38 Nghị định này;\nc) Số lần, thời gian tổ chức đối thoại định kỳ hằng năm;\nd) Cách thức tổ chức đối thoại định kỳ, đối thoại khi có yêu cầu của một hoặc các bên, đối thoại khi có vụ việc;\nđ) Trách nhiệm của các bên khi tham gia đối thoại theo quy định tại khoản 2 Điều 63 của Bộ luật Lao động;\ne) Việc áp dụng quy định tại Điều 176 của Bộ luật Lao động đối với các thành viên đại diện tham gia đối thoại bên người lao động mà không phải là thành viên ban lãnh đạo của tổ chức đại diện người lao động tại cơ sở;\ng) Nội dung khác (nếu có).\n3. Ngoài quy định tại khoản 1 và khoản 2 Điều này, người sử dụng lao động có trách nhiệm:\na) Cử đại diện bên người sử dụng lao động tham gia đối thoại tại nơi làm việc theo quy định;\nb) Bố trí địa điểm, thời gian và các điều kiện vật chất cần thiết khác để tổ chức các cuộc đối thoại tại nơi làm việc;\nc) Báo cáo tình hình thực hiện đối thoại và quy chế dân chủ ở cơ sở tại nơi làm việc với cơ quan quản lý nhà nước về lao động khi được yêu cầu.\n4. Tổ chức đại diện người lao động tại cơ sở và nhóm đại diện đối thoại của người lao động có trách nhiệm:\na) Cử thành viên đại diện tham gia đối thoại theo quy định;\nb) Tham gia ý kiến với người sử dụng lao động về nội dung quy chế dân chủ ở cơ sở tại nơi làm việc;\nc) Lấy ý kiến người lao động, tổng hợp và chuẩn bị nội dung đề nghị đối thoại;\nd) Tham gia đối thoại với người sử dụng lao động theo quy định tại khoản 2 Điều 63 của Bộ luật Lao động, Nghị định này và quy chế dân chủ ở cơ sở tại nơi làm việc.\n5. Khuyến khích người sử dụng lao động và người lao động, tổ chức đại diện người lao động tiến hành đối thoại ngoài những trường hợp quy định tại khoản 2 Điều 63 của Bộ luật Lao động phù hợp với điều kiện tổ chức sản xuất, kinh doanh, tổ chức lao động tại nơi làm việc và quy định cụ thể trong quy chế dân chủ ở cơ sở tại nơi làm việc."
+        },
+        {
+          "article_id": "84-2015-qh13:d88",
+          "chunk_id": "84-2015-qh13:d88",
+          "rank": 8,
+          "raw_rank": 8,
+          "score": 0.5555274,
+          "title": "Hội đồng quốc gia về an toàn, vệ sinh lao động, Hội đồng an toàn, vệ sinh lao động cấp tỉnh",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương VI. QUẢN LÝ NHÀ NƯỚC VỀ AN TOÀN, VỆ SINH LAO ĐỘNG\nĐiều 88. Hội đồng quốc gia về an toàn, vệ sinh lao động, Hội đồng an toàn, vệ sinh lao động cấp tỉnh\n1. Hội đồng quốc gia về an toàn, vệ sinh lao động là tổ chức tư vấn cho Chính phủ trong việc xây dựng mới hoặc sửa đổi, bổ sung chính sách, pháp luật về an toàn, vệ sinh lao động. Hội đồng do Thủ tướng Chính phủ thành lập, bao gồm đại diện Bộ Lao động - Thương binh và Xã hội, Bộ Y tế, Tổng Liên đoàn Lao động Việt Nam, Hội nông dân Việt Nam, tổ chức đại diện người sử dụng lao động, các bộ, ngành có liên quan và một số chuyên gia, nhà khoa học về lĩnh vực an toàn, vệ sinh lao động.\n2. Hội đồng an toàn, vệ sinh lao động cấp tỉnh là tổ chức tư vấn cho Ủy ban nhân dân trong việc tổ chức thực hiện chính sách, pháp luật về an toàn, vệ sinh lao động tại địa phương. Hội đồng do Chủ tịch Ủy ban nhân dân cấp tỉnh thành lập, bao gồm đại diện Sở Lao động - Thương binh và Xã hội, Sở Y tế, Liên đoàn Lao động, Hội nông dân, một số doanh nghiệp, cơ quan, tổ chức và chuyên gia, nhà khoa học về lĩnh vực an toàn, vệ sinh lao động tại địa phương.\n3. Hằng năm, Hội đồng an toàn, vệ sinh lao động có trách nhiệm tổ chức đối thoại nhằm chia sẻ thông tin, tăng cường sự hiểu biết giữa người sử dụng lao động, người lao động, tổ chức công đoàn, tổ chức đại diện người sử dụng lao động và các cơ quan nhà nước để thúc đẩy việc cải thiện các điều kiện làm việc công bằng, an toàn cho người lao động, nâng cao hiệu quả xây dựng, thực hiện chính sách, pháp luật về an toàn, vệ sinh lao động.\n4. Chính phủ quy định chi tiết việc thành lập, chức năng, nhiệm vụ, tổ chức và hoạt động của Hội đồng quốc gia về an toàn, vệ sinh lao động và Hội đồng an toàn, vệ sinh lao động cấp tỉnh."
+        }
+      ],
+      "live_graph_rows": [
+        {
+          "index": 0,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "45-2019-qh14",
+          "article_number": "64",
+          "clause_number": null,
+          "point_number": null,
+          "text": null,
+          "seed_chunk_id": "145-2020-nd-cp:d47"
+        }
+      ],
+      "default_reference_expand_limit_per_node": 3,
+      "default_reference_results": [
+        {
+          "chunk_id": "45-2019-qh14:d64",
+          "clause": null,
+          "change": null,
+          "source": "graph:CITES",
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 64. Nội dung đối thoại tại nơi làm việc\n1. Nội dung đối thoại bắt buộc theo quy định tại điểm c khoản 2 Điều 63 của Bộ luật này.\n2. Ngoài nội dung quy định tại khoản 1 Điều này, các bên lựa chọn một hoặc một số nội dung sau đây để tiến hành đối thoại:\na) Tình hình sản xuất, kinh doanh của người sử dụng lao động;\nb) Việc thực hiện hợp đồng lao động, thỏa ước lao động tập thể, nội quy lao động, quy chế và cam kết, thỏa thuận khác tại nơi làm việc;\nc) Điều kiện làm việc;\nd) Yêu cầu của người lao động, tổ chức đại diện người lao động đối với người sử dụng lao động;\nđ) Yêu cầu của người sử dụng lao động đối với người lao động, tổ chức đại diện người lao động;\ne) Nội dung khác mà một hoặc các bên quan tâm."
+        }
+      ],
+      "qdrant_target_chunks": [
+        {
+          "chunk_id": "45-2019-qh14:d64",
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 64. Nội dung đối thoại tại nơi làm việc\n1. Nội dung đối thoại bắt buộc theo quy định tại điểm c khoản 2 Điều 63 của Bộ luật này.\n2. Ngoài nội dung quy định tại khoản 1 Điều này, các bên lựa chọn một hoặc một số nội dung sau đây để tiến hành đối thoại:\na) Tình hình sản xuất, kinh doanh của người sử dụng lao động;\nb) Việc thực hiện hợp đồng lao động, thỏa ước lao động tập thể, nội quy lao động, quy chế và cam kết, thỏa thuận khác tại nơi làm việc;\nc) Điều kiện làm việc;\nd) Yêu cầu của người lao động, tổ chức đại diện người lao động đối với người sử dụng lao động;\nđ) Yêu cầu của người sử dụng lao động đối với người lao động, tổ chức đại diện người lao động;\ne) Nội dung khác mà một hoặc các bên quan tâm."
+        }
+      ],
+      "marker_checks": [
+        {
+          "text": "Tình hình sản xuất, kinh doanh của người sử dụng lao động",
+          "in_vector_context": false,
+          "in_default_reference_context": true
+        },
+        {
+          "text": "Điều kiện làm việc",
+          "in_vector_context": true,
+          "in_default_reference_context": true
+        }
+      ]
+    },
+    {
+      "id": "manual13",
+      "question": "Cuộc họp xử lý bồi thường thiệt hại do người lao động làm hỏng tài sản phải có những ai tham gia?",
+      "target_article": "45-2019-qh14:d122",
+      "target_rank_in_top50_raw_deduplicated": 41,
+      "vector_top_k": [
+        {
+          "article_id": "145-2020-nd-cp:d71",
+          "chunk_id": "145-2020-nd-cp:d71",
+          "rank": 1,
+          "raw_rank": 1,
+          "score": 0.69380116,
+          "title": "Trình tự, thủ tục xử lý bồi thường thiệt hại",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương VIII. KỶ LUẬT LAO ĐỘNG, TRÁCH NHIỆM VẬT CHẤT > Mục 2. TRÁCH NHIỆM VẬT CHẤT\nĐiều 71. Trình tự, thủ tục xử lý bồi thường thiệt hại\nTrình tự, thủ tục xử lý bồi thường thiệt hại tại khoản 2 Điều 130 của Bộ luật Lao động được quy định như sau:\n1. Khi phát hiện người lao động có hành vi làm hư hỏng, làm mất dụng cụ, thiết bị hoặc làm mất tài sản của người sử dụng lao động hoặc tài sản khác do người sử dụng lao động giao hoặc có hành vi khác gây thiệt hại tài sản của người sử dụng lao động hoặc tiêu hao vật tư quá định mức cho phép thì người sử dụng lao động yêu cầu người lao động tường trình bằng văn bản về vụ việc.\n2. Trong thời hiệu xử lý bồi thường thiệt hại quy định tại Điều 72 Nghị định này, người sử dụng lao động tiến hành họp xử lý bồi thường thiệt hại như sau:\na) Ít nhất 05 ngày làm việc trước khi tiến hành họp xử lý bồi thường thiệt hại, người sử dụng lao động thông báo đến các thành phần phải tham dự họp bao gồm: các thành phần quy định tại điểm b, điểm c khoản 1 Điều 122 của Bộ luật Lao động, thẩm định viên về giá (nếu có); bảo đảm các thành phần này nhận được thông báo trước khi diễn ra cuộc họp. Nội dung thông báo phải nêu rõ thời gian, địa điểm tiến hành họp xử lý bồi thường thiệt hại; họ tên người bị xử lý bồi thường thiệt hại và hành vi vi phạm;\nb) Khi nhận được thông báo của người sử dụng lao động, các thành phần phải tham dự họp quy định tại điểm a khoản này phải xác nhận tham dự cuộc họp với người sử dụng lao động. Trường hợp một trong các thành phần không thể tham dự họp theo thời gian, địa điểm đã thông báo thì người lao động và người sử dụng lao động thỏa thuận việc thay đổi thời gian, địa điểm họp; trường hợp hai bên không thỏa thuận được thì người sử dụng lao động quyết định thời gian, địa điểm họp;\nc) Người sử dụng lao động tiến hành họp xử lý bồi thường thiệt hại theo thời gian, địa điểm đã thông báo quy định tại điểm a, điểm b khoản này. Trường hợp một trong các thành phần phải tham dự họp quy định tại điểm a khoản này không xác nhận tham dự hoặc vắng mặt thì người sử dụng lao động vẫn tiến hành họp xử lý bồi thường thiệt hại theo quy định của pháp luật.\n3. Nội dung cuộc họp xử lý bồi thường thiệt hại phải được lập thành biên bản, thông qua trước khi kết thúc cuộc họp và có chữ ký của người tham dự cuộc họp theo quy định tại điểm a khoản 2 Điều này, trường hợp có người không ký vào biên bản thì người ghi biên bản nêu rõ họ tên, lý do không ký (nếu có) vào nội dung biên bản.\n4. Quyết định xử lý bồi thường thiệt hại phải được ban hành trong thời hiệu xử lý bồi thường thiệt hại. Quyết định xử lý bồi thường thiệt hại phải nêu rõ mức thiệt hại; nguyên nhân thiệt hại; mức bồi thường thiệt hại; thời hạn, hình thức bồi thường thiệt hại và được gửi đến các thành phần phải tham dự họp quy định tại điểm a khoản 2 Điều này.\n5. Các trường hợp bồi thường thiệt hại khác thực hiện theo quy định của Bộ luật Dân sự."
+        },
+        {
+          "article_id": "45-2019-qh14:d129",
+          "chunk_id": "45-2019-qh14:d129",
+          "rank": 2,
+          "raw_rank": 2,
+          "score": 0.622574,
+          "title": "Bồi thường thiệt hại",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương VIII. KỶ LUẬT LAO ĐỘNG, TRÁCH NHIỆM VẬT CHẤT > Mục 2. TRÁCH NHIỆM VẬT CHẤT\nĐiều 129. Bồi thường thiệt hại\n1. Người lao động làm hư hỏng dụng cụ, thiết bị hoặc có hành vi khác gây thiệt hại tài sản của người sử dụng lao động thì phải bồi thường theo quy định của pháp luật hoặc nội quy lao động của người sử dụng lao động.\nTrường hợp người lao động gây thiệt hại không nghiêm trọng do sơ suất với giá trị không quá 10 tháng lương tối thiểu vùng do Chính phủ công bố được áp dụng tại nơi người lao động làm việc thì người lao động phải bồi thường nhiều nhất là 03 tháng tiền lương và bị khấu trừ hằng tháng vào lương theo quy định tại khoản 3 Điều 102 của Bộ luật này.\n2. Người lao động làm mất dụng cụ, thiết bị, tài sản của người sử dụng lao động hoặc tài sản khác do người sử dụng lao động giao hoặc tiêu hao vật tư quá định mức cho phép thì phải bồi thường thiệt hại một phần hoặc toàn bộ theo thời giá thị trường hoặc nội quy lao động; trường hợp có hợp đồng trách nhiệm thì phải bồi thường theo hợp đồng trách nhiệm; trường hợp do thiên tai, hỏa hoạn, địch họa, dịch bệnh nguy hiểm, thảm họa, sự kiện xảy ra khách quan không thể lường trước được và không thể khắc phục được mặc dù đã áp dụng mọi biện pháp cần thiết và khả năng cho phép thì không phải bồi thường."
+        },
+        {
+          "article_id": "45-2019-qh14:d130",
+          "chunk_id": "45-2019-qh14:d130",
+          "rank": 3,
+          "raw_rank": 3,
+          "score": 0.6036947,
+          "title": "Xử lý bồi thường thiệt hại",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương VIII. KỶ LUẬT LAO ĐỘNG, TRÁCH NHIỆM VẬT CHẤT > Mục 2. TRÁCH NHIỆM VẬT CHẤT\nĐiều 130. Xử lý bồi thường thiệt hại\n1. Việc xem xét, quyết định mức bồi thường thiệt hại phải căn cứ vào lỗi, mức độ thiệt hại thực tế và hoàn cảnh thực tế gia đình, nhân thân và tài sản của người lao động.\n2. Chính phủ quy định trình tự, thủ tục, thời hiệu xử lý việc bồi thường thiệt hại."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d72",
+          "chunk_id": "145-2020-nd-cp:d72",
+          "rank": 4,
+          "raw_rank": 4,
+          "score": 0.59728575,
+          "title": "Thời hiệu xử lý bồi thường thiệt hại",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương VIII. KỶ LUẬT LAO ĐỘNG, TRÁCH NHIỆM VẬT CHẤT > Mục 2. TRÁCH NHIỆM VẬT CHẤT\nĐiều 72. Thời hiệu xử lý bồi thường thiệt hại\nThời hiệu xử lý bồi thường thiệt hại tại khoản 2 Điều 130 của Bộ luật Lao động được quy định như sau:\n1. Thời hiệu xử lý bồi thường thiệt hại là 06 tháng kể từ ngày người lao động có hành vi làm hư hỏng, làm mất dụng cụ, thiết bị hoặc làm mất tài sản của người sử dụng lao động hoặc tài sản khác do người sử dụng lao động giao hoặc có hành vi khác gây thiệt hại tài sản của người sử dụng lao động hoặc tiêu hao vật tư quá định mức cho phép.\n2. Không xử lý bồi thường thiệt hại đối với người lao động đang trong thời gian quy định tại khoản 4 Điều 122 của Bộ luật Lao động.\n3. Khi hết thời gian quy định tại khoản 4 Điều 122 của Bộ luật Lao động, nếu hết thời hiệu hoặc còn thời hiệu nhưng không đủ 60 ngày thì được kéo dài thời hiệu xử lý bồi thường thiệt hại nhưng không quá 60 ngày kể từ ngày hết thời gian nêu trên."
+        },
+        {
+          "article_id": "84-2015-qh13:d35",
+          "chunk_id": "84-2015-qh13:d35:p1",
+          "rank": 5,
+          "raw_rank": 5,
+          "score": 0.5680883,
+          "title": "Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng",
+          "meta_khoan": "1-4",
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 1. KHAI BÁO, THỐNG KÊ, BÁO CÁO, ĐIỀU TRA SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG, TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 35. Điều tra vụ tai nạn lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động, sự cố kỹ thuật gây mất an toàn, vệ sinh lao động nghiêm trọng\n1. Người sử dụng lao động có trách nhiệm thành lập Đoàn điều tra tai nạn lao động cấp cơ sở để tiến hành điều tra tai nạn lao động làm bị thương nhẹ, tai nạn lao động làm bị thương nặng một người lao động thuộc thẩm quyền quản lý của mình, trừ trường hợp đã được điều tra theo quy định tại khoản 2 và khoản 3 Điều này hoặc tai nạn lao động được cơ quan nhà nước có thẩm quyền điều tra theo quy định của pháp luật chuyên ngành.\nThành phần Đoàn điều tra tai nạn lao động cấp cơ sở gồm có người sử dụng lao động hoặc người đại diện được người sử dụng lao động ủy quyền bằng văn bản làm Trưởng đoàn và các thành viên là đại diện Ban chấp hành công đoàn cơ sở hoặc đại diện tập thể người lao động khi chưa thành lập tổ chức công đoàn cơ sở, người làm công tác an toàn lao động, người làm công tác y tế và một số thành viên khác.\nTrường hợp tai nạn lao động làm bị thương nặng một người lao động làm việc không theo hợp đồng lao động thì Ủy ban nhân dân cấp xã nơi xảy ra tai nạn lao động phải lập biên bản ghi nhận sự việc và báo cáo Ủy ban nhân dân cấp huyện nơi xảy ra tai nạn.\n2. Cơ quan quản lý nhà nước về lao động cấp tỉnh có trách nhiệm thành lập Đoàn điều tra tai nạn lao động cấp tỉnh để tiến hành điều tra tai nạn lao động chết người, tai nạn lao động làm bị thương nặng từ hai người lao động trở lên, kể cả người lao động làm việc không theo hợp đồng lao động, trừ trường hợp quy định tại khoản 4 Điều này; điều tra lại vụ tai nạn lao động đã được Đoàn điều tra tai nạn lao động cấp cơ sở đã điều tra khi có khiếu nại, tố cáo hoặc khi xét thấy cần thiết.\nThành phần Đoàn điều tra tai nạn lao động cấp tỉnh gồm có đại diện của Thanh tra chuyên ngành về an toàn, vệ sinh lao động thuộc cơ quan quản lý nhà nước cấp tỉnh làm Trưởng đoàn và các thành viên là đại diện Sở Y tế, đại diện Liên đoàn Lao động cấp tỉnh và một số thành viên khác.\n3. Bộ trưởng Bộ Lao động - Thương binh và Xã hội hoặc cơ quan nhà nước có thẩm quyền thành lập Đoàn điều tra tai nạn lao động cấp trung ương để tiến hành điều tra các vụ tai nạn lao động khi xét thấy tính chất nghiêm trọng của tai nạn lao động hoặc mức độ phức tạp của việc điều tra tai nạn lao động vượt quá khả năng xử lý của Đoàn điều tra tai nạn lao động cấp tỉnh; điều tra lại vụ tai nạn lao động đã được Đoàn điều tra tai nạn lao động cấp tỉnh có trách nhiệm điều tra.\nThành phần Đoàn điều tra tai nạn lao động cấp trung ương gồm có đại diện Bộ Lao động - Thương binh và Xã hội, đại diện Bộ Y tế, đại diện Tổng Liên đoàn Lao động Việt Nam và một số thành viên khác.\n4. Đối với các vụ tai nạn, sự cố quy định tại điểm c khoản 1 Điều 34 của Luật này, việc thực hiện điều tra theo quy định của pháp luật chuyên ngành, pháp luật về lao động và có sự phối hợp của Thanh tra an toàn, vệ sinh lao động."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d41",
+          "chunk_id": "145-2020-nd-cp:d41",
+          "rank": 6,
+          "raw_rank": 6,
+          "score": 0.56423837,
+          "title": "Tổ chức đối thoại khi có vụ việc",
+          "meta_khoan": null,
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương V. ĐỐI THOẠI TẠI NƠI LÀM VIỆC, THƯƠNG LƯỢNG TẬP THỂ, THỎA ƯỚC LAO ĐỘNG TẬP THỂ > Mục 1. ĐỐI THOẠI TẠI NƠI LÀM VIỆC\nĐiều 41. Tổ chức đối thoại khi có vụ việc\n1. Đối với vụ việc người sử dụng lao động phải tham khảo, trao đổi ý kiến với tổ chức đại diện người lao động tại cơ sở về quy chế đánh giá mức độ hoàn thành công việc theo quy định tại điểm a khoản 1 Điều 36; cho thôi việc đối với người lao động theo quy định tại Điều 42; phương án sử dụng lao động theo quy định tại Điều 44; thang lương, bảng lương và định mức lao động theo quy định tại Điều 93; quy chế thưởng theo quy định tại Điều 104 và nội quy lao động theo quy định tại Điều 118 của Bộ luật Lao động được thực hiện như sau:\na) Người sử dụng lao động có trách nhiệm gửi văn bản kèm theo nội dung cần tham khảo, trao đổi ý kiến đến các thành viên đại diện tham gia đối thoại của bên người lao động;\nb) Các thành viên đại diện tham gia đối thoại của bên người lao động có trách nhiệm tổ chức lấy ý kiến người lao động do mình đại diện và tổng hợp thành văn bản của từng tổ chức đại diện người lao động tại cơ sở, nhóm đại diện đối thoại của người lao động để gửi tới người sử dụng lao động; trường hợp nội dung đối thoại liên quan đến quyền, lợi ích của lao động nữ thì cần bảo đảm lấy ý kiến của họ;\nc) Căn cứ ý kiến của các tổ chức đại diện người lao động tại cơ sở, nhóm đại diện đối thoại của người lao động, người sử dụng lao động tổ chức đối thoại để thảo luận, trao đổi ý kiến, tham vấn, chia sẻ thông tin về những nội dung người sử dụng lao động đưa ra;\nd) Số lượng, thành phần tham gia, thời gian, địa điểm tổ chức đối thoại do hai bên xác định theo quy chế dân chủ ở cơ sở tại nơi làm việc;\nđ) Diễn biến đối thoại phải được ghi thành biên bản và có chữ ký của đại diện các bên tham gia đối thoại theo quy định tại khoản 4 Điều 39 Nghị định này;\ne) Chậm nhất 03 ngày làm việc kể từ khi kết thúc đối thoại, người sử dụng lao động có trách nhiệm công bố công khai tại nơi làm việc những nội dung chính của đối thoại; tổ chức đại diện người lao động (nếu có), nhóm đại diện đối thoại của người lao động (nếu có) phổ biến những nội dung chính của đối thoại đến người lao động là thành viên.\n2. Đối với vụ việc tạm đình chỉ công việc của người lao động theo quy định tại khoản 1 Điều 128 của Bộ luật Lao động thì người sử dụng lao động và tổ chức đại diện người lao động mà người lao động bị tạm đình chỉ công việc là thành viên có thể trao đổi bằng văn bản hoặc thông qua trao đổi trực tiếp giữa đại diện tham gia đối thoại của bên người sử dụng lao động và đại diện đối thoại của tổ chức đại diện người lao động."
+        },
+        {
+          "article_id": "145-2020-nd-cp:d102",
+          "chunk_id": "145-2020-nd-cp:d102:p2",
+          "rank": 7,
+          "raw_rank": 8,
+          "score": 0.5534783,
+          "title": "Thành lập và hoạt động của Ban trọng tài lao động",
+          "meta_khoan": "5",
+          "text": "Lao động > Nghị định số 145/2020/NĐ-CP > Chương XIV. GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG > Mục 1. NHỮNG QUY ĐỊNH CHUNG VỀ GIẢI QUYẾT TRANH CHẤP LAO ĐỘNG\nĐiều 102. Thành lập và hoạt động của Ban trọng tài lao động\n5. Trình tự tiến hành tổ chức cuộc họp giải quyết tranh chấp lao động theo quy định tại điểm b khoản 4 Điều này được thực hiện như sau:\na) Ít nhất 05 ngày trước khi tổ chức cuộc họp, Ban trọng tài lao động phải có văn bản triệu tập tham gia cuộc họp gửi tới các bên tranh chấp, trong đó ghi rõ thời gian, địa điểm tổ chức cuộc họp;\nb) Khi nhận được văn bản triệu tập, các bên tranh chấp phải phản hồi cho Ban trọng tài lao động về việc tham gia phiên họp. Trường hợp một trong các bên có lý do chính đáng, không thể tham dự cuộc họp theo thời gian, địa điểm triệu tập thì có thể đề nghị Ban trọng tài lao động thay đổi thời gian tổ chức phiên họp vào thời điểm thích hợp. Ban trọng tài lao động có thẩm quyền quyết định cuối cùng việc thay đổi thời gian tiến hành cuộc họp và thông báo cho các bên;\nc) Tại cuộc họp giải quyết tranh chấp lao động phải có mặt đại diện các bên tranh chấp hoặc người được ủy quyền theo quy định. Trường hợp một trong các bên vắng mặt, kể cả trường hợp có đề nghị thay đổi thời gian họp nhưng không được chấp thuận thì Ban trọng tài lao động vẫn tiến hành phiên họp;\nd) Trong phiên họp, Ban trọng tài lao động phải nêu rõ nội dung các bên đề nghị giải quyết, nghe các bên trình bày cụ thể về nội dung vụ việc và ghi thành biên bản, có chữ ký của từng trọng tài viên lao động và các bên tranh chấp tham gia phiên họp."
+        },
+        {
+          "article_id": "45-2019-qh14:d217",
+          "chunk_id": "45-2019-qh14:d217",
+          "rank": 8,
+          "raw_rank": 9,
+          "score": 0.55203396,
+          "title": "Xử lý vi phạm",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương XVI. THANH TRA LAO ĐỘNG, XỬ LÝ VI PHẠM PHÁP LUẬT VỀ LAO ĐỘNG\nĐiều 217. Xử lý vi phạm\n1. Người nào có hành vi vi phạm quy định của Bộ luật này thì tùy theo tính chất, mức độ vi phạm mà bị xử lý kỷ luật, xử phạt vi phạm hành chính hoặc bị truy cứu trách nhiệm hình sự, nếu gây thiệt hại thì phải bồi thường theo quy định của pháp luật.\n2. Khi đã có quyết định của Tòa án về cuộc đình công là bất hợp pháp thì người lao động đang tham gia đình công phải ngừng ngay đình công và trở lại làm việc; nếu người lao động không ngừng đình công, không trở lại làm việc thì tùy theo mức độ vi phạm có thể bị xử lý kỷ luật lao động theo quy định của pháp luật về lao động.\nTrong trường hợp cuộc đình công là bất hợp pháp mà gây thiệt hại cho người sử dụng lao động thì tổ chức đại diện người lao động tổ chức và lãnh đạo đình công phải bồi thường thiệt hại theo quy định của pháp luật.\n3. Người lợi dụng đình công gây mất trật tự, an toàn công cộng, làm tổn hại máy, thiết bị, tài sản của người sử dụng lao động; người có hành vi cản trở thực hiện quyền đình công, kích động, lôi kéo, ép buộc người lao động đình công; người có hành vi trù dập, trả thù người tham gia đình công, người lãnh đạo cuộc đình công thì tùy theo mức độ vi phạm mà bị xử phạt vi phạm hành chính hoặc truy cứu trách nhiệm hình sự, nếu gây thiệt hại thì phải bồi thường theo quy định của pháp luật."
+        }
+      ],
+      "live_graph_rows": [
+        {
+          "index": 0,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "45-2019-qh14",
+          "article_number": "122",
+          "clause_number": "1",
+          "point_number": "b",
+          "text": "1. Việc xử lý kỷ luật lao động được quy định như sau:\na) Người sử dụng lao động phải chứng minh được lỗi của người lao động;\nb) Phải có sự tham gia của tổ chức đại diện người lao động tại cơ sở mà người lao động đang bị xử lý kỷ luật là thành viên;\nc) Người lao động phải có mặt và có quyền tự bào chữa, nhờ luật sư hoặc tổ chức đại diện người lao động bào chữa; trường hợp là người chưa đủ 15 tuổi thì phải có sự tham gia của người đại diện theo pháp luật;\nd) Việc xử lý kỷ luật lao động phải được ghi thành biên bản.",
+          "seed_chunk_id": "145-2020-nd-cp:d71"
+        },
+        {
+          "index": 0,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "45-2019-qh14",
+          "article_number": "122",
+          "clause_number": "1",
+          "point_number": "c",
+          "text": "1. Việc xử lý kỷ luật lao động được quy định như sau:\na) Người sử dụng lao động phải chứng minh được lỗi của người lao động;\nb) Phải có sự tham gia của tổ chức đại diện người lao động tại cơ sở mà người lao động đang bị xử lý kỷ luật là thành viên;\nc) Người lao động phải có mặt và có quyền tự bào chữa, nhờ luật sư hoặc tổ chức đại diện người lao động bào chữa; trường hợp là người chưa đủ 15 tuổi thì phải có sự tham gia của người đại diện theo pháp luật;\nd) Việc xử lý kỷ luật lao động phải được ghi thành biên bản.",
+          "seed_chunk_id": "145-2020-nd-cp:d71"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "45-2019-qh14",
+          "article_number": "122",
+          "clause_number": "4",
+          "point_number": null,
+          "text": "4. Không được xử lý kỷ luật lao động đối với người lao động đang trong thời gian sau đây:\na) Nghỉ ốm đau, điều dưỡng; nghỉ việc được sự đồng ý của người sử dụng lao động;\nb) Đang bị tạm giữ, tạm giam;\nc) Đang chờ kết quả của cơ quan có thẩm quyền điều tra xác minh và kết luận đối với hành vi vi phạm được quy định tại khoản 1 và khoản 2 Điều 125 của Bộ luật này;\nd) Người lao động nữ mang thai; người lao động nghỉ thai sản, nuôi con dưới 12 tháng tuổi.",
+          "seed_chunk_id": "145-2020-nd-cp:d72"
+        }
+      ],
+      "default_reference_expand_limit_per_node": 3,
+      "default_reference_results": [
+        {
+          "chunk_id": "45-2019-qh14:d122",
+          "clause": "1",
+          "change": "điểm b",
+          "source": "graph:CITES",
+          "text": "1. Việc xử lý kỷ luật lao động được quy định như sau:\na) Người sử dụng lao động phải chứng minh được lỗi của người lao động;\nb) Phải có sự tham gia của tổ chức đại diện người lao động tại cơ sở mà người lao động đang bị xử lý kỷ luật là thành viên;\nc) Người lao động phải có mặt và có quyền tự bào chữa, nhờ luật sư hoặc tổ chức đại diện người lao động bào chữa; trường hợp là người chưa đủ 15 tuổi thì phải có sự tham gia của người đại diện theo pháp luật;\nd) Việc xử lý kỷ luật lao động phải được ghi thành biên bản."
+        },
+        {
+          "chunk_id": "45-2019-qh14:d122",
+          "clause": "4",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "4. Không được xử lý kỷ luật lao động đối với người lao động đang trong thời gian sau đây:\na) Nghỉ ốm đau, điều dưỡng; nghỉ việc được sự đồng ý của người sử dụng lao động;\nb) Đang bị tạm giữ, tạm giam;\nc) Đang chờ kết quả của cơ quan có thẩm quyền điều tra xác minh và kết luận đối với hành vi vi phạm được quy định tại khoản 1 và khoản 2 Điều 125 của Bộ luật này;\nd) Người lao động nữ mang thai; người lao động nghỉ thai sản, nuôi con dưới 12 tháng tuổi."
+        }
+      ],
+      "qdrant_target_chunks": [
+        {
+          "chunk_id": "45-2019-qh14:d122",
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương VIII. KỶ LUẬT LAO ĐỘNG, TRÁCH NHIỆM VẬT CHẤT > Mục 1. KỶ LUẬT LAO ĐỘNG\nĐiều 122. Nguyên tắc, trình tự, thủ tục xử lý kỷ luật lao động\n1. Việc xử lý kỷ luật lao động được quy định như sau:\na) Người sử dụng lao động phải chứng minh được lỗi của người lao động;\nb) Phải có sự tham gia của tổ chức đại diện người lao động tại cơ sở mà người lao động đang bị xử lý kỷ luật là thành viên;\nc) Người lao động phải có mặt và có quyền tự bào chữa, nhờ luật sư hoặc tổ chức đại diện người lao động bào chữa; trường hợp là người chưa đủ 15 tuổi thì phải có sự tham gia của người đại diện theo pháp luật;\nd) Việc xử lý kỷ luật lao động phải được ghi thành biên bản.\n2. Không được áp dụng nhiều hình thức xử lý kỷ luật lao động đối với một hành vi vi phạm kỷ luật lao động.\n3. Khi một người lao động đồng thời có nhiều hành vi vi phạm kỷ luật lao động thì chỉ áp dụng hình thức kỷ luật cao nhất tương ứng với hành vi vi phạm nặng nhất.\n4. Không được xử lý kỷ luật lao động đối với người lao động đang trong thời gian sau đây:\na) Nghỉ ốm đau, điều dưỡng; nghỉ việc được sự đồng ý của người sử dụng lao động;\nb) Đang bị tạm giữ, tạm giam;\nc) Đang chờ kết quả của cơ quan có thẩm quyền điều tra xác minh và kết luận đối với hành vi vi phạm được quy định tại khoản 1 và khoản 2 Điều 125 của Bộ luật này;\nd) Người lao động nữ mang thai; người lao động nghỉ thai sản, nuôi con dưới 12 tháng tuổi.\n5. Không xử lý kỷ luật lao động đối với người lao động vi phạm kỷ luật lao động trong khi mắc bệnh tâm thần hoặc một bệnh khác làm mất khả năng nhận thức hoặc khả năng điều khiển hành vi của mình.\n6. Chính phủ quy định trình tự, thủ tục xử lý kỷ luật lao động."
+        }
+      ],
+      "marker_checks": [
+        {
+          "text": "tổ chức đại diện người lao động tại cơ sở mà người lao động đang bị xử lý kỷ luật là thành viên",
+          "in_vector_context": false,
+          "in_default_reference_context": true
+        },
+        {
+          "text": "trường hợp là người chưa đủ 15 tuổi thì phải có sự tham gia của người đại diện theo pháp luật",
+          "in_vector_context": false,
+          "in_default_reference_context": true
+        }
+      ]
+    },
+    {
+      "id": "manual15",
+      "question": "Người lao động nhận việc gia công tại nhà không thuộc diện đóng bảo hiểm tai nạn lao động thì được bên giao việc bảo đảm các quyền lợi gì khi bị tai nạn?",
+      "target_article": "84-2015-qh13:d38",
+      "target_rank_in_top50_raw_deduplicated": 13,
+      "vector_top_k": [
+        {
+          "article_id": "84-2015-qh13:d40",
+          "chunk_id": "84-2015-qh13:d40",
+          "rank": 1,
+          "raw_rank": 1,
+          "score": 0.6255905,
+          "title": "Trường hợp người lao động không được hưởng chế độ từ người sử dụng lao động khi bị tai nạn lao động",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 2. TRÁCH NHIỆM CỦA NGƯỜI SỬ DỤNG LAO ĐỘNG ĐỐI VỚI NGƯỜI LAO ĐỘNG BỊ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 40. Trường hợp người lao động không được hưởng chế độ từ người sử dụng lao động khi bị tai nạn lao động\n1. Người lao động không được hưởng chế độ từ người sử dụng lao động quy định tại Điều 38 và Điều 39 của Luật này nếu bị tai nạn thuộc một trong các nguyên nhân sau:\na) Do mâu thuẫn của chính nạn nhân với người gây ra tai nạn mà không liên quan đến việc thực hiện công việc, nhiệm vụ lao động;\nb) Do người lao động cố ý tự hủy hoại sức khỏe của bản thân;\nc) Do sử dụng ma túy, chất gây nghiện khác trái với quy định của pháp luật.\n2. Bộ trưởng Bộ Lao động - Thương binh và Xã hội quy định chi tiết Điều này."
+        },
+        {
+          "article_id": "84-2015-qh13:d45",
+          "chunk_id": "84-2015-qh13:d45",
+          "rank": 2,
+          "raw_rank": 2,
+          "score": 0.62239605,
+          "title": "Điều kiện hưởng chế độ tai nạn lao động",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 3. CHẾ ĐỘ BẢO HIỂM TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 45. Điều kiện hưởng chế độ tai nạn lao động\nNgười lao động tham gia bảo hiểm tai nạn lao động, bệnh nghề nghiệp được hưởng chế độ tai nạn lao động khi có đủ các điều kiện sau đây:\n1. Bị tai nạn thuộc một trong các trường hợp sau đây:\na) Tại nơi làm việc và trong giờ làm việc, kể cả khi đang thực hiện các nhu cầu sinh hoạt cần thiết tại nơi làm việc hoặc trong giờ làm việc mà Bộ luật lao động và nội quy của cơ sở sản xuất, kinh doanh cho phép, bao gồm nghỉ giải lao, ăn giữa ca, ăn bồi dưỡng hiện vật, làm vệ sinh kinh nguyệt, tắm rửa, cho con bú, đi vệ sinh;\nb) Ngoài nơi làm việc hoặc ngoài giờ làm việc khi thực hiện công việc theo yêu cầu của người sử dụng lao động hoặc người được người sử dụng lao động ủy quyền bằng văn bản trực tiếp quản lý lao động;\nc) Trên tuyến đường đi từ nơi ở đến nơi làm việc hoặc từ nơi làm việc về nơi ở trong khoảng thời gian và tuyến đường hợp lý;\n2. Suy giảm khả năng lao động từ 5% trở lên do bị tai nạn quy định tại khoản 1 Điều này;\n3. Người lao động không được hưởng chế độ do Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp chi trả nếu thuộc một trong các nguyên nhân quy định tại khoản 1 Điều 40 của Luật này."
+        },
+        {
+          "article_id": "84-2015-qh13:d6",
+          "chunk_id": "84-2015-qh13:d6:p2",
+          "rank": 3,
+          "raw_rank": 3,
+          "score": 0.6142337,
+          "title": "Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động",
+          "meta_khoan": "3-7",
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương I. QUY ĐỊNH CHUNG\nĐiều 6. Quyền và nghĩa vụ về an toàn, vệ sinh lao động của người lao động\n3. Người lao động làm việc không theo hợp đồng lao động có quyền sau đây:\na) Được làm việc trong điều kiện an toàn, vệ sinh lao động; được Nhà nước, xã hội và gia đình tạo điều kiện để làm việc trong môi trường an toàn, vệ sinh lao động;\nb) Tiếp nhận thông tin, tuyên truyền, giáo dục về công tác an toàn, vệ sinh lao động; được huấn luyện an toàn, vệ sinh lao động khi làm các công việc có yêu cầu nghiêm ngặt về an toàn, vệ sinh lao động;\nc) Tham gia và hưởng bảo hiểm tai nạn lao động theo hình thức tự nguyện do Chính phủ quy định.\nCăn cứ vào điều kiện phát triển kinh tế - xã hội, khả năng ngân sách nhà nước trong từng thời kỳ, Chính phủ quy định chi tiết về việc hỗ trợ tiền đóng bảo hiểm tai nạn lao động theo hình thức tự nguyện;\nd) Khiếu nại, tố cáo hoặc khởi kiện theo quy định của pháp luật.\n4. Người lao động làm việc không theo hợp đồng lao động có nghĩa vụ sau đây:\na) Chịu trách nhiệm về an toàn, vệ sinh lao động đối với công việc do mình thực hiện theo quy định của pháp luật;\nb) Bảo đảm an toàn, vệ sinh lao động đối với những người có liên quan trong quá trình lao động;\nc) Thông báo với chính quyền địa phương để có biện pháp ngăn chặn kịp thời các hành vi gây mất an toàn, vệ sinh lao động.\n5. Cán bộ, công chức, viên chức, người thuộc lực lượng vũ trang nhân dân có quyền và nghĩa vụ về an toàn, vệ sinh lao động như đối với người lao động quy định tại khoản 1 và khoản 2 Điều này, trừ trường hợp văn bản quy phạm pháp luật áp dụng riêng với đối tượng này có quy định khác.\n6. Người học nghề, tập nghề để làm việc cho người sử dụng lao động có quyền và nghĩa vụ về an toàn, vệ sinh lao động như đối với người lao động quy định tại khoản 1 và khoản 2 Điều này.\n7. Người lao động nước ngoài làm việc tại Việt Nam có quyền và nghĩa vụ về an toàn, vệ sinh lao động như đối với người lao động quy định tại khoản 1 và khoản 2 Điều này; riêng việc tham gia bảo hiểm tai nạn lao động, bệnh nghề nghiệp được thực hiện theo quy định của Chính phủ."
+        },
+        {
+          "article_id": "84-2015-qh13:d69",
+          "chunk_id": "84-2015-qh13:d69",
+          "rank": 4,
+          "raw_rank": 4,
+          "score": 0.60926723,
+          "title": "An toàn, vệ sinh lao động đối với người lao động nhận công việc về làm tại nhà",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương IV. BẢO ĐẢM AN TOÀN, VỆ SINH LAO ĐỘNG ĐỐI VỚI MỘT SỐ LAO ĐỘNG ĐẶC THÙ\nĐiều 69. An toàn, vệ sinh lao động đối với người lao động nhận công việc về làm tại nhà\n1. Người lao động khi thỏa thuận bằng văn bản với người sử dụng lao động về việc giao công việc về làm tại nhà trên cơ sở căn cứ vào việc người lao động bảo đảm được yêu cầu về an toàn, vệ sinh lao động đối với công việc được giao tại nhà.\n2. Nếu xảy ra tai nạn lao động khi làm việc tại nhà, thì người lao động hoặc thân nhân của họ phải báo cáo ngay để người sử dụng lao động biết.\nTrường hợp người bị tai nạn lao động đã tham gia bảo hiểm tai nạn lao động, bệnh nghề nghiệp thì được giải quyết các chính sách, chế độ liên quan đến người bị tai nạn lao động, bệnh nghề nghiệp theo quy định của Luật này.\nTrường hợp người bị tai nạn lao động là người thuộc diện không phải tham gia bảo hiểm tai nạn lao động, bệnh nghề nghiệp thì người sử dụng lao động có trách nhiệm giải quyết quyền lợi cho người lao động theo quy định tại các khoản 1, 2, 3, 4, 5, 6, 7, 8 và 10 Điều 38 của Luật này.\n3. Người sử dụng lao động có trách nhiệm kiểm tra việc bảo đảm an toàn, vệ sinh lao động đối với nơi làm việc của người lao động nhận công việc về làm tại nhà; thực hiện các cam kết trong thỏa thuận với người lao động nhận công việc về làm tại nhà; báo cáo tai nạn lao động xảy ra khi làm việc tại nhà của người lao động cùng với báo cáo chung về tai nạn lao động quy định tại Điều 36 của Luật này."
+        },
+        {
+          "article_id": "84-2015-qh13:d39",
+          "chunk_id": "84-2015-qh13:d39",
+          "rank": 5,
+          "raw_rank": 5,
+          "score": 0.6091795,
+          "title": "Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 2. TRÁCH NHIỆM CỦA NGƯỜI SỬ DỤNG LAO ĐỘNG ĐỐI VỚI NGƯỜI LAO ĐỘNG BỊ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 39. Trách nhiệm của người sử dụng lao động về bồi thường, trợ cấp trong những trường hợp đặc thù khi người lao động bị tai nạn lao động\n1. Trường hợp người lao động bị tai nạn lao động khi thực hiện nhiệm vụ hoặc tuân theo sự điều hành của người sử dụng lao động ở ngoài phạm vi cơ quan, doanh nghiệp, tổ chức, hợp tác xã, nếu do lỗi của người khác gây ra hoặc không xác định được người gây ra tai nạn, thì người sử dụng lao động vẫn phải bồi thường cho người lao động theo quy định tại khoản 4 Điều 38 của Luật này.\n2. Trường hợp người lao động bị tai nạn khi đi từ nơi ở đến nơi làm việc hoặc từ nơi làm việc về nơi ở theo tuyến đường và thời gian hợp lý, nếu do lỗi của người khác gây ra hoặc không xác định được người gây ra tai nạn thì người sử dụng lao động trợ cấp cho người lao động theo quy định tại khoản 5 Điều 38 của Luật này.\n3. Trường hợp người sử dụng lao động đã mua bảo hiểm tai nạn cho người bị tai nạn lao động tại các đơn vị hoạt động kinh doanh dịch vụ bảo hiểm, thì người bị tai nạn lao động được hưởng các khoản chi trả bồi thường, trợ cấp theo hợp đồng đã ký với đơn vị kinh doanh dịch vụ bảo hiểm. Nếu số tiền mà đơn vị kinh doanh dịch vụ bảo hiểm trả cho người bị tai nạn lao động thấp hơn mức quy định tại khoản 4 và khoản 5 Điều 38 của Luật này, thì người sử dụng lao động phải trả phần còn thiếu để tổng số tiền người bị tai nạn lao động hoặc thân nhân của người bị tai nạn lao động nhận được ít nhất bằng mức bồi thường, trợ cấp được quy định tại khoản 4 và khoản 5 Điều 38 của Luật này.\n4. Nếu người sử dụng lao động không đóng bảo hiểm tai nạn lao động, bệnh nghề nghiệp cho người lao động thuộc đối tượng tham gia bảo hiểm xã hội bắt buộc theo quy định của Luật bảo hiểm xã hội, thì ngoài việc phải bồi thường, trợ cấp theo quy định tại Điều 38 của Luật này, người sử dụng lao động phải trả khoản tiền tương ứng với chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo quy định tại Mục 3 Chương này khi người lao động bị tai nạn lao động, bệnh nghề nghiệp; việc chi trả có thể thực hiện một lần hoặc hằng tháng theo thỏa thuận của các bên, trường hợp không thống nhất thì thực hiện theo yêu cầu của người lao động.\n5. Bộ trưởng Bộ Lao động - Thương binh và Xã hội quy định chi tiết Điều này."
+        },
+        {
+          "article_id": "84-2015-qh13:d43",
+          "chunk_id": "84-2015-qh13:d43",
+          "rank": 6,
+          "raw_rank": 6,
+          "score": 0.59284776,
+          "title": "Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 3. CHẾ ĐỘ BẢO HIỂM TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 43. Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp\n1. Đối tượng áp dụng chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo quy định tại Mục này là người lao động tham gia bảo hiểm xã hội bắt buộc theo quy định tại các điểm a, b, c, d, đ, e và h khoản 1 Điều 2 và người sử dụng lao động quy định tại khoản 3 Điều 2 của Luật bảo hiểm xã hội.\n2. Trường hợp người lao động giao kết hợp đồng lao động với nhiều người sử dụng lao động thì người sử dụng lao động phải đóng bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo từng hợp đồng lao động đã giao kết nếu người lao động thuộc đối tượng phải tham gia bảo hiểm xã hội bắt buộc. Khi bị tai nạn lao động, bệnh nghề nghiệp thì người lao động được giải quyết chế độ bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo nguyên tắc đóng, hưởng do Chính phủ quy định."
+        },
+        {
+          "article_id": "45-2019-qh14:d163",
+          "chunk_id": "45-2019-qh14:d163",
+          "rank": 7,
+          "raw_rank": 7,
+          "score": 0.58802986,
+          "title": "Nghĩa vụ của người sử dụng lao động khi sử dụng lao động là người giúp việc gia đình",
+          "meta_khoan": null,
+          "text": "Lao động > Bộ luật số 45/2019/QH14 > Chương XI. NHỮNG QUY ĐỊNH RIÊNG ĐỐI VỚI LAO ĐỘNG CHƯA THÀNH NIÊN VÀ MỘT SỐ LAO ĐỘNG KHÁC > Mục 5. LAO ĐỘNG LÀ NGƯỜI GIÚP VIỆC GIA ĐÌNH\nĐiều 163. Nghĩa vụ của người sử dụng lao động khi sử dụng lao động là người giúp việc gia đình\n1. Thực hiện đầy đủ thỏa thuận đã giao kết trong hợp đồng lao động.\n2. Trả cho người giúp việc gia đình khoản tiền bảo hiểm xã hội, bảo hiểm y tế theo quy định của pháp luật để người lao động chủ động tham gia bảo hiểm xã hội, bảo hiểm y tế.\n3. Tôn trọng danh dự, nhân phẩm của người giúp việc gia đình.\n4. Bố trí chỗ ăn, ở hợp vệ sinh cho người giúp việc gia đình nếu có thỏa thuận.\n5. Tạo cơ hội cho người giúp việc gia đình được tham gia học văn hóa, giáo dục nghề nghiệp.\n6. Trả tiền tàu xe đi đường khi người giúp việc gia đình thôi việc về nơi cư trú, trừ trường hợp người giúp việc gia đình chấm dứt hợp đồng lao động trước thời hạn."
+        },
+        {
+          "article_id": "84-2015-qh13:d57",
+          "chunk_id": "84-2015-qh13:d57",
+          "rank": 8,
+          "raw_rank": 8,
+          "score": 0.58748394,
+          "title": "Hồ sơ hưởng chế độ tai nạn lao động",
+          "meta_khoan": null,
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 3. CHẾ ĐỘ BẢO HIỂM TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 57. Hồ sơ hưởng chế độ tai nạn lao động\n1. Sổ bảo hiểm xã hội.\n2. Giấy ra viện hoặc trích sao hồ sơ bệnh án sau khi đã điều trị tai nạn lao động đối với trường hợp nội trú.\n3. Biên bản giám định mức suy giảm khả năng lao động của Hội đồng giám định y khoa.\n4. Văn bản đề nghị giải quyết chế độ tai nạn lao động theo mẫu do Bảo hiểm xã hội Việt Nam ban hành sau khi thống nhất ý kiến với Bộ Lao động - Thương binh và Xã hội."
+        }
+      ],
+      "live_graph_rows": [
+        {
+          "index": 0,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": null,
+          "point_number": null,
+          "text": null,
+          "seed_chunk_id": "84-2015-qh13:d40"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "1",
+          "point_number": null,
+          "text": "1. Kịp thời sơ cứu, cấp cứu cho người lao động bị tai nạn lao động và phải tạm ứng chi phí sơ cứu, cấp cứu và điều trị cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "10",
+          "point_number": null,
+          "text": "10. Tiền lương để làm cơ sở thực hiện các chế độ bồi thường, trợ cấp, tiền lương trả cho người lao động nghỉ việc do bị tai nạn lao động, bệnh nghề nghiệp được quy định tại các khoản 3, 4 và 5 Điều này là tiền lương bao gồm mức lương, phụ cấp lương và các khoản bổ sung khác thực hiện theo quy định của pháp luật về lao động.",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "2",
+          "point_number": null,
+          "text": "2. Thanh toán chi phí y tế từ khi sơ cứu, cấp cứu đến khi điều trị ổn định cho người bị tai nạn lao động hoặc bệnh nghề nghiệp như sau:\na) Thanh toán phần chi phí đồng chi trả và những chi phí không nằm trong danh mục do bảo hiểm y tế chi trả đối với người lao động tham gia bảo hiểm y tế;\nb) Trả phí khám giám định mức suy giảm khả năng lao động đối với những trường hợp kết luận suy giảm khả năng lao động dưới 5% do người sử dụng lao động giới thiệu người lao động đi khám giám định mức suy giảm khả năng lao động tại Hội đồng giám định y khoa;\nc) Thanh toán toàn bộ chi phí y tế đối với người lao động không tham gia bảo hiểm y tế;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "3",
+          "point_number": null,
+          "text": "3. Trả đủ tiền lương cho người lao động bị tai nạn lao động, bệnh nghề nghiệp phải nghỉ việc trong thời gian điều trị, phục hồi chức năng lao động;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "4",
+          "point_number": null,
+          "text": "4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "5",
+          "point_number": null,
+          "text": "5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "6",
+          "point_number": null,
+          "text": "6. Giới thiệu để người lao động bị tai nạn lao động, bệnh nghề nghiệp được giám định y khoa xác định mức độ suy giảm khả năng lao động, được điều trị, điều dưỡng, phục hồi chức năng lao động theo quy định pháp luật;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "7",
+          "point_number": null,
+          "text": "7. Thực hiện bồi thường, trợ cấp đối với người bị tai nạn lao động, bệnh nghề nghiệp trong thời hạn 05 ngày, kể từ ngày có kết luận của Hội đồng giám định y khoa về mức suy giảm khả năng lao động hoặc kể từ ngày Đoàn điều tra tai nạn lao động công bố biên bản điều tra tai nạn lao động đối với các vụ tai nạn lao động chết người;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "8",
+          "point_number": null,
+          "text": "8. Sắp xếp công việc phù hợp với sức khỏe theo kết luận của Hội đồng giám định y khoa đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp sau khi điều trị, phục hồi chức năng nếu còn tiếp tục làm việc;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 4,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "4",
+          "point_number": null,
+          "text": "4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;",
+          "seed_chunk_id": "84-2015-qh13:d39"
+        },
+        {
+          "index": 4,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "5",
+          "point_number": null,
+          "text": "5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;",
+          "seed_chunk_id": "84-2015-qh13:d39"
+        },
+        {
+          "index": 4,
+          "hop": 1,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": null,
+          "point_number": null,
+          "text": null,
+          "seed_chunk_id": "84-2015-qh13:d39"
+        },
+        {
+          "index": 3,
+          "hop": 2,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "3",
+          "point_number": null,
+          "text": "3. Trả đủ tiền lương cho người lao động bị tai nạn lao động, bệnh nghề nghiệp phải nghỉ việc trong thời gian điều trị, phục hồi chức năng lao động;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 2,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "4",
+          "point_number": null,
+          "text": "4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 3,
+          "hop": 2,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "5",
+          "point_number": null,
+          "text": "5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;",
+          "seed_chunk_id": "84-2015-qh13:d69"
+        },
+        {
+          "index": 4,
+          "hop": 2,
+          "relation": "CITES_COMPONENT",
+          "document_id": "84-2015-qh13",
+          "article_number": "38",
+          "clause_number": "4",
+          "point_number": null,
+          "text": "4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;",
+          "seed_chunk_id": "84-2015-qh13:d39"
+        }
+      ],
+      "default_reference_expand_limit_per_node": 3,
+      "default_reference_results": [
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": null,
+          "change": null,
+          "source": "graph:CITES",
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 2. TRÁCH NHIỆM CỦA NGƯỜI SỬ DỤNG LAO ĐỘNG ĐỐI VỚI NGƯỜI LAO ĐỘNG BỊ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 38. Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp\nNgười sử dụng lao động có trách nhiệm đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp như sau:\n1. Kịp thời sơ cứu, cấp cứu cho người lao động bị tai nạn lao động và phải tạm ứng chi phí sơ cứu, cấp cứu và điều trị cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp;\n2. Thanh toán chi phí y tế từ khi sơ cứu, cấp cứu đến khi điều trị ổn định cho người bị tai nạn lao động hoặc bệnh nghề nghiệp như sau:\na) Thanh toán phần chi phí đồng chi trả và những chi phí không nằm trong danh mục do bảo hiểm y tế chi trả đối với người lao động tham gia bảo hiểm y tế;\nb) Trả phí khám giám định mức suy giảm khả năng lao động đối với những trường hợp kết luận suy giảm khả năng lao động dưới 5% do người sử dụng lao động giới thiệu người lao động đi khám giám định mức suy giảm khả năng lao động tại Hội đồng giám định y khoa;\nc) Thanh toán toàn bộ chi phí y tế đối với người lao động không tham gia bảo hiểm y tế;\n3. Trả đủ tiền lương cho người lao động bị tai nạn lao động, bệnh nghề nghiệp phải nghỉ việc trong thời gian điều trị, phục hồi chức năng lao động;\n4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;\n5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;\n6. Giới thiệu để người lao động bị tai nạn lao động, bệnh nghề nghiệp được giám định y khoa xác định mức độ suy giảm khả năng lao động, được điều trị, điều dưỡng, phục hồi chức năng lao động theo quy định pháp luật;\n7. Thực hiện bồi thường, trợ cấp đối với người bị tai nạn lao động, bệnh nghề nghiệp trong thời hạn 05 ngày, kể từ ngày có kết luận của Hội đồng giám định y khoa về mức suy giảm khả năng lao động hoặc kể từ ngày Đoàn điều tra tai nạn lao động công bố biên bản điều tra tai nạn lao động đối với các vụ tai nạn lao động chết người;\n8. Sắp xếp công việc phù hợp với sức khỏe theo kết luận của Hội đồng giám định y khoa đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp sau khi điều trị, phục hồi chức năng nếu còn tiếp tục làm việc;\n9. Lập hồ sơ hưởng chế độ về tai nạn lao động, bệnh nghề nghiệp từ Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo quy định tại Mục 3 Chương này;\n10. Tiền lương để làm cơ sở thực hiện các chế độ bồi thường, trợ cấp, tiền lương trả cho người lao động nghỉ việc do bị tai nạn lao động, bệnh nghề nghiệp được quy định tại các khoản 3, 4 và 5 Điều này là tiền lương bao gồm mức lương, phụ cấp lương và các khoản bổ sung khác thực hiện theo quy định của pháp luật về lao động.\n11. Bộ trưởng Bộ Lao động - Thương binh và Xã hội quy định chi tiết các khoản 3, 4 và 5 Điều này."
+        },
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": "1",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "1. Kịp thời sơ cứu, cấp cứu cho người lao động bị tai nạn lao động và phải tạm ứng chi phí sơ cứu, cấp cứu và điều trị cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp;"
+        },
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": "10",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "10. Tiền lương để làm cơ sở thực hiện các chế độ bồi thường, trợ cấp, tiền lương trả cho người lao động nghỉ việc do bị tai nạn lao động, bệnh nghề nghiệp được quy định tại các khoản 3, 4 và 5 Điều này là tiền lương bao gồm mức lương, phụ cấp lương và các khoản bổ sung khác thực hiện theo quy định của pháp luật về lao động."
+        },
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": "2",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "2. Thanh toán chi phí y tế từ khi sơ cứu, cấp cứu đến khi điều trị ổn định cho người bị tai nạn lao động hoặc bệnh nghề nghiệp như sau:\na) Thanh toán phần chi phí đồng chi trả và những chi phí không nằm trong danh mục do bảo hiểm y tế chi trả đối với người lao động tham gia bảo hiểm y tế;\nb) Trả phí khám giám định mức suy giảm khả năng lao động đối với những trường hợp kết luận suy giảm khả năng lao động dưới 5% do người sử dụng lao động giới thiệu người lao động đi khám giám định mức suy giảm khả năng lao động tại Hội đồng giám định y khoa;\nc) Thanh toán toàn bộ chi phí y tế đối với người lao động không tham gia bảo hiểm y tế;"
+        },
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": "4",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;"
+        },
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "clause": "5",
+          "change": null,
+          "source": "graph:CITES",
+          "text": "5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;"
+        }
+      ],
+      "qdrant_target_chunks": [
+        {
+          "chunk_id": "84-2015-qh13:d38",
+          "text": "An toàn, vệ sinh lao động > Luật số 84/2015/QH13 > Chương III. CÁC BIỆN PHÁP XỬ LÝ SỰ CỐ KỸ THUẬT GÂY MẤT AN TOÀN, VỆ SINH LAO ĐỘNG VÀ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP > Mục 2. TRÁCH NHIỆM CỦA NGƯỜI SỬ DỤNG LAO ĐỘNG ĐỐI VỚI NGƯỜI LAO ĐỘNG BỊ TAI NẠN LAO ĐỘNG, BỆNH NGHỀ NGHIỆP\nĐiều 38. Trách nhiệm của người sử dụng lao động đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp\nNgười sử dụng lao động có trách nhiệm đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp như sau:\n1. Kịp thời sơ cứu, cấp cứu cho người lao động bị tai nạn lao động và phải tạm ứng chi phí sơ cứu, cấp cứu và điều trị cho người lao động bị tai nạn lao động hoặc bệnh nghề nghiệp;\n2. Thanh toán chi phí y tế từ khi sơ cứu, cấp cứu đến khi điều trị ổn định cho người bị tai nạn lao động hoặc bệnh nghề nghiệp như sau:\na) Thanh toán phần chi phí đồng chi trả và những chi phí không nằm trong danh mục do bảo hiểm y tế chi trả đối với người lao động tham gia bảo hiểm y tế;\nb) Trả phí khám giám định mức suy giảm khả năng lao động đối với những trường hợp kết luận suy giảm khả năng lao động dưới 5% do người sử dụng lao động giới thiệu người lao động đi khám giám định mức suy giảm khả năng lao động tại Hội đồng giám định y khoa;\nc) Thanh toán toàn bộ chi phí y tế đối với người lao động không tham gia bảo hiểm y tế;\n3. Trả đủ tiền lương cho người lao động bị tai nạn lao động, bệnh nghề nghiệp phải nghỉ việc trong thời gian điều trị, phục hồi chức năng lao động;\n4. Bồi thường cho người lao động bị tai nạn lao động mà không hoàn toàn do lỗi của chính người này gây ra và cho người lao động bị bệnh nghề nghiệp với mức như sau:\na) Ít nhất bằng 1,5 tháng tiền lương nếu bị suy giảm từ 5% đến 10% khả năng lao động; sau đó cứ tăng 1% được cộng thêm 0,4 tháng tiền lương nếu bị suy giảm khả năng lao động từ 11% đến 80%;\nb) Ít nhất 30 tháng tiền lương cho người lao động bị suy giảm khả năng lao động từ 81% trở lên hoặc cho thân nhân người lao động bị chết do tai nạn lao động, bệnh nghề nghiệp;\n5. Trợ cấp cho người lao động bị tai nạn lao động mà do lỗi của chính họ gây ra một khoản tiền ít nhất bằng 40% mức quy định tại khoản 4 Điều này với mức suy giảm khả năng lao động tương ứng;\n6. Giới thiệu để người lao động bị tai nạn lao động, bệnh nghề nghiệp được giám định y khoa xác định mức độ suy giảm khả năng lao động, được điều trị, điều dưỡng, phục hồi chức năng lao động theo quy định pháp luật;\n7. Thực hiện bồi thường, trợ cấp đối với người bị tai nạn lao động, bệnh nghề nghiệp trong thời hạn 05 ngày, kể từ ngày có kết luận của Hội đồng giám định y khoa về mức suy giảm khả năng lao động hoặc kể từ ngày Đoàn điều tra tai nạn lao động công bố biên bản điều tra tai nạn lao động đối với các vụ tai nạn lao động chết người;\n8. Sắp xếp công việc phù hợp với sức khỏe theo kết luận của Hội đồng giám định y khoa đối với người lao động bị tai nạn lao động, bệnh nghề nghiệp sau khi điều trị, phục hồi chức năng nếu còn tiếp tục làm việc;\n9. Lập hồ sơ hưởng chế độ về tai nạn lao động, bệnh nghề nghiệp từ Quỹ bảo hiểm tai nạn lao động, bệnh nghề nghiệp theo quy định tại Mục 3 Chương này;\n10. Tiền lương để làm cơ sở thực hiện các chế độ bồi thường, trợ cấp, tiền lương trả cho người lao động nghỉ việc do bị tai nạn lao động, bệnh nghề nghiệp được quy định tại các khoản 3, 4 và 5 Điều này là tiền lương bao gồm mức lương, phụ cấp lương và các khoản bổ sung khác thực hiện theo quy định của pháp luật về lao động.\n11. Bộ trưởng Bộ Lao động - Thương binh và Xã hội quy định chi tiết các khoản 3, 4 và 5 Điều này."
+        }
+      ],
+      "marker_checks": [
+        {
+          "text": "1,5 tháng tiền lương",
+          "in_vector_context": false,
+          "in_default_reference_context": true
+        },
+        {
+          "text": "Thanh toán toàn bộ chi phí y tế đối với người lao động không tham gia bảo hiểm y tế",
+          "in_vector_context": false,
+          "in_default_reference_context": true
+        }
+      ]
+    }
+  ]
+}

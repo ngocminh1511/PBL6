@@ -1,0 +1,8 @@
+{
+  "data/processed/lao_dong_v5/chunks.jsonl": "ace3e0102a6cf5aede720eae5ea7dc92c426ecb66f342212d3b6117d8d58c458",
+  "data/processed/appendices_v1/appendices.jsonl": "90a2a000dcdaef5d6a3171078e7035d8a73e5cdaafb723a5e495aad27598da39",
+  "data/processed/appendices_v1/chunks.jsonl": "4abc0695a1d2aa93ad4cea75ce956fdc4fc8a7225a5fa796735d6fa53c271ac6",
+  "data/processed/appendices_v1/kg_nodes.jsonl": "3abecaa81466882433769dab7129d4062cd9680c358857db0b0d3dfc16c2c7fd",
+  "data/processed/appendices_v1/kg_edges.jsonl": "17f4ccbd0bab3e7f7a8ff5ad725997fcd65db172f891a9b5f459bf2cf8bef44d",
+  "ontology/abox/appendices/appendices.ttl": "690b8cf9b412c43d80c2c8cd6943fb90afe1cf23e07b00231dfe0434e1032f39"
+}

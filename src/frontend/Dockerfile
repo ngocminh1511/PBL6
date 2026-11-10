@@ -1,19 +1,12 @@
-FROM node:18-alpine AS base
-
+FROM node:22-alpine
 WORKDIR /app
-
-# Install dependencies based on the preferred package manager
-COPY src/frontend/package.json ./
-RUN npm install
-
+COPY src/frontend/package.json src/frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY src/frontend ./
-
+ARG BACKEND_ORIGIN=http://backend:8000
+ENV BACKEND_ORIGIN=$BACKEND_ORIGIN
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
 RUN npm run build
-
 EXPOSE 3000
-
 CMD ["npm", "run", "start"]
-

@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { api, errorMessage } from '../../lib/api';
 import { useDocumentStore } from '../../stores/documentStore';
 
 export const UploadModal: React.FC = () => {
   const { isUploadModalOpen, setUploadModalOpen, uploadDocument } = useDocumentStore();
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState('pdf');
+  const [deMucId, setDeMucId] = useState('');
   const [domain, setDomain] = useState('lao_dong');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +40,15 @@ export const UploadModal: React.FC = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await uploadDocument(file, docType, domain);
+      if (docType === 'phap_dien_html') {
+        const response = await api.uploadDocument(file, docType, domain, deMucId || undefined);
+        useDocumentStore.getState().pollTaskProgress(response.task_id);
+      } else {
+        await uploadDocument(file, docType, domain);
+      }
       setUploadModalOpen(false);
     } catch (err: any) {
-      setError(err?.message || 'Có lỗi xảy ra khi nạp tài liệu.');
+      setError(errorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -67,6 +74,9 @@ export const UploadModal: React.FC = () => {
 
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+          {docType === 'phap_dien_html' && <label className="text-sm">Mã đề mục (nếu file chưa có tiêu đề nhận diện)
+            <input value={deMucId} onChange={e => setDeMucId(e.target.value)} placeholder="Ví dụ: 20.2"
+              className="block w-full border rounded-lg p-2 mt-1" /></label>}
           {/* File Type Selector */}
           <div className="flex flex-col gap-1.5">
             <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
@@ -128,8 +138,8 @@ export const UploadModal: React.FC = () => {
               className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface font-body-sm text-body-sm focus:outline-none focus:border-secondary"
             >
               <option value="lao_dong">Pháp luật Lao động & Quan hệ lao động</option>
-              <option value="bhxh">Bảo hiểm xã hội & Y tế</option>
-              <option value="dan_su">Dân sự & Hợp đồng</option>
+
+
               <option value="doanh_nghiep">Doanh nghiệp & Đầu tư</option>
             </select>
           </div>

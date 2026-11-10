@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { api } from '../../lib/api';
+import { api, errorMessage } from '../../lib/api';
 import { AdminConfig, SystemStats } from '../../lib/types';
 
 export default function AdminPage() {
+  const [error, setError] = useState('');
   const [config, setConfig] = useState<AdminConfig | null>(null);
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -17,11 +18,11 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const [cfg, st] = await Promise.all([api.getAdminConfig(), api.getSystemStats()]);
+      const [cfg, st] = await Promise.all([api.getAdminConfig(), api.getSystemStats().catch(() => null)]);
       setConfig(cfg);
       setStats(st);
     } catch (e) {
-      console.error('Failed to load admin settings:', e);
+      setError(errorMessage(e));
     }
   };
 
@@ -30,13 +31,14 @@ export default function AdminPage() {
     if (!config) return;
     setIsSaving(true);
     setSaveSuccess(false);
+    setError('');
     try {
       const updated = await api.updateAdminConfig(config);
       setConfig(updated);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (e) {
-      alert('Có lỗi xảy ra khi lưu cấu hình.');
+      setError(errorMessage(e));
     } finally {
       setIsSaving(false);
     }
@@ -48,10 +50,11 @@ export default function AdminPage() {
       setFlushMessage(res.message);
       setTimeout(() => setFlushMessage(null), 4000);
     } catch (e) {
-      alert('Không thể xóa cache.');
+      setError(errorMessage(e));
     }
   };
 
+  if (!config && error) return <div className="p-gutter max-w-5xl mx-auto"><p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container">{error}</p></div>;
   if (!config) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -87,6 +90,7 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {error && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error}</p>}
       {flushMessage && (
         <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-sm font-medium animate-fadeIn">
           {flushMessage}
@@ -95,7 +99,7 @@ export default function AdminPage() {
 
       {saveSuccess && (
         <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-sm font-medium animate-fadeIn">
-          ✓ Đã lưu cấu hình hệ thống thành công! Các thay đổi đã được áp dụng tức thì.
+          ✓ Đã lưu cấu hình hệ thống thành công! Các request tiếp theo sẽ dùng cấu hình mới.
         </div>
       )}
 
@@ -105,10 +109,10 @@ export default function AdminPage() {
           <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
             <span className="font-label-statute text-[11px] text-on-surface-variant uppercase">CSDL Vector (Qdrant)</span>
             <div className="font-headline-sm text-emerald-600 font-bold mt-1 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className={`w-2 h-2 rounded-full ${stats.vector_db_status === 'connected' ? 'bg-emerald-500' : 'bg-outline'}`}></span>
               {stats.vector_db_status}
             </div>
-            <span className="text-[11px] font-mono text-outline">{stats.total_chunks} Đoạn đã lập chỉ mục</span>
+            <span className="text-[11px] font-mono text-outline">{stats.total_chunks ?? '—'} Đoạn đã lập chỉ mục</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
@@ -117,7 +121,7 @@ export default function AdminPage() {
               <span className="w-2 h-2 rounded-full bg-secondary"></span>
               {stats.graph_db_status}
             </div>
-            <span className="text-[11px] font-mono text-outline">{stats.total_nodes} Đỉnh • {stats.total_edges} Cạnh</span>
+            <span className="text-[11px] font-mono text-outline">{stats.total_nodes ?? '—'} Đỉnh • {stats.total_edges ?? '—'} Cạnh</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
@@ -131,7 +135,7 @@ export default function AdminPage() {
           <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
             <span className="font-label-statute text-[11px] text-on-surface-variant uppercase">Phiên tra cứu</span>
             <div className="font-headline-sm text-on-surface font-bold mt-1">
-              {stats.active_sessions_count} Phiên
+              {stats.active_sessions_count ?? '—'} Phiên
             </div>
             <span className="text-[11px] font-mono text-outline">Lịch sử đa lượt lưu trữ</span>
           </div>
@@ -157,19 +161,15 @@ export default function AdminPage() {
               </label>
               <select
                 value={config.embedding_model}
-                onChange={(e) => setConfig({ ...config, embedding_model: e.target.value })}
+                onChange={(e) => { const pair = Object.entries(config.available_collections).find(([, model]) => model === e.target.value);
+                  if (pair) setConfig({ ...config, embedding_model: e.target.value, qdrant_collection: pair[0] }); }}
                 className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface font-body-sm focus:outline-none focus:border-secondary"
               >
-                <option value="BAAI/bge-m3">BAAI/bge-m3 (Mặc định chuẩn - 1024-d Cosine)</option>
-                <option value="data/model/bge-m3-legal-vietnamese">
-                  bge-m3-legal-vietnamese (Fine-tuned Tiếng Việt Pháp lý)
-                </option>
-                <option value="bkai-foundation-models/vietnamese-bi-encoder">
-                  bkai-foundation-models/vietnamese-bi-encoder
-                </option>
+                {Array.from(new Set([config.embedding_model, 'BAAI/bge-m3', 'data/model/bge-m3-legal-vietnamese', 'bkai-foundation-models/vietnamese-bi-encoder', ...Object.values(config.available_collections)])).map(model =>
+                  <option key={model} value={model} disabled={!Object.values(config.available_collections).includes(model)}>{model}{!Object.values(config.available_collections).includes(model) ? ' · chưa đăng ký collection' : ''}</option>)}
               </select>
               <span className="text-[11px] text-on-surface-variant">
-                Hỗ trợ BGE-m3 đa ngôn ngữ và trọng số fine-tuned pháp lý đã huấn luyện trong thư mục model.
+                Chọn model cùng collection đã index tương ứng; đăng ký thêm qua COLLECTION_MODELS.
               </span>
             </div>
 
@@ -192,6 +192,13 @@ export default function AdminPage() {
             </div>
           </div>
 
+          <div className="flex flex-col gap-1.5">
+            <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">Nguồn tính toán khi truy vấn</label>
+            <select value={config.query_embedding_backend} onChange={e => setConfig({ ...config, query_embedding_backend: e.target.value as 'modal' | 'local' })}
+              className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface font-body-sm">
+              <option value="modal">Modal cloud</option><option value="local">Máy cục bộ</option>
+            </select>
+          </div>
           {config.embedding_backend === 'modal' && (
             <div className="p-3 rounded-xl bg-surface-container-low border border-secondary/30 flex flex-col gap-1">
               <label className="font-label-statute text-label-statute text-secondary font-bold">
@@ -249,13 +256,18 @@ export default function AdminPage() {
               <input
                 type="text"
                 value={config.qdrant_collection}
-                onChange={(e) => setConfig({ ...config, qdrant_collection: e.target.value })}
+                onChange={(e) => setConfig({ ...config, qdrant_collection: e.target.value, embedding_model: config.available_collections[e.target.value] || config.embedding_model })}
                 className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-mono text-sm text-on-surface"
               />
             </div>
           </div>
         </div>
 
+        <div className="p-space-lg bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-1.5">
+          <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">Kết nối đồ thị Neo4j</label>
+          <input value={config.neo4j_uri} onChange={e => setConfig({ ...config, neo4j_uri: e.target.value })}
+            className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-mono text-sm text-on-surface" />
+        </div>
         {/* 3. LLM Provider */}
         <div className="p-space-lg bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col gap-4">
           <div className="flex items-center gap-2 border-b border-outline-variant/20 pb-3">
@@ -275,9 +287,9 @@ export default function AdminPage() {
                 onChange={(e) => setConfig({ ...config, llm_provider: e.target.value as any })}
                 className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface font-body-sm focus:outline-none focus:border-secondary"
               >
-                <option value="gemini">Google Gemini (Khuyên dùng - gemini-2.5-flash)</option>
-                <option value="openai">OpenAI (gpt-4o / gpt-4o-mini)</option>
-                <option value="anthropic">Anthropic (Claude Sonnet 3.5)</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
               </select>
             </div>
 
@@ -287,15 +299,16 @@ export default function AdminPage() {
               </label>
               <input
                 type="text"
-                value={config.gemini_model}
-                onChange={(e) => setConfig({ ...config, gemini_model: e.target.value })}
+                value={config[(config.llm_provider + '_model') as 'gemini_model' | 'anthropic_model' | 'openai_model']}
+                onChange={(e) => setConfig({ ...config, [(config.llm_provider + '_model') as 'gemini_model' | 'anthropic_model' | 'openai_model']: e.target.value })}
                 className="bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-mono text-sm text-on-surface"
-                placeholder="gemini-3.6-flash"
+                placeholder="Tên model của provider đã chọn"
               />
             </div>
           </div>
         </div>
 
+        <label className="flex items-center gap-space-sm font-body-sm text-body-sm"><input type="checkbox" checked={config.redis_enabled} onChange={e => setConfig({ ...config, redis_enabled: e.target.checked })} className="accent-secondary" />Bật Redis cache</label>
         {/* Submit Bar */}
         <div className="flex items-center justify-end gap-3 pt-2">
           <button

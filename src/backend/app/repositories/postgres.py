@@ -6,35 +6,57 @@ from src.backend.app.config import settings
 from src.backend.app.models.database import Base, User, ChatSession, ChatMessage, DocumentRecord, IngestionTask, SystemConfig
 from src.backend.app.utils.pagination import encode_cursor, decode_cursor
 
-# Setup Engine & Session Maker with fallback for sqlite if needed
-db_url = settings.DATABASE_URL
-engine = None
+class Database:
+    def __init__(self, url):
+        self.url = url
+        self.engine = None
+        self.factory = None
+        self.available = False
+        self.error_type = "not_configured" if not url else "not_checked"
 
-if db_url.startswith("postgresql://") or db_url.startswith("postgres://"):
-    try:
-        import psycopg2
-        test_engine = create_engine(db_url, pool_pre_ping=True)
-        # Test real connection immediately
-        with test_engine.connect() as conn:
-            pass
-        engine = test_engine
-        print("[PostgresRepository] Connected successfully to PostgreSQL.")
-    except Exception as e:
-        print(f"[PostgresRepository] Notice: PostgreSQL connection failed ({e}). Automatically using SQLite fallback for local running.")
-        sqlite_path = settings.INTERIM_DIR / "lexgraph.db"
-        engine = create_engine(f"sqlite:///{sqlite_path}", connect_args={"check_same_thread": False})
-else:
-    engine = create_engine(db_url, connect_args={"check_same_thread": False})
+    def start(self):
+        if not self.url:
+            return
+        try:
+            url = self.url.replace("postgres://", "postgresql://", 1)
+            kwargs = {"check_same_thread": False} if url.startswith("sqlite:") else {"connect_timeout": 5}
+            if url == "sqlite://":
+                from sqlalchemy.pool import StaticPool
+                self.engine = create_engine(url, connect_args=kwargs, poolclass=StaticPool)
+            else:
+                self.engine = create_engine(url, connect_args=kwargs, pool_pre_ping=True)
+            from src.backend.app.migrations import upgrade
+            upgrade(self.engine)
+            self.factory = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+            self.available = True
+            self.error_type = None
+        except Exception as exc:
+            self.error_type = type(exc).__name__
+            self.available = False
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    def session(self):
+        if not self.available:
+            from fastapi import HTTPException
+            raise HTTPException(503, "PostgreSQL chưa sẵn sàng; kiểm tra DATABASE_URL cloud.")
+        return self.factory()
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
+    def close(self):
+        if self.engine is not None:
+            self.engine.dispose()
 
-def get_db():
-    db = SessionLocal()
+
+from fastapi import Request
+
+
+def get_db(request: Request):
+    from sqlalchemy.exc import SQLAlchemyError
+    from fastapi import HTTPException
+    db = request.app.state.database.session()
     try:
         yield db
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(503, "Database ứng dụng chưa hoàn tất thao tác.") from None
     finally:
         db.close()
 
@@ -86,7 +108,7 @@ class ChatRepository:
     ) -> Tuple[List[ChatSession], Optional[str], bool, int]:
         total_count = self.db.query(func.count(ChatSession.id)).filter(ChatSession.user_id == user_id).scalar() or 0
         query = self.db.query(ChatSession).filter(ChatSession.user_id == user_id)
-        
+
         decoded = decode_cursor(cursor)
         if decoded:
             cursor_time_str, cursor_id = decoded
@@ -97,7 +119,7 @@ class ChatRepository:
                     (ChatSession.updated_at == cursor_time) & (ChatSession.id < cursor_id)
                 )
             )
-            
+
         items = query.order_by(desc(ChatSession.updated_at), desc(ChatSession.id)).limit(limit + 1).all()
         has_more = len(items) > limit
         if has_more:
@@ -106,19 +128,20 @@ class ChatRepository:
             next_cursor = encode_cursor(last_item.updated_at, last_item.id)
         else:
             next_cursor = None
-            
+
         return items, next_cursor, has_more, total_count
 
     def add_message(
-        self, 
-        session_id: str, 
-        role: str, 
+        self,
+        session_id: str,
+        role: str,
         content: str,
         standalone_query: Optional[str] = None,
         pipeline_trace: Optional[dict] = None,
         legal_evidence: Optional[list] = None,
         citation_check: Optional[dict] = None,
-        execution_time_ms: Optional[int] = None
+        execution_time_ms: Optional[int] = None,
+        attachments: Optional[list] = None, warnings: Optional[list] = None
     ) -> ChatMessage:
         msg = ChatMessage(
             session_id=session_id,
@@ -128,15 +151,15 @@ class ChatRepository:
             pipeline_trace=pipeline_trace,
             legal_evidence=legal_evidence,
             citation_check=citation_check,
-            execution_time_ms=execution_time_ms
+            execution_time_ms=execution_time_ms, attachments=attachments or [], warnings=warnings or []
         )
         self.db.add(msg)
-        
+
         # Update session updated_at
         session = self.db.query(ChatSession).filter(ChatSession.id == session_id).first()
         if session:
             session.updated_at = datetime.utcnow()
-            
+
         self.db.commit()
         self.db.refresh(msg)
         return msg
@@ -158,17 +181,17 @@ class DocumentRepository:
         return self.db.query(DocumentRecord).filter(DocumentRecord.id == document_id).first()
 
     def list_documents_cursor(
-        self, 
-        domain: Optional[str] = None, 
-        search: Optional[str] = None, 
-        cursor: Optional[str] = None, 
+        self,
+        domain: Optional[str] = None,
+        search: Optional[str] = None,
+        cursor: Optional[str] = None,
         limit: int = 10
     ) -> Tuple[List[DocumentRecord], Optional[str], bool, int]:
         query = self.db.query(DocumentRecord)
-        
+
         if domain and domain != "all":
             query = query.filter(DocumentRecord.domain == domain)
-            
+
         if search:
             search_pattern = f"%{search}%"
             query = query.filter(
@@ -178,9 +201,9 @@ class DocumentRepository:
                     DocumentRecord.id.ilike(search_pattern)
                 )
             )
-            
+
         total_count = query.count()
-        
+
         decoded = decode_cursor(cursor)
         if decoded:
             cursor_time_str, cursor_id = decoded
@@ -191,7 +214,7 @@ class DocumentRepository:
                     (DocumentRecord.created_at == cursor_time) & (DocumentRecord.id < cursor_id)
                 )
             )
-            
+
         items = query.order_by(desc(DocumentRecord.created_at), desc(DocumentRecord.id)).limit(limit + 1).all()
         has_more = len(items) > limit
         if has_more:
@@ -200,7 +223,7 @@ class DocumentRepository:
             next_cursor = encode_cursor(last_item.created_at, last_item.id)
         else:
             next_cursor = None
-            
+
         return items, next_cursor, has_more, total_count
 
     def save(self, doc: DocumentRecord) -> DocumentRecord:
@@ -233,11 +256,11 @@ class TaskRepository:
         return self.db.query(IngestionTask).filter(IngestionTask.id == task_id).first()
 
     def update_progress(
-        self, 
-        task_id: str, 
-        progress: float, 
-        step: str, 
-        status: Optional[str] = None, 
+        self,
+        task_id: str,
+        progress: float,
+        step: str,
+        status: Optional[str] = None,
         embedded_chunks: int = 0,
         total_chunks: int = 0,
         error_message: Optional[str] = None

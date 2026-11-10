@@ -1,5 +1,5 @@
 """Decide which chunks to write when new chunks meet the ones already indexed
-(docs/structural_jsonl.md, section 7).
+(docs/SYSTEM.md, section 4.7).
 
 Decisions are per Dieu (article_id: "<document_id>:d35", or ":pl1" for an
 appendix), never per part, so a Dieu never mixes parts from two sources:

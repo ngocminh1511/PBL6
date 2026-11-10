@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { DocumentRecord, IngestionTask } from '../lib/types';
-import { api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 
 interface DocumentState {
   documents: DocumentRecord[];
+  error: string | null;
   isLoading: boolean;
   searchQuery: string;
   selectedDomain: string;
@@ -27,20 +28,21 @@ interface DocumentState {
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
   documents: [],
+  error: null,
   isLoading: false,
   searchQuery: '',
   selectedDomain: 'all',
   nextCursor: null,
   hasMore: false,
-  totalDocuments: 42,
+  totalDocuments: 0,
 
-  selectedDocId: 'BLLD2019',
+  selectedDocId: '',
   selectedDocAST: null,
   activeTask: null,
   isUploadModalOpen: false,
 
   fetchDocuments: async (cursor) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const data = await api.listDocuments(
         get().selectedDomain,
@@ -51,12 +53,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         documents: cursor ? [...state.documents, ...data.items] : data.items,
         nextCursor: data.next_cursor || null,
         hasMore: data.has_more,
-        totalDocuments: data.total_count || 42,
+        totalDocuments: data.total_count ?? 0,
         isLoading: false,
       }));
     } catch (e) {
       console.error('Failed to fetch documents:', e);
-      set({ isLoading: false });
+      set({ isLoading: false, error: errorMessage(e) });
     }
   },
 
@@ -71,12 +73,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   selectDocument: async (docId: string) => {
-    set({ selectedDocId: docId });
+    set({ selectedDocId: docId, selectedDocAST: null, error: null });
     try {
       const ast = await api.getDocumentAST(docId);
       set({ selectedDocAST: ast.ast_tree });
     } catch (e) {
-      console.error('Failed to get AST:', e);
+      set({ error: errorMessage(e) });
     }
   },
 
@@ -102,6 +104,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           get().fetchDocuments();
         }
       } catch (e) {
+        set({ error: errorMessage(e) });
         clearInterval(interval);
       }
     }, 1500);

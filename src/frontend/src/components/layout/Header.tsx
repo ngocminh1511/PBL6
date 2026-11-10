@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
+import type { HealthResponse } from '../../lib/types';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '../../stores/authStore';
@@ -8,6 +10,10 @@ import { useAuthStore } from '../../stores/authStore';
 export const Header: React.FC = () => {
   const pathname = usePathname();
   const { user } = useAuthStore();
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, [pathname]);
+  const connected = health?.qdrant.connection === 'connected' && health?.neo4j.connection === 'connected';
+  const isAppendices = pathname.startsWith('/appendices');
 
   const isChat = pathname.startsWith('/chat') || pathname === '/';
   const isDocs = pathname.startsWith('/documents');
@@ -25,7 +31,7 @@ export const Header: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex items-center gap-space-xs">
                 <span className="font-headline-sm text-headline-sm text-white tracking-tight">Pháp luật Việt Nam</span>
-                <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded-lg bg-[#1E293B] text-[#93C5FD] border border-[#334155]/60">
+                <span className="hidden xl:inline font-label-statute text-label-statute px-1.5 py-0.5 rounded-lg bg-[#1E293B] text-[#93C5FD] border border-[#334155]/60">
                   Hybrid GraphRAG v2.4 (AI Giải thích)
                 </span>
               </div>
@@ -34,7 +40,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="hidden lg:flex items-center h-full gap-space-xs">
+        <nav className="hidden lg:flex items-center h-full gap-space-xs min-w-0">
           <Link
             href="/chat"
             className={`h-full flex items-center px-space-md transition-colors font-body-sm text-body-sm tracking-tight ${
@@ -65,14 +71,20 @@ export const Header: React.FC = () => {
           >
             [3] Cấu hình hệ thống
           </Link>
+          <Link href="/appendices" title="Phụ lục & kiểm tra truy hồi"
+            className={'h-full flex items-center px-space-md transition-colors font-body-sm text-body-sm tracking-tight whitespace-nowrap ' +
+              (isAppendices ? 'bg-[#1E293B] text-white border-b-2 border-secondary shadow-sm font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800')}>
+            [4] Phụ lục
+          </Link>
         </nav>
 
+        <Link href="/appendices" className="lg:hidden ml-auto px-2 py-1 rounded-lg bg-slate-800 text-xs whitespace-nowrap">Phụ lục</Link>
         {/* Dual Index Status & User Profile */}
         <div className="flex items-center gap-space-md shrink-0">
-          <div className="hidden xl:flex items-center gap-space-xs px-space-md py-1 rounded bg-[#1E293B] border border-[#334155]/60">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-label-code text-label-code text-slate-300">Chỉ mục kép: Trực tuyến</span>
-            <span className="font-label-code text-label-code text-slate-400">(Vector 100% | Đồ thị hoạt động)</span>
+          <div className="hidden min-[1800px]:flex items-center gap-space-xs px-space-md py-1 rounded bg-[#1E293B] border border-[#334155]/60">
+            <span className={"w-2 h-2 rounded-full " + (connected ? "bg-emerald-400" : "bg-slate-400")}></span>
+            <span className="font-label-code text-label-code text-slate-300">{connected ? 'Chỉ mục kép: Đã kết nối' : 'Chỉ mục kép: Chưa kiểm tra'}</span>
+            <span className="font-label-code text-label-code text-slate-400">{health ? "Vector: " + health.qdrant.connection + " | Đồ thị: " + health.neo4j.connection : "Đang đọc trạng thái"}</span>
           </div>
 
           <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
@@ -80,9 +92,9 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-space-sm pl-space-xs">
             <div className="text-right hidden md:block">
               <div className="font-headline-sm text-headline-sm text-white leading-none">
-                {user?.full_name || 'Ths. Luật sư'}
+                {user?.full_name || (health?.demo_mode ? 'Chế độ demo' : 'Khách')}
               </div>
-              <div className="font-label-code text-label-code text-slate-400">Chuyên viên Nghiên cứu</div>
+              <div className="font-label-code text-label-code text-slate-400">{user ? 'Tài khoản ' + user.role : 'Không gian tra cứu'}</div>
             </div>
             <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">person</span>

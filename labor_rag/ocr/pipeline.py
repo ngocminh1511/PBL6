@@ -56,8 +56,8 @@ class ProcessedDocument:
 
 
 def _document_id(so_hieu: str, text: str) -> str:
-    """The id chunk schema v5 uses for this document (docs/structural_jsonl.md,
-    section 3.1): from the document number when the first page has one, so a
+    """The id chunk schema v5 uses for this document (docs/SYSTEM.md,
+    section 4.3): from the document number when the first page has one, so a
     PDF and Phap dien agree on it; otherwise from a hash of the extracted text."""
     if so_hieu and is_so_hieu(so_hieu):
         return make_document_id(so_hieu)

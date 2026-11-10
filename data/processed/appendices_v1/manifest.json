@@ -1,0 +1,429 @@
+{
+  "generated_at": "2026-11-02T17:21:49.113510+00:00",
+  "storage_backend": "r2",
+  "documents": [
+    {
+      "document_id": "09-2020-tt-bldtbxh",
+      "document": "09/2020/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 5,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "01-2020-tt-bldtbxh",
+      "document": "01/2020/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 12,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "01-2022-tt-bldtbxh",
+      "document": "01/2022/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "02-2023-tt-byt",
+      "document": "02/2023/TT-BYT",
+      "download_status": "downloaded",
+      "appendices": 2,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_488694.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "02-2024-tt-bldtbxh",
+      "document": "02/2024/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 11,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "03-2016-ttlt-bldtbxh-bqp-bca",
+      "document": "03/2016/TTLT-BLĐTBXH-BQP-BCA",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_TTLT03BLÐTBXH-BQP-BCA_2.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "09-2016-ttlt-bldtbxh-btc",
+      "document": "09/2016/TTLT-BLĐTBXH-BTC",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_TT09BLDTBXH-BTC_2.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "08-2017-tt-bqp",
+      "document": "08/2017/TT-BQP",
+      "download_status": "downloaded",
+      "appendices": 3,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_08.2017.TT-BQP.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "10-2017-tt-bct",
+      "document": "10/2017/TT-BCT",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "09-2023-tt-bldtbxh",
+      "document": "09/2023/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 8,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "11-2017-tt-bldtbxh",
+      "document": "11/2017/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_TT 11 BLDTBXH.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "10-2020-tt-bldtbxh",
+      "document": "10/2020/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "112-2021-nd-cp",
+      "document": "112/2021/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 2,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "135-2020-nd-cp",
+      "document": "135/2020/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 3,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "145-2020-nd-cp",
+      "document": "145/2020/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 6,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "152-2020-nd-cp",
+      "document": "152/2020/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [
+        "1",
+        "2"
+      ],
+      "errors": [
+        "VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "16-2022-tt-bldtbxh",
+      "document": "16/2022/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "17-2023-tt-bldtbxh",
+      "document": "17/2023/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 2,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "18-2021-tt-bldtbxh",
+      "document": "18/2021/TT-BLĐTBXH",
+      "download_status": "partial",
+      "appendices": 2,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "19-2016-tt-bldtbxh",
+      "document": "19/2016/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 18,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_TT19BLÐTBXH.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "19-2021-tt-bldtbxh",
+      "document": "19/2021/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "21-2021-tt-bldtbxh",
+      "document": "21/2021/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 13,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "23-2021-nd-cp",
+      "document": "23/2021/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [
+        "1",
+        "2"
+      ],
+      "errors": [
+        "VanBanGoc_23.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "28-2015-nd-cp",
+      "document": "28/2015/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "29-2021-tt-byt",
+      "document": "29/2021/TT-BYT",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [
+        "4",
+        "5"
+      ],
+      "errors": []
+    },
+    {
+      "document_id": "28-2015-tt-bldtbxh",
+      "document": "28/2015/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 6,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "31-2015-nd-cp",
+      "document": "31/2015/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "293-2025-nd-cp",
+      "document": "293/2025/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_293-cp.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "40-2021-qd-ttg",
+      "document": "40/2021/QĐ-TTg",
+      "download_status": "partial",
+      "appendices": 4,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "38-2015-tt-bldtbxh",
+      "document": "38/2015/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 4,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "43-2016-tt-bldtbxh",
+      "document": "43/2016/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 4,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "44-2016-nd-cp",
+      "document": "44/2016/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 8,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_ND44CP.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "45-2015-tt-bldtbxh",
+      "document": "45/2015/TT-BLĐTBXH",
+      "download_status": "partial",
+      "appendices": 12,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "56-2015-tt-bldtbxh",
+      "document": "56/2015/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 6,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "54-2016-tt-bldtbxh",
+      "document": "54/2016/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 62,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "61-2015-nd-cp",
+      "document": "61/2015/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "97-2022-nd-cp",
+      "document": "97/2022/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 2,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "70-2023-nd-cp",
+      "document": "70/2023/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "61-2020-nd-cp",
+      "document": "61/2020/NĐ-CP",
+      "download_status": "partial",
+      "appendices": 1,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_61.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "140-2018-nd-cp",
+      "document": "140/2018/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 4,
+      "extraction_status": "extracted",
+      "missing_labels": [],
+      "errors": []
+    },
+    {
+      "document_id": "24-2017-tt-bldtbxh",
+      "document": "24/2017/TT-BLĐTBXH",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_TT 24 2017 BLÐTBXH.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    },
+    {
+      "document_id": "74-2019-nd-cp",
+      "document": "74/2019/NĐ-CP",
+      "download_status": "downloaded",
+      "appendices": 0,
+      "extraction_status": "needs_review",
+      "missing_labels": [],
+      "errors": [
+        "VanBanGoc_74.signed.pdf: ValueError: Scanned PDF needs an explicit --ocr extraction run"
+      ]
+    }
+  ],
+  "appendices": 208,
+  "chunks": 98,
+  "kinds": {
+    "reference": 40,
+    "form": 136,
+    "mixed": 0,
+    "unknown": 32
+  }
+}

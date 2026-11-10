@@ -2,7 +2,7 @@
 labor_rag.ingest.merge (which version of a Dieu to keep). No OCR model,
 tokenizer or Qdrant is used; tokens are counted as words.
 
-Needs the OCR dependencies (requirements-ocr.txt). Run from the repository root:
+Needs the OCR dependencies (see the top of requirements.txt). Run from the repository root:
   python tests/test_pdf_to_chunks.py
 """
 from __future__ import annotations

@@ -5,15 +5,29 @@ import { StatsCards } from '../../components/documents/StatsCards';
 import { DocumentTable } from '../../components/documents/DocumentTable';
 import { IngestionProgress } from '../../components/documents/IngestionProgress';
 import { UploadModal } from '../../components/documents/UploadModal';
+import { ASTTree } from '../../components/documents/ASTTree';
+import { api, errorMessage } from '../../lib/api';
+import type { HealthResponse } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 
 export default function DocumentsPage() {
-  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents } = useDocumentStore();
+  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, error } = useDocumentStore();
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [probeError, setProbeError] = useState('');
+  const [probing, setProbing] = useState(false);
+  async function probe() {
+    setProbing(true); setProbeError('');
+    try { setHealth(await api.health(true)); } catch (e) { setProbeError(errorMessage(e)); }
+    finally { setProbing(false); }
+  }
   const [rightTab, setRightTab] = useState<'tree' | 'json'>('tree');
 
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
+
+  useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, []);
+  useEffect(() => { if (!selectedDocId && documents.length) selectDocument(documents[0].id); }, [documents, selectedDocId, selectDocument]);
 
   const selectedDoc = documents.find((d) => d.id === selectedDocId) || documents[0];
 
@@ -45,25 +59,26 @@ export default function DocumentsPage() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-on-tertiary-container"></span>
             </span>
             <span className="font-label-code text-label-code text-on-surface-variant">
-              Neo4j Bolt: <strong className="text-on-surface font-metric-num">7687</strong>
+              Neo4j: <strong className="text-on-surface font-metric-num">{health?.neo4j.connection || "Chưa kiểm tra"}</strong>
             </span>
             <span className="text-outline-variant">•</span>
             <span className="font-label-code text-label-code text-on-surface-variant">
-              Qdrant gRPC: <strong className="text-on-surface font-metric-num">6334</strong>
+              Qdrant: <strong className="text-on-surface font-metric-num">{health?.qdrant.connection || "Chưa kiểm tra"}</strong>
             </span>
           </div>
 
           <button
-            onClick={() => alert('Chỉ mục toàn vẹn: 1,420 đỉnh (nodes) khớp 100% giữa Qdrant và Neo4j.')}
+            onClick={probe} disabled={probing}
             className="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all font-headline-sm text-body-sm"
           >
             <span className="material-symbols-outlined text-[17px]">verified_user</span>
-            <span>Kiểm định toàn vẹn chỉ mục</span>
+            <span>{probing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối chỉ mục'}</span>
           </button>
         </div>
       </div>
 
       <div className="p-gutter flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto">
+        {(error || probeError) && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error || probeError}</p>}
         {/* TOP KPI BANNER */}
         <StatsCards />
 
@@ -82,25 +97,25 @@ export default function DocumentsPage() {
                 <div className="flex items-center gap-space-xs">
                   <span className="material-symbols-outlined text-secondary text-[18px]">terminal</span>
                   <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface font-bold">
-                    Nhật ký Luồng nạp Chỉ mục Kép
+                    Trạng thái tác vụ và văn bản
                   </span>
                 </div>
                 <span className="font-label-code text-label-statute text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                  Luồng trực tiếp: Đang hoạt động
+                  {activeTask ? activeTask.status : 'Chưa có tác vụ nạp'}
                 </span>
               </div>
               <div className="bg-surface-container-low p-space-sm rounded-lg font-label-code text-label-statute text-on-surface-variant flex flex-col gap-1 overflow-x-auto text-[11px]">
                 <div className="flex items-center gap-space-xs text-on-tertiary-container">
-                  <span>[TIẾN_TRÌNH]</span>
-                  <span>PHÂN TÍCH THÀNH CÔNG: {selectedDoc?.title || 'BLLD2019'} đã phân tách cấu trúc chương, mục, điều, khoản.</span>
+                  <span>[TÁC_VỤ]</span>
+                  <span>{activeTask?.current_step || 'Chưa chạy tác vụ nạp tài liệu.'}</span>
                 </div>
                 <div className="flex items-center gap-space-xs text-on-surface">
-                  <span>[CẬP_NHẬT_VECTOR]</span>
-                  <span>QDRANT_UPSERT: Tập hợp 'legal_ld_v5_bge' đã đồng bộ với vector BGE-m3.</span>
+                  <span>[CHUNK]</span>
+                  <span>{selectedDoc ? selectedDoc.chunks_count + ' chunk của văn bản đang chọn.' : 'Chưa chọn văn bản.'}</span>
                 </div>
                 <div className="flex items-center gap-space-xs text-secondary">
-                  <span>[HỢP_NHẤT_ĐỒ_THỊ]</span>
-                  <span>NEO4J_MERGE: Đã thực thi lô Cypher (đã xác thực quan hệ CONTAINS, PART_OF, REFERS_TO).</span>
+                  <span>[ĐỒ_THỊ]</span>
+                  <span>{selectedDoc ? selectedDoc.nodes_count + ' node · ' + selectedDoc.edges_count + ' quan hệ trong dữ liệu.' : 'Chưa có dữ liệu đồ thị của văn bản.'}</span>
                 </div>
               </div>
             </div>
@@ -116,41 +131,41 @@ export default function DocumentsPage() {
                     Thanh tra Cấu trúc Phân cấp
                   </span>
                   <span className="font-label-code text-label-statute px-2 py-0.5 rounded bg-surface-container text-on-surface">
-                    Mã Đỉnh: ROOT_{selectedDoc?.id || 'BLLD2019'}
+                    Mã văn bản: {selectedDoc?.id || '—'}
                   </span>
                 </div>
                 <h2 className="font-headline-md text-headline-md text-on-surface leading-snug">
-                  Kiểm tra Cấu trúc Phân cấp: {selectedDoc?.title || 'Bộ luật Lao động 2019'}
+                  Kiểm tra Cấu trúc Phân cấp: {selectedDoc?.title || 'Chưa chọn văn bản'}
                 </h2>
                 <div className="font-label-code text-label-code text-on-surface-variant text-[11px]">
-                  Mã số hiệu: {selectedDoc?.document_number || '45/2019/QH14'} • Quốc hội khóa XIV
+                  Mã số hiệu: {selectedDoc?.document_number || '—'}
                 </div>
               </div>
 
               {/* Breakdown Stats */}
               <div className="grid grid-cols-3 gap-2 bg-surface-container-low p-space-sm rounded-lg text-center">
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Chương / Mục</div>
-                  <div className="font-metric-num text-metric-num text-on-surface">17 / 12</div>
+                  <div className="font-label-statute text-label-statute text-on-surface-variant">Node trong dữ liệu</div>
+                  <div className="font-metric-num text-metric-num text-on-surface">{selectedDoc?.nodes_count ?? '—'}</div>
                 </div>
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Điều luật</div>
+                  <div className="font-label-statute text-label-statute text-on-surface-variant">Chunk văn bản</div>
                   <div className="font-metric-num text-metric-num text-secondary">
-                    {selectedDoc?.nodes_count ? Math.floor(selectedDoc.nodes_count / 3) : 220} Điều
+                    {selectedDoc?.chunks_count ?? '—'}
                   </div>
                 </div>
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Khoản & Điểm</div>
+                  <div className="font-label-statute text-label-statute text-on-surface-variant">Quan hệ</div>
                   <div className="font-metric-num text-metric-num text-on-surface">
-                    {selectedDoc?.chunks_count || 412} K | 185 Đm
+                    {selectedDoc?.edges_count ?? '—'}
                   </div>
                 </div>
                 <div className="p-1 col-span-3 bg-surface-container rounded mt-1 flex items-center justify-between px-3">
                   <span className="font-label-statute text-label-statute text-on-surface-variant">
-                    Cạnh tham chiếu chéo (Cross-Citation):
+                    Tổng quan hệ trong dữ liệu:
                   </span>
                   <span className="font-label-code text-label-code font-bold text-secondary">
-                    {selectedDoc?.edges_count || 142} REFERS_TO
+                    {selectedDoc?.edges_count ?? '—'} cạnh
                   </span>
                 </div>
               </div>
@@ -175,80 +190,25 @@ export default function DocumentsPage() {
                     Mã AST / Graph JSON
                   </button>
                 </div>
-                <span className="font-label-statute text-label-statute text-outline">Độ sâu: 5 cấp bậc</span>
+                <span className="font-label-statute text-label-statute text-outline">{selectedDocAST ? 'Cấu trúc từ dữ liệu' : 'Chưa có cấu trúc'}</span>
               </div>
 
               {/* AST Tree View */}
-              {rightTab === 'tree' ? (
-                <div className="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-2 font-body-sm text-body-sm overflow-hidden border border-outline-variant/30">
-                  <div className="flex items-center gap-2 p-2 rounded bg-surface-container text-on-surface shadow-xs">
-                    <span className="material-symbols-outlined text-[18px] text-secondary">folder_open</span>
-                    <span className="font-headline-sm text-body-sm font-semibold">[Văn bản]</span>
-                    <span className="font-label-code text-body-sm text-on-surface">{selectedDoc?.title}</span>
-                  </div>
-
-                  <div className="ml-4 pl-3 flex flex-col gap-2 border-l border-indigo-200">
-                    <div className="flex items-center gap-2 p-2 rounded bg-surface-container-lowest text-on-surface shadow-xs">
-                      <span className="material-symbols-outlined text-[16px] text-secondary">
-                        subdirectory_arrow_right
-                      </span>
-                      <span className="font-label-statute text-label-statute text-secondary font-bold">[Chương III]</span>
-                      <span className="font-body-md text-body-md text-on-surface">Hợp đồng lao động</span>
-                    </div>
-
-                    <div className="ml-4 pl-3 flex flex-col gap-2 border-l border-indigo-200">
-                      <div className="flex items-center justify-between p-2 rounded-lg bg-surface-container-high text-on-surface shadow-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[16px] text-secondary">gavel</span>
-                          <span className="font-label-statute text-label-statute text-secondary font-bold">[Điều 35]</span>
-                          <span className="font-headline-sm text-body-sm text-on-surface font-semibold">
-                            Quyền đơn phương chấm dứt HĐLĐ của NLĐ
-                          </span>
-                        </div>
-                        <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary">
-                          Đoạn Vector
-                        </span>
-                      </div>
-
-                      {/* Point d Refers to edge */}
-                      <div className="p-2 rounded bg-surface-container-lowest shadow-xs flex flex-col gap-2 border border-outline-variant/30">
-                        <div className="flex items-center justify-between">
-                          <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded bg-surface-container font-bold">
-                            [Điểm d - Ngành nghề đặc thù]
-                          </span>
-                        </div>
-                        <div className="p-2 rounded-lg bg-surface-container flex flex-col gap-1 shadow-xs">
-                          <div className="flex items-center justify-between">
-                            <span className="font-label-code text-label-statute text-secondary font-bold">
-                              CẠNH ĐỒ THỊ: THAM CHIẾU (REFERS_TO)
-                            </span>
-                            <span className="font-label-statute text-label-statute px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-tertiary-container">
-                              Đã đối chiếu & Liên kết
-                            </span>
-                          </div>
-                          <div className="font-label-code text-label-statute text-on-surface text-[11px]">
-                            ──▶ <strong>NĐ 145/2020/NĐ-CP</strong> (Điều 7 Khoản 2)
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-surface-container-lowest p-space-md rounded-xl font-label-code text-label-statute text-on-surface overflow-x-auto max-h-[360px] overflow-y-auto border border-outline-variant/30 text-[11px]">
-                  <pre>{JSON.stringify(selectedDocAST || selectedDoc?.ast_tree_json || { doc_id: selectedDoc?.id }, null, 2)}</pre>
-                </div>
-              )}
+              <div className="bg-surface-container-low p-space-md rounded-xl border border-outline-variant/30 max-h-[560px] overflow-auto">
+                {selectedDocAST ? (rightTab === 'tree' ? <ASTTree node={selectedDocAST} /> :
+                  <pre className="font-label-code text-label-statute text-[11px]">{JSON.stringify(selectedDocAST, null, 2)}</pre>) :
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Chọn một văn bản để xem cấu trúc.</p>}
+              </div>
 
               {/* Embedding & Storage card */}
               <div className="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs border border-outline-variant/30 text-[12px]">
                 <div className="flex items-center justify-between font-label-statute text-on-surface-variant">
                   <span>Thuộc tính Vector & Topology</span>
-                  <span className="font-label-code text-secondary">Node Type: LegalPointNode</span>
+                  <span className="font-label-code text-secondary">Cấu trúc dữ liệu nguồn</span>
                 </div>
                 <div className="flex items-center justify-between pt-1 border-t border-outline-variant/20 font-label-code">
                   <span>Embedding Model:</span>
-                  <strong className="text-on-surface">BAAI/bge-m3 (Cosine 1024-d)</strong>
+                  <strong className="text-on-surface">{health?.embedding?.model || 'Đang đọc cấu hình'}</strong>
                 </div>
               </div>
             </div>

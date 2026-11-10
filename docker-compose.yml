@@ -4,6 +4,7 @@ name: labor_rag
 
 services:
   neo4j:
+    profiles: ["local"]
     image: neo4j:5-community
     container_name: labor_rag_neo4j
     ports:
@@ -21,6 +22,7 @@ services:
       retries: 10
 
   qdrant:
+    profiles: ["local"]
     image: qdrant/qdrant:latest
     container_name: labor_rag_qdrant
     ports:
@@ -29,6 +31,43 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
 
+  postgres:
+    image: postgres:15-alpine
+    profiles: ["local"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local_dev_only
+      POSTGRES_DB: lexgraph_db
+    ports: ["5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    profiles: ["local"]
+    ports: ["6379:6379"]
+    volumes: ["redis_data:/data"]
+  backend:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    env_file: .env
+    environment:
+      INTERIM_DIR: /app/data/runtime
+    ports: ["8000:8000"]
+    volumes: ["runtime_data:/app/data/runtime", "upload_data:/app/data/uploads"]
+  frontend:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+      args:
+        BACKEND_ORIGIN: http://backend:8000
+    ports: ["3000:3000"]
+    depends_on: [backend]
 volumes:
   neo4j_data:
   qdrant_data:
+  postgres_data:
+  redis_data:
+  runtime_data:
+  upload_data:

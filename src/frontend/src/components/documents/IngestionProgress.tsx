@@ -55,7 +55,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
               ? 'bg-red-600'
               : 'bg-gradient-to-r from-secondary to-indigo-500 animate-pulse'
           }`}
-          style={{ width: `${Math.max(task.progress, 5)}%` }}
+          style={{ width: `${Math.max(task.progress, 0)}%` }}
         ></div>
       </div>
 
@@ -72,6 +72,9 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
         )}
       </div>
 
+      {task.result?.reused_chunks ? <p className="text-xs text-slate-500">Tái sử dụng {task.result.reused_chunks} chunk không đổi; không embedding lại.</p> : null}
+      {task.result?.warnings.map((warning, index) => <p key={index} className="text-xs text-amber-800">{warning}</p>)}
+      {task.result?.artifact_ids[0] && <a className="text-xs text-secondary underline" href={'/api/files/' + encodeURIComponent(task.result.artifact_ids[0]) + '?download=true'}>Tải file nguồn đã lưu</a>}
       {isFailed && task.error_message && (
         <div className="p-2 rounded bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
           Lỗi: {task.error_message}

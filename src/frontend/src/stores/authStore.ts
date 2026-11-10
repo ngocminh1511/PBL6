@@ -10,15 +10,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    id: 'usr_lawyer_demo',
-    username: 'lawyer_demo',
-    email: 'lawyer@lexgraph.vn',
-    full_name: 'Ths. Luật sư Nghiên cứu',
-    role: 'lawyer'
-  },
+  user: null,
   token: typeof window !== 'undefined' ? localStorage.getItem('lexgraph_token') : null,
-  isAuthenticated: true,
+  isAuthenticated: false,
   setUser: (user, token) => {
     if (token && typeof window !== 'undefined') {
       localStorage.setItem('lexgraph_token', token);

@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { ChatSession, ChatMessage, EvidenceItem, RetrievalMode } from '../lib/types';
-import { api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 
 interface ChatState {
   sessions: ChatSession[];
+  error: string | null;
   activeSessionId: string | null;
   messages: ChatMessage[];
   isLoading: boolean;
@@ -19,6 +20,8 @@ interface ChatState {
   // Inspector Column State
   inspectorTab: 'tab-hierarchy' | 'tab-graph' | 'tab-rerank';
   selectedCitation: string | null;
+  /** Bumped on every citation click, so choosing the same citation again re-focuses the tree. */
+  focusTick: number;
   selectedEvidences: EvidenceItem[];
 
   // Actions
@@ -34,6 +37,7 @@ interface ChatState {
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
+  error: null,
   activeSessionId: null,
   messages: [],
   isLoading: false,
@@ -47,10 +51,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   inspectorTab: 'tab-hierarchy',
   selectedCitation: 'Điều 35, Khoản 1, Điểm a',
+  focusTick: 0,
   selectedEvidences: [],
 
   fetchSessions: async (cursor) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const data = await api.listSessions(cursor);
       set((state) => ({
@@ -67,7 +72,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to fetch sessions:', e);
-      set({ isLoading: false });
+      set({ isLoading: false, error: errorMessage(e) });
     }
   },
 
@@ -86,13 +91,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }));
       return session.id;
     } catch (e) {
-      console.error('Failed to create session:', e);
+      set({ error: errorMessage(e) });
       return '';
     }
   },
 
   selectSession: async (sessionId: string) => {
-    set({ activeSessionId: sessionId, isLoading: true });
+    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedCitation: null, error: null });
     try {
       const data = await api.getSession(sessionId);
       set({
@@ -107,7 +112,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to select session:', e);
-      set({ isLoading: false });
+      set({ isLoading: false, error: errorMessage(e) });
     }
   },
 
@@ -127,6 +132,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({
       messages: [...messages, tempUserMsg],
       isSending: true,
+      error: null,
     });
 
     try {
@@ -152,13 +158,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       get().fetchSessions();
     } catch (e) {
       console.error('Failed to send message:', e);
-      set({ isSending: false });
+      set(state => ({ isSending: false, error: errorMessage(e), messages: state.messages.filter(message => message.id !== tempUserMsg.id) }));
     }
   },
 
   setSelectedDomain: (domain) => set({ selectedDomain: domain }),
   setSelectedRetrievalMode: (mode) => set({ selectedRetrievalMode: mode }),
   setInspectorTab: (tab) => set({ inspectorTab: tab }),
-  setSelectedCitation: (citation) => set({ selectedCitation: citation }),
+  setSelectedCitation: (citation) => set(state => ({ selectedCitation: citation, focusTick: state.focusTick + 1 })),
 }));
 

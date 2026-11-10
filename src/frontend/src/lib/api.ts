@@ -1,10 +1,22 @@
 import axios from 'axios';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse } from './types';
+
+export function errorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.detail;
+    if (typeof detail === 'string') return detail;
+    if (Array.isArray(detail)) return detail.map((item) => item.msg).join('; ');
+    return error.response ? 'Lỗi HTTP ' + error.response.status : 'Không kết nối được backend.';
+  }
+  return error instanceof Error ? error.message : 'Thao tác chưa hoàn tất.';
+}
+
 import {
   ChatSession, ChatMessage, CursorPage, DocumentRecord,
   DocumentAST, IngestionTask, AdminConfig, SystemStats
 } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
@@ -25,6 +37,22 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const api = {
+  async listAppendices(params: Record<string, string | number>): Promise<AppendixList> {
+    return (await apiClient.get('/appendices', { params })).data;
+  },
+  async getAppendix(id: string): Promise<AppendixItem> {
+    return (await apiClient.get('/appendices/' + encodeURIComponent(id))).data;
+  },
+  async inspect(question: string, top_k: number = 8): Promise<RetrievalResult> {
+    return (await apiClient.post('/retrieve', { question, top_k })).data;
+  },
+  async health(probe: boolean = false): Promise<HealthResponse> {
+    return (await apiClient.get('/health', { params: { probe } })).data;
+  },
+  async getGraph(documentId: string, articleNumber?: string): Promise<GraphResponse> {
+    return (await apiClient.get('/documents/' + encodeURIComponent(documentId) + '/graph',
+      { params: { article_number: articleNumber } })).data;
+  },
   // ================= CHAT =================
   async listSessions(cursor?: string, limit: number = 15): Promise<CursorPage<ChatSession>> {
     const res = await apiClient.get('/chat/sessions', { params: { cursor, limit } });
@@ -64,11 +92,12 @@ export const api = {
     return res.data;
   },
 
-  async uploadDocument(file: File, documentType: string = 'pdf', domain: string = 'lao_dong'): Promise<{ task_id: string; message: string; document_id: string }> {
+  async uploadDocument(file: File, documentType: string = 'pdf', domain: string = 'lao_dong', deMucId?: string): Promise<{ task_id: string; message: string; document_id?: string }> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('document_type', documentType);
     formData.append('domain', domain);
+    if (deMucId) formData.append('de_muc_id', deMucId);
 
     const res = await apiClient.post('/documents/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

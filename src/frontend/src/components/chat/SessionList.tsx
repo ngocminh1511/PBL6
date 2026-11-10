@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
 import { useChatStore } from '../../stores/chatStore';
 import { RetrievalMode } from '../../lib/types';
 
@@ -15,6 +16,10 @@ export const SessionList: React.FC = () => {
     selectedRetrievalMode,
     setSelectedRetrievalMode,
   } = useChatStore();
+
+  const [documentCount, setDocumentCount] = useState<number | null>(null);
+  useEffect(() => { api.listDocuments('all', undefined, undefined, 1)
+    .then(page => setDocumentCount(page.total_count ?? 0)).catch(() => setDocumentCount(null)); }, []);
 
   return (
     <aside className="w-[280px] shrink-0 bg-surface-container-low flex flex-col justify-between overflow-hidden shadow-sm border-r border-outline-variant/30">
@@ -40,6 +45,7 @@ export const SessionList: React.FC = () => {
             </span>
           </div>
 
+          {!sessions.length && <p className="p-space-sm rounded-xl bg-surface-container text-on-surface-variant font-body-sm text-body-sm">Chưa có phiên được lưu.</p>}
           <div className="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto pr-1">
             {sessions.map((s) => {
               const isActive = s.id === activeSessionId;
@@ -72,7 +78,7 @@ export const SessionList: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm">
                     <span className="material-symbols-outlined text-[14px] text-secondary">forum</span>
-                    <span>{s.message_count || 2} lượt hỏi • Dấu vết truy vấn</span>
+                    <span>{s.message_count ?? 0} tin nhắn • Dấu vết truy vấn</span>
                   </div>
                 </div>
               );
@@ -98,7 +104,7 @@ export const SessionList: React.FC = () => {
                 <span className="font-body-sm text-body-sm font-medium text-on-surface">Toàn bộ kho số hóa</span>
               </div>
               <span className="font-metric-num text-metric-num text-on-surface-variant bg-surface-variant px-1.5 rounded">
-                42 VB
+                {documentCount == null ? '—' : documentCount + ' VB'}
               </span>
             </label>
 
@@ -113,7 +119,7 @@ export const SessionList: React.FC = () => {
                 />
                 <span className="font-body-sm text-body-sm text-on-surface">Pháp luật Lao động</span>
               </div>
-              <span className="font-metric-num text-metric-num text-on-surface-variant">24 VB</span>
+              <span className="font-metric-num text-metric-num text-on-surface-variant">{documentCount == null ? '—' : documentCount + ' VB'}</span>
             </label>
 
             <label className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high cursor-pointer transition-colors">
@@ -121,13 +127,13 @@ export const SessionList: React.FC = () => {
                 <input
                   type="radio"
                   name="domain"
-                  checked={selectedDomain === 'bhxh'}
-                  onChange={() => setSelectedDomain('bhxh')}
+                  checked={false}
+                  disabled
                   className="accent-secondary h-3.5 w-3.5"
                 />
                 <span className="font-body-sm text-body-sm text-on-surface">Luật BHXH & Y tế</span>
               </div>
-              <span className="font-metric-num text-metric-num text-on-surface-variant">18 VB</span>
+              <span className="font-metric-num text-metric-num text-on-surface-variant">Chưa nạp</span>
             </label>
           </div>
         </div>
@@ -139,7 +145,7 @@ export const SessionList: React.FC = () => {
               Cơ chế Thử nghiệm (Ablation)
             </span>
             <span className="font-label-statute text-label-statute text-on-tertiary-container bg-tertiary-fixed px-1.5 py-0.5 rounded font-semibold">
-              Tối ưu hóa
+              Có LLM
             </span>
           </div>
 
@@ -214,9 +220,9 @@ export const SessionList: React.FC = () => {
                 className="accent-secondary h-3.5 w-3.5"
               />
               <div className="flex flex-col">
-                <span className="font-body-sm text-body-sm text-on-surface">Chỉ Đồ thị Tri thức</span>
+                <span className="font-body-sm text-body-sm text-on-surface">Đồ thị từ seed vector</span>
                 <span className="font-label-code text-label-code text-on-surface-variant text-[11px]">
-                  Đường cơ sở • Tra cứu thực thể thuần túy
+                  Chọn seed bằng vector, mở rộng qua đồ thị
                 </span>
               </div>
             </label>
@@ -228,7 +234,7 @@ export const SessionList: React.FC = () => {
       <div className="p-space-sm bg-surface-container text-on-surface-variant flex items-center justify-between font-label-statute text-label-statute border-t border-outline-variant/30">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
-          <span>Chỉ mục: 42 Văn bản</span>
+          <span>Chỉ mục: {documentCount == null ? '—' : documentCount} văn bản</span>
         </div>
         <span className="font-metric-num text-metric-num">v2.4.8 (Neo4j+Qdrant)</span>
       </div>
