@@ -63,7 +63,8 @@ from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 sys.stdout.reconfigure(encoding="utf-8")
 load_dotenv()
 
-CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
+CHUNKS_PATH = Path(os.getenv("CHUNKS_PATH", str(LAO_DONG_DIR / "chunks.jsonl")))
+KG_DIR = Path(os.getenv("KG_DIR", str(LAO_DONG_DIR)))
 
 MODEL_NAME = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 COLLECTION = os.getenv("QDRANT_COLLECTION", "legal_ld_v5_bge")
@@ -217,7 +218,7 @@ def apply_upsert_plan(client: QdrantClient, collection: str, chunks: list[dict])
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
-    parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="graph projection to read validity from")
+    parser.add_argument("--kg-dir", type=Path, default=KG_DIR, help="graph projection to read validity from")
     parser.add_argument("--model", default=MODEL_NAME)
     parser.add_argument("--collection", default=COLLECTION)
     parser.add_argument("--qdrant-url", default=QDRANT_URL)
