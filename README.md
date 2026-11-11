@@ -24,6 +24,7 @@ npm --prefix src/frontend run dev
 ```
 
 Frontend: http://localhost:3000 · Phụ lục: http://localhost:3000/appendices · API: http://127.0.0.1:8000/docs.
+Frontend dev dùng `.next-dev`, build/start production dùng `.next`, nên chạy build không ghi đè cache của dev server đang mở.
 `BACKEND_ORIGIN` là biến phía server của Next.js, không có hậu tố `/api`; browser luôn gọi `/api` cùng origin.
 
 Mặc định dùng Qdrant/Neo4j cloud, Modal và R2 đã cấu hình trong `.env`. Bổ sung PostgreSQL và Redis cloud:
@@ -42,11 +43,61 @@ SQLite chỉ dùng khi đặt `DATABASE_URL=sqlite:///...` rõ ràng cho kiểm 
 
 Cấu hình quản trị được kiểm tra rồi lưu PostgreSQL và áp dụng đồng bộ. Tác vụ đang chạy hoặc version cấu hình cũ làm thao tác lưu trả `409`.
 Thứ tự cấu hình: mặc định → `.env` → biến môi trường → overrides đã lưu PostgreSQL.
-Khóa bí mật và kết nối PostgreSQL/Redis luôn lấy từ môi trường. Collection khác model cần index trước và đăng ký:
+PostgreSQL và khóa mã hóa lấy từ môi trường. API key, mật khẩu dịch vụ và Redis URL có thể nhập trên trang quản trị; secret được mã hóa trong PostgreSQL. Collection khác model cần index trước và đăng ký:
 
 ```dotenv
 COLLECTION_MODELS={"legal_ld_v5_bge":"BAAI/bge-m3"}
 ```
+
+Trang **Cấu hình hệ thống** (`/admin`) gồm LLM, embedding, Qdrant, Neo4j, R2, Redis và OCR/upload.
+Các nhóm nằm trong thanh điều hướng; mỗi lần mở một nhóm để tránh form kéo dài. Mục LLM quản lý nhiều cấu hình có tên:
+**Thêm cấu hình → chọn Local/Cloud → nhà cung cấp hoặc máy chủ → model và key → kiểm tra/lưu**.
+Có thể thêm nhiều kết nối Gemini với các key/model khác nhau, sửa hoặc xóa từng cấu hình và chọn **Dùng** để chuyển kết nối đang chạy.
+Thêm cấu hình không tự đổi LLM đang dùng, trừ khi chọn **Sử dụng cấu hình này sau khi lưu**. Cấu hình đang dùng cần được chuyển
+sang kết nối khác trước khi xóa. Local hỗ trợ Ollama, LM Studio và API tương thích OpenAI; danh sách model được lấy từ máy chủ
+đã cấu hình, không phải danh sách mẫu. Địa chỉ hoặc key thay đổi sẽ loại bỏ danh sách/kết quả kiểm tra cũ.
+Nhập địa chỉ/thông tin xác thực, bấm **Kiểm tra**, rồi **Lưu và áp dụng nhóm này** hoặc **Lưu tất cả thay đổi**.
+Dấu ✓ xác nhận kết quả kiểm tra thực tế; sửa trường liên quan sẽ bỏ xác nhận cũ. Lưu chỉ kiểm tra các nhóm bị ảnh hưởng;
+đổi embedding/collection sẽ kiểm tra thêm cặp model và số chiều. Collection phải có sẵn, dùng đúng model đã khai báo.
+Đăng ký model của collection hiện có trong phần **Nâng cao** của Qdrant; thao tác này không đổi vector hay lập chỉ mục lại.
+
+Mỗi trường hiển thị nguồn đang dùng. **Dùng giá trị môi trường** xóa override khi lưu và khôi phục giá trị từ cấu hình
+khởi động; biến môi trường tiến trình ưu tiên hơn `.env`, sau cùng là mặc định. Ô secret để trống giữ nguyên giá trị.
+**Bỏ xác thực** lưu giá trị rỗng tường minh với các dịch vụ cho phép; không tự lấy lại key từ `.env`.
+
+Để lưu secret mới, tạo một khóa Fernet bằng Python trong môi trường đã cài extra `api`:
+
+```powershell
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Đặt kết quả vào `CONFIG_ENCRYPTION_KEY` trong môi trường backend và khởi động lại. Giữ khóa này ổn định, sao lưu riêng
+khỏi database; mất hoặc đổi khóa khiến cấu hình mã hóa không đọc được và các thao tác phụ thuộc bị chặn rõ ràng.
+API không trả lại secret đã lưu; Redis URL được xem là secret vì có thể chứa mật khẩu. Thiếu khóa vẫn dùng và kiểm tra
+được secret từ môi trường, đồng thời lưu được thay đổi không chứa secret mới.
+
+LLM local dùng `LLM_PROVIDER=local`, `LOCAL_LLM_BASE_URL` (ví dụ `http://127.0.0.1:11434/v1`), `LOCAL_LLM_MODEL`
+và API key tùy chọn. Server/model phải được chuẩn bị sẵn. Nút **Tải danh sách model** dùng thông tin đang nhập,
+vẫn cho nhập tên thủ công; danh sách không xác nhận quyền dùng miễn phí. Kiểm tra LLM sinh một phản hồi ngắn và dùng hạn mức API.
+Các địa chỉ local được truy cập từ **máy chạy backend**. R2 kiểm tra bucket chỉ đọc; đổi bucket không di chuyển file cũ.
+Kiểm tra OCR cần dependency và file model đã có; đổi OCR chỉ áp dụng cho tài liệu xử lý tiếp theo.
+
+Khi PostgreSQL chưa kết nối, trang vẫn cho xem/kiểm tra theo quyền hiện có; lưu trả `503`, cần cấu hình `DATABASE_URL`
+và restart backend. `DATABASE_URL`, `CONFIG_ENCRYPTION_KEY`, JWT, CORS, đường dẫn runtime và `BACKEND_ORIGIN` là thiết lập
+khởi động qua môi trường. Giao diện không khởi chạy Docker, tạo collection, nạp dữ liệu hoặc tự tải LLM local.
+Cấu hình này điều khiển backend; CLI tiếp tục nhận cấu hình tường minh hoặc dùng môi trường.
+
+Để thiết lập PostgreSQL lần đầu, mở mục **PostgreSQL** trên `/admin`: dán connection string hoặc nhập host, port,
+database, tài khoản, mật khẩu và SSL. **Kiểm tra** chỉ chạy `SELECT 1`, không tạo bảng hoặc ghi dữ liệu.
+**Lưu vào .env** kiểm tra lại rồi cập nhật riêng `DATABASE_URL`, giữ các cấu hình khác; thao tác này dùng được khi
+chưa có PostgreSQL hoặc khóa mã hóa. Trạng thái **Đã lưu** được giữ sau khi tải lại trang; ô URI trống chỉ để bảo vệ mật khẩu.
+Sau khi lưu, bấm **Áp dụng kết nối đã lưu** để thiết lập hoặc kết nối lại database khi backend đang chưa kết nối. Bước này
+chuẩn bị schema bổ sung và nạp cấu hình từ database đích, chỉ chuyển tài nguyên khi toàn bộ bước chuẩn bị thành công;
+tác vụ đang chạy sẽ làm thao tác trả `409`. Đổi sang một database khác khi database hiện tại đang hoạt động vẫn cần
+dừng backend bằng `Ctrl+C` và chạy lại `python run_backend.py`. Database đích phải được tạo sẵn;
+thay kết nối không sao chép lịch sử, tài khoản hay tài liệu từ database cũ. Nếu `DATABASE_URL` được đặt trực tiếp
+trong môi trường tiến trình/container, cần cập nhật hoặc bỏ override đó để giá trị trong `.env` có hiệu lực.
+Thông tin xác thực đã lưu không được trả lại qua API; ô nhập trống giữ thông tin hiện có cho cùng máy chủ/tài khoản.
 
 Khởi động có migration **bổ sung** theo revision trong `app_schema_versions`; dữ liệu cũ được giữ nguyên.
 Không tự nạp tài liệu mẫu, recreate collection hoặc xóa dataset. Upload dùng một worker; tác vụ gián đoạn do restart
@@ -58,7 +109,8 @@ Compose giữ tên project `labor_rag` và các volume Neo4j/Qdrant cũ. Không 
 `.env` không được đưa vào image; Compose truyền biến môi trường lúc chạy.
 
 ```powershell
-python -m pytest tests/test_unified_backend.py tests/test_retrieval_inspect.py tests/test_appendices.py tests/test_r2_storage.py -q
+python -m pytest tests/test_postgres_configuration.py tests/test_admin_configuration.py tests/test_unified_backend.py tests/test_retrieval_inspect.py tests/test_appendices.py tests/test_r2_storage.py -q
+npm --prefix src/frontend run test:config
 npm --prefix src/frontend run build
 ```
 

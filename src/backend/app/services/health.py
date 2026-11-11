@@ -1,5 +1,6 @@
 """Read-only service diagnostics, with sanitized errors and real counters."""
 from contextlib import closing
+from datetime import datetime, timezone
 from labor_rag.appendices.catalog import read_json
 from labor_rag.appendices.runtime import usable
 
@@ -8,6 +9,7 @@ def health_status(runtime, *, probe=False):
     catalog, config = runtime.catalog, runtime.settings
     catalog.refresh_storage()
     result = {
+        "checked_at": datetime.now(timezone.utc).isoformat() if probe else None,
         "demo_mode": config.DEMO_MODE, "config_version": runtime.version,
         "storage": {
             "backend": "r2" if any(a.get("storage_backend") == "r2" for a in catalog.artifacts.values()) else "local",
@@ -22,16 +24,19 @@ def health_status(runtime, *, probe=False):
             "missing_documents": [d for d in catalog.report.get("documents", []) if d.get("extraction_status") != "extracted"]},
         "postgres": {"connection": "connected" if runtime.database.available else "unavailable",
                      "error_type": runtime.database.error_type},
-        "redis": {"connection": runtime.cache().status},
+        "redis": {"connection": "unavailable" if runtime.configuration_error else runtime.cache().status},
         "embedding": {"backend": config.query_backend, "model": config.EMBEDDING_MODEL},
         "llm": {"provider": config.LLM_PROVIDER, "status": "not_probed"},
     }
     for key in ("neo4j", "qdrant"):
         report = read_json(catalog.directory / (key + "_load_report.json"), {"status": "not_checked"})
-        result[key] = {k: v for k, v in report.items() if k in {
-            "status", "nodes", "edges", "appendix_points", "base_unchanged", "error_type",
-        }}
+        result[key] = {"last_load_status": report.get("status", "not_checked")}
         result[key]["connection"] = "not_checked"
+    if runtime.configuration_error:
+        for key in ("neo4j", "qdrant"):
+            result[key]["connection"] = "unavailable"
+        result["llm"]["status"] = "unavailable"
+        return result
     if probe:
         from neo4j import GraphDatabase
         from qdrant_client import QdrantClient

@@ -3,11 +3,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
 from sqlalchemy.exc import SQLAlchemyError
 from labor_rag.settings import Settings
 
 
-def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_factory=None):
+def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_factory=None, bootstrap_env_file=None):
     from labor_rag.appendices.runtime import AppendixCatalog
     from src.backend.app.repositories.postgres import Database
     from src.backend.app.services.runtime import Runtime
@@ -21,6 +23,9 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
     database = Database(config.DATABASE_URL)
     runtime = Runtime(config, database, catalog or AppendixCatalog(),
                       storage_factory=storage_factory, retrieval_factory=retrieval_factory)
+    from src.backend.app.services.postgres_configuration import PostgresConfiguration
+    from labor_rag.settings import ROOT_DIR
+    runtime.postgres_config = PostgresConfiguration(runtime, bootstrap_env_file or ROOT_DIR / ".env")
     ingestion = IngestionService(runtime, database)
 
     @asynccontextmanager
@@ -36,13 +41,21 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
             yield
         finally:
             ingestion.close()
-            runtime.close_resources()
+            runtime.close_resources(shutdown=True)
             database.close()
 
     app = FastAPI(title=config.PROJECT_NAME, version=config.VERSION, lifespan=lifespan)
     app.state.database = database
     app.state.runtime = runtime
     app.state.ingestion = ingestion
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_request(request, exc):
+        if request.url.path.startswith(config.API_V1_PREFIX + "/admin/"):
+            return JSONResponse(status_code=422, content={"detail": [
+                {k: error[k] for k in ("loc", "msg", "type")} for error in exc.errors()
+            ]})
+        return await request_validation_exception_handler(request, exc)
 
     @app.exception_handler(SQLAlchemyError)
     async def database_error(request, exc):

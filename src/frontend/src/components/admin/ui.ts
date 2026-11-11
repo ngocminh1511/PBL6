@@ -1,0 +1,3 @@
+export const adminInput = 'w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-on-surface outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/10 disabled:bg-slate-50 disabled:text-slate-400';
+export const adminButton = 'inline-flex items-center justify-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
+export const adminPrimary = 'inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-[#3d34c7] transition-colors disabled:opacity-40 disabled:cursor-not-allowed';

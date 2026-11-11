@@ -69,7 +69,7 @@ class IngestionPipeline:
         if document_type == "pdf":
             from labor_rag.ocr.pipeline import process_document
             from labor_rag.ingest.pdf_abox import document_abox
-            document = process_document(path).document
+            document = process_document(path, settings=config).document
             if not document.metadata.so_hieu or not list(document.iter_articles()):
                 raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra nguồn OCR.")
             chunks, warnings = document_to_chunks(document, kg=kg, count=TokenCounter(config.EMBEDDING_MODEL))

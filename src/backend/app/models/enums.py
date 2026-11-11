@@ -35,4 +35,5 @@ class LLMProvider(str, Enum):
     GEMINI = "gemini"
     ANTHROPIC = "anthropic"
     OPENAI = "openai"
+    LOCAL = "local"
 
