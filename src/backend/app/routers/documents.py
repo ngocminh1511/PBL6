@@ -13,6 +13,7 @@ from src.backend.app.models.database import IngestionTask, DocumentRecord, User
 from src.backend.app.models.schemas import DocumentResponse, DocumentASTResponse, IngestionTaskResponse, UploadResponse, CursorPage, GraphResponse
 from src.backend.app.services.runtime import get_runtime
 from src.backend.app.services.corpus import Corpus
+from src.backend.app.services.graph import build_graph
 from src.backend.app.utils.pagination import encode_cursor, decode_cursor
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
@@ -68,21 +69,21 @@ def get_graph(document_id: str, article_number: str | None = Query(None, max_len
                         OPTIONAL MATCH (n)-[r]-(m:Entity {dataset_id:$dataset})
                         RETURN n,m,r LIMIT 50
                     """, dataset=config.DATASET_ID, document=document_id, article=article_number)
-                    nodes, edges = {}, {}
+                    nodes, relations = {}, {}
                     for record in records:
                         for key in ["n", "m"]:
                             node = record[key]
                             if node is not None:
                                 identity = node.get("id") or node.element_id
-                                nodes[identity] = {"id": identity, "label": node.get("label") or "component",
-                                    "title": node.get("ten") or node.get("article_number") or identity,
-                                    "article_number": node.get("article_number"), "document_id": node.get("document_id")}
+                                nodes[identity] = {"labels": list(node.labels), "props": dict(node)}
                         relation = record["r"]
                         if relation is not None:
-                            edges[relation.element_id] = {"source": relation.start_node.get("id") or relation.start_node.element_id,
-                                "target": relation.end_node.get("id") or relation.end_node.element_id, "type": relation.type}
-            return {"status": "connected", "nodes": list(nodes.values()), "edges": list(edges.values()),
-                    "warnings": ["Giới hạn 50 kết quả đồ thị."] if len(edges) == 50 else []}
+                            relations[relation.element_id] = {"type": relation.type,
+                                "source": relation.start_node.get("id") or relation.start_node.element_id,
+                                "target": relation.end_node.get("id") or relation.end_node.element_id}
+            graph = build_graph(nodes, list(relations.values()), focus_document=document_id)
+            return {"status": "connected", **graph,
+                    "warnings": ["Giới hạn 50 kết quả đồ thị."] if len(relations) == 50 else []}
         except Exception as exc:
             raise HTTPException(503, "Neo4j chưa truy vấn được (" + type(exc).__name__ + ").") from None
 

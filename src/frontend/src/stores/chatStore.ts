@@ -20,6 +20,8 @@ interface ChatState {
   // Inspector Column State
   inspectorTab: 'tab-hierarchy' | 'tab-graph' | 'tab-rerank';
   selectedCitation: string | null;
+  /** Bumped on every citation click, so choosing the same citation again re-focuses the tree. */
+  focusTick: number;
   selectedEvidences: EvidenceItem[];
 
   // Actions
@@ -49,6 +51,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   inspectorTab: 'tab-hierarchy',
   selectedCitation: 'Điều 35, Khoản 1, Điểm a',
+  focusTick: 0,
   selectedEvidences: [],
 
   fetchSessions: async (cursor) => {
@@ -162,6 +165,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setSelectedDomain: (domain) => set({ selectedDomain: domain }),
   setSelectedRetrievalMode: (mode) => set({ selectedRetrievalMode: mode }),
   setInspectorTab: (tab) => set({ inspectorTab: tab }),
-  setSelectedCitation: (citation) => set({ selectedCitation: citation }),
+  setSelectedCitation: (citation) => set(state => ({ selectedCitation: citation, focusTick: state.focusTick + 1 })),
 }));
 

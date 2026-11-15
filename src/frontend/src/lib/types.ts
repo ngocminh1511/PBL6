@@ -267,5 +267,8 @@ export interface ASTNode {
   type: string;
   title: string;
   text?: string;
+  article_number?: string | null;
+  clause_number?: string | null;
+  point_number?: string | null;
   children?: ASTNode[];
 }
