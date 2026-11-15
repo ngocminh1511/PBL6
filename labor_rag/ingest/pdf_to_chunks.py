@@ -310,15 +310,34 @@ def main() -> int:
         default="full",
         help="TH2/B: 'full' (đầy đủ ngữ cảnh, mặc định) | TH1/A: 'minimal' (chỉ Điều n. Tên)",
     )
+    parser.add_argument(
+        "--reparse",
+        action="store_true",
+        help="re-run legal cleaner and structure parser on doc.full_text from the JSON tree",
+    )
     args = parser.parse_args()
 
     if args.from_json:
         doc = load_document(args.from_json)
+        if args.reparse and doc.full_text:
+            from labor_rag.ocr.cleaner import fix_line_breaks, normalize_whitespace, preprocess_legal_text
+            from labor_rag.ocr.export import export_hierarchical
+            from labor_rag.ocr.structure import parse_structure
+
+            clean_text = normalize_whitespace(fix_line_breaks(preprocess_legal_text(doc.full_text)))
+            new_doc = parse_structure(clean_text, document_id=doc.document_id)
+            new_doc.metadata = doc.metadata
+            new_doc.footnotes = doc.footnotes
+            doc = new_doc
+            tree_path = export_hierarchical(doc, args.from_json)
+            print(f"Reparsed OCR tree: {tree_path}")
     else:
         from labor_rag.ocr.export import export_hierarchical
         from labor_rag.ocr.pipeline import process_document
 
-        doc = process_document(args.input).document
+        doc = process_document(
+            args.input, progress=lambda msg, pct: print(f"[{pct:.1f}%] {msg}", flush=True)
+        ).document
         # Keep the OCR tree so the chunks can be rebuilt without OCR'ing again.
         tree_path = export_hierarchical(doc, args.out_dir / f"{doc.document_id}_hierarchical.jsonl")
         print(f"OCR tree: {tree_path}")
