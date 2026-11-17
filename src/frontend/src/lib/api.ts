@@ -13,7 +13,8 @@ export function errorMessage(error: unknown): string {
 
 import {
   ChatSession, ChatMessage, CursorPage, DocumentRecord,
-  DocumentAST, IngestionTask, AdminConfig, SystemStats
+  DocumentAST, IngestionTask, AdminConfig, AdminConfigUpdate, ConfigService, ConfigCheckResult, SystemStats,
+  LLMProfileInput, LLMProfilesResponse, PostgresConfigInput, PostgresConfig, PostgresCheckResult
 } from './types';
 
 const API_BASE = '/api';
@@ -126,9 +127,49 @@ export const api = {
     return res.data;
   },
 
-  async updateAdminConfig(config: Partial<AdminConfig>): Promise<AdminConfig> {
+  async updateAdminConfig(config: AdminConfigUpdate): Promise<AdminConfig> {
     const res = await apiClient.put('/admin/config', config);
     return res.data;
+  },
+
+  async checkAdminConfig(service: ConfigService, overrides: AdminConfigUpdate): Promise<ConfigCheckResult> {
+    return (await apiClient.post('/admin/config/check', { service, overrides }, { timeout: 65000 })).data;
+  },
+
+  async listLLMModels(overrides: AdminConfigUpdate): Promise<{ provider: string; models: string[] }> {
+    return (await apiClient.post('/admin/llm/models', { overrides }, { timeout: 65000 })).data;
+  },
+
+  async listLLMProfiles(): Promise<LLMProfilesResponse> {
+    return (await apiClient.get('/admin/llm/profiles')).data;
+  },
+  async getPostgresConfig(): Promise<PostgresConfig> {
+    return (await apiClient.get('/admin/postgres')).data;
+  },
+  async checkPostgresConfig(config: PostgresConfigInput): Promise<PostgresCheckResult> {
+    return (await apiClient.post('/admin/postgres/check', config, { timeout: 20000 })).data;
+  },
+  async savePostgresConfig(config: PostgresConfigInput): Promise<PostgresConfig> {
+    return (await apiClient.put('/admin/postgres', config, { timeout: 20000 })).data;
+  },
+  async applyPostgresConfig(): Promise<PostgresConfig> {
+    return (await apiClient.post('/admin/postgres/apply', {}, { timeout: 65000 })).data;
+  },
+  async saveLLMProfile(profile: LLMProfileInput, id?: string): Promise<LLMProfilesResponse> {
+    return (await apiClient.request({ method: id ? 'PUT' : 'POST',
+      url: '/admin/llm/profiles' + (id ? '/' + encodeURIComponent(id) : ''), data: profile, timeout: 65000 })).data;
+  },
+  async checkLLMProfile(profile: LLMProfileInput): Promise<ConfigCheckResult> {
+    return (await apiClient.post('/admin/llm/profiles/check', profile, { timeout: 65000 })).data;
+  },
+  async listProfileModels(profile: LLMProfileInput): Promise<{ provider: string; models: string[] }> {
+    return (await apiClient.post('/admin/llm/profiles/models', profile, { timeout: 65000 })).data;
+  },
+  async activateLLMProfile(id: string, config_version: number): Promise<LLMProfilesResponse> {
+    return (await apiClient.post('/admin/llm/profiles/' + encodeURIComponent(id) + '/activate', { config_version }, { timeout: 65000 })).data;
+  },
+  async deleteLLMProfile(id: string, config_version: number): Promise<LLMProfilesResponse> {
+    return (await apiClient.delete('/admin/llm/profiles/' + encodeURIComponent(id), { data: { config_version } })).data;
   },
 
   async getSystemStats(): Promise<SystemStats> {

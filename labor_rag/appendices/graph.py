@@ -122,7 +122,7 @@ def build(output_dir: Path = PROCESSED_DIR, *, validate: bool = True) -> dict:
 
 def load(output_dir: Path = PROCESSED_DIR) -> dict:
     """MERGE only the addon entities and relationships into the configured dataset."""
-    from neo4j import GraphDatabase
+    from labor_rag.services.neo4j import create_neo4j_driver
     from labor_rag.ingest.load_neo4j import safe_identifier
     load_dotenv(ROOT_DIR/".env")
     nodes, edges = jsonl(output_dir/"kg_nodes.jsonl"), jsonl(output_dir/"kg_edges.jsonl")
@@ -132,7 +132,7 @@ def load(output_dir: Path = PROCESSED_DIR) -> dict:
     if not report.get("shacl_conforms"):
         raise ValueError("SHACL validation must pass before loading")
     dataset = os.getenv("DATASET_ID","lao_dong_v5")
-    driver = GraphDatabase.driver(os.getenv("NEO4J_URI","bolt://localhost:7687"),
+    driver = create_neo4j_driver(os.getenv("NEO4J_URI","bolt://localhost:7687"),
         auth=(os.getenv("NEO4J_USER","neo4j"),os.getenv("NEO4J_PASSWORD","labor_rag_pw")),connection_timeout=10,max_transaction_retry_time=5)
     try:
         driver.verify_connectivity()

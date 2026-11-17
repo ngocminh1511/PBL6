@@ -55,11 +55,11 @@ def get_ast(document_id: str, runtime=Depends(get_runtime)):
 
 @router.get("/{document_id}/graph", response_model=GraphResponse)
 def get_graph(document_id: str, article_number: str | None = Query(None, max_length=40), runtime=Depends(get_runtime)):
-    from neo4j import GraphDatabase
+    from labor_rag.services.neo4j import create_neo4j_driver
     with runtime.operation(serialized=False):
         config = runtime.settings
         try:
-            with GraphDatabase.driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
+            with create_neo4j_driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
                 connection_timeout=5, max_transaction_retry_time=0) as driver:
                 with driver.session(database=config.NEO4J_DATABASE) as session:
                     records = session.run("""

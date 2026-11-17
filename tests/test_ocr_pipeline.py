@@ -23,6 +23,7 @@ from labor_rag.ocr.cleaner import (
     detect_headers_footers,
     fix_line_breaks,
     normalize_whitespace,
+    preprocess_legal_text,
     remove_page_numbers,
     split_footnotes,
 )
@@ -84,6 +85,21 @@ def test_line_breaks_and_whitespace():
     assert normalize_whitespace("  Quá   nhiều \t space  ") == "Quá nhiều space"
     merged = clean_and_merge(["Điều 1. A\nnội dung bị\nngắt dòng.", "Điều 2. B"])
     assert "nội dung bị ngắt dòng." in merged
+
+
+def test_legal_ocr_preprocessing_and_embedded_headings():
+    raw = (
+        "Quy định về hợp đông và tiêu chuâ lao động, châm dứt quan hệ lao động.\n"
+        "ít nhất bằng 02 tháng tiền lương Thuận đời Điều 42, Nghĩa vị của người sử dụng lao động trong trường hợp\n"
+        "theo quy định tại Điều 35 của Bộ luật này."
+    )
+    processed = preprocess_legal_text(raw)
+    assert "hợp đồng" in processed
+    assert "tiêu chuẩn" in processed
+    assert "chấm dứt" in processed
+    assert "\nĐiều 42, Nghĩa vị" in processed
+    # Cross reference line should NOT be split into a new heading
+    assert "theo quy định tại Điều 35" in processed
 
 
 # --- structure ------------------------------------------------

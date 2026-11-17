@@ -38,7 +38,7 @@ class EmbeddingProvider:
         else:
             from sentence_transformers import SentenceTransformer
             if self._model is None:
-                self._model = SentenceTransformer(self.model_name)
+                self._model = SentenceTransformer(self.model_name, token=self.settings.HF_TOKEN or None)
             result = self._model.encode(
                 values, normalize_embeddings=normalize_embeddings, batch_size=batch_size,
             )

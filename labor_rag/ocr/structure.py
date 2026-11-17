@@ -56,9 +56,12 @@ PATTERNS = {
     StructureLevel.CHAPTER: re.compile(r"^\s*(?:CHƯƠNG|Chương)\s+([IVXLCDM]+|[0-9]+)\b\.?\s*"),
     # OCR often drops the dot below: "Muc 3".
     StructureLevel.SECTION: re.compile(r"^\s*(?:M[ỤU]C|M[ụu]c)\s+(\d+)\b\.?\s*"),
-    # OCR often gets the tone mark of "Điều" wrong ("Điêu", "Diều").
+    # OCR often gets the tone mark or ending of "Điều" wrong ("Điêu", "Diều", "Diệu", "Điên", "Điền", "Điềp").
     # An inserted Dieu keeps its neighbour's number plus a letter: "Điều 35a".
-    StructureLevel.ARTICLE: re.compile(r"^\s*(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+(\d+[a-zđ]?)(?=[.,\s]|$)[.,]?\s*"),
+    StructureLevel.ARTICLE: re.compile(
+        r"^\s*(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+(\d+[a-zđ]?)(?=[.,:\s-]|$)[.,:]?\s*",
+        re.UNICODE | re.IGNORECASE,
+    ),
     # "1." or, as OCR often reads it, "1," before a capitalised sentence; "1a." when inserted.
     StructureLevel.CLAUSE: re.compile(r"^\s*(\d+[a-zđ]?)(?:\.\s+|,\s+(?=[A-ZĐÀ-Ỹ]))"),
     # Điểm labels are lower-case; OCR often capitalises them ("A) ").
@@ -91,10 +94,17 @@ def parse_line(line: str) -> ParsedLine:
     if m:
         return ParsedLine(StructureLevel.PART, number=m.group().strip(), title=stripped[m.end():].strip())
 
-    for level in (StructureLevel.CHAPTER, StructureLevel.SECTION, StructureLevel.ARTICLE):
+    for level in (StructureLevel.CHAPTER, StructureLevel.SECTION):
         m = PATTERNS[level].match(stripped)
         if m:
             return ParsedLine(level, number=m.group(1), title=stripped[m.end():].strip())
+
+    m = PATTERNS[StructureLevel.ARTICLE].match(stripped)
+    if m:
+        num_m = re.match(r"\d+", m.group(1))
+        # A valid Dieu number in legal documents is between 1 and 350
+        if num_m and 1 <= int(num_m.group()) <= 350:
+            return ParsedLine(StructureLevel.ARTICLE, number=m.group(1), title=stripped[m.end():].strip())
 
     m = PATTERNS[StructureLevel.CLAUSE].match(stripped)
     # A Khoản number is small; "2019. ..." at a line start is not a Khoản.
@@ -254,6 +264,17 @@ def parse_structure(text: str, document_id: str = "") -> LegalDocument:
             )
 
         elif parsed.level == StructureLevel.ARTICLE:
+            if state.clause and re.match(r"^(?:và|hoặc|của\s+[Bb]ộ\s+luật|của\s+[Ll]uật|thì\s+)\b", parsed.title, re.IGNORECASE):
+                _append_text(state, stripped)
+                continue
+            # When inside an amending article (e.g. Điều 219), smaller article numbers (e.g. Điều 54, 55)
+            # are quoted amendment targets belonging to this article rather than new root-level articles.
+            if state.article and re.search(r"sửa\s+đ[oổ]i|b[oổ]\s+sung|bãi\s+bỏ", state.article.article_title, re.IGNORECASE):
+                cur_num_m = re.match(r"\d+", state.article.article_number.split()[-1])
+                new_num_m = re.match(r"\d+", parsed.number)
+                if cur_num_m and new_num_m and int(new_num_m.group()) < int(cur_num_m.group()):
+                    _append_text(state, stripped)
+                    continue
             _flush_article(state)
             state.in_preamble = False
             state.article = Article(

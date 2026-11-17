@@ -3,15 +3,13 @@ from __future__ import annotations
 
 import hashlib
 import mimetypes
-import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import quote, urlsplit
 
-from dotenv import load_dotenv
-
 from labor_rag.config import ROOT_DIR
+
 from .catalog import now, sha256
 
 
@@ -38,16 +36,18 @@ class StorageConfig:
 
     @classmethod
     def from_env(cls):
-        load_dotenv(ROOT_DIR/".env")
-        aliases={"endpoint":("OBJECT_STORAGE_ENDPOINT_URL","R2_ENDPOINT_URL"),
-                 "bucket":("OBJECT_STORAGE_BUCKET","R2_BUCKET_NAME"),
-                 "access_key":("OBJECT_STORAGE_ACCESS_KEY_ID","R2_ACCESS_KEY_ID"),
-                 "secret_key":("OBJECT_STORAGE_SECRET_ACCESS_KEY","R2_SECRET_ACCESS_KEY")}
-        values={key:next((os.environ[n].strip() for n in names if os.getenv(n,"").strip()),"") for key,names in aliases.items()}
-        missing=[aliases[k][0] for k,v in values.items() if not v]
+        from labor_rag.settings import Settings
+        return cls.from_settings(Settings(_env_file=ROOT_DIR / ".env"))
+
+    @classmethod
+    def from_settings(cls, config):
+        fields = {"endpoint": "OBJECT_STORAGE_ENDPOINT_URL", "bucket": "OBJECT_STORAGE_BUCKET",
+                  "access_key": "OBJECT_STORAGE_ACCESS_KEY_ID", "secret_key": "OBJECT_STORAGE_SECRET_ACCESS_KEY"}
+        values = {key: getattr(config, name).strip() for key, name in fields.items()}
+        missing=[fields[k] for k,v in values.items() if not v]
         if missing:
             raise StorageConfigurationError("Missing storage settings: "+", ".join(missing))
-        provider=os.getenv("OBJECT_STORAGE_PROVIDER","s3").lower()
+        provider=config.OBJECT_STORAGE_PROVIDER.lower()
         if provider not in {"s3","r2"}:
             raise StorageConfigurationError("OBJECT_STORAGE_PROVIDER must be s3 or r2")
         parsed=urlsplit(values["endpoint"])
@@ -56,10 +56,10 @@ class StorageConfig:
             raise StorageConfigurationError("Use the HTTPS R2 S3 endpoint without a bucket path or query")
         if not re.fullmatch(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]",values["bucket"]):
             raise StorageConfigurationError("Invalid OBJECT_STORAGE_BUCKET")
-        prefix=os.getenv("OBJECT_STORAGE_PREFIX","appendices_v1").strip("/")
+        prefix=config.OBJECT_STORAGE_PREFIX.strip("/")
         if not prefix or not re.fullmatch(r"[a-zA-Z0-9_./-]+",prefix) or any(p in {".","..",""} for p in prefix.split("/")):
             raise StorageConfigurationError("Invalid OBJECT_STORAGE_PREFIX")
-        return cls(**values,region=os.getenv("OBJECT_STORAGE_REGION","auto"),prefix=prefix)
+        return cls(**values,region=config.OBJECT_STORAGE_REGION,prefix=prefix)
 
 
 def content_type(filename: str) -> str:
@@ -72,15 +72,15 @@ def disposition(filename: str, *, inline: bool = False) -> str:
 
 
 class R2Store:
-    def __init__(self, config: StorageConfig | None = None, *, client=None):
+    def __init__(self, config: StorageConfig | None = None, *, client=None, timeout=60, retries=3):
         self.config=config or StorageConfig.from_env()
         if client is None:
             import boto3
             from botocore.config import Config
             client=boto3.client("s3",endpoint_url=self.config.endpoint,region_name=self.config.region,
                 aws_access_key_id=self.config.access_key,aws_secret_access_key=self.config.secret_key,
-                config=Config(signature_version="s3v4",connect_timeout=10,read_timeout=60,
-                              retries={"max_attempts":3,"mode":"standard"},
+                config=Config(signature_version="s3v4",connect_timeout=min(timeout, 10),read_timeout=timeout,
+                              retries={"max_attempts":retries,"mode":"standard"},
                               request_checksum_calculation="when_required",response_checksum_validation="when_required"))
         self.client=client
 

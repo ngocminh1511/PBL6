@@ -150,9 +150,12 @@ class TokenCounter:
     """Counts tokens with the embedding model's tokenizer (bge-m3)."""
 
     def __init__(self, model: str = EMBEDDING_TOKENIZER) -> None:
+        from pathlib import Path
         from transformers import AutoTokenizer
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
+        local_dir = Path(__file__).resolve().parents[2] / "data" / "models" / "bge-m3-tokenizer"
+        target = str(local_dir) if local_dir.exists() else model
+        self.tokenizer = AutoTokenizer.from_pretrained(target)
 
     def __call__(self, text: str) -> int:
         return len(self.tokenizer(text, add_special_tokens=True, verbose=False)["input_ids"])

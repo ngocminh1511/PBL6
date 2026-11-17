@@ -2,9 +2,20 @@ from typing import Optional, List, Tuple
 from datetime import datetime
 from sqlalchemy import create_engine, desc, func, or_
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.engine import make_url
 from src.backend.app.config import settings
 from src.backend.app.models.database import Base, User, ChatSession, ChatMessage, DocumentRecord, IngestionTask, SystemConfig
 from src.backend.app.utils.pagination import encode_cursor, decode_cursor
+
+
+def normalize_database_url(value):
+    """Use the psycopg2 driver declared in the api extra across SQLAlchemy versions."""
+    if not value.startswith(("postgres://", "postgresql://")):
+        return value
+    url = make_url(value)
+    if url.drivername in {"postgres", "postgresql"}:
+        url = url.set(drivername="postgresql+psycopg2")
+    return url.render_as_string(hide_password=False)
 
 class Database:
     def __init__(self, url):
@@ -18,7 +29,7 @@ class Database:
         if not self.url:
             return
         try:
-            url = self.url.replace("postgres://", "postgresql://", 1)
+            url = normalize_database_url(self.url)
             kwargs = {"check_same_thread": False} if url.startswith("sqlite:") else {"connect_timeout": 5}
             if url == "sqlite://":
                 from sqlalchemy.pool import StaticPool
@@ -43,6 +54,18 @@ class Database:
     def close(self):
         if self.engine is not None:
             self.engine.dispose()
+
+    def adopt(self, replacement):
+        """Keep resource references held by HTTP/ingestion while replacing an idle DB."""
+        previous_engine = self.engine
+        self.url, self.engine, self.factory = replacement.url, replacement.engine, replacement.factory
+        self.available, self.error_type = replacement.available, replacement.error_type
+        replacement.engine, replacement.factory, replacement.available = None, None, False
+        if previous_engine is not None:
+            try:
+                previous_engine.dispose()
+            except Exception:
+                pass  # The new database is already installed; retire the old pool best-effort.
 
 
 from fastapi import Request

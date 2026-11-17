@@ -412,6 +412,13 @@ npm --prefix src/frontend run dev  # http://localhost:3000/appendices
 python -m labor_rag.app.chat     # REPL
 ```
 
+HTTP và CLI tạo kết nối Neo4j qua `labor_rag/services/neo4j.py`. Với URI TLS có xác minh
+(`neo4j+s://`, `bolt+s://`), mỗi driver dùng một SSL context riêng nạp CA hệ thống và
+CA công khai từ dependency `certifi`. Context vẫn kiểm tra chuỗi chứng chỉ và hostname;
+không thay đổi biến môi trường hoặc SSL mặc định của tiến trình. Không cần đặt
+`SSL_CERT_FILE` khi chuyển máy. Các URI local và chế độ self-signed cấu hình tường minh
+giữ hành vi của Neo4j driver.
+
 | Endpoint | Chức năng |
 |---|---|
 | `GET /api/appendices`, `/api/appendices/{id}`, `/api/appendices/{id}/view` | Danh sách, chi tiết, HTML phụ lục đã tách |
@@ -561,6 +568,46 @@ lượt, và kiểm định thống kê giữa các cấu hình.
 - Thiếu PostgreSQL chỉ ảnh hưởng chức năng có persistence; công cụ phụ lục/retrieval không cần SQL/Redis/LLM.
   Redis lỗi làm bỏ cache. Lỗi Qdrant/Neo4j/R2 được báo theo giai đoạn; không sinh bằng chứng hoặc số liệu mẫu.
 - Frontend gọi `/api` qua proxy Next.js. `/appendices?appendix_id=...&chunk_id=...` mở đúng vị trí trích dẫn trong iframe.
+- Trang `/admin` quản lý LLM cloud/local tương thích OpenAI, embedding, Qdrant, Neo4j, R2, Redis và OCR/upload.
+  `GET/PUT /api/admin/config` giữ hợp đồng cũ và thêm metadata nguồn, secret đã thiết lập, khả năng lưu;
+  PUT chỉ gửi trường thay đổi, `reset_fields` khôi phục cấu hình nền. `POST /api/admin/config/check` kiểm tra bản nhập
+  mà không ghi cấu hình/dữ liệu; `POST /api/admin/llm/models` liệt kê model bằng thông tin chưa lưu.
+  Các endpoint dùng dependency admin hiện có, bao gồm hành vi demo đã cấu hình.
+- `SystemConfig(key=runtime)` dùng format 3: `overrides` chứa cấu hình thường, `encrypted_secrets` chứa secret mã hóa
+  Fernet, `version` kiểm soát cập nhật. Đọc tương thích bản ghi cũ; không cần xóa bảng hay dữ liệu. Khóa giải mã
+  `CONFIG_ENCRYPTION_KEY` chỉ lấy từ môi trường. Mất/sai khóa báo lỗi cấu hình và chặn pipeline, giữ trạng thái kết nối
+  PostgreSQL riêng biệt. Không fallback secret khi giải mã hoặc xác thực thất bại.
+- `llm_profiles` lưu các kết nối LLM độc lập theo ID, tên, local/cloud, provider, model, endpoint và nguồn API key.
+  Key riêng của từng profile được mã hóa; `active_llm_profile_id` cùng các overrides hiệu lực được commit trong một transaction.
+  Các API `/api/admin/llm/profiles` hỗ trợ danh sách/thêm/sửa/xóa, `/check`, `/models` và `/{id}/activate` dùng cùng quyền admin.
+  Lưu profile và chuyển active đều kiểm tra thực tế; cấu hình inactive không thay đổi client đang chạy. Các cập nhật cấu hình khác
+  giữ nguyên danh sách profile. Đọc tương thích format 1/2; cấu hình LLM cũ được giữ thành profile legacy trong bộ nhớ và lưu ở lần
+  cập nhật tiếp theo. Profile môi trường là nguồn dự phòng chỉ đọc, không sao chép secret ra trình duyệt.
+- Cấu hình hiệu lực: override đã lưu → biến môi trường tiến trình → `.env` → mặc định. Giá trị rỗng/false tường minh
+  được giữ. Reset dùng snapshot cấu hình nền lúc startup. Secret không được trả về API hay lưu trong trình duyệt;
+  URL Redis được mã hóa toàn bộ. UI loại kết quả kiểm tra trả về sau khi trường liên quan đã đổi.
+- Kiểm tra từng nhóm tạo tài nguyên tạm và đóng sau dùng, timeout 10 giây cho kết nối và 60 giây cho LLM/embedding/OCR.
+  Lưu tự kiểm tra nhóm bị ảnh hưởng, kiểm tra cặp embedding/collection khi đổi liên quan; commit thành công mới thay snapshot
+  và đóng client cũ. Tác vụ đang hoạt động hoặc version cũ trả `409`; thiếu PostgreSQL trả `503` khi lưu.
+  R2 nhận `StorageConfig` tường minh; OCR nhận snapshot theo context của lần xử lý, cache predictor theo model/device/beam search.
+  LLM client thuộc runtime, dùng chung cho rewrite, rerank và generation, kể cả local. Không sửa môi trường để đổi client.
+- Kiểm tra cấu hình không khởi chạy container, ghi dữ liệu thử, tạo collection hay seed dữ liệu. Model/collection đã chuẩn bị
+  từ trước; kiểm tra OCR không tải model. Thống kê lỗi không tái sử dụng số node/cạnh của báo cáo nạp trước đó.
+- PostgreSQL bootstrap có API admin riêng: `GET/PUT /api/admin/postgres`, `POST /api/admin/postgres/check`.
+  Cho nhập URI hoặc host/port/database/user/password/SSL, kiểm tra bằng `SELECT 1` với connect/statement timeout 5 giây;
+  không chạy migration khi kiểm tra. PUT kiểm tra lại rồi ghi riêng `DATABASE_URL` vào `.env` bằng dotenv, giữ nguyên các key khác.
+  Không cần database ứng dụng hoặc Fernet để lưu kết nối ban đầu. PUT không thay `os.environ`, snapshot hay engine đang hoạt động.
+  `saved` phản ánh dữ liệu thực sự tồn tại trong `.env`, kể cả sau reload; `pending_apply` và `can_apply` phân biệt lưu và áp dụng.
+  `POST /api/admin/postgres/apply` thiết lập/kết nối lại database đã lưu khi backend chưa kết nối hoặc vẫn cùng URI:
+  khóa runtime và kiểm tra tác vụ đang chạy, kiểm tra kết nối, chạy migration bổ sung trên tài nguyên tạm rồi nạp cấu hình đích.
+  Khi chuẩn bị thành công mới chuyển engine/factory trong cùng đối tượng Database để giữ tham chiếu của HTTP và ingestion;
+  mọi lỗi trước đó giữ runtime cũ và file đã lưu. Không tạo thêm ingestion worker hoặc sửa môi trường tiến trình.
+  Đổi database đang hoạt động hoặc xung đột DATABASE_URL của tiến trình vẫn yêu cầu restart (`pending_restart`). Response chỉ trả metadata an toàn,
+  không trả URI chứa mật khẩu. Mật khẩu để trống trong form từng trường chỉ được giữ cho cùng host/port/user.
+- Tại ranh giới tạo engine, URI `postgres://`/`postgresql://` được chuẩn hóa thành dialect `postgresql+psycopg2`
+  để dùng đúng dependency `psycopg2-binary` trong extra `api`, độc lập driver mặc định của từng phiên bản SQLAlchemy.
+  Chuỗi cấu hình lưu trên giao diện vẫn giữ scheme PostgreSQL chuẩn. Thiếu thư viện/driver được báo là lỗi dependency,
+  không phân loại thành tài nguyên hoặc database không tồn tại.
 - `graph_only` giữ hành vi hiện có: vector chọn seed trước rồi mở rộng đồ thị. Benchmark fine-tuning chấm retrieval
   bằng nhãn; ứng dụng hỏi đáp dùng thêm LLM rewrite/rerank/generation.
 - Chạy một backend process và một ingestion worker. Chưa có queue phân tán hoặc transaction chung cho graph/vector:

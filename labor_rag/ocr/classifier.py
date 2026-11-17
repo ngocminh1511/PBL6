@@ -46,6 +46,9 @@ def classify_page(page: pymupdf.Page) -> PageClassification:
 
     if text_length < 10 and coverage < 0.1:
         page_type = PageType.EMPTY
+    elif coverage > settings.SCAN_IMAGE_COVERAGE and text_length < 300:
+        # Little text (e.g. digital signature or thin OCR layer) over a large image: a scan
+        page_type = PageType.SCANNED
     elif text_length >= settings.MIN_TEXT_CHARS:
         page_type = PageType.TEXT
     elif coverage > settings.SCAN_IMAGE_COVERAGE:
