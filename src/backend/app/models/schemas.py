@@ -108,6 +108,9 @@ class ChatSessionCreate(BaseModel):
     domain: Literal["all", "lao_dong"] = "all"
     retrieval_mode: Optional[RetrievalMode] = RetrievalMode.HYBRID
 
+class ChatSessionUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+
 class ChatSessionResponse(BaseModel):
     id: str
     title: str

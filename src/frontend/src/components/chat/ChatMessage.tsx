@@ -42,12 +42,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
         {/* Header Meta */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface">Hệ thống Pháp luật Việt Nam (Hybrid GraphRAG)</span>
-            {message.pipeline_trace && (
-              <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
-                {message.pipeline_trace.trace_id}
-              </span>
-            )}
+            <span className="font-headline-sm text-headline-sm text-on-surface">Hệ thống Pháp luật Việt Nam</span>
           </div>
           <span className="font-label-code text-label-code text-on-surface-variant">
             Thời gian thực thi: {message.execution_time_ms == null ? '—' : message.execution_time_ms + 'ms'}

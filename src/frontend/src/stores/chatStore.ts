@@ -23,17 +23,31 @@ interface ChatState {
   /** Bumped on every citation click, so choosing the same citation again re-focuses the tree. */
   focusTick: number;
   selectedEvidences: EvidenceItem[];
+  pinnedSessionIds: string[];
 
   // Actions
   fetchSessions: (cursor?: string) => Promise<void>;
   createSession: (title?: string) => Promise<string>;
   selectSession: (sessionId: string) => Promise<void>;
+  renameSession: (sessionId: string, newTitle: string) => Promise<void>;
+  deleteSession: (sessionId: string) => Promise<void>;
+  togglePinSession: (sessionId: string) => void;
   sendMessage: (question: string) => Promise<void>;
   setSelectedDomain: (domain: string) => void;
   setSelectedRetrievalMode: (mode: RetrievalMode) => void;
   setInspectorTab: (tab: 'tab-hierarchy' | 'tab-graph' | 'tab-rerank') => void;
   setSelectedCitation: (citation: string | null) => void;
 }
+
+const getStoredPinned = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('lexgraph_pinned_sessions');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
@@ -45,6 +59,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   nextCursor: null,
   hasMore: false,
   totalSessions: 0,
+  pinnedSessionIds: getStoredPinned(),
 
   selectedDomain: 'all',
   selectedRetrievalMode: 'hybrid',
@@ -166,5 +181,62 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setSelectedRetrievalMode: (mode) => set({ selectedRetrievalMode: mode }),
   setInspectorTab: (tab) => set({ inspectorTab: tab }),
   setSelectedCitation: (citation) => set(state => ({ selectedCitation: citation, focusTick: state.focusTick + 1 })),
+
+  renameSession: async (sessionId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+    try {
+      const updated = await api.updateSession(sessionId, { title: newTitle.trim() });
+      set((state) => ({
+        sessions: state.sessions.map((s) => (s.id === sessionId ? { ...s, title: updated.title } : s)),
+      }));
+    } catch (e) {
+      console.error('Failed to rename session:', e);
+      set({ error: errorMessage(e) });
+    }
+  },
+
+  deleteSession: async (sessionId: string) => {
+    try {
+      await api.deleteSession(sessionId);
+      const { sessions, activeSessionId, pinnedSessionIds } = get();
+      const remaining = sessions.filter((s) => s.id !== sessionId);
+      const remainingPinned = pinnedSessionIds.filter((id) => id !== sessionId);
+      try {
+        localStorage.setItem('lexgraph_pinned_sessions', JSON.stringify(remainingPinned));
+      } catch {}
+
+      const nextActiveId = activeSessionId === sessionId
+        ? (remaining.length > 0 ? remaining[0].id : null)
+        : activeSessionId;
+
+      set({
+        sessions: remaining,
+        pinnedSessionIds: remainingPinned,
+        activeSessionId: nextActiveId,
+        totalSessions: Math.max(0, get().totalSessions - 1),
+      });
+
+      if (nextActiveId && nextActiveId !== activeSessionId) {
+        get().selectSession(nextActiveId);
+      } else if (!nextActiveId) {
+        set({ messages: [], selectedEvidences: [] });
+      }
+    } catch (e) {
+      console.error('Failed to delete session:', e);
+      set({ error: errorMessage(e) });
+    }
+  },
+
+  togglePinSession: (sessionId: string) => {
+    const { pinnedSessionIds } = get();
+    const isPinned = pinnedSessionIds.includes(sessionId);
+    const updated = isPinned
+      ? pinnedSessionIds.filter((id) => id !== sessionId)
+      : [sessionId, ...pinnedSessionIds];
+    try {
+      localStorage.setItem('lexgraph_pinned_sessions', JSON.stringify(updated));
+    } catch {}
+    set({ pinnedSessionIds: updated });
+  },
 }));
 

@@ -172,6 +172,25 @@ class ChatRepository:
             .all()
         )
 
+    def update_session(self, session_id: str, user_id: str, title: Optional[str] = None) -> Optional[ChatSession]:
+        session = self.get_session(session_id, user_id=user_id)
+        if not session:
+            return None
+        if title is not None:
+            session.title = title.strip()
+            session.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(session)
+        return session
+
+    def delete_session(self, session_id: str, user_id: str) -> bool:
+        session = self.get_session(session_id, user_id=user_id)
+        if not session:
+            return False
+        self.db.delete(session)
+        self.db.commit()
+        return True
+
 # ================= DOCUMENT REPOSITORY =================
 class DocumentRepository:
     def __init__(self, db: Session):

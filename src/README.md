@@ -15,6 +15,8 @@ Terminal khác:
 ```powershell
 npm --prefix src/frontend ci
 npm --prefix src/frontend run dev
+
+hoặc cd/frontend rồi chạy npm run dev
 ```
 
 [README chính](../README.md) có hướng dẫn cloud, cấu hình, Docker và kiểm thử.
