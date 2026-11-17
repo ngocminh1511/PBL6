@@ -23,12 +23,12 @@ import os
 from dataclasses import dataclass, field
 from datetime import date
 
-from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
 from qdrant_client.models import DatetimeRange, FieldCondition, Filter, IsNullCondition, MatchAny, MatchValue, PayloadField
 from dotenv import load_dotenv
 
 from labor_rag.ingest.chunk_schema import article_id, citation, join_parts, make_chunk_id, part_number
+from labor_rag.services.neo4j import create_neo4j_driver
 
 load_dotenv()
 
@@ -234,7 +234,7 @@ class HybridRetriever:
         self.collection = collection or config.QDRANT_COLLECTION
         self.qdrant = QdrantClient(url=config.QDRANT_URL, api_key=config.QDRANT_API_KEY or None,
                                    timeout=config.QDRANT_TIMEOUT)
-        self.neo4j = GraphDatabase.driver(config.NEO4J_URI,
+        self.neo4j = create_neo4j_driver(config.NEO4J_URI,
             auth=(config.NEO4J_USER, config.NEO4J_PASSWORD), connection_timeout=8,
             max_transaction_retry_time=2)
         self.graph_warning: str | None = None

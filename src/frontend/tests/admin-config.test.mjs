@@ -11,7 +11,7 @@ const compiled = ts.transpileModule(source, {
 }).outputText;
 const context = { exports: {} };
 runInNewContext(compiled, context);
-const { buildConfigUpdate, createConfigRequestTracker } = context.exports;
+const { buildConfigUpdate, createConfigRequestTracker, isConfigVerified } = context.exports;
 const plain = value => JSON.parse(JSON.stringify(value));
 
 test('saving one group excludes credentials and resets from other groups', () => {
@@ -55,4 +55,16 @@ test('a newer check and discarding changes supersede earlier requests', () => {
   assert.equal(tracker.isCurrent('llm', second), true);
   tracker.invalidateAll();
   assert.equal(tracker.isCurrent('llm', second), false);
+});
+
+test('only a successful current check or live connection earns a verification tick', () => {
+  assert.equal(isConfigVerified(undefined, 'connected'), true);
+  for (const status of ['unavailable', 'not_checked', 'not_configured', 'disabled', undefined]) {
+    assert.equal(isConfigVerified(undefined, status), false);
+  }
+  assert.equal(isConfigVerified({ result: { status: 'passed' } }), true);
+  for (const state of [{}, { checking: true }, { error: 'offline' },
+    { result: { status: 'failed' } }, { result: { status: 'disabled' } }, { result: { status: 'not_configured' } }]) {
+    assert.equal(isConfigVerified(state, 'connected'), false, 'old live status cannot override an edit or failed check');
+  }
 });

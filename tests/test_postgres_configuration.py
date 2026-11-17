@@ -81,6 +81,46 @@ def test_failed_check_never_changes_file_or_claims_success(setup, monkeypatch):
         assert env_file.read_bytes() == original
 
 
+@pytest.mark.parametrize("process_url,conflict", [
+    (None, False),
+    ("postgresql://user:private-password@db.example:5432/app?sslmode=require", False),
+    ("postgres://user:private-password@db.example:5432/app?sslmode=require", False),
+    ("postgresql+psycopg2://user:private-password@db.example:5432/app?sslmode=require", False),
+    ("postgresql://user:private-password@other.example:5432/app?sslmode=require", True),
+    ("postgresql://user:other-password@db.example:5432/app?sslmode=require", True),
+])
+def test_environment_warning_requires_a_real_conflict(setup, monkeypatch, process_url, conflict):
+    app, env_file, probes = setup
+    saved = "postgresql://user:private-password@db.example:5432/app?sslmode=require"
+    env_file.write_text('DATABASE_URL="' + saved + '"\n', encoding="utf-8")
+    if process_url is not None:
+        monkeypatch.setenv("DATABASE_URL", process_url)
+    original = env_file.read_bytes()
+    with TestClient(app) as client:
+        response = client.get("/api/admin/postgres")
+        assert response.status_code == 200
+        status = response.json()
+        assert status["environment_override"] is conflict
+        assert status["source"] == ("environment" if process_url else "env_file")
+        assert status["can_apply"] is not conflict
+        assert status["pending_restart"] is conflict
+        assert "private-password" not in response.text and "other-password" not in response.text
+        if conflict:
+            assert client.post("/api/admin/postgres/apply").status_code == 409
+        assert not probes
+        assert env_file.read_bytes() == original
+        assert os.environ.get("DATABASE_URL") == process_url
+
+
+def test_environment_without_a_saved_url_is_not_a_conflict(setup, monkeypatch):
+    app, _, _ = setup
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:private-password@db.example/app")
+    with TestClient(app) as client:
+        response = client.get("/api/admin/postgres")
+        assert response.json()["source"] == "environment"
+        assert not response.json()["environment_override"]
+
+
 @pytest.mark.parametrize("value", ["not-a-url", "sqlite:///local.db", "postgresql://hostonly/app", "postgresql://user:pass@host/app?sslmode=bad"])
 def test_invalid_connection_strings_are_sanitized(setup, value):
     app, _, seen = setup

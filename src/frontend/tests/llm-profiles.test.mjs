@@ -34,11 +34,19 @@ const { LLMProfilesManager } = compile('../src/components/admin/LLMProfilesManag
 const { PostgresSettings } = compile('../src/components/admin/PostgresSettings.tsx', {
   '../../lib/api': { api, errorMessage: error => error.message }, './ui': ui,
 });
+const adminLogic = compile('../src/lib/admin-config.ts');
+const { default: AdminPage } = compile('../src/app/admin/page.tsx', {
+  '../../lib/api': { api, errorMessage: error => error.message },
+  '../../lib/admin-config': adminLogic,
+  '../../components/admin/LLMProfilesManager': { LLMProfilesManager },
+  '../../components/admin/PostgresSettings': { PostgresSettings },
+  '../../components/admin/ui': ui, './admin.module.css': { page: 'admin-page' },
+});
 const environment = { id: 'environment', name: 'Từ môi trường', mode: 'cloud', provider: 'gemini', model: 'existing-model',
   base_url: '', local_runtime: 'compatible', api_key_source: 'environment', key_configured: true, read_only: true, verification: null };
 let root;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-const button = text => Array.from(document.querySelectorAll('button')).find(item => item.textContent.trim() === text);
+const button = text => Array.from(document.querySelectorAll('button')).find(item => !item.closest('[hidden]') && item.textContent.trim() === text);
 const field = text => Array.from(document.querySelectorAll('label')).find(item => item.textContent.startsWith(text))?.querySelector('input,select');
 async function click(element) {
   assert.ok(element, 'control exists');
@@ -207,4 +215,120 @@ test('reloading PostgreSQL settings keeps the saved badge and does not claim an 
   assert.equal(button('Đã lưu').disabled, true);
   assert.ok(button('Áp dụng kết nối đã lưu'));
   assert.equal(document.body.textContent.includes('Chưa kiểm tra thay đổi trên form'), false);
+});
+
+const navButton = name => Array.from(document.querySelectorAll('nav[aria-label="Nhóm cấu hình"] button')).find(item => item.textContent.trim() === name);
+const verified = name => !!navButton(name)?.parentElement.querySelector('[aria-label="Đã kiểm tra thành công"]');
+const passed = service => ({ service, status: 'passed', message: 'Kiểm tra thành công.', checked_at: new Date().toISOString(), latency_ms: 1, details: {} });
+
+async function mountAdmin(overrides = {}) {
+  const config = { config_version: 1, can_save: false, encryption_ready: false, configuration_error: null,
+    postgres_status: 'unavailable', sources: {}, environment_sources: {}, environment_values: {},
+    environment_secret_configured: {}, secret_configured: {}, available_collections: { legal: 'test-model' },
+    collection_models: {}, embedding_model: 'test-model', embedding_backend: 'modal', query_embedding_backend: 'modal',
+    modal_app_name: 'test-app', qdrant_url: 'https://vectors.example', qdrant_collection: 'legal', qdrant_timeout: 10,
+    neo4j_uri: 'neo4j+s://graph.example', neo4j_user: 'user', neo4j_database: 'database',
+    ocr_model: 'vgg_transformer', ocr_device: '', ocr_dpi: 300, max_upload_bytes: 50 * 1024 * 1024,
+    ocr_beamsearch: false, ocr_semantic_chunking: false,
+    redis_enabled: true, startup: { cors_origins: [] } };
+  const postgres = { configured: true, saved: true, pending_apply: true, can_apply: true, pending_restart: false,
+    connection_status: 'unavailable', host: 'db.example', port: 5432, database: 'app', username: 'user',
+    sslmode: 'require', password_configured: true, environment_override: false };
+  service = {
+    getAdminConfig: async () => config,
+    getSystemStats: async () => ({ vector_db_status: 'connected', graph_db_status: 'connected', redis_status: 'not_checked' }),
+    getPostgresConfig: async () => postgres,
+    listLLMProfiles: async () => ({ profiles: [environment], active_profile_id: environment.id, config_version: 1 }),
+    checkAdminConfig: async name => passed(name),
+    checkPostgresConfig: async () => passed('postgres'),
+    checkLLMProfile: async () => passed('llm'),
+    ...overrides,
+  };
+  await act(async () => {
+    root = createRoot(document.getElementById('app'));
+    root.render(React.createElement(AdminPage));
+  });
+}
+
+test('sidebar ticks reflect live connections and leave unchecked groups without ticks', async () => {
+  await mountAdmin();
+  assert.equal(verified('Qdrant'), true);
+  assert.equal(verified('Neo4j'), true);
+  for (const name of ['Mô hình LLM', 'PostgreSQL', 'Embedding', 'Lưu trữ file', 'Redis cache', 'OCR và upload']) {
+    assert.equal(verified(name), false, name);
+  }
+  assert.equal(document.querySelector('[aria-labelledby="settings-group-title"]'), null, 'LLM has a single settings panel');
+});
+
+test('sidebar ignores old successes after edits and clears ticks after a failed recheck', async () => {
+  let finish;
+  await mountAdmin({ checkAdminConfig: () => new Promise(resolve => { finish = resolve; }) });
+  await click(navButton('Neo4j'));
+  await click(button('Kiểm tra'));
+  assert.equal(verified('Neo4j'), false);
+  await fill(document.getElementById('config-neo4j_uri'), 'neo4j+s://new.example');
+  await act(async () => { finish(passed('neo4j')); });
+  assert.equal(verified('Neo4j'), false);
+
+  service.checkAdminConfig = async () => passed('neo4j');
+  await click(button('Kiểm tra'));
+  assert.equal(verified('Neo4j'), true);
+  await click(navButton('OCR và upload'));
+  assert.equal(verified('Neo4j'), true, 'switching panels preserves the verification');
+  await click(navButton('Neo4j'));
+  service.checkAdminConfig = async () => { throw new Error('offline'); };
+  await click(button('Kiểm tra'));
+  assert.equal(verified('Neo4j'), false, 'a live probe cannot override a newer check failure');
+});
+
+test('editing embedding clears related vector checks while keeping unrelated graph ticks', async () => {
+  await mountAdmin();
+  await click(navButton('Embedding'));
+  await fill(document.getElementById('config-embedding_model'), 'another-model');
+  assert.equal(verified('Qdrant'), false);
+  assert.equal(verified('Neo4j'), true);
+  await click(button('Kiểm tra'));
+  assert.equal(verified('Embedding'), true);
+  await click(navButton('Qdrant'));
+  await fill(document.getElementById('config-qdrant_collection'), 'another-collection');
+  assert.equal(verified('Embedding'), false);
+});
+
+test('LLM and PostgreSQL verification survives navigation and connection edits remove the tick', async () => {
+  await mountAdmin();
+  await click(document.querySelector('button[aria-label="Kiểm tra Từ môi trường"]'));
+  assert.equal(verified('Mô hình LLM'), true);
+  assert.ok(document.querySelector('tbody td:first-child [aria-label="Đã kiểm tra thành công"]'));
+  await click(navButton('PostgreSQL'));
+  await click(button('Kiểm tra'));
+  assert.equal(verified('PostgreSQL'), true);
+  await click(navButton('Neo4j'));
+  assert.equal(verified('Mô hình LLM'), true);
+  assert.equal(verified('PostgreSQL'), true);
+  await click(navButton('PostgreSQL'));
+  await fill(document.getElementById('postgres-url'), 'postgresql://user:pass@new.example/app');
+  assert.equal(verified('PostgreSQL'), false);
+  await click(navButton('Mô hình LLM'));
+  service.checkLLMProfile = async () => { throw new Error('offline'); };
+  await click(document.querySelector('button[aria-label="Kiểm tra Từ môi trường"]'));
+  assert.equal(verified('Mô hình LLM'), false);
+});
+
+test('a failed LLM recheck does not fall back to an older saved verification', async () => {
+  const profile = { ...environment, verification: passed('llm') };
+  await mountAdmin({ listLLMProfiles: async () => ({ profiles: [profile], active_profile_id: profile.id, config_version: 1 }),
+    checkLLMProfile: async () => { throw new Error('offline'); } });
+  assert.equal(verified('Mô hình LLM'), true);
+  await click(document.querySelector('button[aria-label="Kiểm tra Từ môi trường"]'));
+  assert.equal(verified('Mô hình LLM'), false);
+  assert.equal(document.querySelector('tbody td:first-child [aria-label="Đã kiểm tra thành công"]'), null);
+});
+
+test('checking an inactive LLM profile does not verify the active LLM connection', async () => {
+  const other = { ...environment, id: 'other', name: 'Other LLM', read_only: false };
+  await mountAdmin({ listLLMProfiles: async () => ({ profiles: [environment, other], active_profile_id: environment.id, config_version: 1 }) });
+  await click(document.querySelector('button[aria-label="Kiểm tra Other LLM"]'));
+  assert.equal(verified('Mô hình LLM'), false);
+  const row = Array.from(document.querySelectorAll('tbody tr')).find(item => item.textContent.includes('Other LLM'));
+  assert.ok(row.querySelector('td:first-child [aria-label="Đã kiểm tra thành công"]'));
 });

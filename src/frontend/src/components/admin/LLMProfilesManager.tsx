@@ -10,7 +10,7 @@ const providers = { gemini: 'Google Gemini', openai: 'OpenAI', anthropic: 'Anthr
 type ProfileForm = Omit<LLMProfileInput, 'mode'> & { mode: 'cloud' | 'local' | null; api_key: string };
 const emptyForm = (): ProfileForm => ({ name: '', mode: null, provider: 'gemini', model: '', base_url: '', local_runtime: 'ollama', api_key_source: 'custom', api_key: '', activate: false });
 
-export function LLMProfilesManager({ config, onChanged }: { config: AdminConfig; onChanged: () => Promise<void> }) {
+export function LLMProfilesManager({ config, onChanged, onVerificationChange }: { config: AdminConfig; onChanged: () => Promise<void>; onVerificationChange?: (verified: boolean) => void }) {
   const [data, setData] = useState<LLMProfilesResponse | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -25,7 +25,7 @@ export function LLMProfilesManager({ config, onChanged }: { config: AdminConfig;
   const [checking, setChecking] = useState(false);
   const [busy, setBusy] = useState('');
   const [formError, setFormError] = useState('');
-  const [rowChecks, setRowChecks] = useState<Record<string, ConfigCheckResult>>({});
+  const [rowChecks, setRowChecks] = useState<Record<string, ConfigCheckResult | null>>({});
   const [deleting, setDeleting] = useState<LLMProfile | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const formRevision = useRef(0);
@@ -34,10 +34,16 @@ export function LLMProfilesManager({ config, onChanged }: { config: AdminConfig;
 
   useEffect(() => {
     const revision = ++listRequest.current;
-    api.listLLMProfiles().then(result => { if (revision === listRequest.current) setData(result); })
+    api.listLLMProfiles().then(result => { if (revision === listRequest.current) { setData(result); setRowChecks({}); } })
       .catch(e => { if (revision === listRequest.current) setError(errorMessage(e)); });
     return () => { listRequest.current++; };
   }, [config.config_version]);
+
+  const activeProfile = data?.profiles.find(profile => profile.id === data.active_profile_id);
+  const activeVerification = activeProfile && (Object.prototype.hasOwnProperty.call(rowChecks, activeProfile.id) ? rowChecks[activeProfile.id] : activeProfile.verification);
+  const activeDraft = !!form && editing?.id === activeProfile?.id;
+  const verified = data?.config_version === config.config_version && (activeDraft ? check?.status === 'passed' : activeVerification?.status === 'passed');
+  useEffect(() => { onVerificationChange?.(verified); }, [verified, onVerificationChange]);
 
   useEffect(() => {
     if (form && dialog.current && !dialog.current.open) dialog.current.showModal();
@@ -141,11 +147,13 @@ export function LLMProfilesManager({ config, onChanged }: { config: AdminConfig;
   }
 
   async function checkRow(profile: LLMProfile) {
+    const revision = listRequest.current;
     setBusy('check-' + profile.id); setError('');
+    setRowChecks(previous => ({ ...previous, [profile.id]: null }));
     try {
       const result = await api.checkLLMProfile({ ...profile, profile_id: profile.id });
-      setRowChecks(previous => ({ ...previous, [profile.id]: result }));
-    } catch (e) { setError(errorMessage(e)); }
+      if (revision === listRequest.current) setRowChecks(previous => ({ ...previous, [profile.id]: result }));
+    } catch (e) { if (revision === listRequest.current) setError(errorMessage(e)); }
     finally { setBusy(''); }
   }
 
@@ -181,14 +189,15 @@ export function LLMProfilesManager({ config, onChanged }: { config: AdminConfig;
     {!data && !error && <p className="p-6 text-sm text-slate-500 flex items-center gap-2"><Loader2 size={16} className="animate-spin" />Đang tải cấu hình…</p>}
     {data && <div className="overflow-x-auto max-h-[560px] overflow-y-auto">
       <table className="w-full text-sm text-left"><thead className="bg-slate-50/70 text-slate-500 text-xs">
-        <tr><th className="font-medium px-5 py-3">Tên cấu hình</th><th className="font-medium px-3 py-3">Model</th><th className="font-medium px-3 py-3">Trạng thái</th><th className="font-medium px-5 py-3 text-right">Thao tác</th></tr>
+        <tr><th className="w-10 pl-5 pr-0 py-3"><span className="sr-only">Kiểm tra kết nối</span></th><th className="font-medium px-3 py-3">Tên cấu hình</th><th className="font-medium px-3 py-3">Model</th><th className="font-medium px-3 py-3">Trạng thái</th><th className="font-medium px-5 py-3 text-right">Thao tác</th></tr>
       </thead><tbody>{rows.map(profile => {
         const active = profile.id === data.active_profile_id;
-        const verification = rowChecks[profile.id] || profile.verification;
+        const verification = Object.prototype.hasOwnProperty.call(rowChecks, profile.id) ? rowChecks[profile.id] : profile.verification;
         const Icon = profile.mode === 'local' ? HardDrive : Cloud;
         return <tr key={profile.id} className={'border-t border-slate-100 ' + (active ? 'bg-secondary/[0.025]' : '')}>
-          <td className="px-5 py-4"><div className="flex items-center gap-3 min-w-[170px]">
-            <span className={'p-2 rounded-xl ' + (profile.mode === 'local' ? 'bg-slate-100 text-slate-600' : 'bg-secondary/5 text-secondary')}><Icon size={17} /></span>
+          <td className="pl-5 pr-0 py-4">{verification?.status === 'passed' && <CheckCircle2 size={16} className="text-emerald-600" role="img" aria-label="Đã kiểm tra thành công" />}</td>
+          <td className="px-3 py-4"><div className="flex items-center gap-3 min-w-[170px]">
+            <span className={'p-2 rounded-xl ' + (profile.mode === 'local' ? 'bg-slate-100 text-slate-600' : 'bg-secondary/5 text-secondary')}><Icon size={17} aria-hidden="true" /></span>
             <div><p className="font-medium">{profile.name}</p><p className="text-xs text-slate-500 mt-0.5">{profile.mode === 'local' ? 'Local' : 'Cloud'} · {profile.mode === 'local' ? ({ ollama: 'Ollama', lmstudio: 'LM Studio', compatible: 'API tương thích' }[profile.local_runtime]) : providers[profile.provider]}</p></div>
           </div></td>
           <td className="px-3 py-4 max-w-[190px]"><p className="truncate" title={profile.model}>{profile.model || 'Chưa chọn model'}</p>

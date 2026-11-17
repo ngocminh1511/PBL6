@@ -412,6 +412,13 @@ npm --prefix src/frontend run dev  # http://localhost:3000/appendices
 python -m labor_rag.app.chat     # REPL
 ```
 
+HTTP và CLI tạo kết nối Neo4j qua `labor_rag/services/neo4j.py`. Với URI TLS có xác minh
+(`neo4j+s://`, `bolt+s://`), mỗi driver dùng một SSL context riêng nạp CA hệ thống và
+CA công khai từ dependency `certifi`. Context vẫn kiểm tra chuỗi chứng chỉ và hostname;
+không thay đổi biến môi trường hoặc SSL mặc định của tiến trình. Không cần đặt
+`SSL_CERT_FILE` khi chuyển máy. Các URI local và chế độ self-signed cấu hình tường minh
+giữ hành vi của Neo4j driver.
+
 | Endpoint | Chức năng |
 |---|---|
 | `GET /api/appendices`, `/api/appendices/{id}`, `/api/appendices/{id}/view` | Danh sách, chi tiết, HTML phụ lục đã tách |

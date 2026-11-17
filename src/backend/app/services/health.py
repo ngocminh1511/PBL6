@@ -55,7 +55,9 @@ def health_status(runtime, *, probe=False):
 
 
 def _graph_probe(config, graph):
-    with graph.driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
+    from labor_rag.services.neo4j import create_neo4j_driver
+    with create_neo4j_driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
+                      driver_factory=graph.driver,
                       connection_timeout=5, max_transaction_retry_time=0) as driver:
         driver.verify_connectivity()
         with driver.session(database=config.NEO4J_DATABASE) as session:

@@ -172,8 +172,8 @@ def _check(service, config):
                 raise ValueError("Unsupported vector layout")
             return {"dimensions": dimension, "points": info.points_count}
     if service == "neo4j":
-        from neo4j import GraphDatabase
-        with GraphDatabase.driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
+        from labor_rag.services.neo4j import create_neo4j_driver
+        with create_neo4j_driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD),
                                   connection_timeout=10, max_transaction_retry_time=0) as driver:
             driver.verify_connectivity()
             with driver.session(database=config.NEO4J_DATABASE) as session:

@@ -6,7 +6,7 @@ import { api, errorMessage } from '../../lib/api';
 import type { PostgresConfig, PostgresConfigInput, PostgresCheckResult } from '../../lib/types';
 import { adminInput, adminButton, adminPrimary } from './ui';
 
-export function PostgresSettings({ onApplied }: { onApplied?: () => Promise<void> }) {
+export function PostgresSettings({ onApplied, onVerificationChange }: { onApplied?: () => Promise<void>; onVerificationChange?: (verified: boolean) => void }) {
   const [config, setConfig] = useState<PostgresConfig | null>(null);
   const [mode, setMode] = useState<'url' | 'fields'>('url');
   const [url, setUrl] = useState('');
@@ -16,49 +16,56 @@ export function PostgresSettings({ onApplied }: { onApplied?: () => Promise<void
   const [notice, setNotice] = useState('');
   const [result, setResult] = useState<PostgresCheckResult | null>(null);
   const [busy, setBusy] = useState<'check' | 'save' | 'apply' | null>(null);
+  const [verified, setVerified] = useState(false);
   const revision = useRef(0);
+
+  useEffect(() => { onVerificationChange?.(verified); }, [verified, onVerificationChange]);
 
   useEffect(() => {
     let alive = true;
+    const initialRevision = revision.current;
     api.getPostgresConfig().then(value => {
       if (!alive) return;
       setConfig(value);
+      if (revision.current === initialRevision) setVerified(value.connection_status === 'connected' && !value.pending_apply && !value.pending_restart);
       setFields(previous => ({ ...previous, host: value.host, port: value.port, database: value.database, username: value.username, sslmode: value.sslmode }));
     }).catch(e => { if (alive) setError(errorMessage(e)); });
     return () => { alive = false; revision.current++; };
   }, []);
 
-  function invalidate() { revision.current++; setResult(null); setError(''); setNotice(''); if (busy === 'check') setBusy(null); }
+  function invalidate() { revision.current++; setVerified(false); setResult(null); setError(''); setNotice(''); if (busy === 'check') setBusy(null); }
   function payload(): PostgresConfigInput {
     if (mode === 'url') return { mode, url: url.trim() || undefined, sslmode: fields.sslmode };
     return { mode, ...fields, password: fields.password || undefined };
   }
   async function check() {
     const current = ++revision.current;
-    setBusy('check'); setError(''); setResult(null); setNotice('');
-    try { const checked = await api.checkPostgresConfig(payload()); if (current === revision.current) setResult(checked); }
+    setBusy('check'); setVerified(false); setError(''); setResult(null); setNotice('');
+    try { const checked = await api.checkPostgresConfig(payload()); if (current === revision.current) { setResult(checked); setVerified(checked.status === 'passed'); } }
     catch (e) { if (current === revision.current) setError(errorMessage(e)); }
     finally { if (current === revision.current) setBusy(null); }
   }
   async function save(event: React.FormEvent) {
     event.preventDefault();
     const current = ++revision.current;
-    setBusy('save'); setError(''); setNotice(''); setResult(null);
+    setBusy('save'); setVerified(false); setError(''); setNotice(''); setResult(null);
     try {
       const saved = await api.savePostgresConfig(payload());
       if (current !== revision.current) return;
       setConfig(saved); setNotice(saved.message); setUrl(''); setVisible(false);
+      setVerified(true);
       setFields(previous => ({ ...previous, host: saved.host, port: saved.port, database: saved.database, username: saved.username, password: '', sslmode: saved.sslmode }));
     } catch (e) { if (current === revision.current) setError(errorMessage(e)); }
     finally { if (current === revision.current) setBusy(null); }
   }
   async function apply() {
     const current = ++revision.current;
-    setBusy('apply'); setError(''); setNotice(''); setResult(null);
+    setBusy('apply'); setVerified(false); setError(''); setNotice(''); setResult(null);
     try {
       const applied = await api.applyPostgresConfig();
       if (current !== revision.current) return;
       setConfig(applied); setNotice(applied.message);
+      setVerified(applied.connection_status === 'connected');
       await onApplied?.();
     } catch (e) { if (current === revision.current) setError(errorMessage(e)); }
     finally { if (current === revision.current) setBusy(null); }
@@ -102,7 +109,7 @@ export function PostgresSettings({ onApplied }: { onApplied?: () => Promise<void
           </div>}
         <div className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs text-slate-500 leading-5 flex items-start gap-2"><Info size={14} className="shrink-0 mt-0.5 text-slate-400" />
           <p>Kiểm tra chỉ đọc dữ liệu. Lưu cập nhật <strong className="font-medium">DATABASE_URL</strong> trong <strong className="font-medium">.env</strong>. Sau đó bấm <strong className="font-medium">Áp dụng</strong> để thiết lập kết nối ban đầu; database cần được tạo sẵn.</p></div>
-        {config?.environment_override && <p className="text-xs text-amber-700">DATABASE_URL đang được đặt trực tiếp trong môi trường tiến trình. Cần cập nhật hoặc bỏ giá trị đó để .env có hiệu lực sau khi khởi động lại.</p>}
+        {config?.environment_override && <p className="text-xs text-amber-700">DATABASE_URL của tiến trình khác giá trị trong .env và đang được ưu tiên. Cập nhật hoặc bỏ biến DATABASE_URL ở terminal/IDE, rồi khởi động lại backend để áp dụng .env.</p>}
         {notice && <div role="status" className="px-3 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm"><p className="flex gap-2 items-start"><CheckCircle2 size={16} className="shrink-0 mt-0.5" />{notice}</p>
           {config?.pending_restart && <p className="mt-2 text-xs text-emerald-800">Trong terminal backend: Ctrl+C, rồi chạy lại <strong className="font-medium">python run_backend.py</strong>.</p>}</div>}
         {error && <p role="alert" className="text-sm text-red-600 flex gap-2 items-start"><AlertCircle size={15} className="shrink-0 mt-0.5" />{error}</p>}

@@ -289,6 +289,7 @@ export interface PostgresConfig {
   sslmode: PostgresConfigInput['sslmode'];
   password_configured: boolean;
   source: 'environment' | 'env_file' | 'default';
+  /** The process DATABASE_URL differs from the saved .env connection. */
   environment_override: boolean;
   pending_restart: boolean;
   pending_apply: boolean;

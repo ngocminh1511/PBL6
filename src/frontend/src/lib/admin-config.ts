@@ -1,4 +1,12 @@
-import type { AdminConfigUpdate, ConfigField, ConfigService } from './types';
+import type { AdminConfigUpdate, ConfigCheckResult, ConfigField, ConfigService } from './types';
+
+export type ConfigCheckState = { checking?: boolean; result?: ConfigCheckResult; error?: string };
+
+/** A current check or edit takes precedence over an earlier health probe. */
+export function isConfigVerified(state: ConfigCheckState | undefined, connection?: string): boolean {
+  if (state !== undefined) return !state.checking && !state.error && state.result?.status === 'passed';
+  return connection === 'connected';
+}
 
 export interface ConfigFieldSpec {
   key: ConfigField;

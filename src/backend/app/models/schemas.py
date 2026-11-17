@@ -406,7 +406,7 @@ class PostgresConfigResponse(BaseModel):
     sslmode: str
     password_configured: bool
     source: Literal["environment", "env_file", "default"]
-    environment_override: bool
+    environment_override: bool = Field(description="True only when the process DATABASE_URL conflicts with the saved .env URL.")
     pending_restart: bool
     pending_apply: bool
     can_apply: bool

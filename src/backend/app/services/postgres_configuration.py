@@ -64,7 +64,9 @@ class PostgresConfiguration:
             except HTTPException:
                 pass
         override = os.environ.get("DATABASE_URL", "")
-        overridden = bool(override)
+        # load_dotenv may put the same file value into os.environ. Warn only
+        # when the process value would actually override a different saved URL.
+        overridden = bool(stored and override and not self.same_url(stored, override))
         with self.runtime.lock:
             available = self.runtime.database.available
             active_url = self.runtime.database.url
@@ -76,7 +78,7 @@ class PostgresConfiguration:
                 "database": url.database if url else "", "username": url.username if url else "",
                 "sslmode": url.query.get("sslmode", "require") if url else "require",
                 "password_configured": bool(url and url.password), "environment_override": overridden,
-                "source": "environment" if overridden or (not stored and self.runtime.base.DATABASE_URL) else "env_file" if stored else "default",
+                "source": "environment" if override or (not stored and self.runtime.base.DATABASE_URL) else "env_file" if stored else "default",
                 "pending_restart": pending and not can_apply, "pending_apply": pending,
                 "can_apply": can_apply, "saved": bool(stored), "message": message}
 

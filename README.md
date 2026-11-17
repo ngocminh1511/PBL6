@@ -16,6 +16,10 @@ pip install -e ".[api,rag,ocr,dev]"
 python run_backend.py
 ```
 
+Kết nối Neo4j TLS (`neo4j+s://`, `bolt+s://`) tự nạp bộ CA `certifi` cùng CA hệ thống,
+giữ xác minh chứng chỉ và hostname. `certifi` được cài qua extra `rag`; không cần đặt
+`SSL_CERT_FILE` thủ công trên mỗi máy.
+
 Mở terminal khác:
 
 ```powershell
@@ -96,7 +100,7 @@ chuẩn bị schema bổ sung và nạp cấu hình từ database đích, chỉ 
 tác vụ đang chạy sẽ làm thao tác trả `409`. Đổi sang một database khác khi database hiện tại đang hoạt động vẫn cần
 dừng backend bằng `Ctrl+C` và chạy lại `python run_backend.py`. Database đích phải được tạo sẵn;
 thay kết nối không sao chép lịch sử, tài khoản hay tài liệu từ database cũ. Nếu `DATABASE_URL` được đặt trực tiếp
-trong môi trường tiến trình/container, cần cập nhật hoặc bỏ override đó để giá trị trong `.env` có hiệu lực.
+trong môi trường tiến trình/container và khác giá trị trong `.env`, cần cập nhật hoặc bỏ override đó để giá trị trong `.env` có hiệu lực.
 Thông tin xác thực đã lưu không được trả lại qua API; ô nhập trống giữ thông tin hiện có cho cùng máy chủ/tài khoản.
 
 Khởi động có migration **bổ sung** theo revision trong `app_schema_versions`; dữ liệu cũ được giữ nguyên.
