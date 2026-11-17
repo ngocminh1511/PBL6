@@ -49,7 +49,8 @@ def answer_question(req, user, db, runtime):
             raise HTTPException(503, f"Bước {exc.stage} chưa hoàn tất ({exc.error_type}).") from None
         except Exception as exc:
             raise HTTPException(503, f"Hỏi đáp chưa hoàn tất ({type(exc).__name__}).") from None
-        result["pipeline_trace"]["config_version"] = runtime.version
+        if result.get("pipeline_trace"):
+            result["pipeline_trace"]["config_version"] = runtime.version
         user_msg = repo.add_message(session.id, "user", req.question)
         assistant = repo.add_message(session.id, "assistant", result["answer"],
             standalone_query=result["standalone_query"], pipeline_trace=result["pipeline_trace"],
