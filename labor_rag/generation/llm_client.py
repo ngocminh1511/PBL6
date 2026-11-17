@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 
 from labor_rag.settings import Settings
+from labor_rag.llm_providers import base_url_field, model_field, secret_field
 
 _request_settings = ContextVar("llm_settings", default=None)
 _request_client = ContextVar("llm_client", default=None)
@@ -21,14 +22,14 @@ class LLMClient:
     @property
     def model(self):
         provider = self.settings.LLM_PROVIDER
-        return getattr(self.settings, "LOCAL_LLM_MODEL" if provider == "local" else provider.upper() + "_MODEL")
+        return getattr(self.settings, model_field(provider).upper())
 
     def client(self):
         if self._client is not None:
             return self._client
         config = self.settings
         provider = config.LLM_PROVIDER
-        key = getattr(config, "LOCAL_LLM_API_KEY" if provider == "local" else provider.upper() + "_API_KEY")
+        key = getattr(config, secret_field(provider).upper())
         if provider != "local" and not key:
             raise ValueError("Chưa thiết lập API key cho LLM đã chọn.")
         if provider == "gemini":
@@ -42,8 +43,12 @@ class LLMClient:
         else:
             from openai import OpenAI
             options = {"api_key": key or "local-no-auth", "timeout": self.timeout, "max_retries": 0}
-            if provider == "local":
-                options["base_url"] = config.LOCAL_LLM_BASE_URL
+            endpoint_field = base_url_field(provider)
+            if endpoint_field:
+                endpoint = getattr(config, endpoint_field.upper()).strip()
+                if not endpoint:
+                    raise ValueError("Chưa thiết lập địa chỉ API cho nhà cung cấp đã chọn.")
+                options["base_url"] = endpoint
             self._client = OpenAI(**options)
         return self._client
 

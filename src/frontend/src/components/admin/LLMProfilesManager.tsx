@@ -3,12 +3,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Cloud, HardDrive, Check, CheckCircle2, Circle, Copy, Pencil, Trash2, X, RefreshCw, Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { api, errorMessage } from '../../lib/api';
-import type { AdminConfig, ConfigCheckResult, LLMProfile, LLMProfileInput, LLMProfilesResponse } from '../../lib/types';
+import type { AdminConfig, AdminConfigValues, ConfigCheckResult, LLMProfile, LLMProfileInput, LLMProfilesResponse, LLMProvider } from '../../lib/types';
 import { adminButton, adminInput, adminPrimary } from './ui';
 
-const providers = { gemini: 'Google Gemini', openai: 'OpenAI', anthropic: 'Anthropic', local: 'Local' };
+const providers = { gemini: 'Google Gemini', openai: 'OpenAI', anthropic: 'Anthropic', openrouter: 'OpenRouter', groq: 'Groq', qwen: 'Qwen / Alibaba Cloud', local: 'Local' };
+const cloudEndpoints = { openrouter: 'https://openrouter.ai/api/v1', groq: 'https://api.groq.com/openai/v1', qwen: '' };
+const providerDocs: Partial<Record<LLMProvider, string>> = {
+  gemini: 'https://ai.google.dev/gemini-api/docs/rate-limits', openai: 'https://platform.openai.com/docs/guides/rate-limits',
+  anthropic: 'https://docs.anthropic.com/en/api/rate-limits', openrouter: 'https://openrouter.ai/docs/quickstart',
+  groq: 'https://console.groq.com/docs/rate-limits', qwen: 'https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope',
+};
 type ProfileForm = Omit<LLMProfileInput, 'mode'> & { mode: 'cloud' | 'local' | null; api_key: string };
 const emptyForm = (): ProfileForm => ({ name: '', mode: null, provider: 'gemini', model: '', base_url: '', local_runtime: 'ollama', api_key_source: 'custom', api_key: '', activate: false });
+const needsEndpoint = (current: ProfileForm) => current.mode === 'local' || current.provider in cloudEndpoints;
 
 export function LLMProfilesManager({ config, onChanged, onVerificationChange }: { config: AdminConfig; onChanged: () => Promise<void>; onVerificationChange?: (verified: boolean) => void }) {
   const [data, setData] = useState<LLMProfilesResponse | null>(null);
@@ -17,6 +24,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
   const [filter, setFilter] = useState<'all' | 'cloud' | 'local'>('all');
   const [form, setForm] = useState<ProfileForm | null>(null);
   const [editing, setEditing] = useState<LLMProfile | null>(null);
+  const [copySource, setCopySource] = useState<LLMProfile | null>(null);
   const [models, setModels] = useState<string[]>([]);
   const [modelsError, setModelsError] = useState('');
   const [loadingModels, setLoadingModels] = useState(false);
@@ -56,11 +64,17 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
     const result: LLMProfileInput = { ...current, mode: current.mode, config_version: data?.config_version ?? config.config_version };
     if (!current.api_key) delete result.api_key;
     if (editing) result.profile_id = editing.id;
+    else if (copySource) result.copy_key_from = copySource.id;
     return result;
   }
 
+  function defaultEndpoint(provider: LLMProvider) {
+    const fromEnvironment = config.environment_values?.[(provider + '_base_url') as keyof AdminConfigValues];
+    return typeof fromEnvironment === 'string' ? fromEnvironment : cloudEndpoints[provider as keyof typeof cloudEndpoints] || '';
+  }
+
   async function fetchModels(current = form) {
-    if (!current?.mode || (current.mode === 'local' && !current.base_url)) return;
+    if (!current?.mode || (needsEndpoint(current) && !current.base_url.trim())) return;
     const request = ++modelRequest.current;
     setLoadingModels(true); setModelsError('');
     try {
@@ -98,6 +112,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
     formRevision.current++; modelRequest.current++;
     setModels([]); setModelsError(''); setCheck(null); setFormError(''); setChecking(false); setLoadingModels(false); setManualModel(false);
     setEditing(profile && !duplicate && !profile.read_only ? profile : null);
+    setCopySource(profile && duplicate && !profile.read_only ? profile : null);
     setForm(profile ? { name: duplicate || profile.read_only ? profile.name + ' · bản riêng' : profile.name,
       mode: profile.mode, provider: profile.provider, model: profile.model, base_url: profile.base_url,
       local_runtime: profile.local_runtime, api_key_source: profile.api_key_source, api_key: '', activate: false }
@@ -169,8 +184,10 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
   }
 
   const rows = data?.profiles.filter(profile => filter === 'all' || profile.mode === filter) || [];
-  const hasDraftKey = !!form?.api_key || (!!editing?.key_configured && editing.api_key_source === 'custom' && editing.provider === form?.provider);
-  const canCheck = !!form?.mode && !!form.model.trim() && (form.mode !== 'local' || !!form.base_url.trim()) &&
+  const keyOwner = editing || copySource;
+  const hasStoredKey = !!keyOwner?.key_configured && keyOwner.api_key_source === 'custom' && keyOwner.provider === form?.provider;
+  const hasDraftKey = !!form?.api_key || hasStoredKey;
+  const canCheck = !!form?.mode && !!form.model.trim() && (!needsEndpoint(form) || !!form.base_url.trim()) &&
     (form.api_key_source !== 'custom' || hasDraftKey);
 
   return <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -215,6 +232,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
             <button className="p-2 text-slate-400 hover:text-emerald-600 disabled:opacity-30" disabled={!!busy} title={'Kiểm tra ' + profile.name} aria-label={'Kiểm tra ' + profile.name} onClick={() => checkRow(profile)}>
               {busy === 'check-' + profile.id ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}</button>
             <button className="p-2 text-slate-400 hover:text-secondary" title={profile.read_only ? 'Tạo bản cấu hình riêng' : 'Chỉnh sửa'} aria-label={'Chỉnh sửa ' + profile.name} disabled={!!busy} onClick={() => open(profile, profile.read_only)}>{profile.read_only ? <Copy size={15} /> : <Pencil size={15} />}</button>
+            {!profile.read_only && <button className="p-2 text-slate-400 hover:text-secondary disabled:opacity-30" title="Nhân bản (dùng lại API key)" aria-label={'Nhân bản ' + profile.name} disabled={!!busy} onClick={() => open(profile, true)}><Copy size={15} /></button>}
             {!profile.read_only && <button className="p-2 text-slate-400 hover:text-red-600 disabled:opacity-25" title={active ? 'Chọn cấu hình khác trước khi xóa' : 'Xóa cấu hình'} aria-label={'Xóa ' + profile.name}
               disabled={active || !!busy || !data.can_save} onClick={() => setDeleting(profile)}><Trash2 size={15} /></button>}
           </div></td>
@@ -234,31 +252,34 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
         <div className="p-6 space-y-4">
           <fieldset disabled={busy === 'save'}><legend className="text-sm font-medium mb-2">Nơi chạy model</legend>
             <div className="grid grid-cols-2 gap-3">{(['local', 'cloud'] as const).map(mode => { const Icon = mode === 'local' ? HardDrive : Cloud; return <button key={mode} type="button" aria-pressed={form.mode === mode}
-              onClick={() => { if (form.mode === mode) return; setManualModel(false); update({ mode, provider: mode === 'local' ? 'local' : 'gemini', model: '', api_key: '', name: form.name || (mode === 'local' ? 'LLM local' : 'Gemini mới'),
+              onClick={() => { if (form.mode === mode) return; setManualModel(false); update({ mode, provider: mode === 'local' ? 'local' : 'gemini', model: '', api_key: '', name: form.name || (mode === 'local' ? 'LLM local' : 'LLM cloud'),
                 base_url: mode === 'local' ? 'http://127.0.0.1:11434/v1' : '', local_runtime: 'ollama', api_key_source: mode === 'local' ? 'none' : 'custom' }); }}
               className={'flex items-center gap-3 p-3 rounded-xl border text-left transition-colors ' + (form.mode === mode ? 'border-secondary bg-secondary/5 ring-1 ring-secondary' : 'border-slate-200 hover:border-slate-300')}>
               <Icon size={19} className={form.mode === mode ? 'text-secondary' : 'text-slate-400'} /><span><span className="block text-sm font-semibold">{mode === 'local' ? 'Local' : 'Cloud'}</span>
-                <span className="block text-[11px] text-slate-500">{mode === 'local' ? 'Model trên máy chủ của bạn' : 'Gemini, OpenAI, Anthropic'}</span></span>
+                <span className="block text-[11px] text-slate-500">{mode === 'local' ? 'Model trên máy chủ của bạn' : 'Gemini, OpenRouter, Groq, Qwen…'}</span></span>
               {form.mode === mode && <Check size={15} className="ml-auto text-secondary" />}</button>; })}</div>
           </fieldset>
           {form.mode && <fieldset disabled={busy === 'save'} className="space-y-4">
             <div className="grid grid-cols-2 gap-3"><label className="block text-sm font-medium">Tên cấu hình<input className={adminInput + ' mt-1.5'} required maxLength={100} value={form.name} onChange={e => update({ name: e.target.value })} placeholder="Ví dụ: Gemini cá nhân" /></label>
               {form.mode === 'cloud' ? <label className="block text-sm font-medium">Nhà cung cấp<select className={adminInput + ' mt-1.5'} value={form.provider}
-                onChange={e => { setManualModel(false); update({ provider: e.target.value as LLMProfileInput['provider'], model: '', api_key: '' }); }}>
-                <option value="gemini">Google Gemini</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option></select></label>
+                onChange={e => { const provider = e.target.value as LLMProvider; setManualModel(false); update({ provider, model: '', api_key: '', base_url: defaultEndpoint(provider) }); }}>
+                {Object.entries(providers).filter(([id]) => id !== 'local').map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
                 : <label className="block text-sm font-medium">Máy chủ local<select className={adminInput + ' mt-1.5'} value={form.local_runtime} onChange={e => update({ local_runtime: e.target.value as LLMProfileInput['local_runtime'], model: '',
                   base_url: e.target.value === 'ollama' ? 'http://127.0.0.1:11434/v1' : e.target.value === 'lmstudio' ? 'http://127.0.0.1:1234/v1' : '' })}>
                   <option value="ollama">Ollama</option><option value="lmstudio">LM Studio</option><option value="compatible">API tương thích OpenAI khác</option></select></label>}
             </div>
             {form.mode === 'local' && <label className="block text-sm font-medium">Địa chỉ máy chủ<input className={adminInput + ' mt-1.5'} required type="url" value={form.base_url} onChange={e => update({ base_url: e.target.value })} placeholder="http://127.0.0.1:11434/v1" />
               <span className="block mt-1 text-xs font-normal text-slate-400">Địa chỉ được truy cập từ máy chạy backend. Danh sách model tự cập nhật theo máy chủ.</span></label>}
+            {form.mode === 'cloud' && needsEndpoint(form) && <label className="block text-sm font-medium">Địa chỉ API (Base URL)<input className={adminInput + ' mt-1.5'} required type="url" value={form.base_url} onChange={e => update({ base_url: e.target.value })}
+              placeholder={form.provider === 'qwen' ? 'https://<workspace-id>.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1' : defaultEndpoint(form.provider)} />
+              <span className="block mt-1 text-xs font-normal text-slate-400">{form.provider === 'qwen' ? 'Dán Base URL từ Alibaba Cloud Model Studio, cùng workspace và region với API key.' : 'Dùng địa chỉ API của nhà cung cấp, không thêm /chat/completions.'}</span></label>}
             <div className="grid grid-cols-2 gap-3"><label className="block text-sm font-medium">Xác thực<select className={adminInput + ' mt-1.5'} value={form.api_key_source} onChange={e => update({ api_key_source: e.target.value as LLMProfileInput['api_key_source'] })}>
               {form.mode === 'local' && <option value="none">Không cần API key</option>}<option value="custom">API key riêng</option><option value="environment">API key từ môi trường</option></select></label>
               {form.api_key_source === 'custom' && <label className="block text-sm font-medium">API key<input type="password" autoComplete="new-password" className={adminInput + ' mt-1.5'} value={form.api_key} onChange={e => update({ api_key: e.target.value })}
-                placeholder={editing?.key_configured && editing.api_key_source === 'custom' && editing.provider === form.provider ? 'Để trống để giữ key đã lưu' : 'Nhập API key'} /></label>}
+                placeholder={hasStoredKey ? (editing ? 'Để trống để giữ key đã lưu' : 'Để trống để dùng key của bản gốc') : 'Nhập API key'} /></label>}
             </div>
             <div><div className="flex items-center justify-between gap-2 mb-1.5"><label htmlFor="llm-profile-model" className="text-sm font-medium">{form.mode === 'local' ? 'Model trên máy chủ' : 'Model'}</label>
-              <button type="button" className="inline-flex items-center gap-1 text-xs text-secondary hover:underline disabled:opacity-40" disabled={loadingModels || (form.api_key_source === 'custom' && !hasDraftKey)} onClick={() => fetchModels()}>
+              <button type="button" className="inline-flex items-center gap-1 text-xs text-secondary hover:underline disabled:opacity-40" disabled={loadingModels || (form.api_key_source === 'custom' && !hasDraftKey) || (needsEndpoint(form) && !form.base_url.trim())} onClick={() => fetchModels()}>
                 <RefreshCw size={12} className={loadingModels ? 'animate-spin' : ''} />{loadingModels ? 'Đang tải…' : 'Tải danh sách'}</button></div>
               {manualModel ? <input id="llm-profile-model" required className={adminInput} value={form.model} onChange={e => update({ model: e.target.value })} placeholder="Tên model chính xác" />
                 : <select id="llm-profile-model" required className={adminInput} value={form.model} onChange={e => update({ model: e.target.value })} disabled={loadingModels}>
@@ -270,7 +291,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
                 <button type="button" className="text-xs text-secondary hover:underline shrink-0" onClick={() => setManualModel(!manualModel)}>{manualModel ? 'Chọn từ danh sách' : 'Nhập thủ công'}</button></div>
             </div>
             <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={!!form.activate} onChange={e => update({ activate: e.target.checked })} className="accent-secondary" />Sử dụng cấu hình này sau khi lưu</label>
-            {form.mode === 'cloud' && <p className="text-xs text-slate-400">Kiểm tra sử dụng một lượt gọi API. <a className="text-secondary hover:underline" target="_blank" rel="noreferrer" href={form.provider === 'gemini' ? 'https://ai.google.dev/gemini-api/docs/rate-limits' : form.provider === 'anthropic' ? 'https://docs.anthropic.com/en/api/rate-limits' : 'https://platform.openai.com/docs/guides/rate-limits'}>Xem hạn mức</a></p>}
+            {form.mode === 'cloud' && <p className="text-xs text-slate-400">Model chạy trên cloud; không cần tải về máy. Kiểm tra sử dụng một lượt gọi API. <a className="text-secondary hover:underline" target="_blank" rel="noreferrer" href={providerDocs[form.provider]}>Hướng dẫn nhà cung cấp</a></p>}
           </fieldset>}
           {(check || checking) && <p role="status" className={'flex items-center gap-2 rounded-xl px-3 py-2 text-sm ' + (check?.status === 'passed' ? 'bg-emerald-50 text-emerald-700' : checking ? 'bg-slate-50 text-slate-500' : 'bg-red-50 text-red-700')}>
             {checking ? <Loader2 size={15} className="animate-spin" /> : check?.status === 'passed' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}{checking ? 'Đang kiểm tra model…' : check?.message}</p>}

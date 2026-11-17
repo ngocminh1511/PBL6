@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from importlib.util import find_spec
 from time import perf_counter
 from urllib.parse import urlsplit, urlunsplit
+from labor_rag.llm_providers import CLOUD_API_PROVIDERS, base_url_field, model_field, secret_field
 
 GROUP_FIELDS = {
     "llm": {"llm_provider", "gemini_model", "gemini_api_key", "openai_model", "openai_api_key",
@@ -16,9 +17,12 @@ GROUP_FIELDS = {
     "redis": {"redis_enabled", "redis_url", "embedding_cache_ttl", "session_cache_ttl"},
     "ocr": {"ocr_model", "ocr_device", "ocr_dpi", "ocr_beamsearch", "ocr_semantic_chunking", "ocr_semantic_model", "max_upload_bytes"},
 }
+for provider in CLOUD_API_PROVIDERS:
+    GROUP_FIELDS["llm"].update({model_field(provider), secret_field(provider), base_url_field(provider)})
 EDITABLE = set().union(*GROUP_FIELDS.values())
 SECRETS = {"gemini_api_key", "openai_api_key", "anthropic_api_key", "local_llm_api_key", "hf_token",
            "qdrant_api_key", "neo4j_password", "object_storage_access_key_id", "object_storage_secret_access_key", "redis_url"}
+SECRETS.update(secret_field(provider) for provider in CLOUD_API_PROVIDERS)
 
 
 class DiagnosticFailure(ValueError):
@@ -77,6 +81,8 @@ def validate_urls(config, fields=EDITABLE):
         ("qdrant_url", config.QDRANT_URL, {"http", "https"}),
         ("neo4j_uri", config.NEO4J_URI, {"bolt", "bolt+s", "bolt+ssc", "neo4j", "neo4j+s", "neo4j+ssc"}),
         ("local_llm_base_url", config.LOCAL_LLM_BASE_URL, {"http", "https"}),
+        *((base_url_field(provider), getattr(config, base_url_field(provider).upper()), {"https"})
+          for provider in CLOUD_API_PROVIDERS),
         ("object_storage_endpoint_url", config.OBJECT_STORAGE_ENDPOINT_URL, {"https"}),
     ]:
         if field not in fields or not value:
@@ -121,9 +127,14 @@ def failure_message(exc):
 def check_service(service, config):
     started = perf_counter()
     result = {"service": service, "status": "passed", "message": "Kiểm tra thành công.", "details": {}}
+    llm_required = [model_field(config.LLM_PROVIDER).upper()]
+    if config.LLM_PROVIDER != "local":
+        llm_required.append(secret_field(config.LLM_PROVIDER).upper())
+    endpoint_field = base_url_field(config.LLM_PROVIDER)
+    if endpoint_field:
+        llm_required.append(endpoint_field.upper())
     required = {
-        "llm": (["LOCAL_LLM_BASE_URL", "LOCAL_LLM_MODEL"] if config.LLM_PROVIDER == "local" else
-                [config.LLM_PROVIDER.upper() + "_API_KEY", config.LLM_PROVIDER.upper() + "_MODEL"]),
+        "llm": llm_required,
         "embedding": ["EMBEDDING_MODEL"], "qdrant": ["QDRANT_URL", "QDRANT_COLLECTION"],
         "neo4j": ["NEO4J_URI", "NEO4J_USER", "NEO4J_DATABASE"],
         "r2": ["OBJECT_STORAGE_ENDPOINT_URL", "OBJECT_STORAGE_BUCKET", "OBJECT_STORAGE_ACCESS_KEY_ID", "OBJECT_STORAGE_SECRET_ACCESS_KEY"],

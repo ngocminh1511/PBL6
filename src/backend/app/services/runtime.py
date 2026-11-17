@@ -142,8 +142,10 @@ class Runtime:
 
     def config(self):
         with self.lock:
+            url_fields = {"qdrant_url", "neo4j_uri", "local_llm_base_url", "object_storage_endpoint_url",
+                          "openrouter_base_url", "groq_base_url", "qwen_base_url"}
             result = {k: getattr(self.settings, k.upper()) for k in EDITABLE - SECRETS}
-            for key in ("qdrant_url", "neo4j_uri", "local_llm_base_url", "object_storage_endpoint_url"):
+            for key in url_fields:
                 result[key] = public_url(result[key])
             try:
                 cipher(self.base.CONFIG_ENCRYPTION_KEY)
@@ -156,8 +158,7 @@ class Runtime:
                 available_collections=self.collection_models,
                 sources={k: "saved" if k in self.overrides else
                     "environment" if k.upper() in self.base.model_fields_set else "default" for k in EDITABLE},
-                environment_values={k: public_url(getattr(self.base, k.upper())) if k in {
-                    "qdrant_url", "neo4j_uri", "local_llm_base_url", "object_storage_endpoint_url"}
+                environment_values={k: public_url(getattr(self.base, k.upper())) if k in url_fields
                     else self.base.query_backend if k == "query_embedding_backend" else getattr(self.base, k.upper())
                     for k in EDITABLE - SECRETS},
                 environment_secret_configured={k: bool(getattr(self.base, k.upper())) for k in SECRETS},

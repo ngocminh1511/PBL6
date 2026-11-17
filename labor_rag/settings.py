@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from labor_rag.llm_providers import DEFAULT_CLOUD_BASE_URLS
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
@@ -37,13 +38,22 @@ class Settings(BaseSettings):
     EMBEDDING_BACKEND: Literal["local", "modal"] = "modal"
     QUERY_EMBEDDING_BACKEND: Literal["local", "modal"] | None = None
     MODAL_APP_NAME: str = "labor-rag-embed"
-    LLM_PROVIDER: Literal["gemini", "anthropic", "openai", "local"] = "gemini"
+    LLM_PROVIDER: Literal["gemini", "anthropic", "openai", "openrouter", "groq", "qwen", "local"] = "gemini"
     GEMINI_API_KEY: str = Field(default="", repr=False)
     GEMINI_MODEL: str = "gemini-3.6-flash"
     ANTHROPIC_API_KEY: str = Field(default="", repr=False)
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5"
     OPENAI_API_KEY: str = Field(default="", repr=False)
     OPENAI_MODEL: str = "gpt-4o-mini"
+    OPENROUTER_API_KEY: str = Field(default="", repr=False)
+    OPENROUTER_MODEL: str = ""
+    OPENROUTER_BASE_URL: str = DEFAULT_CLOUD_BASE_URLS["openrouter"]
+    GROQ_API_KEY: str = Field(default="", repr=False)
+    GROQ_MODEL: str = ""
+    GROQ_BASE_URL: str = DEFAULT_CLOUD_BASE_URLS["groq"]
+    QWEN_API_KEY: str = Field(default="", repr=False)
+    QWEN_MODEL: str = ""
+    QWEN_BASE_URL: str = DEFAULT_CLOUD_BASE_URLS["qwen"]
     LOCAL_LLM_BASE_URL: str = "http://127.0.0.1:11434/v1"
     LOCAL_LLM_MODEL: str = ""
     LOCAL_LLM_API_KEY: str = Field(default="", repr=False)

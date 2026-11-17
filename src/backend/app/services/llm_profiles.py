@@ -1,22 +1,19 @@
 """Named LLM connections. Secrets stay encrypted and activation is transactional."""
 from copy import deepcopy
 from uuid import uuid4
+from labor_rag.llm_providers import CLOUD_API_PROVIDERS, base_url_field, model_field, secret_field
 
 from fastapi import HTTPException
 from .configuration import GROUP_FIELDS, cipher
 
-PROVIDERS = {"gemini", "openai", "anthropic", "local"}
-
-
-def secret_field(provider):
-    return "local_llm_api_key" if provider == "local" else provider + "_api_key"
+PROVIDERS = {"gemini", "openai", "anthropic", "local"} | CLOUD_API_PROVIDERS
 
 
 def profile_from_settings(settings, *, identity="environment", source="environment", name="Từ môi trường"):
     provider = settings.LLM_PROVIDER
     return {"id": identity, "name": name, "mode": "local" if provider == "local" else "cloud",
-            "provider": provider, "model": getattr(settings, "LOCAL_LLM_MODEL" if provider == "local" else provider.upper() + "_MODEL"),
-            "base_url": settings.LOCAL_LLM_BASE_URL if provider == "local" else "", "local_runtime": "compatible",
+            "provider": provider, "model": getattr(settings, model_field(provider).upper()),
+            "base_url": getattr(settings, base_url_field(provider).upper()) if base_url_field(provider) else "", "local_runtime": "compatible",
             "api_key_source": source, "api_key": getattr(settings, secret_field(provider).upper()) if source == "custom" else None,
             "verification": None}
 
@@ -76,7 +73,7 @@ class LLMProfiles:
                     "encryption_ready": config["encryption_ready"]}
 
     def draft(self, body, identity=None):
-        data = body.model_dump(exclude={"config_version", "activate", "profile_id"})
+        data = body.model_dump(exclude={"config_version", "activate", "profile_id", "copy_key_from"})
         if (data["mode"] == "local") != (data["provider"] == "local"):
             raise HTTPException(422, "Chọn Local/Cloud trước, rồi chọn nhà cung cấp phù hợp.")
         if data["provider"] not in PROVIDERS:
@@ -84,8 +81,15 @@ class LLMProfiles:
         if data["api_key_source"] == "none" and data["mode"] != "local":
             raise HTTPException(422, "Kết nối cloud cần API key.")
         data["name"], data["model"] = data["name"].strip(), data["model"].strip()
-        data["base_url"] = data["base_url"].strip() if data["mode"] == "local" else ""
-        existing = self.find(identity) if identity and identity != "environment" else None
+        endpoint_field = base_url_field(data["provider"])
+        data["base_url"] = data["base_url"].strip() if endpoint_field else ""
+        if data["provider"] in CLOUD_API_PROVIDERS and not data["base_url"]:
+            data["base_url"] = getattr(self.runtime.base, endpoint_field.upper())
+        if endpoint_field and not data["base_url"]:
+            raise HTTPException(422, "Nhập địa chỉ API (Base URL) của nhà cung cấp đã chọn.")
+        # A duplicate may reuse its source's stored key without sending it to the browser.
+        key_owner = identity or body.copy_key_from
+        existing = self.find(key_owner) if key_owner and key_owner != "environment" else None
         if data["api_key_source"] == "custom" and not data["api_key"]:
             data["api_key"] = existing.get("api_key") if existing and existing["provider"] == data["provider"] else None
         if data["api_key_source"] != "custom":
@@ -99,12 +103,13 @@ class LLMProfiles:
             return self.runtime.make_settings(values), values
         provider = profile["provider"]
         values.update(llm_provider=provider)
-        values["local_llm_model" if provider == "local" else provider + "_model"] = profile["model"]
+        values[model_field(provider)] = profile["model"]
         # An environment-backed profile inherits only its provider's startup key.
         if profile["api_key_source"] != "environment":
             values[secret_field(provider)] = self.key(profile)
-        if provider == "local":
-            values["local_llm_base_url"] = profile["base_url"]
+        endpoint_field = base_url_field(provider)
+        if endpoint_field:
+            values[endpoint_field] = profile["base_url"]
         try:
             return self.runtime.make_settings(values), values
         except ValueError:

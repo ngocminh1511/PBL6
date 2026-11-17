@@ -236,6 +236,15 @@ class AdminConfigUpdate(BaseModel):
     gemini_api_key: Optional[str] = Field(default=None, repr=False)
     openai_api_key: Optional[str] = Field(default=None, repr=False)
     anthropic_api_key: Optional[str] = Field(default=None, repr=False)
+    openrouter_api_key: Optional[str] = Field(default=None, repr=False)
+    openrouter_model: Optional[str] = None
+    openrouter_base_url: Optional[str] = None
+    groq_api_key: Optional[str] = Field(default=None, repr=False)
+    groq_model: Optional[str] = None
+    groq_base_url: Optional[str] = None
+    qwen_api_key: Optional[str] = Field(default=None, repr=False)
+    qwen_model: Optional[str] = None
+    qwen_base_url: Optional[str] = None
     local_llm_base_url: Optional[str] = None
     local_llm_model: Optional[str] = None
     local_llm_api_key: Optional[str] = Field(default=None, repr=False)
@@ -273,6 +282,12 @@ class AdminConfigResponse(BaseModel):
     available_collections: Dict[str, str]
     anthropic_model: str
     openai_model: str
+    openrouter_model: str
+    openrouter_base_url: str
+    groq_model: str
+    groq_base_url: str
+    qwen_model: str
+    qwen_base_url: str
     embedding_model: str
     embedding_backend: str
     vector_db: str
@@ -349,13 +364,14 @@ class LLMProfileInput(BaseModel):
     config_version: Optional[int] = None
     name: str = Field(default="", max_length=100)
     mode: Literal["cloud", "local"]
-    provider: Literal["gemini", "openai", "anthropic", "local"]
+    provider: Literal["gemini", "openai", "anthropic", "openrouter", "groq", "qwen", "local"]
     model: str = ""
     base_url: str = ""
     local_runtime: Literal["ollama", "lmstudio", "compatible"] = "ollama"
     api_key_source: Literal["custom", "environment", "none"] = "custom"
     api_key: Optional[str] = Field(default=None, repr=False)
     profile_id: Optional[str] = None
+    copy_key_from: Optional[str] = None
     activate: bool = False
 
 

@@ -161,8 +161,14 @@ export interface AdminConfigValues {
   embedding_backend: 'local' | 'modal';
   qdrant_url: string;
   qdrant_collection: string;
-  llm_provider: 'gemini' | 'anthropic' | 'openai' | 'local';
+  llm_provider: LLMProvider;
   gemini_model: string;
+  openrouter_model: string;
+  openrouter_base_url: string;
+  groq_model: string;
+  groq_base_url: string;
+  qwen_model: string;
+  qwen_base_url: string;
   modal_app_name: string;
   neo4j_uri: string;
   redis_enabled: boolean;
@@ -192,6 +198,9 @@ export interface AdminSecretValues {
   gemini_api_key: string;
   openai_api_key: string;
   anthropic_api_key: string;
+  openrouter_api_key: string;
+  groq_api_key: string;
+  qwen_api_key: string;
   local_llm_api_key: string;
   hf_token: string;
   qdrant_api_key: string;
@@ -241,7 +250,7 @@ export interface ConfigCheckResult {
   details: { error?: string; dimensions?: number; points?: number; missing_fields?: string[] };
 }
 
-export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'local';
+export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'groq' | 'qwen' | 'local';
 export interface LLMProfileInput {
   name: string;
   mode: 'cloud' | 'local';
@@ -252,6 +261,7 @@ export interface LLMProfileInput {
   api_key_source: 'custom' | 'environment' | 'none';
   api_key?: string;
   profile_id?: string;
+  copy_key_from?: string;
   config_version?: number;
   activate?: boolean;
 }
