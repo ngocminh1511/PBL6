@@ -129,8 +129,14 @@ class ChatRepository:
     def list_sessions_cursor(
         self, user_id: str, cursor: Optional[str] = None, limit: int = 15
     ) -> Tuple[List[ChatSession], Optional[str], bool, int]:
-        total_count = self.db.query(func.count(ChatSession.id)).filter(ChatSession.user_id == user_id).scalar() or 0
-        query = self.db.query(ChatSession).filter(ChatSession.user_id == user_id)
+        total_count = self.db.query(func.count(ChatSession.id)).filter(
+            ChatSession.user_id == user_id,
+            ChatSession.messages.any()
+        ).scalar() or 0
+        query = self.db.query(ChatSession).filter(
+            ChatSession.user_id == user_id,
+            ChatSession.messages.any()
+        )
 
         decoded = decode_cursor(cursor)
         if decoded:

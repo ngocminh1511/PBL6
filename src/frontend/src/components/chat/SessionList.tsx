@@ -66,6 +66,24 @@ export const SessionList: React.FC<SessionListProps> = ({
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
+  // Filter: Do not show empty sessions in history
+  const validSessions = sortedSessions.filter((s) => (s.message_count ?? 0) > 0);
+
+  const formatVNTime = (dateStr: string) => {
+    try {
+      const isoStr = !dateStr.endsWith('Z') && !dateStr.includes('+') ? dateStr + 'Z' : dateStr;
+      const d = new Date(isoStr);
+      return d.toLocaleTimeString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+    } catch {
+      return '';
+    }
+  };
+
   const handleStartRename = (session: ChatSession) => {
     setEditingSessionId(session.id);
     setEditTitle(session.title);
@@ -131,18 +149,18 @@ export const SessionList: React.FC<SessionListProps> = ({
               Lịch sử tra cứu gần đây
             </span>
             <span className="font-metric-num text-metric-num text-on-surface-variant">
-              {sessions.length} phiên
+              {validSessions.length} phiên
             </span>
           </div>
 
-          {!sessions.length && (
+          {!validSessions.length && (
             <p className="p-space-sm rounded-xl bg-surface-container text-on-surface-variant font-body-sm text-body-sm shrink-0">
               Chưa có phiên được lưu.
             </p>
           )}
 
           <div className="flex flex-col gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1">
-            {sortedSessions.map((s) => {
+            {validSessions.map((s) => {
               const isActive = s.id === activeSessionId;
               const isPinned = pinnedSessionIds.includes(s.id);
               const isMenuOpen = menuOpenSessionId === s.id;
@@ -180,7 +198,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                         </span>
                       )}
                       <span className="font-label-code text-label-code text-on-surface-variant text-[11px]">
-                        {new Date(s.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatVNTime(s.updated_at)}
                       </span>
 
                       {/* 3 dots action menu button */}
@@ -247,7 +265,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                   {/* Footer message count */}
                   <div className="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm">
                     <span className="material-symbols-outlined text-[14px] text-secondary">forum</span>
-                    <span>{s.message_count ?? 0} tin nhắn • Dấu vết truy vấn</span>
+                    <span>{s.message_count ?? 0} tin nhắn</span>
                   </div>
 
                   {copiedSessionId === s.id && (

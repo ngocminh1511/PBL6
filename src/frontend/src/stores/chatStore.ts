@@ -91,24 +91,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  createSession: async (title) => {
-    try {
-      const session = await api.createSession(
-        title || 'Phiên tra cứu mới',
-        get().selectedDomain,
-        get().selectedRetrievalMode
-      );
-      set((state) => ({
-        sessions: [session, ...state.sessions],
-        activeSessionId: session.id,
-        messages: [],
-        totalSessions: state.totalSessions + 1,
-      }));
-      return session.id;
-    } catch (e) {
-      set({ error: errorMessage(e) });
-      return '';
-    }
+  createSession: async (_title?: string) => {
+    set({
+      activeSessionId: null,
+      messages: [],
+      selectedEvidences: [],
+      selectedCitation: null,
+      error: null,
+    });
+    return '';
   },
 
   selectSession: async (sessionId: string) => {
