@@ -127,6 +127,9 @@ export interface DocumentRecord {
   chunks_count: number;
   nodes_count: number;
   edges_count: number;
+  articles_count?: number;
+  clauses_count?: number;
+  points_count?: number;
   created_at: string;
   updated_at: string;
   ast_tree_json?: any;
@@ -178,6 +181,9 @@ export interface SystemStats {
   total_chunks: number | null;
   total_nodes: number | null;
   total_edges: number | null;
+  total_articles?: number | null;
+  total_clauses?: number | null;
+  total_points?: number | null;
   vector_db_status: string;
   graph_db_status: string;
   redis_status: string;

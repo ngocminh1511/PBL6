@@ -16,17 +16,29 @@ class Corpus:
         self.edges = rows(LAO_DONG_DIR / "kg_edges.jsonl")
         self.chunks = rows(LAO_DONG_DIR / "chunks.jsonl")
         self.documents = {}
+        self.total_articles = sum(1 for n in self.nodes if n.get("label") == "Dieu")
+        self.total_clauses = sum(1 for n in self.nodes if n.get("clause_number"))
+        self.total_points = sum(1 for n in self.nodes if n.get("point_number"))
         counts = Counter(c["document_id"] for c in self.chunks)
+        nodes_by_doc = defaultdict(list)
+        for n in self.nodes:
+            if n.get("document_id"):
+                nodes_by_doc[n["document_id"]].append(n)
+
         for node in self.nodes:
             if node.get("label") == "VanBan" and node.get("document_id"):
                 identity = node["document_id"]
-                owned = {n["id"] for n in self.nodes if n.get("document_id") == identity}
+                owned_nodes = nodes_by_doc[identity]
+                owned = {n["id"] for n in owned_nodes}
                 self.documents[identity] = {
                     "id": identity, "title": node.get("ten") or node.get("document_number") or identity,
                     "document_number": node.get("document_number"), "document_type": "phap_dien_html",
                     "domain": "lao_dong", "effective_from_date": node.get("effective_date"),
                     "status": "versioned_corpus", "chunks_count": counts[identity],
                     "nodes_count": len(owned), "edges_count": sum(e["source"] in owned for e in self.edges),
+                    "articles_count": sum(1 for n in owned_nodes if n.get("label") == "Dieu"),
+                    "clauses_count": sum(1 for n in owned_nodes if n.get("clause_number")),
+                    "points_count": sum(1 for n in owned_nodes if n.get("point_number")),
                     "created_at": "1970-01-01T00:00:00", "updated_at": "1970-01-01T00:00:00",
                 }
 

@@ -22,14 +22,16 @@ def statistics(runtime=Depends(get_runtime)):
     from src.backend.app.models.database import ChatSession, DocumentRecord
     with runtime.operation(serialized=False):
         h = health_status(runtime, probe=True)
-    documents = len(Corpus().documents)
+    c = Corpus()
+    documents = len(c.documents)
     sessions = None
     if runtime.database.available:
         with runtime.database.session() as db:
-            documents = len(set(Corpus().documents) | {row[0] for row in db.query(DocumentRecord.id).all()})
+            documents = len(set(c.documents) | {row[0] for row in db.query(DocumentRecord.id).all()})
             sessions = db.query(ChatSession).count()
     return SystemStatsResponse(total_documents=documents, total_chunks=h["qdrant"].get("points"),
         total_nodes=h["neo4j"].get("nodes"), total_edges=h["neo4j"].get("edges"),
+        total_articles=c.total_articles, total_clauses=c.total_clauses, total_points=c.total_points,
         vector_db_status=h["qdrant"]["connection"], graph_db_status=h["neo4j"]["connection"],
         redis_status=h["redis"]["connection"], active_sessions_count=sessions)
 

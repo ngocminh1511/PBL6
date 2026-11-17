@@ -31,7 +31,7 @@ export const DocumentTable: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm số hiệu (VD: 45/2019/QH14), trích yếu văn bản..."
+              placeholder="Tìm số hiệu (VD: 45/2019/QH14), tên văn bản quy phạm..."
               className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container transition-colors border border-outline-variant/30"
             />
           </div>
@@ -98,10 +98,10 @@ export const DocumentTable: React.FC = () => {
       <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col border border-outline-variant/30">
         <div className="px-space-md py-space-sm bg-surface-container-low flex items-center justify-between border-b border-outline-variant/20">
           <span className="font-label-statute text-label-statute uppercase text-on-surface-variant tracking-wider font-bold">
-            Danh mục Văn bản Đã Lập Chỉ mục Kép
+            Danh mục Văn bản Quy phạm Đã Số hóa
           </span>
           <span className="font-label-code text-label-code text-on-surface-variant">
-            Hiển thị {documents.length} / {totalDocuments} văn bản trọng điểm
+            Hiển thị {documents.length} / {totalDocuments} văn bản
           </span>
         </div>
 
@@ -110,16 +110,17 @@ export const DocumentTable: React.FC = () => {
             <thead>
               <tr className="bg-surface-container text-on-surface-variant font-label-statute text-label-statute uppercase tracking-wider text-[11px]">
                 <th className="py-2.5 px-space-md">Số hiệu / Tên văn bản</th>
-                <th className="py-2.5 px-space-sm text-center">Phân cấp Đỉnh (Nodes)</th>
-                <th className="py-2.5 px-space-sm text-center">Quan hệ (Edges)</th>
-                <th className="py-2.5 px-space-sm">Vector Nhúng</th>
-                <th className="py-2.5 px-space-md text-right">Trạng thái Cây</th>
+                <th className="py-2.5 px-space-sm">Lĩnh vực</th>
+                <th className="py-2.5 px-space-sm text-center">Cơ cấu quy định</th>
+                <th className="py-2.5 px-space-sm text-center">Ngày hiệu lực</th>
+                <th className="py-2.5 px-space-md text-right">Tình trạng</th>
               </tr>
             </thead>
             <tbody className="font-body-md text-body-md divide-y divide-outline-variant/20">
               {!documents.length && <tr><td colSpan={5} className="p-space-lg text-center text-on-surface-variant">{isLoading ? 'Đang tải văn bản…' : 'Chưa có văn bản phù hợp.'}</td></tr>}
               {documents.map((doc) => {
                 const isSelected = doc.id === selectedDocId;
+                const domainLabel = doc.domain === 'lao_dong' ? 'Lao động' : doc.domain === 'doanh_nghiep' ? 'Doanh nghiệp' : doc.domain;
                 return (
                   <tr
                     key={doc.id}
@@ -145,49 +146,43 @@ export const DocumentTable: React.FC = () => {
                               {doc.title}
                             </span>
                             {doc.document_number && (
-                              <span className="font-label-code text-label-statute px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary shadow-xs">
+                              <span className="font-label-code text-label-statute px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary shadow-xs font-semibold">
                                 {doc.document_number}
                               </span>
                             )}
                           </div>
                           <span className="font-body-sm text-body-sm text-on-surface-variant truncate text-[11px]">
-                            Hiệu lực: {doc.effective_from_date || 'Chưa xác định'} • Lĩnh vực:{' '}
-                            {doc.domain === 'lao_dong' ? 'Lao động' : doc.domain}
+                            {doc.document_type === 'phap_dien_html' ? 'Nguồn Bộ Pháp điển' : 'Văn bản số hóa'}
                           </span>
                         </div>
                       </div>
                     </td>
 
-                    <td className="py-3 px-space-sm text-center">
-                      <div className="font-metric-num text-metric-num text-on-surface">
-                        {doc.nodes_count ?? 0} Đỉnh AST
-                      </div>
-                      <div className="font-label-statute text-label-statute text-outline text-[10px]">
-                        Điều • Khoản • Điểm
-                      </div>
-                    </td>
-
-                    <td className="py-3 px-space-sm text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-metric-num text-label-code text-[11px]">
-                        {doc.edges_count ?? 0} Cạnh
+                    <td className="py-3 px-space-sm">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-statute text-[11px]">
+                        {domainLabel}
                       </span>
                     </td>
 
-                    <td className="py-3 px-space-sm">
-                      <div className="flex flex-col">
-                        <span className="font-metric-num text-label-code text-on-surface text-[12px]">
-                          {doc.chunks_count ?? 0} Đoạn (Chunks)
-                        </span>
-                        <span className="font-label-statute text-label-statute text-outline text-[10px]">
-                          Chunk của văn bản
-                        </span>
+                    <td className="py-3 px-space-sm text-center">
+                      <div className="font-metric-num text-metric-num text-on-surface">
+                        {doc.articles_count ? `${doc.articles_count} Điều` : 'Toàn văn'}
+                      </div>
+                      <div className="font-label-statute text-label-statute text-outline text-[10px]">
+                        {doc.clauses_count ? `${doc.clauses_count} Khoản` : 'Quy chuẩn'}
                       </div>
                     </td>
 
+                    <td className="py-3 px-space-sm text-center">
+                      <span className="font-label-code text-[11px] text-on-surface">
+                        {doc.effective_from_date || 'Đang cập nhật'}
+                      </span>
+                    </td>
+
                     <td className="py-3 px-space-md text-right">
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container-lowest text-on-tertiary-container font-label-statute text-label-statute shadow-xs text-[11px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
-                        {doc.status === 'completed' ? 'Đã lập chỉ mục' : 'Corpus có sẵn'}
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-lowest text-emerald-700 font-label-statute text-label-statute shadow-xs text-[11px]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Sẵn sàng tra cứu
                       </span>
                     </td>
                   </tr>
@@ -200,7 +195,7 @@ export const DocumentTable: React.FC = () => {
         {/* Cursor Pagination Footer */}
         <div className="p-space-md bg-surface-container-low flex items-center justify-between border-t border-outline-variant/30">
           <span className="font-label-code text-label-code text-on-surface-variant text-[11px]">
-            Hiển thị danh mục văn bản số hóa (Phân trang con trỏ Cursor)
+            Danh mục văn bản pháp luật phục vụ tra cứu
           </span>
           <div className="flex items-center gap-space-xs">
             <button disabled={!hasMore || isLoading} onClick={() => fetchDocuments(nextCursor || undefined)}

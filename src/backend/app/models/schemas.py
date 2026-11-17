@@ -184,6 +184,9 @@ class DocumentResponse(BaseModel):
     chunks_count: int = 0
     nodes_count: int = 0
     edges_count: int = 0
+    articles_count: Optional[int] = 0
+    clauses_count: Optional[int] = 0
+    points_count: Optional[int] = 0
     created_at: datetime
     updated_at: datetime
 
@@ -278,6 +281,9 @@ class SystemStatsResponse(BaseModel):
     total_chunks: Optional[int] = None
     total_nodes: Optional[int] = None
     total_edges: Optional[int] = None
+    total_articles: Optional[int] = None
+    total_clauses: Optional[int] = None
+    total_points: Optional[int] = None
     vector_db_status: str
     graph_db_status: str
     redis_status: str

@@ -59,20 +59,14 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
         ></div>
       </div>
 
-      {/* Step details & Chunks Counter */}
+      {/* Step details */}
       <div className="flex items-center justify-between font-label-code text-[11px] text-on-surface-variant pt-0.5">
         <div className="flex items-center gap-1.5">
           <span className="material-symbols-outlined text-[15px] text-secondary">sync</span>
           <span className="font-medium text-on-surface">{task.current_step}</span>
         </div>
-        {task.total_chunks > 0 && (
-          <span className="font-metric-num text-secondary font-bold">
-            Tạo vector: {task.embedded_chunks} / {task.total_chunks} đoạn
-          </span>
-        )}
       </div>
 
-      {task.result?.reused_chunks ? <p className="text-xs text-slate-500">Tái sử dụng {task.result.reused_chunks} chunk không đổi; không embedding lại.</p> : null}
       {task.result?.warnings.map((warning, index) => <p key={index} className="text-xs text-amber-800">{warning}</p>)}
       {task.result?.artifact_ids[0] && <a className="text-xs text-secondary underline" href={'/api/files/' + encodeURIComponent(task.result.artifact_ids[0]) + '?download=true'}>Tải file nguồn đã lưu</a>}
       {isFailed && task.error_message && (

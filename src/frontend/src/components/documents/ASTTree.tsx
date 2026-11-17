@@ -27,7 +27,7 @@ export function ASTTree({ node, level = 0, focus, tick = 0 }: { node: ASTNode; l
     <summary ref={summary} className={'flex items-start gap-space-xs cursor-pointer p-space-sm rounded-lg text-on-surface border shadow-xs list-none ' + (active ? 'bg-secondary-fixed border-secondary ring-2 ring-secondary' : 'bg-surface-container border-outline-variant/20')}>
       <span className="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">{level === 0 ? 'folder_open' : 'subdirectory_arrow_right'}</span>
       <span className="font-label-statute text-label-statute font-bold text-secondary shrink-0">[{type}]</span>
-      <span className="font-headline-sm text-body-sm font-semibold break-words min-w-0">{node.title || (node.article_number ? '' : node.id)}</span>
+      <span className="font-headline-sm text-body-sm font-semibold break-words min-w-0">{node.title || ''}</span>
       {!!node.children?.length && <span className="font-label-code text-[10px] text-on-surface-variant ml-auto shrink-0">{node.children.length}</span>}
     </summary>
     {node.text && <p className="p-space-sm mt-space-xs bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface-variant whitespace-pre-wrap leading-relaxed">{node.text}</p>}
