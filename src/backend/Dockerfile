@@ -4,7 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm 
 COPY pyproject.toml /app/
 COPY labor_rag /app/labor_rag
 COPY src/backend /app/src/backend
-RUN pip install --no-cache-dir -e '.[api,rag,ocr]'
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -e '.[api,rag]'
 COPY ontology /app/ontology
 COPY data/processed /app/data/processed
 COPY docs/reports/appendix_inventory/appendix_references.csv /app/docs/reports/appendix_inventory/

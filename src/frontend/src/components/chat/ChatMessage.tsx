@@ -42,12 +42,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
         {/* Header Meta */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface">Hệ thống Pháp luật Việt Nam (Hybrid GraphRAG)</span>
-            {message.pipeline_trace && (
-              <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
-                {message.pipeline_trace.trace_id}
-              </span>
-            )}
+            <span className="font-headline-sm text-headline-sm text-on-surface">Hệ thống Pháp luật Việt Nam</span>
           </div>
           <span className="font-label-code text-label-code text-on-surface-variant">
             Thời gian thực thi: {message.execution_time_ms == null ? '—' : message.execution_time_ms + 'ms'}
@@ -59,16 +54,25 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
 
         {/* Final Legal Answer Card */}
         <article className="p-space-lg rounded-2xl bg-surface-container-lowest shadow-md flex flex-col gap-space-md border border-outline-variant/30">
-          {/* Verified Status Header Badge */}
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-statute text-label-statute font-bold">
-              <span className="material-symbols-outlined text-[15px]">verified_user</span>
-              <span>{verified ? 'TRÍCH DẪN KHỚP CHỨNG CỨ TRUY HỒI' : check?.unverified.length ? 'CÓ TRÍCH DẪN CẦN ĐỐI CHIẾU' : 'CHƯA CÓ KẾT QUẢ ĐỐI CHIẾU'}</span>
+          {/* Status Header Badge */}
+          {message.pipeline_trace ? (
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-statute text-label-statute font-bold">
+                <span className="material-symbols-outlined text-[15px]">verified_user</span>
+                <span>{verified ? 'TRÍCH DẪN KHỚP CHỨNG CỨ TRUY HỒI' : check?.unverified.length ? 'CÓ TRÍCH DẪN CẦN ĐỐI CHIẾU' : 'CHƯA CÓ KẾT QUẢ ĐỐI CHIẾU'}</span>
+              </div>
+              <span className="font-label-code text-label-code text-on-surface-variant font-mono">
+                Trích dẫn khớp: {check?.verified.length ?? 0}
+              </span>
             </div>
-            <span className="font-label-code text-label-code text-on-surface-variant font-mono">
-              Trích dẫn khớp: {check?.verified.length ?? 0}
-            </span>
-          </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-statute text-label-statute font-bold">
+                <span className="material-symbols-outlined text-[15px] text-secondary">forum</span>
+                <span>PHẢN HỒI TRỰC TIẾP</span>
+              </div>
+            </div>
+          )}
 
           {message.warnings?.map((warning, i) => <p key={i} className="p-space-sm rounded-lg bg-amber-50 text-amber-900 font-body-sm text-body-sm">{warning}</p>)}
           {/* Legal Answer Content */}

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from src.backend.app.dependencies import get_current_user, get_db
 from src.backend.app.models.database import User, ChatSession, ChatMessage
 from src.backend.app.models.schemas import (
-    ChatSessionCreate, ChatSessionResponse, ChatMessageResponse,
+    ChatSessionCreate, ChatSessionUpdate, ChatSessionResponse, ChatMessageResponse,
     SessionDetailResponse, ChatAskRequest, ChatAskResponse,
     CursorPage, PipelineTrace
 )
@@ -73,6 +73,35 @@ def get_session(
         session=ChatSessionResponse.model_validate(session),
         messages=[ChatMessageResponse.model_validate(m) for m in messages]
     )
+
+@router.patch("/sessions/{session_id}", response_model=ChatSessionResponse)
+def update_session(
+    session_id: str,
+    req: ChatSessionUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    repo = ChatRepository(db)
+    session = repo.update_session(session_id, user_id=current_user.id, title=req.title)
+    if not session:
+        raise HTTPException(status_code=404, detail="Phiên hỏi đáp không tồn tại")
+    resp = ChatSessionResponse.model_validate(session)
+    resp.message_count = len(session.messages)
+    if session.messages:
+        resp.last_message_preview = session.messages[-1].content[:60] + "..."
+    return resp
+
+@router.delete("/sessions/{session_id}")
+def delete_session(
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    repo = ChatRepository(db)
+    success = repo.delete_session(session_id, user_id=current_user.id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Phiên hỏi đáp không tồn tại")
+    return {"ok": True, "session_id": session_id}
 
 @router.post("/ask", response_model=ChatAskResponse)
 def ask_legal_question(req: ChatAskRequest, request: Request,

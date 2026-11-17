@@ -70,6 +70,16 @@ export const api = {
     return res.data;
   },
 
+  async updateSession(sessionId: string, data: { title?: string }): Promise<ChatSession> {
+    const res = await apiClient.patch(`/chat/sessions/${sessionId}`, data);
+    return res.data;
+  },
+
+  async deleteSession(sessionId: string): Promise<{ ok: boolean; session_id: string }> {
+    const res = await apiClient.delete(`/chat/sessions/${sessionId}`);
+    return res.data;
+  },
+
   async ask(params: {
     session_id?: string;
     question: string;

@@ -70,7 +70,8 @@ from labor_rag.ingest.merge import PHAP_DIEN, plan_upsert
 
 load_dotenv()
 
-CHUNKS_PATH = LAO_DONG_DIR / "chunks.jsonl"
+CHUNKS_PATH = Path(os.getenv("CHUNKS_PATH", str(LAO_DONG_DIR / "chunks.jsonl")))
+KG_DIR = Path(os.getenv("KG_DIR", str(LAO_DONG_DIR)))
 # Written by scripts/colab_embed.ipynb, read by --backend file.
 VECTORS_PATH = INTERIM_DIR / "vectors.npz"
 
@@ -275,7 +276,7 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
-    parser.add_argument("--kg-dir", type=Path, default=LAO_DONG_DIR, help="graph projection to read validity from")
+    parser.add_argument("--kg-dir", type=Path, default=KG_DIR, help="graph projection to read validity from")
     parser.add_argument("--model", default=MODEL_NAME)
     parser.add_argument("--collection", default=COLLECTION)
     parser.add_argument("--qdrant-url", default=QDRANT_URL)

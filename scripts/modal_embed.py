@@ -53,7 +53,9 @@ class Embedder:
         from sentence_transformers import SentenceTransformer
 
         model_path = self.model_name
-        if "bge-m3-legal-vietnamese" in self.model_name or self.model_name in ("finetuned", "custom"):
+        if "model2" in self.model_name or "bge-m3-v2" in self.model_name:
+            model_path = "/cache/model2"
+        elif "bge-m3-legal-vietnamese" in self.model_name or self.model_name in ("finetuned", "custom"):
             model_path = "/cache/bge-m3-finetuned"
         elif not os.path.exists(model_path) and os.path.exists(f"/cache/{model_path}"):
             model_path = f"/cache/{model_path}"
