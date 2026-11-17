@@ -1,0 +1,14 @@
+{
+  "base_nodes": {
+    "count": 11744,
+    "sha256": "659839122297175d7e704c0281c9a0a6528547314c5a6cd90a295900a4b82ff6"
+  },
+  "base_edges": {
+    "count": 33357,
+    "sha256": "7eb0bc033abb8fdd6f4dac2cad0fa24561b095ea7948b84102bf9208a4997e74"
+  },
+  "totals": {
+    "nodes": 11744,
+    "edges": 33357
+  }
+}

@@ -1,13 +1,4 @@
-beautifulsoup4>=4.12
-lxml>=5.0
-neo4j>=5.24
-qdrant-client>=1.11
-sentence-transformers>=3.1
-rdflib>=7.0
-pyshacl>=0.26
-google-genai>=1.0
-python-dotenv>=1.0
-pandas>=2.0
-openpyxl>=3.1
-matplotlib>=3.8
-jupyterlab>=4.0
+# Single dependency source: pyproject.toml. Run from the repository root.
+-e .[api,rag,ocr,dev]
+# OCR also requires: pip install vietocr==0.3.13 --no-deps
+# Install torchvision from the same CPU/CUDA index and version family as torch.

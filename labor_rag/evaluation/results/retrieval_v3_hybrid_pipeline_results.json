@@ -1,0 +1,101 @@
+{
+  "benchmark": "benchmark_questions_v3",
+  "timestamp": "2026-10-19T11:14:17.324041+00:00",
+  "vector_collection": "legal_ld_v7_bge",
+  "questions_count": 201,
+  "cross_ref_count": 133,
+  "overall": {
+    "vector_only": {
+      "count": 201,
+      "Hit@1": 0.791,
+      "Hit@5": 0.9552,
+      "Hit@8": 0.9701,
+      "Hit@10": 0.9801,
+      "Recall@5": 0.6045,
+      "Recall@8": 0.6649,
+      "Recall@10": 0.6845,
+      "MRR@10": 0.8552,
+      "NDCG@5": 0.7454,
+      "NDCG@8": 0.7588,
+      "NDCG@10": 0.7639,
+      "MAP@10": 0.5552
+    },
+    "hybrid_standard": {
+      "count": 201,
+      "Hit@1": 0.791,
+      "Hit@5": 0.9552,
+      "Hit@8": 0.9602,
+      "Hit@10": 0.9602,
+      "Recall@5": 0.6045,
+      "Recall@8": 0.8291,
+      "Recall@10": 0.8659,
+      "MRR@10": 0.8527,
+      "NDCG@5": 0.7454,
+      "NDCG@8": 0.8132,
+      "NDCG@10": 0.8423,
+      "MAP@10": 0.7291
+    },
+    "hybrid_coupled": {
+      "count": 201,
+      "Hit@1": 0.791,
+      "Hit@5": 0.9552,
+      "Hit@8": 0.9701,
+      "Hit@10": 0.9801,
+      "Recall@5": 0.7138,
+      "Recall@8": 0.8106,
+      "Recall@10": 0.8428,
+      "MRR@10": 0.8552,
+      "NDCG@5": 0.7937,
+      "NDCG@8": 0.826,
+      "NDCG@10": 0.8484,
+      "MAP@10": 0.7627
+    }
+  },
+  "cross_reference_subset": {
+    "vector_only": {
+      "count": 133,
+      "Hit@1": 0.812,
+      "Hit@5": 0.9774,
+      "Hit@8": 0.985,
+      "Hit@10": 0.9925,
+      "Recall@5": 0.4587,
+      "Recall@8": 0.5325,
+      "Recall@10": 0.5596,
+      "MRR@10": 0.8753,
+      "NDCG@5": 0.7023,
+      "NDCG@8": 0.717,
+      "NDCG@10": 0.7231,
+      "MAP@10": 0.4341
+    },
+    "hybrid_standard": {
+      "count": 133,
+      "Hit@1": 0.812,
+      "Hit@5": 0.9774,
+      "Hit@8": 0.985,
+      "Hit@10": 0.985,
+      "Recall@5": 0.4587,
+      "Recall@8": 0.7982,
+      "Recall@10": 0.8537,
+      "MRR@10": 0.8742,
+      "NDCG@5": 0.7023,
+      "NDCG@8": 0.8048,
+      "NDCG@10": 0.8489,
+      "MAP@10": 0.7003
+    },
+    "hybrid_coupled": {
+      "count": 133,
+      "Hit@1": 0.812,
+      "Hit@5": 0.9774,
+      "Hit@8": 0.985,
+      "Hit@10": 0.9925,
+      "Recall@5": 0.6239,
+      "Recall@8": 0.7527,
+      "Recall@10": 0.7987,
+      "MRR@10": 0.8753,
+      "NDCG@5": 0.7754,
+      "NDCG@8": 0.8185,
+      "NDCG@10": 0.8508,
+      "MAP@10": 0.7477
+    }
+  }
+}

@@ -1,5 +1,10 @@
 """Load a JSONL graph projection into Neo4j.
 
+Every node also gets the label :Entity, unique on (id, dataset_id), so edges
+are matched through that constraint instead of a scan of all nodes. Source
+Dieu / khoan (:SourceComponent) and documents (:VanBan) are indexed on
+document_id (+ article_number), the key retrieval looks them up by.
+
 The default data directory is the Lao dong projection:
 
     python -m labor_rag.ingest.load_neo4j --replace-dataset
@@ -14,11 +19,12 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from neo4j import GraphDatabase
+from dotenv import load_dotenv
 
-from labor_rag.config import LAO_DONG_V4_DIR
+from labor_rag.config import LAO_DONG_DIR
+from labor_rag.services.neo4j import create_neo4j_driver
 
-sys.stdout.reconfigure(encoding="utf-8")
+load_dotenv()
 
 
 def safe_identifier(value: str, fallback: str) -> str:
@@ -33,8 +39,10 @@ def read_jsonl(path: Path) -> list[dict]:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=LAO_DONG_V4_DIR)
+    parser.add_argument("--data-dir", type=Path, default=LAO_DONG_DIR)
     parser.add_argument("--uri", default=os.getenv("NEO4J_URI", "bolt://localhost:7687"))
     parser.add_argument("--user", default=os.getenv("NEO4J_USER", "neo4j"))
     parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD", "labor_rag_pw"))
@@ -46,6 +54,10 @@ def main() -> int:
         help="Delete only nodes carrying --dataset-id before loading the projection.",
     )
     args = parser.parse_args()
+    return load_projection(args)
+
+
+def load_projection(args):
 
     nodes = read_jsonl(args.data_dir / "kg_nodes.jsonl")
     edges = read_jsonl(args.data_dir / "kg_edges.jsonl")
@@ -60,59 +72,67 @@ def main() -> int:
     for edge in edges:
         edge.setdefault("dataset_id", dataset_id)
 
-    driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
-    driver.verify_connectivity()
-    print(f"Connected to Neo4j database={args.database}.")
+    driver = create_neo4j_driver(args.uri, auth=(args.user, args.password))
+    try:
+        driver.verify_connectivity()
+        print(f"Connected to Neo4j database={args.database}.")
 
-    node_labels = sorted({safe_identifier(str(node.get("label")), "Resource") for node in nodes})
-    edge_types = sorted({safe_identifier(str(edge.get("type")), "RELATED_TO") for edge in edges})
-    with driver.session(database=args.database) as session:
-        if args.replace_dataset:
-            deleted = session.run(
-                "MATCH (n {dataset_id: $dataset_id}) DETACH DELETE n RETURN count(n) AS deleted",
-                dataset_id=dataset_id,
-            ).single()["deleted"]
-            print(f"  replaced dataset {dataset_id}: deleted {deleted} existing nodes")
-        for label in node_labels:
+        node_labels = sorted({safe_identifier(str(node.get("label")), "Resource") for node in nodes})
+        edge_types = sorted({safe_identifier(str(edge.get("type")), "RELATED_TO") for edge in edges})
+        with driver.session(database=args.database) as session:
+            if args.replace_dataset:
+                deleted = session.run(
+                    "MATCH (n {dataset_id: $dataset_id}) DETACH DELETE n RETURN count(n) AS deleted",
+                    dataset_id=dataset_id,
+                ).single()["deleted"]
+                print(f"  replaced dataset {dataset_id}: deleted {deleted} existing nodes")
+            for label in ["Entity", *node_labels]:
+                session.run(
+                    f"CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) "
+                    "REQUIRE (n.id, n.dataset_id) IS UNIQUE"
+                )
             session.run(
-                f"CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) "
-                "REQUIRE (n.id, n.dataset_id) IS UNIQUE"
+                "CREATE INDEX source_component_article IF NOT EXISTS "
+                "FOR (n:SourceComponent) ON (n.dataset_id, n.document_id, n.article_number)"
             )
+            session.run("CREATE INDEX van_ban_document IF NOT EXISTS FOR (n:VanBan) ON (n.dataset_id, n.document_id)")
 
-        by_label: dict[str, list[dict]] = defaultdict(list)
-        for node in nodes:
-            node = dict(node)
-            node["label"] = safe_identifier(str(node.get("label")), "Resource")
-            by_label[node["label"]].append(node)
-        for label, items in by_label.items():
-            session.run(
-                f"UNWIND $items AS item "
-                f"MERGE (n:{label} {{id: item.id, dataset_id: item.dataset_id}}) "
-                "SET n += item",
-                items=items,
-            )
-            print(f"  loaded {len(items)} :{label} nodes")
+            by_label: dict[str, list[dict]] = defaultdict(list)
+            for node in nodes:
+                node = dict(node)
+                node["label"] = safe_identifier(str(node.get("label")), "Resource")
+                by_label[node["label"]].append(node)
+            for label, items in by_label.items():
+                session.run(
+                    f"UNWIND $items AS item "
+                    f"MERGE (n:Entity {{id: item.id, dataset_id: item.dataset_id}}) "
+                    f"SET n:{label} "
+                    "SET n += item",
+                    items=items,
+                )
+                print(f"  loaded {len(items)} :{label} nodes")
 
-        by_type: dict[str, list[dict]] = defaultdict(list)
-        for edge in edges:
-            edge = dict(edge)
-            edge["type"] = safe_identifier(str(edge.get("type")), "RELATED_TO")
-            edge["predicate_iri"] = edge.get("predicate_iri") or f"local:{edge['type']}"
-            by_type[edge["type"]].append(edge)
-        for edge_type, items in by_type.items():
-            session.run(
-                f"""
-                UNWIND $items AS item
-                MATCH (a {{id: item.source, dataset_id: item.dataset_id}}),
-                      (b {{id: item.target, dataset_id: item.dataset_id}})
-                MERGE (a)-[r:{edge_type} {{predicate_iri: item.predicate_iri, dataset_id: item.dataset_id}}]->(b)
-                SET r += item
-                """,
-                items=items,
-            )
-            print(f"  loaded {len(items)} :{edge_type} edges")
+            by_type: dict[str, list[dict]] = defaultdict(list)
+            for edge in edges:
+                edge = dict(edge)
+                edge["type"] = safe_identifier(str(edge.get("type")), "RELATED_TO")
+                edge["predicate_iri"] = edge.get("predicate_iri") or f"local:{edge['type']}"
+                by_type[edge["type"]].append(edge)
+            for edge_type, items in by_type.items():
+                session.run(
+                    f"""
+                    UNWIND $items AS item
+                    MATCH (a:Entity {{id: item.source, dataset_id: item.dataset_id}}),
+                          (b:Entity {{id: item.target, dataset_id: item.dataset_id}})
+                    MERGE (a)-[r:{edge_type} {{predicate_iri: item.predicate_iri, dataset_id: item.dataset_id}}]->(b)
+                    SET r += item
+                    """,
+                    items=items,
+                )
+                print(f"  loaded {len(items)} :{edge_type} edges")
 
-    driver.close()
+    finally:
+        driver.close()
     print("Done. Browse at http://localhost:7474")
     return 0
 

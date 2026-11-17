@@ -54,11 +54,16 @@ PATTERNS = {
         re.IGNORECASE | re.UNICODE,
     ),
     StructureLevel.CHAPTER: re.compile(r"^\s*(?:CHƯƠNG|Chương)\s+([IVXLCDM]+|[0-9]+)\b\.?\s*"),
-    StructureLevel.SECTION: re.compile(r"^\s*(?:MỤC|Mục)\s+(\d+)\b\.?\s*"),
-    # OCR often gets the tone mark of "Điều" wrong ("Điêu", "Diều").
-    StructureLevel.ARTICLE: re.compile(r"^\s*(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+(\d+)\b[.,]?\s*"),
-    # "1." or, as OCR often reads it, "1," before a capitalised sentence.
-    StructureLevel.CLAUSE: re.compile(r"^\s*(\d+)(?:\.\s+|,\s+(?=[A-ZĐÀ-Ỹ]))"),
+    # OCR often drops the dot below: "Muc 3".
+    StructureLevel.SECTION: re.compile(r"^\s*(?:M[ỤU]C|M[ụu]c)\s+(\d+)\b\.?\s*"),
+    # OCR often gets the tone mark or ending of "Điều" wrong ("Điêu", "Diều", "Diệu", "Điên", "Điền", "Điềp").
+    # An inserted Dieu keeps its neighbour's number plus a letter: "Điều 35a".
+    StructureLevel.ARTICLE: re.compile(
+        r"^\s*(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+(\d+[a-zđ]?)(?=[.,:\s-]|$)[.,:]?\s*",
+        re.UNICODE | re.IGNORECASE,
+    ),
+    # "1." or, as OCR often reads it, "1," before a capitalised sentence; "1a." when inserted.
+    StructureLevel.CLAUSE: re.compile(r"^\s*(\d+[a-zđ]?)(?:\.\s+|,\s+(?=[A-ZĐÀ-Ỹ]))"),
     # Điểm labels are lower-case; OCR often capitalises them ("A) ").
     StructureLevel.POINT: re.compile(r"^\s*([a-zđA-ZĐ])\)\s+"),
 }
@@ -89,14 +94,21 @@ def parse_line(line: str) -> ParsedLine:
     if m:
         return ParsedLine(StructureLevel.PART, number=m.group().strip(), title=stripped[m.end():].strip())
 
-    for level in (StructureLevel.CHAPTER, StructureLevel.SECTION, StructureLevel.ARTICLE):
+    for level in (StructureLevel.CHAPTER, StructureLevel.SECTION):
         m = PATTERNS[level].match(stripped)
         if m:
             return ParsedLine(level, number=m.group(1), title=stripped[m.end():].strip())
 
+    m = PATTERNS[StructureLevel.ARTICLE].match(stripped)
+    if m:
+        num_m = re.match(r"\d+", m.group(1))
+        # A valid Dieu number in legal documents is between 1 and 350
+        if num_m and 1 <= int(num_m.group()) <= 350:
+            return ParsedLine(StructureLevel.ARTICLE, number=m.group(1), title=stripped[m.end():].strip())
+
     m = PATTERNS[StructureLevel.CLAUSE].match(stripped)
     # A Khoản number is small; "2019. ..." at a line start is not a Khoản.
-    if m and 1 <= int(m.group(1)) <= 99:
+    if m and 1 <= int(re.match(r"\d+", m.group(1)).group()) <= 99:
         return ParsedLine(StructureLevel.CLAUSE, number=m.group(1), text=stripped[m.end():].strip())
 
     m = PATTERNS[StructureLevel.POINT].match(stripped)
@@ -252,6 +264,17 @@ def parse_structure(text: str, document_id: str = "") -> LegalDocument:
             )
 
         elif parsed.level == StructureLevel.ARTICLE:
+            if state.clause and re.match(r"^(?:và|hoặc|của\s+[Bb]ộ\s+luật|của\s+[Ll]uật|thì\s+)\b", parsed.title, re.IGNORECASE):
+                _append_text(state, stripped)
+                continue
+            # When inside an amending article (e.g. Điều 219), smaller article numbers (e.g. Điều 54, 55)
+            # are quoted amendment targets belonging to this article rather than new root-level articles.
+            if state.article and re.search(r"sửa\s+đ[oổ]i|b[oổ]\s+sung|bãi\s+bỏ", state.article.article_title, re.IGNORECASE):
+                cur_num_m = re.match(r"\d+", state.article.article_number.split()[-1])
+                new_num_m = re.match(r"\d+", parsed.number)
+                if cur_num_m and new_num_m and int(new_num_m.group()) < int(cur_num_m.group()):
+                    _append_text(state, stripped)
+                    continue
             _flush_article(state)
             state.in_preamble = False
             state.article = Article(
@@ -309,8 +332,12 @@ def extract_metadata(text: str, title: str = "", source_file: str = "", total_pa
     metadata = DocumentMetadata(source_file=source_file, total_pages=total_pages)
     head = text[:3000]
 
-    # "Số: 45/2019/QH14", "Số: 145/2020/NĐ-CP"
-    m = re.search(r"(?:Số|số)[:\s]+(\d+/\d{4}/[A-ZĐ\-]+\d*)", head)
+    # "Số: 45/2019/QH14", "Luật số: 84/2015/QH13", "Số : 40/2021/QĐ-TTg".
+    # In a VBHN the number of the consolidated document comes before "được
+    # sửa đổi, bổ sung bởi:"; the amending documents listed after it have
+    # numbers too, so a miss before it must not fall through to them.
+    amended_by = _AMENDED_BY.search(head)
+    m = re.search(_SO + r"\s*:?\s*" + _SO_HIEU, head[: amended_by.start()] if amended_by else head, re.IGNORECASE)
     if m:
         metadata.so_hieu = m.group(1)
 
@@ -331,4 +358,65 @@ def extract_metadata(text: str, title: str = "", source_file: str = "", total_pa
         if m:
             metadata.co_quan_ban_hanh = m.group().strip()
             break
+
+    _consolidation_metadata(metadata, text, head)
     return metadata
+
+
+# A van ban hop nhat (VBHN) opens with "Bộ luật Lao động số 45/2019/QH14 ngày
+# ... , có hiệu lực kể từ ngày 01 tháng 01 năm 2021, được sửa đổi, bổ sung
+# bởi:" and a numbered list of the amending documents with their own dates.
+_SO_HIEU = r"(\d+[a-z]?/\d{4}/[\wĐđÐ-]+)"
+# "số", as OCR also reads it: "sô", "só", "so".
+_SO = r"\bs[ốôóo]"
+_VBHN_NUMBER = re.compile(_SO + r"\s*:?\s*(\d+/VBHN-[\wĐđÐ-]+)", re.IGNORECASE)
+_AMENDED_BY = re.compile(r"được\s+sửa\s+đổi,?\s+bổ\s+sung\s+bởi\s*:", re.IGNORECASE)
+_EFFECTIVE = re.compile(
+    r"có\s+hiệu\s+lực\s+(?:thi\s+hành\s+)?(?:k[ểêe]\s+)?từ\s+ngày\s+"  # OCR: "kê từ"
+    r"(?:(\d{1,2})/(\d{1,2})/(\d{4})|(\d{1,2})\s+tháng\s+(\d{1,2})\s+năm\s+(\d{4}))",
+    re.IGNORECASE,
+)
+# "Bộ luật này có hiệu lực thi hành từ ngày 01 tháng 01 năm 2021." in the Dieu on entry into force.
+_OWN_EFFECTIVE = re.compile(
+    r"(?:Bộ\s+luật|Luật|Pháp\s+lệnh|Nghị\s+quyết|Nghị\s+định|Quyết\s+định|Thông\s+tư(?:\s+liên\s+tịch)?)\s+này\s+"
+    + _EFFECTIVE.pattern,
+    re.IGNORECASE,
+)
+_LIST_ITEM = re.compile(r"(?m)^\s*\d+[.,]\s+")
+
+
+def _effective_date(match: re.Match) -> str:
+    day, month, year = (match.group(1), match.group(2), match.group(3)) if match.group(3) else match.group(4, 5, 6)
+    return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+
+
+def _consolidation_metadata(metadata: DocumentMetadata, text: str, head: str) -> None:
+    """Fill hop_nhat, so_hieu_vbhn, van_ban_sua_doi, ngay_hieu_luc and version_date."""
+    vbhn = _VBHN_NUMBER.search(head)
+    if vbhn:
+        metadata.so_hieu_vbhn = vbhn.group(1)
+    amended_by = _AMENDED_BY.search(head)
+    metadata.hop_nhat = bool(vbhn or amended_by)
+
+    if amended_by:
+        own = _EFFECTIVE.search(head[: amended_by.start()])
+        if own:
+            metadata.ngay_hieu_luc = _effective_date(own)
+        # The list ends where the preamble ("Căn cứ ...") or the body starts.
+        rest = head[amended_by.end():]
+        end = re.search(r"Căn\s+cứ|^\s*(?:Chương|CHƯƠNG|Điều|PHẦN|Phần)\s", rest, re.MULTILINE)
+        listing = rest[: end.start()] if end else rest
+        for item in _LIST_ITEM.split(listing):
+            number = re.search(_SO + r"\s+" + _SO_HIEU, item, re.IGNORECASE)
+            effective = _EFFECTIVE.search(item)
+            if number:
+                metadata.van_ban_sua_doi.append(
+                    {"so_hieu": number.group(1), "ngay_hieu_luc": _effective_date(effective) if effective else ""}
+                )
+    if not metadata.ngay_hieu_luc:
+        own = _OWN_EFFECTIVE.search(text)
+        if own:
+            metadata.ngay_hieu_luc = _effective_date(re.search(_EFFECTIVE, own.group()))
+
+    dates = [metadata.ngay_hieu_luc, *(doc["ngay_hieu_luc"] for doc in metadata.van_ban_sua_doi)]
+    metadata.version_date = max((d for d in dates if d), default="")

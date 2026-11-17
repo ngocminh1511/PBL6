@@ -1,0 +1,3367 @@
+{
+  "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85": {
+    "artifact_id": "sha256:ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+    "sha256": "ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/09-2020-tt-bldtbxh/ccda274085c4caa2_vbpl_content.html",
+    "bytes": 89334,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien--152670",
+    "downloaded_at": "2026-11-02T16:46:35.670729+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "09-2020-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien--152670",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/cc/ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+      "sha256": "ccda274085c4caa267ce07bf946cb98c17c8a121d017146ac399a17c6e49ea85",
+      "bytes": 89334,
+      "etag": "\"1f2630d0e56fc0cd46503547ed91c0e1\"",
+      "verified_at": "2026-11-02T17:42:31.880950+00:00",
+      "status": "already_present"
+    }
+  },
+  "sha256:5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1": {
+    "artifact_id": "sha256:5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+    "sha256": "5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+    "file_name": "VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf",
+    "path": "data/raw/appendix/09-2020-tt-bldtbxh/5b0269b01d366688_VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf",
+    "bytes": 2713463,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf/download",
+    "downloaded_at": "2026-11-02T16:46:36.820569+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2020-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/VanBanGoc_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/5b/5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+      "sha256": "5b0269b01d366688fcc0f3ca0091710cf2218df3508597edd1f531c8a80e55e1",
+      "bytes": 2713463,
+      "etag": "\"54a609eb61d0efef739891955bac692f\"",
+      "verified_at": "2026-11-02T17:42:33.552708+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f": {
+    "artifact_id": "sha256:ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+    "sha256": "ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+    "file_name": "thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc",
+    "path": "data/raw/appendix/09-2020-tt-bldtbxh/ebe5b8a0cc92db64_thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc",
+    "bytes": 251392,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc/download",
+    "downloaded_at": "2026-11-02T16:46:37.075804+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2020-tt-bldtbxh",
+        "file_name": "thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152670/thong-tu-09-2020-tt-bldtbxh-huong-dan-bo-luat-lao-dong-ve-lao-dong-chua-thanh-nien.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/eb/ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+      "sha256": "ebe5b8a0cc92db644206d4d1b59b3c5d6d4eb3d21afb780c2ccbe92a0f862d8f",
+      "bytes": 251392,
+      "etag": "\"0aa5dcb018c27cd3d074dbb53e9d0faa\"",
+      "verified_at": "2026-11-02T17:42:33.068222+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:6c3550d446fe2834c0fb4e57030fd48a8eafc2d0bbf55f9137e2a39cacd167c6": {
+    "artifact_id": "sha256:6c3550d446fe2834c0fb4e57030fd48a8eafc2d0bbf55f9137e2a39cacd167c6",
+    "sha256": "6c3550d446fe2834c0fb4e57030fd48a8eafc2d0bbf55f9137e2a39cacd167c6",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/01-2020-tt-bldtbxh/6c3550d446fe2834_vbpl_content.html",
+    "bytes": 16493,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-01-2020-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam-va-nghi-dinh-so-74-2019-nd-cp-ngay-23-thang-9-nam-2019-cua-chinh-phu-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp--140693",
+    "downloaded_at": "2026-11-02T16:47:20.049685+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "01-2020-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-01-2020-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam-va-nghi-dinh-so-74-2019-nd-cp-ngay-23-thang-9-nam-2019-cua-chinh-phu-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp--140693",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/6c/6c3550d446fe2834c0fb4e57030fd48a8eafc2d0bbf55f9137e2a39cacd167c6",
+      "sha256": "6c3550d446fe2834c0fb4e57030fd48a8eafc2d0bbf55f9137e2a39cacd167c6",
+      "bytes": 16493,
+      "etag": "\"87e5158448991005675ecda2c1081726\"",
+      "verified_at": "2026-11-02T17:42:34.091132+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:9113d261e7aeac3523954ca7c0489ac7cb20d19cb755a965e8345511b48b7845": {
+    "artifact_id": "sha256:9113d261e7aeac3523954ca7c0489ac7cb20d19cb755a965e8345511b48b7845",
+    "sha256": "9113d261e7aeac3523954ca7c0489ac7cb20d19cb755a965e8345511b48b7845",
+    "file_name": "VanBanGoc_Thông tư 01.2020 về Quỹ quốc gia việc làm.pdf",
+    "path": "data/raw/appendix/01-2020-tt-bldtbxh/9113d261e7aeac35_VanBanGoc_Thông tư 01.2020 về Quỹ quốc gia việc làm.pdf",
+    "bytes": 371321,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/140693/VanBanGoc_Th%C3%B4ng%20t%C6%B0%2001.2020%20v%E1%BB%81%20Qu%E1%BB%B9%20qu%E1%BB%91c%20gia%20vi%E1%BB%87c%20l%C3%A0m.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:22.726213+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "01-2020-tt-bldtbxh",
+        "file_name": "VanBanGoc_Thông tư 01.2020 về Quỹ quốc gia việc làm.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/140693/VanBanGoc_Th%C3%B4ng%20t%C6%B0%2001.2020%20v%E1%BB%81%20Qu%E1%BB%B9%20qu%E1%BB%91c%20gia%20vi%E1%BB%87c%20l%C3%A0m.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/91/9113d261e7aeac3523954ca7c0489ac7cb20d19cb755a965e8345511b48b7845",
+      "sha256": "9113d261e7aeac3523954ca7c0489ac7cb20d19cb755a965e8345511b48b7845",
+      "bytes": 371321,
+      "etag": "\"685ac250ff96f43fee347203247f4adf\"",
+      "verified_at": "2026-11-02T17:42:34.663079+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:16d51147ab7ba164dfa8577ce1b2fc08ca1491317d6c21e662216d76fb76501a": {
+    "artifact_id": "sha256:16d51147ab7ba164dfa8577ce1b2fc08ca1491317d6c21e662216d76fb76501a",
+    "sha256": "16d51147ab7ba164dfa8577ce1b2fc08ca1491317d6c21e662216d76fb76501a",
+    "file_name": "Thông tư 01.2020 về Quỹ quốc gia việc làm.doc",
+    "path": "data/raw/appendix/01-2020-tt-bldtbxh/16d51147ab7ba164_Thông tư 01.2020 về Quỹ quốc gia việc làm.doc",
+    "bytes": 412160,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/140693/Th%C3%B4ng%20t%C6%B0%2001.2020%20v%E1%BB%81%20Qu%E1%BB%B9%20qu%E1%BB%91c%20gia%20vi%E1%BB%87c%20l%C3%A0m.doc/download",
+    "downloaded_at": "2026-11-02T16:47:23.715589+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "01-2020-tt-bldtbxh",
+        "file_name": "Thông tư 01.2020 về Quỹ quốc gia việc làm.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/140693/Th%C3%B4ng%20t%C6%B0%2001.2020%20v%E1%BB%81%20Qu%E1%BB%B9%20qu%E1%BB%91c%20gia%20vi%E1%BB%87c%20l%C3%A0m.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/16/16d51147ab7ba164dfa8577ce1b2fc08ca1491317d6c21e662216d76fb76501a",
+      "sha256": "16d51147ab7ba164dfa8577ce1b2fc08ca1491317d6c21e662216d76fb76501a",
+      "bytes": 412160,
+      "etag": "\"96f50cd3032db56c6d1a8c6eb85b8084\"",
+      "verified_at": "2026-11-02T17:42:35.092832+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:68a5160da98c3ed91a6329968c4d500ace1890a5ea8411319edcb2538526e710": {
+    "artifact_id": "sha256:68a5160da98c3ed91a6329968c4d500ace1890a5ea8411319edcb2538526e710",
+    "sha256": "68a5160da98c3ed91a6329968c4d500ace1890a5ea8411319edcb2538526e710",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/01-2022-tt-bldtbxh/68a5160da98c3ed9_vbpl_content.html",
+    "bytes": 73463,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-01-2022-tt-bldtbxh-huong-dan-thu-thap-luu-tru-tong-hop-thong-tin-thi-truong-lao-dong--153821",
+    "downloaded_at": "2026-11-02T16:47:21.096835+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "01-2022-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-01-2022-tt-bldtbxh-huong-dan-thu-thap-luu-tru-tong-hop-thong-tin-thi-truong-lao-dong--153821",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/68/68a5160da98c3ed91a6329968c4d500ace1890a5ea8411319edcb2538526e710",
+      "sha256": "68a5160da98c3ed91a6329968c4d500ace1890a5ea8411319edcb2538526e710",
+      "bytes": 73463,
+      "etag": "\"a09be592eb01e545a738fb81ed1c3fb2\"",
+      "verified_at": "2026-11-02T17:42:35.422727+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:52b46ee8c2f40f41c74aadb101fc165b440006f3c6cfe7e1081b458ba3a3abc0": {
+    "artifact_id": "sha256:52b46ee8c2f40f41c74aadb101fc165b440006f3c6cfe7e1081b458ba3a3abc0",
+    "sha256": "52b46ee8c2f40f41c74aadb101fc165b440006f3c6cfe7e1081b458ba3a3abc0",
+    "file_name": "VanBanGoc_thong-tu-01-2022-tt-bldtbxh.pdf",
+    "path": "data/raw/appendix/01-2022-tt-bldtbxh/52b46ee8c2f40f41_VanBanGoc_thong-tu-01-2022-tt-bldtbxh.pdf",
+    "bytes": 4510289,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153821/VanBanGoc_thong-tu-01-2022-tt-bldtbxh.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:24.273381+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "01-2022-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-01-2022-tt-bldtbxh.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153821/VanBanGoc_thong-tu-01-2022-tt-bldtbxh.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/52/52b46ee8c2f40f41c74aadb101fc165b440006f3c6cfe7e1081b458ba3a3abc0",
+      "sha256": "52b46ee8c2f40f41c74aadb101fc165b440006f3c6cfe7e1081b458ba3a3abc0",
+      "bytes": 4510289,
+      "etag": "\"72b9865aded7755daf3baed2187a58d1\"",
+      "verified_at": "2026-11-02T17:42:36.417354+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ab36167f1dcdc9ba9eba133d7489498831667f0144d9256703bdaccb9155860a": {
+    "artifact_id": "sha256:ab36167f1dcdc9ba9eba133d7489498831667f0144d9256703bdaccb9155860a",
+    "sha256": "ab36167f1dcdc9ba9eba133d7489498831667f0144d9256703bdaccb9155860a",
+    "file_name": "thong-tu-01-2022-tt-bldtbxh.doc",
+    "path": "data/raw/appendix/01-2022-tt-bldtbxh/ab36167f1dcdc9ba_thong-tu-01-2022-tt-bldtbxh.doc",
+    "bytes": 436736,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153821/thong-tu-01-2022-tt-bldtbxh.doc/download",
+    "downloaded_at": "2026-11-02T16:47:25.713009+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "01-2022-tt-bldtbxh",
+        "file_name": "thong-tu-01-2022-tt-bldtbxh.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153821/thong-tu-01-2022-tt-bldtbxh.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ab/ab36167f1dcdc9ba9eba133d7489498831667f0144d9256703bdaccb9155860a",
+      "sha256": "ab36167f1dcdc9ba9eba133d7489498831667f0144d9256703bdaccb9155860a",
+      "bytes": 436736,
+      "etag": "\"e56ec5486938f1cbe2fb601fa2983712\"",
+      "verified_at": "2026-11-02T17:42:36.363850+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:6dab38e68798a02fb34fb0b94556d1b631d9a1b0bfb96b1aa77fb5093d48fffe": {
+    "artifact_id": "sha256:6dab38e68798a02fb34fb0b94556d1b631d9a1b0bfb96b1aa77fb5093d48fffe",
+    "sha256": "6dab38e68798a02fb34fb0b94556d1b631d9a1b0bfb96b1aa77fb5093d48fffe",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/02-2023-tt-byt/6dab38e68798a02f_vbpl_content.html",
+    "bytes": 7642,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-02-2023-tt-byt-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-15-2016-tt-byt-ngay-15-thang-5-nam-2016-cua-bo-y-te-quy-dinh-ve-benh-nghe-nghiep-duoc-huong-bao-hiem-xa-hoi--160122",
+    "downloaded_at": "2026-11-02T16:47:24.772700+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "02-2023-tt-byt",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-02-2023-tt-byt-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-15-2016-tt-byt-ngay-15-thang-5-nam-2016-cua-bo-y-te-quy-dinh-ve-benh-nghe-nghiep-duoc-huong-bao-hiem-xa-hoi--160122",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/6d/6dab38e68798a02fb34fb0b94556d1b631d9a1b0bfb96b1aa77fb5093d48fffe",
+      "sha256": "6dab38e68798a02fb34fb0b94556d1b631d9a1b0bfb96b1aa77fb5093d48fffe",
+      "bytes": 7642,
+      "etag": "\"ac033cc895baa921147458020b0bb733\"",
+      "verified_at": "2026-11-02T17:42:37.148053+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:0be535fec7137183b56474f82fb3d3982e3ef7bee516bf58255a0f9d2ff93ba6": {
+    "artifact_id": "sha256:0be535fec7137183b56474f82fb3d3982e3ef7bee516bf58255a0f9d2ff93ba6",
+    "sha256": "0be535fec7137183b56474f82fb3d3982e3ef7bee516bf58255a0f9d2ff93ba6",
+    "file_name": "VanBanGoc_488694.pdf",
+    "path": "data/raw/appendix/02-2023-tt-byt/0be535fec7137183_VanBanGoc_488694.pdf",
+    "bytes": 1968544,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/160122/VanBanGoc_488694.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:26.976552+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "02-2023-tt-byt",
+        "file_name": "VanBanGoc_488694.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/160122/VanBanGoc_488694.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/0b/0be535fec7137183b56474f82fb3d3982e3ef7bee516bf58255a0f9d2ff93ba6",
+      "sha256": "0be535fec7137183b56474f82fb3d3982e3ef7bee516bf58255a0f9d2ff93ba6",
+      "bytes": 1968544,
+      "etag": "\"d7ab42156d08878044dc2cf521beab8b\"",
+      "verified_at": "2026-11-02T17:42:38.056132+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:cd1d2a1099e80ada583ed64bcd092e7056e6b2fecbfcff6d6a521c5a1a9525e8": {
+    "artifact_id": "sha256:cd1d2a1099e80ada583ed64bcd092e7056e6b2fecbfcff6d6a521c5a1a9525e8",
+    "sha256": "cd1d2a1099e80ada583ed64bcd092e7056e6b2fecbfcff6d6a521c5a1a9525e8",
+    "file_name": "02_2023_TT-BYT_488694.doc",
+    "path": "data/raw/appendix/02-2023-tt-byt/cd1d2a1099e80ada_02_2023_TT-BYT_488694.doc",
+    "bytes": 53248,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/160122/02_2023_TT-BYT_488694.doc/download",
+    "downloaded_at": "2026-11-02T16:47:28.658922+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "02-2023-tt-byt",
+        "file_name": "02_2023_TT-BYT_488694.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/160122/02_2023_TT-BYT_488694.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/cd/cd1d2a1099e80ada583ed64bcd092e7056e6b2fecbfcff6d6a521c5a1a9525e8",
+      "sha256": "cd1d2a1099e80ada583ed64bcd092e7056e6b2fecbfcff6d6a521c5a1a9525e8",
+      "bytes": 53248,
+      "etag": "\"43f37d964fa250c552c5e61de9e61a2b\"",
+      "verified_at": "2026-11-02T17:42:38.653341+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:d07295fff91e1ea4d4a6bdb0792f973bffe16692d8b210c1d132f6f73e0d55d3": {
+    "artifact_id": "sha256:d07295fff91e1ea4d4a6bdb0792f973bffe16692d8b210c1d132f6f73e0d55d3",
+    "sha256": "d07295fff91e1ea4d4a6bdb0792f973bffe16692d8b210c1d132f6f73e0d55d3",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/02-2024-tt-bldtbxh/d07295fff91e1ea4_vbpl_content.html",
+    "bytes": 258980,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-02-2024-tt-bldtbxh-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-21-2021-tt-bldtbxh-ngay-15-thang-12-nam-2021-cua-bo-truong-bo-lao-dong-thuong-binh-va-xa-hoi-quy-dinh-chi-tiet-mot-so-dieu-cua-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--166757",
+    "downloaded_at": "2026-11-02T16:47:27.818272+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "02-2024-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-02-2024-tt-bldtbxh-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-21-2021-tt-bldtbxh-ngay-15-thang-12-nam-2021-cua-bo-truong-bo-lao-dong-thuong-binh-va-xa-hoi-quy-dinh-chi-tiet-mot-so-dieu-cua-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--166757",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/d0/d07295fff91e1ea4d4a6bdb0792f973bffe16692d8b210c1d132f6f73e0d55d3",
+      "sha256": "d07295fff91e1ea4d4a6bdb0792f973bffe16692d8b210c1d132f6f73e0d55d3",
+      "bytes": 258980,
+      "etag": "\"f1de9744a715d0711ae26d248d8b4027\"",
+      "verified_at": "2026-11-02T17:42:39.136374+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:b3d6ef3564749853cd2176c33d1339996b6ae04b29400440f1cb5e2d39ec29a5": {
+    "artifact_id": "sha256:b3d6ef3564749853cd2176c33d1339996b6ae04b29400440f1cb5e2d39ec29a5",
+    "sha256": "b3d6ef3564749853cd2176c33d1339996b6ae04b29400440f1cb5e2d39ec29a5",
+    "file_name": "VanBanGoc_Thông tư-02-2024-TT-BLĐTBXH.pdf",
+    "path": "data/raw/appendix/02-2024-tt-bldtbxh/b3d6ef3564749853_VanBanGoc_Thông tư-02-2024-TT-BLĐTBXH.pdf",
+    "bytes": 839821,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/166757/VanBanGoc_Th%C3%B4ng%20t%C6%B0-02-2024-TT-BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:29.823021+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "02-2024-tt-bldtbxh",
+        "file_name": "VanBanGoc_Thông tư-02-2024-TT-BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/166757/VanBanGoc_Th%C3%B4ng%20t%C6%B0-02-2024-TT-BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/b3/b3d6ef3564749853cd2176c33d1339996b6ae04b29400440f1cb5e2d39ec29a5",
+      "sha256": "b3d6ef3564749853cd2176c33d1339996b6ae04b29400440f1cb5e2d39ec29a5",
+      "bytes": 839821,
+      "etag": "\"b034ab848eb16ca8214dc749b983cd7a\"",
+      "verified_at": "2026-11-02T17:42:39.552632+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:e490c67f9195dad14d287242354e07456bf2f5ab13cd43c8261b592f3ef8a55a": {
+    "artifact_id": "sha256:e490c67f9195dad14d287242354e07456bf2f5ab13cd43c8261b592f3ef8a55a",
+    "sha256": "e490c67f9195dad14d287242354e07456bf2f5ab13cd43c8261b592f3ef8a55a",
+    "file_name": "Thông tư-02-2024-TT-BLĐTBXH.docx",
+    "path": "data/raw/appendix/02-2024-tt-bldtbxh/e490c67f9195dad1_Thông tư-02-2024-TT-BLĐTBXH.docx",
+    "bytes": 121934,
+    "format": "zip",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/166757/Th%C3%B4ng%20t%C6%B0-02-2024-TT-BL%C4%90TBXH.docx/download",
+    "downloaded_at": "2026-11-02T16:47:31.668148+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "02-2024-tt-bldtbxh",
+        "file_name": "Thông tư-02-2024-TT-BLĐTBXH.docx",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/166757/Th%C3%B4ng%20t%C6%B0-02-2024-TT-BL%C4%90TBXH.docx/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/e4/e490c67f9195dad14d287242354e07456bf2f5ab13cd43c8261b592f3ef8a55a",
+      "sha256": "e490c67f9195dad14d287242354e07456bf2f5ab13cd43c8261b592f3ef8a55a",
+      "bytes": 121934,
+      "etag": "\"a4cdc0eb652b4a21d5090563bdb56e7c\"",
+      "verified_at": "2026-11-02T17:42:40.066533+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:eeccf77ef7c09a523963b77a1232d214b8906eefe4f8f619943e7dcd23372221": {
+    "artifact_id": "sha256:eeccf77ef7c09a523963b77a1232d214b8906eefe4f8f619943e7dcd23372221",
+    "sha256": "eeccf77ef7c09a523963b77a1232d214b8906eefe4f8f619943e7dcd23372221",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/03-2016-ttlt-bldtbxh-bqp-bca/eeccf77ef7c09a52_vbpl_content.html",
+    "bytes": 19316,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-lien-tich-so-03-2016-ttlt-bldtbxh-bqp-bca-huong-dan-thuc-hien-khoan-6-dieu-32-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-3-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep-ve-viec-thong-bao-bien-dong-lao-dong-lam-viec-tai-cac-don-vi-thuoc-bo-quoc-phong-bo-cong-an--117670",
+    "downloaded_at": "2026-11-02T16:47:30.760537+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "03-2016-ttlt-bldtbxh-bqp-bca",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-lien-tich-so-03-2016-ttlt-bldtbxh-bqp-bca-huong-dan-thuc-hien-khoan-6-dieu-32-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-3-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep-ve-viec-thong-bao-bien-dong-lao-dong-lam-viec-tai-cac-don-vi-thuoc-bo-quoc-phong-bo-cong-an--117670",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ee/eeccf77ef7c09a523963b77a1232d214b8906eefe4f8f619943e7dcd23372221",
+      "sha256": "eeccf77ef7c09a523963b77a1232d214b8906eefe4f8f619943e7dcd23372221",
+      "bytes": 19316,
+      "etag": "\"e527f767c9d384a11941497a82ebdd92\"",
+      "verified_at": "2026-11-02T17:42:40.648452+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:df0750bf9001700a5ddfddf80b72d809372ab9dba16a8bb9772426033d02bc50": {
+    "artifact_id": "sha256:df0750bf9001700a5ddfddf80b72d809372ab9dba16a8bb9772426033d02bc50",
+    "sha256": "df0750bf9001700a5ddfddf80b72d809372ab9dba16a8bb9772426033d02bc50",
+    "file_name": "VanBanGoc_TTLT03BLÐTBXH-BQP-BCA_2.pdf",
+    "path": "data/raw/appendix/03-2016-ttlt-bldtbxh-bqp-bca/df0750bf9001700a_VanBanGoc_TTLT03BLÐTBXH-BQP-BCA_2.pdf",
+    "bytes": 89870,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117670/VanBanGoc_TTLT03BL%C3%90TBXH-BQP-BCA_2.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:32.644716+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "03-2016-ttlt-bldtbxh-bqp-bca",
+        "file_name": "VanBanGoc_TTLT03BLÐTBXH-BQP-BCA_2.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117670/VanBanGoc_TTLT03BL%C3%90TBXH-BQP-BCA_2.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/df/df0750bf9001700a5ddfddf80b72d809372ab9dba16a8bb9772426033d02bc50",
+      "sha256": "df0750bf9001700a5ddfddf80b72d809372ab9dba16a8bb9772426033d02bc50",
+      "bytes": 89870,
+      "etag": "\"72e5e0a586fefbb94a773dd638fb846b\"",
+      "verified_at": "2026-11-02T17:42:41.116871+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:989a930fc20a310c1abf8a3fc1ab3d5043a96dec1ca689977f8e7e591383a8e4": {
+    "artifact_id": "sha256:989a930fc20a310c1abf8a3fc1ab3d5043a96dec1ca689977f8e7e591383a8e4",
+    "sha256": "989a930fc20a310c1abf8a3fc1ab3d5043a96dec1ca689977f8e7e591383a8e4",
+    "file_name": "03_2016_TTLT-BLDTBXH-BQP-BCA.doc",
+    "path": "data/raw/appendix/03-2016-ttlt-bldtbxh-bqp-bca/989a930fc20a310c_03_2016_TTLT-BLDTBXH-BQP-BCA.doc",
+    "bytes": 71168,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117670/03_2016_TTLT-BLDTBXH-BQP-BCA.doc/download",
+    "downloaded_at": "2026-11-02T16:47:34.658578+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "03-2016-ttlt-bldtbxh-bqp-bca",
+        "file_name": "03_2016_TTLT-BLDTBXH-BQP-BCA.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117670/03_2016_TTLT-BLDTBXH-BQP-BCA.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/98/989a930fc20a310c1abf8a3fc1ab3d5043a96dec1ca689977f8e7e591383a8e4",
+      "sha256": "989a930fc20a310c1abf8a3fc1ab3d5043a96dec1ca689977f8e7e591383a8e4",
+      "bytes": 71168,
+      "etag": "\"97f9572c87a0ad678905a0b4d6cc75a3\"",
+      "verified_at": "2026-11-02T17:42:41.456302+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:c88544d328ac1fe326aea5ce771c9e51d67165686e8cd679d78a6d4d0d3ab4b7": {
+    "artifact_id": "sha256:c88544d328ac1fe326aea5ce771c9e51d67165686e8cd679d78a6d4d0d3ab4b7",
+    "sha256": "c88544d328ac1fe326aea5ce771c9e51d67165686e8cd679d78a6d4d0d3ab4b7",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/09-2016-ttlt-bldtbxh-btc/c88544d328ac1fe3_vbpl_content.html",
+    "bytes": 60422,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-lien-tich-so-09-2016-ttlt-bldtbxh-btc-huong-dan-thuc-hien-mot-so-dieu-ve-ho-tro-dua-nguoi-lao-dong-di-lam-viec-o-nuoc-ngoai-theo-hop-dong-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--117778",
+    "downloaded_at": "2026-11-02T16:47:37.125397+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "09-2016-ttlt-bldtbxh-btc",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-lien-tich-so-09-2016-ttlt-bldtbxh-btc-huong-dan-thuc-hien-mot-so-dieu-ve-ho-tro-dua-nguoi-lao-dong-di-lam-viec-o-nuoc-ngoai-theo-hop-dong-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--117778",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/c8/c88544d328ac1fe326aea5ce771c9e51d67165686e8cd679d78a6d4d0d3ab4b7",
+      "sha256": "c88544d328ac1fe326aea5ce771c9e51d67165686e8cd679d78a6d4d0d3ab4b7",
+      "bytes": 60422,
+      "etag": "\"a696d5201972fa1530df3ce122b863f9\"",
+      "verified_at": "2026-11-02T17:42:42.055079+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f18f9b3a142932c034791f4f030f327c75aa37a6fd9c6d360ab72ded18059a1a": {
+    "artifact_id": "sha256:f18f9b3a142932c034791f4f030f327c75aa37a6fd9c6d360ab72ded18059a1a",
+    "sha256": "f18f9b3a142932c034791f4f030f327c75aa37a6fd9c6d360ab72ded18059a1a",
+    "file_name": "VanBanGoc_TT09BLDTBXH-BTC_2.pdf",
+    "path": "data/raw/appendix/09-2016-ttlt-bldtbxh-btc/f18f9b3a142932c0_VanBanGoc_TT09BLDTBXH-BTC_2.pdf",
+    "bytes": 189147,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117778/VanBanGoc_TT09BLDTBXH-BTC_2.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:37.746057+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2016-ttlt-bldtbxh-btc",
+        "file_name": "VanBanGoc_TT09BLDTBXH-BTC_2.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117778/VanBanGoc_TT09BLDTBXH-BTC_2.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f1/f18f9b3a142932c034791f4f030f327c75aa37a6fd9c6d360ab72ded18059a1a",
+      "sha256": "f18f9b3a142932c034791f4f030f327c75aa37a6fd9c6d360ab72ded18059a1a",
+      "bytes": 189147,
+      "etag": "\"ef67010b7ca03a841eecbe735fa86fa0\"",
+      "verified_at": "2026-11-02T17:42:42.318481+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:bd1ed4779da551f471732e5720afc7f69ec30e2a55141dfad07bc262131b6f62": {
+    "artifact_id": "sha256:bd1ed4779da551f471732e5720afc7f69ec30e2a55141dfad07bc262131b6f62",
+    "sha256": "bd1ed4779da551f471732e5720afc7f69ec30e2a55141dfad07bc262131b6f62",
+    "file_name": "09_2016_TTLT-BLDTBXH-BTC_293271.doc",
+    "path": "data/raw/appendix/09-2016-ttlt-bldtbxh-btc/bd1ed4779da551f4_09_2016_TTLT-BLDTBXH-BTC_293271.doc",
+    "bytes": 102400,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117778/09_2016_TTLT-BLDTBXH-BTC_293271.doc/download",
+    "downloaded_at": "2026-11-02T16:47:38.690699+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2016-ttlt-bldtbxh-btc",
+        "file_name": "09_2016_TTLT-BLDTBXH-BTC_293271.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117778/09_2016_TTLT-BLDTBXH-BTC_293271.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/bd/bd1ed4779da551f471732e5720afc7f69ec30e2a55141dfad07bc262131b6f62",
+      "sha256": "bd1ed4779da551f471732e5720afc7f69ec30e2a55141dfad07bc262131b6f62",
+      "bytes": 102400,
+      "etag": "\"5a49977637d22ffbde60210cc0fe3f30\"",
+      "verified_at": "2026-11-02T17:42:42.919927+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:fb638277a5b5288e6e006a7bd5d61345eee1166e0f5bf98130128c80ac0f9691": {
+    "artifact_id": "sha256:fb638277a5b5288e6e006a7bd5d61345eee1166e0f5bf98130128c80ac0f9691",
+    "sha256": "fb638277a5b5288e6e006a7bd5d61345eee1166e0f5bf98130128c80ac0f9691",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/08-2017-tt-bqp/fb638277a5b5288e_vbpl_content.html",
+    "bytes": 58985,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-08-2017-tt-bqp-quy-dinh-hoat-dong-kiem-dinh-ky-thuat-an-toan-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-trong-bo-quoc-phong--157193",
+    "downloaded_at": "2026-11-02T16:47:33.804406+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "08-2017-tt-bqp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-08-2017-tt-bqp-quy-dinh-hoat-dong-kiem-dinh-ky-thuat-an-toan-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-trong-bo-quoc-phong--157193",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/fb/fb638277a5b5288e6e006a7bd5d61345eee1166e0f5bf98130128c80ac0f9691",
+      "sha256": "fb638277a5b5288e6e006a7bd5d61345eee1166e0f5bf98130128c80ac0f9691",
+      "bytes": 58985,
+      "etag": "\"375a8724f60117b4bfbc49f61eef7245\"",
+      "verified_at": "2026-11-02T17:42:43.089506+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:a60bbc4ebfeb8d5a5408141b392a56aedcf3ed8bac2b069f465180a94674a9a2": {
+    "artifact_id": "sha256:a60bbc4ebfeb8d5a5408141b392a56aedcf3ed8bac2b069f465180a94674a9a2",
+    "sha256": "a60bbc4ebfeb8d5a5408141b392a56aedcf3ed8bac2b069f465180a94674a9a2",
+    "file_name": "VanBanGoc_08.2017.TT-BQP.pdf",
+    "path": "data/raw/appendix/08-2017-tt-bqp/a60bbc4ebfeb8d5a_VanBanGoc_08.2017.TT-BQP.pdf",
+    "bytes": 8105482,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157193/VanBanGoc_08.2017.TT-BQP.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:38.042548+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "08-2017-tt-bqp",
+        "file_name": "VanBanGoc_08.2017.TT-BQP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157193/VanBanGoc_08.2017.TT-BQP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/a6/a60bbc4ebfeb8d5a5408141b392a56aedcf3ed8bac2b069f465180a94674a9a2",
+      "sha256": "a60bbc4ebfeb8d5a5408141b392a56aedcf3ed8bac2b069f465180a94674a9a2",
+      "bytes": 8105482,
+      "etag": "\"c8fcb8dc362da3de388d2092e8ed7cba\"",
+      "verified_at": "2026-11-02T17:42:44.687845+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:938ee3af36ce870fa068da7f6195b80404231da5b2b91081c31cf84defeee13b": {
+    "artifact_id": "sha256:938ee3af36ce870fa068da7f6195b80404231da5b2b91081c31cf84defeee13b",
+    "sha256": "938ee3af36ce870fa068da7f6195b80404231da5b2b91081c31cf84defeee13b",
+    "file_name": "08.2017.TT-BQP.doc",
+    "path": "data/raw/appendix/08-2017-tt-bqp/938ee3af36ce870f_08.2017.TT-BQP.doc",
+    "bytes": 636416,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157193/08.2017.TT-BQP.doc/download",
+    "downloaded_at": "2026-11-02T16:47:39.798697+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "08-2017-tt-bqp",
+        "file_name": "08.2017.TT-BQP.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157193/08.2017.TT-BQP.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/93/938ee3af36ce870fa068da7f6195b80404231da5b2b91081c31cf84defeee13b",
+      "sha256": "938ee3af36ce870fa068da7f6195b80404231da5b2b91081c31cf84defeee13b",
+      "bytes": 636416,
+      "etag": "\"5b7fa426e5649e159d25c76d55fe4c1b\"",
+      "verified_at": "2026-11-02T17:42:44.287761+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:7c83d9503124d7d1a3d19d0a2e62352dd3f482aa361bcb45174a92cb3639de34": {
+    "artifact_id": "sha256:7c83d9503124d7d1a3d19d0a2e62352dd3f482aa361bcb45174a92cb3639de34",
+    "sha256": "7c83d9503124d7d1a3d19d0a2e62352dd3f482aa361bcb45174a92cb3639de34",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/10-2017-tt-bct/7c83d9503124d7d1_vbpl_content.html",
+    "bytes": 56131,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-10-2017-tt-bct-ngay-26-thang-7-nam-2017-cua-bo-truong-bo-cong-thuong-ban-hanh-quy-trinh-kiem-dinh-ky-thuat-an-toan-lao-dong-doi-voi-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-thuoc-tham-quyen-quan-ly-cua-bo-cong-thuong--157075",
+    "downloaded_at": "2026-11-02T16:47:41.789039+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "10-2017-tt-bct",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-10-2017-tt-bct-ngay-26-thang-7-nam-2017-cua-bo-truong-bo-cong-thuong-ban-hanh-quy-trinh-kiem-dinh-ky-thuat-an-toan-lao-dong-doi-voi-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-thuoc-tham-quyen-quan-ly-cua-bo-cong-thuong--157075",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/7c/7c83d9503124d7d1a3d19d0a2e62352dd3f482aa361bcb45174a92cb3639de34",
+      "sha256": "7c83d9503124d7d1a3d19d0a2e62352dd3f482aa361bcb45174a92cb3639de34",
+      "bytes": 56131,
+      "etag": "\"186dfa94428092d54da8967e009638a1\"",
+      "verified_at": "2026-11-02T17:42:45.423483+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:9042f78611b9f542035f61d5760fcc6feac2a782c176bf82f8d8732f86e975d9": {
+    "artifact_id": "sha256:9042f78611b9f542035f61d5760fcc6feac2a782c176bf82f8d8732f86e975d9",
+    "sha256": "9042f78611b9f542035f61d5760fcc6feac2a782c176bf82f8d8732f86e975d9",
+    "file_name": "VanBanGoc_thong-tu-10-2017-tt-bct-bo-cong-thuong.pdf",
+    "path": "data/raw/appendix/10-2017-tt-bct/9042f78611b9f542_VanBanGoc_thong-tu-10-2017-tt-bct-bo-cong-thuong.pdf",
+    "bytes": 3724581,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157075/VanBanGoc_thong-tu-10-2017-tt-bct-bo-cong-thuong.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:44.342035+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "10-2017-tt-bct",
+        "file_name": "VanBanGoc_thong-tu-10-2017-tt-bct-bo-cong-thuong.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/157075/VanBanGoc_thong-tu-10-2017-tt-bct-bo-cong-thuong.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/90/9042f78611b9f542035f61d5760fcc6feac2a782c176bf82f8d8732f86e975d9",
+      "sha256": "9042f78611b9f542035f61d5760fcc6feac2a782c176bf82f8d8732f86e975d9",
+      "bytes": 3724581,
+      "etag": "\"1e8f86738367caf0cd3481e258709c80\"",
+      "verified_at": "2026-11-02T17:42:45.948515+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:039e3ef1852c5f43dd8971baf09f5e1d409fcd0c157a0f981021f40aecf87029": {
+    "artifact_id": "sha256:039e3ef1852c5f43dd8971baf09f5e1d409fcd0c157a0f981021f40aecf87029",
+    "sha256": "039e3ef1852c5f43dd8971baf09f5e1d409fcd0c157a0f981021f40aecf87029",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/09-2023-tt-bldtbxh/039e3ef1852c5f43_vbpl_content.html",
+    "bytes": 807264,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2023-tt-bldtbxh-ban-hanh-dinh-muc-kinh-te-ky-thuat-ve-dao-tao-ngoai-ngu-cho-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--163048",
+    "downloaded_at": "2026-11-02T16:47:41.181170+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "09-2023-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-09-2023-tt-bldtbxh-ban-hanh-dinh-muc-kinh-te-ky-thuat-ve-dao-tao-ngoai-ngu-cho-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--163048",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/03/039e3ef1852c5f43dd8971baf09f5e1d409fcd0c157a0f981021f40aecf87029",
+      "sha256": "039e3ef1852c5f43dd8971baf09f5e1d409fcd0c157a0f981021f40aecf87029",
+      "bytes": 807264,
+      "etag": "\"948772e4f2e504a1d114fb442fc9585c\"",
+      "verified_at": "2026-11-02T17:42:46.819833+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:6810a8b3f269ec6ec23fc370929e04b1736b595a5d2e273a4b4f2009518c73c1": {
+    "artifact_id": "sha256:6810a8b3f269ec6ec23fc370929e04b1736b595a5d2e273a4b4f2009518c73c1",
+    "sha256": "6810a8b3f269ec6ec23fc370929e04b1736b595a5d2e273a4b4f2009518c73c1",
+    "file_name": "VanBanGoc_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.pdf",
+    "path": "data/raw/appendix/09-2023-tt-bldtbxh/6810a8b3f269ec6e_VanBanGoc_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.pdf",
+    "bytes": 1583317,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/163048/VanBanGoc_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:42.997402+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2023-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/163048/VanBanGoc_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/68/6810a8b3f269ec6ec23fc370929e04b1736b595a5d2e273a4b4f2009518c73c1",
+      "sha256": "6810a8b3f269ec6ec23fc370929e04b1736b595a5d2e273a4b4f2009518c73c1",
+      "bytes": 1583317,
+      "etag": "\"4beef480c35edc8e746550a86a5a3d7c\"",
+      "verified_at": "2026-11-02T17:42:46.854287+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:b062f25253b9802d441578acb79b31a1484f8de1634181aa5377f347f7fc2519": {
+    "artifact_id": "sha256:b062f25253b9802d441578acb79b31a1484f8de1634181aa5377f347f7fc2519",
+    "sha256": "b062f25253b9802d441578acb79b31a1484f8de1634181aa5377f347f7fc2519",
+    "file_name": "thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.doc",
+    "path": "data/raw/appendix/09-2023-tt-bldtbxh/b062f25253b9802d_thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.doc",
+    "bytes": 1055744,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/163048/thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.doc/download",
+    "downloaded_at": "2026-11-02T16:47:44.880178+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "09-2023-tt-bldtbxh",
+        "file_name": "thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/163048/thong-tu-09-2023-tt-bldtbxh-dao-tao-ngoai-ngu-cho-nld-vn-di-lam-viec-o-nuoc-ngoai.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/b0/b062f25253b9802d441578acb79b31a1484f8de1634181aa5377f347f7fc2519",
+      "sha256": "b062f25253b9802d441578acb79b31a1484f8de1634181aa5377f347f7fc2519",
+      "bytes": 1055744,
+      "etag": "\"2f06315310eaaef3158017dcb66aee9b\"",
+      "verified_at": "2026-11-02T17:42:47.896373+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f73a4e59c4f8975d62fd4259f9b2568d8b70908902b0aee01f4c9ed6a4d1b9ad": {
+    "artifact_id": "sha256:f73a4e59c4f8975d62fd4259f9b2568d8b70908902b0aee01f4c9ed6a4d1b9ad",
+    "sha256": "f73a4e59c4f8975d62fd4259f9b2568d8b70908902b0aee01f4c9ed6a4d1b9ad",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/11-2017-tt-bldtbxh/f73a4e59c4f8975d_vbpl_content.html",
+    "bytes": 208234,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-11-2017-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam-ve-chinh-sach-viec-lam-cong--120916",
+    "downloaded_at": "2026-11-02T16:47:46.795461+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "11-2017-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-11-2017-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam-ve-chinh-sach-viec-lam-cong--120916",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f7/f73a4e59c4f8975d62fd4259f9b2568d8b70908902b0aee01f4c9ed6a4d1b9ad",
+      "sha256": "f73a4e59c4f8975d62fd4259f9b2568d8b70908902b0aee01f4c9ed6a4d1b9ad",
+      "bytes": 208234,
+      "etag": "\"4603c144663372b391c4fc50d114ccc1\"",
+      "verified_at": "2026-11-02T17:42:47.717857+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:8f5c8d6b8bb7bede58ae390f60fc860db24263844536a98ca25160c88dfcb6b9": {
+    "artifact_id": "sha256:8f5c8d6b8bb7bede58ae390f60fc860db24263844536a98ca25160c88dfcb6b9",
+    "sha256": "8f5c8d6b8bb7bede58ae390f60fc860db24263844536a98ca25160c88dfcb6b9",
+    "file_name": "VanBanGoc_TT 11 BLDTBXH.pdf",
+    "path": "data/raw/appendix/11-2017-tt-bldtbxh/8f5c8d6b8bb7bede_VanBanGoc_TT 11 BLDTBXH.pdf",
+    "bytes": 115262,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/120916/VanBanGoc_TT%2011%20BLDTBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:48.698020+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "11-2017-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 11 BLDTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/120916/VanBanGoc_TT%2011%20BLDTBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/8f/8f5c8d6b8bb7bede58ae390f60fc860db24263844536a98ca25160c88dfcb6b9",
+      "sha256": "8f5c8d6b8bb7bede58ae390f60fc860db24263844536a98ca25160c88dfcb6b9",
+      "bytes": 115262,
+      "etag": "\"e248e71d45c94af20bc5bf9ff4d8820c\"",
+      "verified_at": "2026-11-02T17:42:48.615152+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:67146c33d77baa4c0d121214a35c53a819bc0568dd927384a61d98e3948daa2c": {
+    "artifact_id": "sha256:67146c33d77baa4c0d121214a35c53a819bc0568dd927384a61d98e3948daa2c",
+    "sha256": "67146c33d77baa4c0d121214a35c53a819bc0568dd927384a61d98e3948daa2c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/10-2020-tt-bldtbxh/67146c33d77baa4c_vbpl_content.html",
+    "bytes": 58762,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-10-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-khoan-sau-day-cua-bo-luat-lao-dong-ve-noi-dung-cua-hop-dong-lao-dong-hoi-dong-thuong-luong-tap-the-va-nghe-cong-viec-co-anh-huong-xau-toi-chuc-nang-sinh-san-nuoi-con--146696",
+    "downloaded_at": "2026-11-02T16:47:45.773441+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "10-2020-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-10-2020-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-khoan-sau-day-cua-bo-luat-lao-dong-ve-noi-dung-cua-hop-dong-lao-dong-hoi-dong-thuong-luong-tap-the-va-nghe-cong-viec-co-anh-huong-xau-toi-chuc-nang-sinh-san-nuoi-con--146696",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/67/67146c33d77baa4c0d121214a35c53a819bc0568dd927384a61d98e3948daa2c",
+      "sha256": "67146c33d77baa4c0d121214a35c53a819bc0568dd927384a61d98e3948daa2c",
+      "bytes": 58762,
+      "etag": "\"8b39186ec5608940447c36f41255b7d4\"",
+      "verified_at": "2026-11-02T17:42:48.707992+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:b2b7e891bec31090825b93cd4e3d582cb4c779d34aca5e32e5234d9023efc853": {
+    "artifact_id": "sha256:b2b7e891bec31090825b93cd4e3d582cb4c779d34aca5e32e5234d9023efc853",
+    "sha256": "b2b7e891bec31090825b93cd4e3d582cb4c779d34aca5e32e5234d9023efc853",
+    "file_name": "VanBanGoc_TT 10 2020 BLĐTBXH.pdf",
+    "path": "data/raw/appendix/10-2020-tt-bldtbxh/b2b7e891bec31090_VanBanGoc_TT 10 2020 BLĐTBXH.pdf",
+    "bytes": 711689,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/146696/VanBanGoc_TT%2010%202020%20BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:47.816251+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "10-2020-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 10 2020 BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/146696/VanBanGoc_TT%2010%202020%20BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/b2/b2b7e891bec31090825b93cd4e3d582cb4c779d34aca5e32e5234d9023efc853",
+      "sha256": "b2b7e891bec31090825b93cd4e3d582cb4c779d34aca5e32e5234d9023efc853",
+      "bytes": 711689,
+      "etag": "\"b150661b673a3bddf8541ffabf145fe1\"",
+      "verified_at": "2026-11-02T17:42:49.557706+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f51a7e2af8ac2f7bcd812d2f77a419f00acd25b1aaa2cb8084094428221c0849": {
+    "artifact_id": "sha256:f51a7e2af8ac2f7bcd812d2f77a419f00acd25b1aaa2cb8084094428221c0849",
+    "sha256": "f51a7e2af8ac2f7bcd812d2f77a419f00acd25b1aaa2cb8084094428221c0849",
+    "file_name": "10_2020_TT-BLDTBXH_454406.doc",
+    "path": "data/raw/appendix/10-2020-tt-bldtbxh/f51a7e2af8ac2f7b_10_2020_TT-BLDTBXH_454406.doc",
+    "bytes": 100864,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/146696/10_2020_TT-BLDTBXH_454406.doc/download",
+    "downloaded_at": "2026-11-02T16:47:49.697110+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "10-2020-tt-bldtbxh",
+        "file_name": "10_2020_TT-BLDTBXH_454406.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/146696/10_2020_TT-BLDTBXH_454406.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f5/f51a7e2af8ac2f7bcd812d2f77a419f00acd25b1aaa2cb8084094428221c0849",
+      "sha256": "f51a7e2af8ac2f7bcd812d2f77a419f00acd25b1aaa2cb8084094428221c0849",
+      "bytes": 100864,
+      "etag": "\"df4a78b9b5dfcb68f85779db0104296f\"",
+      "verified_at": "2026-11-02T17:42:49.712420+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:32ab0f5ab1598d91eef6a1fb3d2dd680fda69781e6ab474faa05802466c0754d": {
+    "artifact_id": "sha256:32ab0f5ab1598d91eef6a1fb3d2dd680fda69781e6ab474faa05802466c0754d",
+    "sha256": "32ab0f5ab1598d91eef6a1fb3d2dd680fda69781e6ab474faa05802466c0754d",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/112-2021-nd-cp/32ab0f5ab1598d91_vbpl_content.html",
+    "bytes": 492231,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-112-2021-nd-cp-quy-dinh-chi-tiet-mot-so-dieu-va-bien-phap-thi-hanh-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--152929",
+    "downloaded_at": "2026-11-02T16:47:50.956311+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "112-2021-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-112-2021-nd-cp-quy-dinh-chi-tiet-mot-so-dieu-va-bien-phap-thi-hanh-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong--152929",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/32/32ab0f5ab1598d91eef6a1fb3d2dd680fda69781e6ab474faa05802466c0754d",
+      "sha256": "32ab0f5ab1598d91eef6a1fb3d2dd680fda69781e6ab474faa05802466c0754d",
+      "bytes": 492231,
+      "etag": "\"d16d2fc29251666e9c9f70cd4db70c2b\"",
+      "verified_at": "2026-11-02T17:42:50.463922+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:dd836f1d270ce511bc55e47a3f3bd84813afbf812a660ef64fa544df4fb4c0f2": {
+    "artifact_id": "sha256:dd836f1d270ce511bc55e47a3f3bd84813afbf812a660ef64fa544df4fb4c0f2",
+    "sha256": "dd836f1d270ce511bc55e47a3f3bd84813afbf812a660ef64fa544df4fb4c0f2",
+    "file_name": "VanBanGoc_112.signed.pdf",
+    "path": "data/raw/appendix/112-2021-nd-cp/dd836f1d270ce511_VanBanGoc_112.signed.pdf",
+    "bytes": 1741955,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152929/VanBanGoc_112.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:53.028898+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "112-2021-nd-cp",
+        "file_name": "VanBanGoc_112.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152929/VanBanGoc_112.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/dd/dd836f1d270ce511bc55e47a3f3bd84813afbf812a660ef64fa544df4fb4c0f2",
+      "sha256": "dd836f1d270ce511bc55e47a3f3bd84813afbf812a660ef64fa544df4fb4c0f2",
+      "bytes": 1741955,
+      "etag": "\"77511ef949db7c223a6d112fd3df7328\"",
+      "verified_at": "2026-11-02T17:42:50.737753+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:a67a15d804bed0edb1dbabd994129c84d0aa11426207df7d682555d9aea83e56": {
+    "artifact_id": "sha256:a67a15d804bed0edb1dbabd994129c84d0aa11426207df7d682555d9aea83e56",
+    "sha256": "a67a15d804bed0edb1dbabd994129c84d0aa11426207df7d682555d9aea83e56",
+    "file_name": "112_2021_ND-CP_482323.doc",
+    "path": "data/raw/appendix/112-2021-nd-cp/a67a15d804bed0ed_112_2021_ND-CP_482323.doc",
+    "bytes": 291328,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152929/112_2021_ND-CP_482323.doc/download",
+    "downloaded_at": "2026-11-02T16:47:54.743876+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "112-2021-nd-cp",
+        "file_name": "112_2021_ND-CP_482323.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152929/112_2021_ND-CP_482323.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/a6/a67a15d804bed0edb1dbabd994129c84d0aa11426207df7d682555d9aea83e56",
+      "sha256": "a67a15d804bed0edb1dbabd994129c84d0aa11426207df7d682555d9aea83e56",
+      "bytes": 291328,
+      "etag": "\"9bb987d4e7bc0f1ef3bdf715ef290e9c\"",
+      "verified_at": "2026-11-02T17:42:51.443596+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:60fa9eceb580a569e199d32f537e7599dd7a4e5385f783de77998f4679535370": {
+    "artifact_id": "sha256:60fa9eceb580a569e199d32f537e7599dd7a4e5385f783de77998f4679535370",
+    "sha256": "60fa9eceb580a569e199d32f537e7599dd7a4e5385f783de77998f4679535370",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/135-2020-nd-cp/60fa9eceb580a569_vbpl_content.html",
+    "bytes": 95070,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu--152734",
+    "downloaded_at": "2026-11-02T16:47:51.827260+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "135-2020-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu--152734",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/60/60fa9eceb580a569e199d32f537e7599dd7a4e5385f783de77998f4679535370",
+      "sha256": "60fa9eceb580a569e199d32f537e7599dd7a4e5385f783de77998f4679535370",
+      "bytes": 95070,
+      "etag": "\"91f710d096b95ed5609748fae1f238f8\"",
+      "verified_at": "2026-11-02T17:42:51.636799+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:0c11ba5832889801e4ed24f56ada90f60697a440834656e1c618eaae935344c4": {
+    "artifact_id": "sha256:0c11ba5832889801e4ed24f56ada90f60697a440834656e1c618eaae935344c4",
+    "sha256": "0c11ba5832889801e4ed24f56ada90f60697a440834656e1c618eaae935344c4",
+    "file_name": "VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf",
+    "path": "data/raw/appendix/135-2020-nd-cp/0c11ba5832889801_VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf",
+    "bytes": 622897,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152734/VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf/download",
+    "downloaded_at": "2026-11-02T16:47:53.799092+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "135-2020-nd-cp",
+        "file_name": "VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152734/VanBanGoc_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/0c/0c11ba5832889801e4ed24f56ada90f60697a440834656e1c618eaae935344c4",
+      "sha256": "0c11ba5832889801e4ed24f56ada90f60697a440834656e1c618eaae935344c4",
+      "bytes": 622897,
+      "etag": "\"128b82e795a84fea7a6374ac14d14094\"",
+      "verified_at": "2026-11-02T17:42:52.409600+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:509d8fed89402d559ccfc46d55662d2f53f0c375b130d8b8435b41030db7665a": {
+    "artifact_id": "sha256:509d8fed89402d559ccfc46d55662d2f53f0c375b130d8b8435b41030db7665a",
+    "sha256": "509d8fed89402d559ccfc46d55662d2f53f0c375b130d8b8435b41030db7665a",
+    "file_name": "nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.doc",
+    "path": "data/raw/appendix/135-2020-nd-cp/509d8fed89402d55_nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.doc",
+    "bytes": 539136,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152734/nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.doc/download",
+    "downloaded_at": "2026-11-02T16:47:55.783703+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "135-2020-nd-cp",
+        "file_name": "nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152734/nghi-dinh-135-2020-nd-cp-quy-dinh-ve-tuoi-nghi-huu.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/50/509d8fed89402d559ccfc46d55662d2f53f0c375b130d8b8435b41030db7665a",
+      "sha256": "509d8fed89402d559ccfc46d55662d2f53f0c375b130d8b8435b41030db7665a",
+      "bytes": 539136,
+      "etag": "\"baf410bd573eda68e2fab2ca31b618f3\"",
+      "verified_at": "2026-11-02T17:42:52.924805+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:e22defd0b0ce6a09e83c24ecd634bde9dc7e2368c390d7f0223423ce1125c417": {
+    "artifact_id": "sha256:e22defd0b0ce6a09e83c24ecd634bde9dc7e2368c390d7f0223423ce1125c417",
+    "sha256": "e22defd0b0ce6a09e83c24ecd634bde9dc7e2368c390d7f0223423ce1125c417",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/145-2020-nd-cp/e22defd0b0ce6a09_vbpl_content.html",
+    "bytes": 758074,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-145-2020-nd-cp-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-dieu-kien-lao-dong-va-quan-he-lao-dong--152668",
+    "downloaded_at": "2026-11-02T16:47:57.107790+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "145-2020-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-145-2020-nd-cp-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-bo-luat-lao-dong-ve-dieu-kien-lao-dong-va-quan-he-lao-dong--152668",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/e2/e22defd0b0ce6a09e83c24ecd634bde9dc7e2368c390d7f0223423ce1125c417",
+      "sha256": "e22defd0b0ce6a09e83c24ecd634bde9dc7e2368c390d7f0223423ce1125c417",
+      "bytes": 758074,
+      "etag": "\"a385cb422d4bcfaa252b8db135e2ac52\"",
+      "verified_at": "2026-11-02T17:42:53.324069+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:9def8ed628fb0e4fb48482e00c902cddaa0514e776da4c93647d07b93b57c8b4": {
+    "artifact_id": "sha256:9def8ed628fb0e4fb48482e00c902cddaa0514e776da4c93647d07b93b57c8b4",
+    "sha256": "9def8ed628fb0e4fb48482e00c902cddaa0514e776da4c93647d07b93b57c8b4",
+    "file_name": "VanBanGoc_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.pdf",
+    "path": "data/raw/appendix/145-2020-nd-cp/9def8ed628fb0e4f_VanBanGoc_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.pdf",
+    "bytes": 12194854,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152668/VanBanGoc_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:02.689254+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "145-2020-nd-cp",
+        "file_name": "VanBanGoc_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152668/VanBanGoc_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/9d/9def8ed628fb0e4fb48482e00c902cddaa0514e776da4c93647d07b93b57c8b4",
+      "sha256": "9def8ed628fb0e4fb48482e00c902cddaa0514e776da4c93647d07b93b57c8b4",
+      "bytes": 12194854,
+      "etag": "\"eaa002c2afdefd04d66be3640b4e5ed6\"",
+      "verified_at": "2026-11-02T17:42:55.405250+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ca743f29c3fbd313adb8b6851edbb50660891a1e42e452638e41b83f683aaba6": {
+    "artifact_id": "sha256:ca743f29c3fbd313adb8b6851edbb50660891a1e42e452638e41b83f683aaba6",
+    "sha256": "ca743f29c3fbd313adb8b6851edbb50660891a1e42e452638e41b83f683aaba6",
+    "file_name": "nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.doc",
+    "path": "data/raw/appendix/145-2020-nd-cp/ca743f29c3fbd313_nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.doc",
+    "bytes": 1478656,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152668/nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.doc/download",
+    "downloaded_at": "2026-11-02T16:48:03.188454+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "145-2020-nd-cp",
+        "file_name": "nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152668/nghi-dinh-145-2020-huong-dan-thi-hanh-dieu-kien-lao-dong-va-quan-he-lao-dong.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ca/ca743f29c3fbd313adb8b6851edbb50660891a1e42e452638e41b83f683aaba6",
+      "sha256": "ca743f29c3fbd313adb8b6851edbb50660891a1e42e452638e41b83f683aaba6",
+      "bytes": 1478656,
+      "etag": "\"d0220a2568fd7ffac8ace2ea229ab7b8\"",
+      "verified_at": "2026-11-02T17:42:54.584974+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:be891cd3255063503a16832c41838317a63030a4992fd304c3606128139b15f9": {
+    "artifact_id": "sha256:be891cd3255063503a16832c41838317a63030a4992fd304c3606128139b15f9",
+    "sha256": "be891cd3255063503a16832c41838317a63030a4992fd304c3606128139b15f9",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/152-2020-nd-cp/be891cd325506350_vbpl_content.html",
+    "bytes": 149085,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-152-2020-nd-cp-quy-dinh-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam-va-tuyen-dung-quan-ly-nguoi-lao-dong-viet-nam-lam-viec-cho-to-chuc-ca-nhan-nuoc-ngoai-tai-viet-nam--152669",
+    "downloaded_at": "2026-11-02T16:47:57.930055+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "152-2020-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-152-2020-nd-cp-quy-dinh-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam-va-tuyen-dung-quan-ly-nguoi-lao-dong-viet-nam-lam-viec-cho-to-chuc-ca-nhan-nuoc-ngoai-tai-viet-nam--152669",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/be/be891cd3255063503a16832c41838317a63030a4992fd304c3606128139b15f9",
+      "sha256": "be891cd3255063503a16832c41838317a63030a4992fd304c3606128139b15f9",
+      "bytes": 149085,
+      "etag": "\"da311d07e0c5e504cc50a96735128e5b\"",
+      "verified_at": "2026-11-02T17:42:55.406258+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:04a7efb9b0fec468db6fcf3dd360278f6debcc8e37b5f79230317d9e9bdc64e6": {
+    "artifact_id": "sha256:04a7efb9b0fec468db6fcf3dd360278f6debcc8e37b5f79230317d9e9bdc64e6",
+    "sha256": "04a7efb9b0fec468db6fcf3dd360278f6debcc8e37b5f79230317d9e9bdc64e6",
+    "file_name": "VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf",
+    "path": "data/raw/appendix/152-2020-nd-cp/04a7efb9b0fec468_VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf",
+    "bytes": 6455492,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152669/VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:03.062930+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "152-2020-nd-cp",
+        "file_name": "VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152669/VanBanGoc_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/04/04a7efb9b0fec468db6fcf3dd360278f6debcc8e37b5f79230317d9e9bdc64e6",
+      "sha256": "04a7efb9b0fec468db6fcf3dd360278f6debcc8e37b5f79230317d9e9bdc64e6",
+      "bytes": 6455492,
+      "etag": "\"e06924eb020823e0f9a0e5632fbfde2b\"",
+      "verified_at": "2026-11-02T17:42:56.917168+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:9b9972ee8dcce6f6e61b7aa53ec9abe25ec4184a912801378cd6c977e202a24e": {
+    "artifact_id": "sha256:9b9972ee8dcce6f6e61b7aa53ec9abe25ec4184a912801378cd6c977e202a24e",
+    "sha256": "9b9972ee8dcce6f6e61b7aa53ec9abe25ec4184a912801378cd6c977e202a24e",
+    "file_name": "nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+    "path": "data/raw/appendix/152-2020-nd-cp/9b9972ee8dcce6f6_nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+    "bytes": 1894912,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152669/nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.doc/download",
+    "downloaded_at": "2026-11-02T16:48:04.334656+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "152-2020-nd-cp",
+        "file_name": "nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152669/nghi-dinh-152-2020-nd-cp-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/9b/9b9972ee8dcce6f6e61b7aa53ec9abe25ec4184a912801378cd6c977e202a24e",
+      "sha256": "9b9972ee8dcce6f6e61b7aa53ec9abe25ec4184a912801378cd6c977e202a24e",
+      "bytes": 1894912,
+      "etag": "\"921a0afc0d95810effac8a09b0600c55\"",
+      "verified_at": "2026-11-02T17:42:56.501717+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:3b39fa97e8174d733b70a7aa6ae783ae3cce977f3cb377182a822549e130cef6": {
+    "artifact_id": "sha256:3b39fa97e8174d733b70a7aa6ae783ae3cce977f3cb377182a822549e130cef6",
+    "sha256": "3b39fa97e8174d733b70a7aa6ae783ae3cce977f3cb377182a822549e130cef6",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/16-2022-tt-bldtbxh/3b39fa97e8174d73_vbpl_content.html",
+    "bytes": 87100,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-16-2022-tt-bldtbxh-ban-hanh-chuong-trinh-dao-tao-ve-nghiep-vu-danh-gia-ky-nang-nghe-quoc-gia--156059",
+    "downloaded_at": "2026-11-02T16:48:04.912750+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "16-2022-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-16-2022-tt-bldtbxh-ban-hanh-chuong-trinh-dao-tao-ve-nghiep-vu-danh-gia-ky-nang-nghe-quoc-gia--156059",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/3b/3b39fa97e8174d733b70a7aa6ae783ae3cce977f3cb377182a822549e130cef6",
+      "sha256": "3b39fa97e8174d733b70a7aa6ae783ae3cce977f3cb377182a822549e130cef6",
+      "bytes": 87100,
+      "etag": "\"c737af9e9a7373b87d8499c7bf0f4c2d\"",
+      "verified_at": "2026-11-02T17:42:57.296601+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:682c0b592efddc5fec96d65487c80905b695a1acfc6e7b2178cd08fc5467389f": {
+    "artifact_id": "sha256:682c0b592efddc5fec96d65487c80905b695a1acfc6e7b2178cd08fc5467389f",
+    "sha256": "682c0b592efddc5fec96d65487c80905b695a1acfc6e7b2178cd08fc5467389f",
+    "file_name": "VanBanGoc_thong-tu-16-2022-tt-bldtbxh.pdf",
+    "path": "data/raw/appendix/16-2022-tt-bldtbxh/682c0b592efddc5f_VanBanGoc_thong-tu-16-2022-tt-bldtbxh.pdf",
+    "bytes": 1913590,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/156059/VanBanGoc_thong-tu-16-2022-tt-bldtbxh.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:07.495420+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "16-2022-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-16-2022-tt-bldtbxh.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/156059/VanBanGoc_thong-tu-16-2022-tt-bldtbxh.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/68/682c0b592efddc5fec96d65487c80905b695a1acfc6e7b2178cd08fc5467389f",
+      "sha256": "682c0b592efddc5fec96d65487c80905b695a1acfc6e7b2178cd08fc5467389f",
+      "bytes": 1913590,
+      "etag": "\"dd308702a588dd4027ff005f8e2ac112\"",
+      "verified_at": "2026-11-02T17:42:58.110366+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:85bc9dd63649eefa45319dbf0d6cb2c32ef8b7a2061bb86ad08cb38567cbbc15": {
+    "artifact_id": "sha256:85bc9dd63649eefa45319dbf0d6cb2c32ef8b7a2061bb86ad08cb38567cbbc15",
+    "sha256": "85bc9dd63649eefa45319dbf0d6cb2c32ef8b7a2061bb86ad08cb38567cbbc15",
+    "file_name": "thong-tu-16-2022-tt-bldtbxh.doc",
+    "path": "data/raw/appendix/16-2022-tt-bldtbxh/85bc9dd63649eefa_thong-tu-16-2022-tt-bldtbxh.doc",
+    "bytes": 243200,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/156059/thong-tu-16-2022-tt-bldtbxh.doc/download",
+    "downloaded_at": "2026-11-02T16:48:08.852417+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "16-2022-tt-bldtbxh",
+        "file_name": "thong-tu-16-2022-tt-bldtbxh.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/156059/thong-tu-16-2022-tt-bldtbxh.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/85/85bc9dd63649eefa45319dbf0d6cb2c32ef8b7a2061bb86ad08cb38567cbbc15",
+      "sha256": "85bc9dd63649eefa45319dbf0d6cb2c32ef8b7a2061bb86ad08cb38567cbbc15",
+      "bytes": 243200,
+      "etag": "\"c05b6559e21d88ff566b8de435218f7c\"",
+      "verified_at": "2026-11-02T17:42:58.112369+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:1b971d160950f037aba8d4705e58df859b132f286a8d8f15b077ddc12d5be1f6": {
+    "artifact_id": "sha256:1b971d160950f037aba8d4705e58df859b132f286a8d8f15b077ddc12d5be1f6",
+    "sha256": "1b971d160950f037aba8d4705e58df859b132f286a8d8f15b077ddc12d5be1f6",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/17-2023-tt-bldtbxh/1b971d160950f037_vbpl_content.html",
+    "bytes": 27820,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-17-2023-tt-bldtbxh-huong-dan-viec-uy-quyen-thuc-hien-nhiem-vu-quan-ly-nha-nuoc-ve-lao-dong-trong-cac-khu-cong-nghiep-khu-kinh-te--167029",
+    "downloaded_at": "2026-11-02T16:48:05.871245+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "17-2023-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-17-2023-tt-bldtbxh-huong-dan-viec-uy-quyen-thuc-hien-nhiem-vu-quan-ly-nha-nuoc-ve-lao-dong-trong-cac-khu-cong-nghiep-khu-kinh-te--167029",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/1b/1b971d160950f037aba8d4705e58df859b132f286a8d8f15b077ddc12d5be1f6",
+      "sha256": "1b971d160950f037aba8d4705e58df859b132f286a8d8f15b077ddc12d5be1f6",
+      "bytes": 27820,
+      "etag": "\"c7e60d1ab58c7d215d291562977a689b\"",
+      "verified_at": "2026-11-02T17:42:58.996853+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:eae31ff22696f5003c32bb4a59cbfc2ee7cd6cfff43da6c23f970b4335ceb39c": {
+    "artifact_id": "sha256:eae31ff22696f5003c32bb4a59cbfc2ee7cd6cfff43da6c23f970b4335ceb39c",
+    "sha256": "eae31ff22696f5003c32bb4a59cbfc2ee7cd6cfff43da6c23f970b4335ceb39c",
+    "file_name": "VanBanGoc_Thông tư-17-2023-TT-BLĐTBXH.pdf",
+    "path": "data/raw/appendix/17-2023-tt-bldtbxh/eae31ff22696f500_VanBanGoc_Thông tư-17-2023-TT-BLĐTBXH.pdf",
+    "bytes": 2938757,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/167029/VanBanGoc_Th%C3%B4ng%20t%C6%B0-17-2023-TT-BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:08.429740+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "17-2023-tt-bldtbxh",
+        "file_name": "VanBanGoc_Thông tư-17-2023-TT-BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/167029/VanBanGoc_Th%C3%B4ng%20t%C6%B0-17-2023-TT-BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ea/eae31ff22696f5003c32bb4a59cbfc2ee7cd6cfff43da6c23f970b4335ceb39c",
+      "sha256": "eae31ff22696f5003c32bb4a59cbfc2ee7cd6cfff43da6c23f970b4335ceb39c",
+      "bytes": 2938757,
+      "etag": "\"7546b48d24201906953db2b068d73be2\"",
+      "verified_at": "2026-11-02T17:42:59.987922+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ef6e0b283b9e484ca0a93fa56360519d6fedb449d9a1900b1667d4761636a066": {
+    "artifact_id": "sha256:ef6e0b283b9e484ca0a93fa56360519d6fedb449d9a1900b1667d4761636a066",
+    "sha256": "ef6e0b283b9e484ca0a93fa56360519d6fedb449d9a1900b1667d4761636a066",
+    "file_name": "Thông tư-17-2023-TT-BLĐTBXH.docx",
+    "path": "data/raw/appendix/17-2023-tt-bldtbxh/ef6e0b283b9e484c_Thông tư-17-2023-TT-BLĐTBXH.docx",
+    "bytes": 54388,
+    "format": "zip",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/167029/Th%C3%B4ng%20t%C6%B0-17-2023-TT-BL%C4%90TBXH.docx/download",
+    "downloaded_at": "2026-11-02T16:48:09.788417+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "17-2023-tt-bldtbxh",
+        "file_name": "Thông tư-17-2023-TT-BLĐTBXH.docx",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/167029/Th%C3%B4ng%20t%C6%B0-17-2023-TT-BL%C4%90TBXH.docx/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ef/ef6e0b283b9e484ca0a93fa56360519d6fedb449d9a1900b1667d4761636a066",
+      "sha256": "ef6e0b283b9e484ca0a93fa56360519d6fedb449d9a1900b1667d4761636a066",
+      "bytes": 54388,
+      "etag": "\"9fde158c4ff7a6d5622d0120ad54da2e\"",
+      "verified_at": "2026-11-02T17:42:59.857889+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:b926f979c7837331446ca7e45f77e6f1c39331ca6e4ba15197d5d3b51d25c811": {
+    "artifact_id": "sha256:b926f979c7837331446ca7e45f77e6f1c39331ca6e4ba15197d5d3b51d25c811",
+    "sha256": "b926f979c7837331446ca7e45f77e6f1c39331ca6e4ba15197d5d3b51d25c811",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/18-2021-tt-bldtbxh/b926f979c7837331_vbpl_content.html",
+    "bytes": 97589,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-18-2021-tt-bldtbxh-quy-dinh-ve-thoi-gio-lam-viec-thoi-gio-nghi-ngoi-doi-voi-nguoi-lao-dong-lam-cac-cong-viec-san-xuat-co-tinh-thoi-vu-cong-viec-gia-cong-theo-don-dat-hang--153297",
+    "downloaded_at": "2026-11-02T16:48:10.910888+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "18-2021-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-18-2021-tt-bldtbxh-quy-dinh-ve-thoi-gio-lam-viec-thoi-gio-nghi-ngoi-doi-voi-nguoi-lao-dong-lam-cac-cong-viec-san-xuat-co-tinh-thoi-vu-cong-viec-gia-cong-theo-don-dat-hang--153297",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/b9/b926f979c7837331446ca7e45f77e6f1c39331ca6e4ba15197d5d3b51d25c811",
+      "sha256": "b926f979c7837331446ca7e45f77e6f1c39331ca6e4ba15197d5d3b51d25c811",
+      "bytes": 97589,
+      "etag": "\"4afe9c287b86d3958afbb8ae9a1d4f74\"",
+      "verified_at": "2026-11-02T17:43:00.706272+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:dac0bce70e502e765045a6bd4c95719515b0b802f83a2cf424432758115d740f": {
+    "artifact_id": "sha256:dac0bce70e502e765045a6bd4c95719515b0b802f83a2cf424432758115d740f",
+    "sha256": "dac0bce70e502e765045a6bd4c95719515b0b802f83a2cf424432758115d740f",
+    "file_name": "VanBanGoc_TT 18.2021.pdf",
+    "path": "data/raw/appendix/18-2021-tt-bldtbxh/dac0bce70e502e76_VanBanGoc_TT 18.2021.pdf",
+    "bytes": 1063192,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153297/VanBanGoc_TT%2018.2021.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:13.169362+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "18-2021-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 18.2021.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/153297/VanBanGoc_TT%2018.2021.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/da/dac0bce70e502e765045a6bd4c95719515b0b802f83a2cf424432758115d740f",
+      "sha256": "dac0bce70e502e765045a6bd4c95719515b0b802f83a2cf424432758115d740f",
+      "bytes": 1063192,
+      "etag": "\"4102eb03a69a516a1eadc3f632c3829e\"",
+      "verified_at": "2026-11-02T17:43:01.099044+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:7aa550baa004ae43f30b48d964dae2e663b9a01dfe416f9956deeabb562933ce": {
+    "artifact_id": "sha256:7aa550baa004ae43f30b48d964dae2e663b9a01dfe416f9956deeabb562933ce",
+    "sha256": "7aa550baa004ae43f30b48d964dae2e663b9a01dfe416f9956deeabb562933ce",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/19-2016-tt-bldtbxh/7aa550baa004ae43_vbpl_content.html",
+    "bytes": 114353,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2016-tt-bldtbxh-huong-dan-thi-hanh-mot-so-dieu-cua-nghi-dinh-so-31-2015-nd-cp-ngay-24-3-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-danh-gia-cap-chung-chi-ky-nang-nghe-quoc-gia--117819",
+    "downloaded_at": "2026-11-02T16:48:12.042429+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "19-2016-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2016-tt-bldtbxh-huong-dan-thi-hanh-mot-so-dieu-cua-nghi-dinh-so-31-2015-nd-cp-ngay-24-3-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-danh-gia-cap-chung-chi-ky-nang-nghe-quoc-gia--117819",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/7a/7aa550baa004ae43f30b48d964dae2e663b9a01dfe416f9956deeabb562933ce",
+      "sha256": "7aa550baa004ae43f30b48d964dae2e663b9a01dfe416f9956deeabb562933ce",
+      "bytes": 114353,
+      "etag": "\"2c440963365be299e0a412eb792be927\"",
+      "verified_at": "2026-11-02T17:43:01.756901+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f3ef55164b9a866e057f5577d3e4b36110bd854a9401878440e322dbf4019ded": {
+    "artifact_id": "sha256:f3ef55164b9a866e057f5577d3e4b36110bd854a9401878440e322dbf4019ded",
+    "sha256": "f3ef55164b9a866e057f5577d3e4b36110bd854a9401878440e322dbf4019ded",
+    "file_name": "VanBanGoc_TT19BLÐTBXH.pdf",
+    "path": "data/raw/appendix/19-2016-tt-bldtbxh/f3ef55164b9a866e_VanBanGoc_TT19BLÐTBXH.pdf",
+    "bytes": 600620,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117819/VanBanGoc_TT19BL%C3%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:13.895777+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "19-2016-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT19BLÐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117819/VanBanGoc_TT19BL%C3%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f3/f3ef55164b9a866e057f5577d3e4b36110bd854a9401878440e322dbf4019ded",
+      "sha256": "f3ef55164b9a866e057f5577d3e4b36110bd854a9401878440e322dbf4019ded",
+      "bytes": 600620,
+      "etag": "\"f91e51e1bb75cdf3eb041076def6e91e\"",
+      "verified_at": "2026-11-02T17:43:02.213135+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f53796cf3659885cb6a7f25095227ebb57cca25cde523914f9410fb45a780408": {
+    "artifact_id": "sha256:f53796cf3659885cb6a7f25095227ebb57cca25cde523914f9410fb45a780408",
+    "sha256": "f53796cf3659885cb6a7f25095227ebb57cca25cde523914f9410fb45a780408",
+    "file_name": "19_2016_TT-BLDTBXH_322551.doc",
+    "path": "data/raw/appendix/19-2016-tt-bldtbxh/f53796cf3659885c_19_2016_TT-BLDTBXH_322551.doc",
+    "bytes": 473088,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117819/19_2016_TT-BLDTBXH_322551.doc/download",
+    "downloaded_at": "2026-11-02T16:48:15.878454+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "19-2016-tt-bldtbxh",
+        "file_name": "19_2016_TT-BLDTBXH_322551.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117819/19_2016_TT-BLDTBXH_322551.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f5/f53796cf3659885cb6a7f25095227ebb57cca25cde523914f9410fb45a780408",
+      "sha256": "f53796cf3659885cb6a7f25095227ebb57cca25cde523914f9410fb45a780408",
+      "bytes": 473088,
+      "etag": "\"abe418550e8b6a138488dbfb58ffedf3\"",
+      "verified_at": "2026-11-02T17:43:02.559575+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:a8406473dc20005b7fcd58895b26616ac229b114d354e7009f8df4fb0c9b2b3a": {
+    "artifact_id": "sha256:a8406473dc20005b7fcd58895b26616ac229b114d354e7009f8df4fb0c9b2b3a",
+    "sha256": "a8406473dc20005b7fcd58895b26616ac229b114d354e7009f8df4fb0c9b2b3a",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/19-2021-tt-bldtbxh/a8406473dc20005b_vbpl_content.html",
+    "bytes": 78871,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2021-tt-bldtbxh-ban-hanh-danh-muc-vung-co-dieu-kien-kinh-te-xa-hoi-dac-biet-kho-khan-lam-co-so-xac-dinh-cac-truong-hop-co-the-nghi-huu-o-tuoi-thap-hon-tuoi-nghi-huu-trong-dieu-kien-lao-dong-binh-thuong--152735",
+    "downloaded_at": "2026-11-02T16:48:17.009282+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "19-2021-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2021-tt-bldtbxh-ban-hanh-danh-muc-vung-co-dieu-kien-kinh-te-xa-hoi-dac-biet-kho-khan-lam-co-so-xac-dinh-cac-truong-hop-co-the-nghi-huu-o-tuoi-thap-hon-tuoi-nghi-huu-trong-dieu-kien-lao-dong-binh-thuong--152735",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/a8/a8406473dc20005b7fcd58895b26616ac229b114d354e7009f8df4fb0c9b2b3a",
+      "sha256": "a8406473dc20005b7fcd58895b26616ac229b114d354e7009f8df4fb0c9b2b3a",
+      "bytes": 78871,
+      "etag": "\"4adf9d3a187c20e39b8cdb0cac87276a\"",
+      "verified_at": "2026-11-02T17:43:03.479943+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:098dd10bf2d87d5825df463627d9ab30a8b2ad07a27b0af30d55fd461276468e": {
+    "artifact_id": "sha256:098dd10bf2d87d5825df463627d9ab30a8b2ad07a27b0af30d55fd461276468e",
+    "sha256": "098dd10bf2d87d5825df463627d9ab30a8b2ad07a27b0af30d55fd461276468e",
+    "file_name": "VanBanGoc_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.pdf",
+    "path": "data/raw/appendix/19-2021-tt-bldtbxh/098dd10bf2d87d58_VanBanGoc_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.pdf",
+    "bytes": 2965156,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152735/VanBanGoc_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:20.060797+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "19-2021-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152735/VanBanGoc_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/09/098dd10bf2d87d5825df463627d9ab30a8b2ad07a27b0af30d55fd461276468e",
+      "sha256": "098dd10bf2d87d5825df463627d9ab30a8b2ad07a27b0af30d55fd461276468e",
+      "bytes": 2965156,
+      "etag": "\"a57f81a3c334f29aa5629caece70e8c7\"",
+      "verified_at": "2026-11-02T17:43:03.770345+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:5a6e321440c058b83c6ea16c2185f057a828e839f094f6f86ee3b03faa985432": {
+    "artifact_id": "sha256:5a6e321440c058b83c6ea16c2185f057a828e839f094f6f86ee3b03faa985432",
+    "sha256": "5a6e321440c058b83c6ea16c2185f057a828e839f094f6f86ee3b03faa985432",
+    "file_name": "thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.doc",
+    "path": "data/raw/appendix/19-2021-tt-bldtbxh/5a6e321440c058b8_thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.doc",
+    "bytes": 189952,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152735/thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.doc/download",
+    "downloaded_at": "2026-11-02T16:48:20.835677+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "19-2021-tt-bldtbxh",
+        "file_name": "thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/152735/thong-tu-19-2021-tt-bldtbxh-bo-lao-dong-thuong-binh-va-xa-hoi.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/5a/5a6e321440c058b83c6ea16c2185f057a828e839f094f6f86ee3b03faa985432",
+      "sha256": "5a6e321440c058b83c6ea16c2185f057a828e839f094f6f86ee3b03faa985432",
+      "bytes": 189952,
+      "etag": "\"cf3358bad792ca87c93889617dcf9027\"",
+      "verified_at": "2026-11-02T17:43:04.663614+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:eafeb1b1a205b64adc571c77b4104feb1082535778bac8a06450473e00f6d1a4": {
+    "artifact_id": "sha256:eafeb1b1a205b64adc571c77b4104feb1082535778bac8a06450473e00f6d1a4",
+    "sha256": "eafeb1b1a205b64adc571c77b4104feb1082535778bac8a06450473e00f6d1a4",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/21-2021-tt-bldtbxh/eafeb1b1a205b64a_vbpl_content.html",
+    "bytes": 198604,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-21-2021-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong-so-69-2020-qh14-ngay-13-thang-11-nam-2020-sau-day-goi-tat-la-luat-69-2020-qh14--162453",
+    "downloaded_at": "2026-11-02T16:48:17.953855+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "21-2021-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-21-2021-tt-bldtbxh-quy-dinh-chi-tiet-va-huong-dan-thi-hanh-mot-so-dieu-cua-luat-nguoi-lao-dong-viet-nam-di-lam-viec-o-nuoc-ngoai-theo-hop-dong-so-69-2020-qh14-ngay-13-thang-11-nam-2020-sau-day-goi-tat-la-luat-69-2020-qh14--162453",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ea/eafeb1b1a205b64adc571c77b4104feb1082535778bac8a06450473e00f6d1a4",
+      "sha256": "eafeb1b1a205b64adc571c77b4104feb1082535778bac8a06450473e00f6d1a4",
+      "bytes": 198604,
+      "etag": "\"1b5055011686a6fb8498678ec572dd09\"",
+      "verified_at": "2026-11-02T17:43:04.718617+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ab843713cf50dcd46d93c14b879092dc609b16f8b00eabb23511aed8d7ab2b20": {
+    "artifact_id": "sha256:ab843713cf50dcd46d93c14b879092dc609b16f8b00eabb23511aed8d7ab2b20",
+    "sha256": "ab843713cf50dcd46d93c14b879092dc609b16f8b00eabb23511aed8d7ab2b20",
+    "file_name": "VanBanGoc_thong-tu-21-2021-tt-bldtbxh.pdf",
+    "path": "data/raw/appendix/21-2021-tt-bldtbxh/ab843713cf50dcd4_VanBanGoc_thong-tu-21-2021-tt-bldtbxh.pdf",
+    "bytes": 3292116,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162453/VanBanGoc_thong-tu-21-2021-tt-bldtbxh.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:20.418571+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "21-2021-tt-bldtbxh",
+        "file_name": "VanBanGoc_thong-tu-21-2021-tt-bldtbxh.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162453/VanBanGoc_thong-tu-21-2021-tt-bldtbxh.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ab/ab843713cf50dcd46d93c14b879092dc609b16f8b00eabb23511aed8d7ab2b20",
+      "sha256": "ab843713cf50dcd46d93c14b879092dc609b16f8b00eabb23511aed8d7ab2b20",
+      "bytes": 3292116,
+      "etag": "\"979de9397b5118131342165cf1df0694\"",
+      "verified_at": "2026-11-02T17:43:06.356794+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:d69ea98a21d6b1b14d989edc3e81a72f9128fd38033da8d5e75f51691ff9d965": {
+    "artifact_id": "sha256:d69ea98a21d6b1b14d989edc3e81a72f9128fd38033da8d5e75f51691ff9d965",
+    "sha256": "d69ea98a21d6b1b14d989edc3e81a72f9128fd38033da8d5e75f51691ff9d965",
+    "file_name": "thong-tu-21-2021-tt-bldtbxh.doc",
+    "path": "data/raw/appendix/21-2021-tt-bldtbxh/d69ea98a21d6b1b1_thong-tu-21-2021-tt-bldtbxh.doc",
+    "bytes": 456192,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162453/thong-tu-21-2021-tt-bldtbxh.doc/download",
+    "downloaded_at": "2026-11-02T16:48:21.857801+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "21-2021-tt-bldtbxh",
+        "file_name": "thong-tu-21-2021-tt-bldtbxh.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162453/thong-tu-21-2021-tt-bldtbxh.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/d6/d69ea98a21d6b1b14d989edc3e81a72f9128fd38033da8d5e75f51691ff9d965",
+      "sha256": "d69ea98a21d6b1b14d989edc3e81a72f9128fd38033da8d5e75f51691ff9d965",
+      "bytes": 456192,
+      "etag": "\"3f54d238c5b0cf0de5dc625931c1edbf\"",
+      "verified_at": "2026-11-02T17:43:05.649208+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:daa74e0f58db313842adc08386bc204e508c9a6574585efd030dd8bdfb088c87": {
+    "artifact_id": "sha256:daa74e0f58db313842adc08386bc204e508c9a6574585efd030dd8bdfb088c87",
+    "sha256": "daa74e0f58db313842adc08386bc204e508c9a6574585efd030dd8bdfb088c87",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/23-2021-nd-cp/daa74e0f58db3138_vbpl_content.html",
+    "bytes": 132595,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-23-2021-nd-cp-quy-dinh-chi-tiet-khoan-3-dieu-37-va-dieu-39-ve-luat-viec-lam-ve-trung-tam-dich-vu-viec-lam-doanh-nghiep-hoat-dong-dich-vu-viec-lam--148194",
+    "downloaded_at": "2026-11-02T16:48:22.949513+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "23-2021-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-23-2021-nd-cp-quy-dinh-chi-tiet-khoan-3-dieu-37-va-dieu-39-ve-luat-viec-lam-ve-trung-tam-dich-vu-viec-lam-doanh-nghiep-hoat-dong-dich-vu-viec-lam--148194",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/da/daa74e0f58db313842adc08386bc204e508c9a6574585efd030dd8bdfb088c87",
+      "sha256": "daa74e0f58db313842adc08386bc204e508c9a6574585efd030dd8bdfb088c87",
+      "bytes": 132595,
+      "etag": "\"fdb8652b3cf1ced0186ded1a6f4a9df7\"",
+      "verified_at": "2026-11-02T17:43:06.457210+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:3954091a0e13be5c1dcde897d6c0b534834030af4c3ce3458055ec5794962a41": {
+    "artifact_id": "sha256:3954091a0e13be5c1dcde897d6c0b534834030af4c3ce3458055ec5794962a41",
+    "sha256": "3954091a0e13be5c1dcde897d6c0b534834030af4c3ce3458055ec5794962a41",
+    "file_name": "VanBanGoc_23.signed.pdf",
+    "path": "data/raw/appendix/23-2021-nd-cp/3954091a0e13be5c_VanBanGoc_23.signed.pdf",
+    "bytes": 2267747,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/148194/VanBanGoc_23.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:25.372255+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "23-2021-nd-cp",
+        "file_name": "VanBanGoc_23.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/148194/VanBanGoc_23.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/39/3954091a0e13be5c1dcde897d6c0b534834030af4c3ce3458055ec5794962a41",
+      "sha256": "3954091a0e13be5c1dcde897d6c0b534834030af4c3ce3458055ec5794962a41",
+      "bytes": 2267747,
+      "etag": "\"fb80d891ba7595a53196f29e93fd7052\"",
+      "verified_at": "2026-11-02T17:43:08.008740+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:7dd93be5165226e9ba3f80c6ea46faf11b4915087102c89401389d77dfc37e2c": {
+    "artifact_id": "sha256:7dd93be5165226e9ba3f80c6ea46faf11b4915087102c89401389d77dfc37e2c",
+    "sha256": "7dd93be5165226e9ba3f80c6ea46faf11b4915087102c89401389d77dfc37e2c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/28-2015-nd-cp/7dd93be5165226e9_vbpl_content.html",
+    "bytes": 34431,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-61-2020-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-thang-3-nam-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--142819",
+    "downloaded_at": "2026-11-02T16:48:23.936511+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "61-2020-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-61-2020-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-thang-3-nam-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--142819",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/7d/7dd93be5165226e9ba3f80c6ea46faf11b4915087102c89401389d77dfc37e2c",
+      "sha256": "7dd93be5165226e9ba3f80c6ea46faf11b4915087102c89401389d77dfc37e2c",
+      "bytes": 34431,
+      "etag": "\"7e5d2786e138ead44811911fe5f375cc\"",
+      "verified_at": "2026-11-02T17:43:07.398069+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:16ba7fba569bc4fef4ed9bc94fc9978b790e1129d142cafdf084eb6be7df22ee": {
+    "artifact_id": "sha256:16ba7fba569bc4fef4ed9bc94fc9978b790e1129d142cafdf084eb6be7df22ee",
+    "sha256": "16ba7fba569bc4fef4ed9bc94fc9978b790e1129d142cafdf084eb6be7df22ee",
+    "file_name": "VanBanGoc_61.signed.pdf",
+    "path": "data/raw/appendix/28-2015-nd-cp/16ba7fba569bc4fe_VanBanGoc_61.signed.pdf",
+    "bytes": 1045198,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/142819/VanBanGoc_61.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:25.995024+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "61-2020-nd-cp",
+        "file_name": "VanBanGoc_61.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/142819/VanBanGoc_61.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/16/16ba7fba569bc4fef4ed9bc94fc9978b790e1129d142cafdf084eb6be7df22ee",
+      "sha256": "16ba7fba569bc4fef4ed9bc94fc9978b790e1129d142cafdf084eb6be7df22ee",
+      "bytes": 1045198,
+      "etag": "\"7d8790efd4aba409eea1c6daa3c0978b\"",
+      "verified_at": "2026-11-02T17:43:08.317495+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:92a2a3d7da9bedfa45d5631300fa701f3f6480d9a01b1bacd0294fd65b0ad565": {
+    "artifact_id": "sha256:92a2a3d7da9bedfa45d5631300fa701f3f6480d9a01b1bacd0294fd65b0ad565",
+    "sha256": "92a2a3d7da9bedfa45d5631300fa701f3f6480d9a01b1bacd0294fd65b0ad565",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/29-2021-tt-byt/92a2a3d7da9bedfa_vbpl_content.html",
+    "bytes": 25811,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-29-2021-tt-byt-huong-dan-hoat-dong-dao-tao-chuyen-mon-ve-y-te-lao-dong--157102",
+    "downloaded_at": "2026-11-02T16:48:29.956270+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "29-2021-tt-byt",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-29-2021-tt-byt-huong-dan-hoat-dong-dao-tao-chuyen-mon-ve-y-te-lao-dong--157102",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/92/92a2a3d7da9bedfa45d5631300fa701f3f6480d9a01b1bacd0294fd65b0ad565",
+      "sha256": "92a2a3d7da9bedfa45d5631300fa701f3f6480d9a01b1bacd0294fd65b0ad565",
+      "bytes": 25811,
+      "etag": "\"0d79695433aee790427f79e1ca43d04f\"",
+      "verified_at": "2026-11-02T17:43:08.902924+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:45f278933a8f43d92cd6535af466cd0de977f7b36d1e95360c665c26a10673bf": {
+    "artifact_id": "sha256:45f278933a8f43d92cd6535af466cd0de977f7b36d1e95360c665c26a10673bf",
+    "sha256": "45f278933a8f43d92cd6535af466cd0de977f7b36d1e95360c665c26a10673bf",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/28-2015-tt-bldtbxh/45f278933a8f43d9_vbpl_content.html",
+    "bytes": 90499,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-28-2015-tt-bldtbxh-huong-dan-thuc-hien-dieu-52-cua-luat-viec-lam-va-mot-so-dieu-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-thang-3-nam-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--95800",
+    "downloaded_at": "2026-11-02T16:48:26.978040+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "28-2015-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-28-2015-tt-bldtbxh-huong-dan-thuc-hien-dieu-52-cua-luat-viec-lam-va-mot-so-dieu-cua-nghi-dinh-so-28-2015-nd-cp-ngay-12-thang-3-nam-2015-cua-chinh-phu-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--95800",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/45/45f278933a8f43d92cd6535af466cd0de977f7b36d1e95360c665c26a10673bf",
+      "sha256": "45f278933a8f43d92cd6535af466cd0de977f7b36d1e95360c665c26a10673bf",
+      "bytes": 90499,
+      "etag": "\"3c897024f8877ce21d41b41233f862e2\"",
+      "verified_at": "2026-11-02T17:43:09.265509+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:bcb7af7542ca0507f0f5707bffba00e108f6d4d1e9e61a1593d9d5953219c8d5": {
+    "artifact_id": "sha256:bcb7af7542ca0507f0f5707bffba00e108f6d4d1e9e61a1593d9d5953219c8d5",
+    "sha256": "bcb7af7542ca0507f0f5707bffba00e108f6d4d1e9e61a1593d9d5953219c8d5",
+    "file_name": "VanBanGoc_28.2015.TT.BLĐTBXH.pdf",
+    "path": "data/raw/appendix/28-2015-tt-bldtbxh/bcb7af7542ca0507_VanBanGoc_28.2015.TT.BLĐTBXH.pdf",
+    "bytes": 902413,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/VanBanGoc_28.2015.TT.BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:29.263679+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "28-2015-tt-bldtbxh",
+        "file_name": "VanBanGoc_28.2015.TT.BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/VanBanGoc_28.2015.TT.BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/bc/bcb7af7542ca0507f0f5707bffba00e108f6d4d1e9e61a1593d9d5953219c8d5",
+      "sha256": "bcb7af7542ca0507f0f5707bffba00e108f6d4d1e9e61a1593d9d5953219c8d5",
+      "bytes": 902413,
+      "etag": "\"b62abb4ff27833a214feaf6cabe0bf7d\"",
+      "verified_at": "2026-11-02T17:43:09.990146+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:637e399f951c8a76e4ef0db29855fbd9b7ad5107ef018d72ee5fa8d4e652478e": {
+    "artifact_id": "sha256:637e399f951c8a76e4ef0db29855fbd9b7ad5107ef018d72ee5fa8d4e652478e",
+    "sha256": "637e399f951c8a76e4ef0db29855fbd9b7ad5107ef018d72ee5fa8d4e652478e",
+    "file_name": "28.2015.TT.BLĐTBXH.doc",
+    "path": "data/raw/appendix/28-2015-tt-bldtbxh/637e399f951c8a76_28.2015.TT.BLĐTBXH.doc",
+    "bytes": 179200,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/28.2015.TT.BL%C4%90TBXH.doc/download",
+    "downloaded_at": "2026-11-02T16:48:30.837843+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "28-2015-tt-bldtbxh",
+        "file_name": "28.2015.TT.BLĐTBXH.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/28.2015.TT.BL%C4%90TBXH.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/63/637e399f951c8a76e4ef0db29855fbd9b7ad5107ef018d72ee5fa8d4e652478e",
+      "sha256": "637e399f951c8a76e4ef0db29855fbd9b7ad5107ef018d72ee5fa8d4e652478e",
+      "bytes": 179200,
+      "etag": "\"76d0efefa31ce746724460868c86c441\"",
+      "verified_at": "2026-11-02T17:43:10.019518+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:6bdb5c69553cc691f2ddbe4ce73936a626e9f3810f4a3df46aaba5ce0f3a23e7": {
+    "artifact_id": "sha256:6bdb5c69553cc691f2ddbe4ce73936a626e9f3810f4a3df46aaba5ce0f3a23e7",
+    "sha256": "6bdb5c69553cc691f2ddbe4ce73936a626e9f3810f4a3df46aaba5ce0f3a23e7",
+    "file_name": "Phụ lục.doc",
+    "path": "data/raw/appendix/28-2015-tt-bldtbxh/6bdb5c69553cc691_Phụ lục.doc",
+    "bytes": 781824,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+    "downloaded_at": "2026-11-02T16:48:32.961334+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "28-2015-tt-bldtbxh",
+        "file_name": "Phụ lục.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/95800/Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/6b/6bdb5c69553cc691f2ddbe4ce73936a626e9f3810f4a3df46aaba5ce0f3a23e7",
+      "sha256": "6bdb5c69553cc691f2ddbe4ce73936a626e9f3810f4a3df46aaba5ce0f3a23e7",
+      "bytes": 781824,
+      "etag": "\"13fd85f694672d537306fc45aa8711bf\"",
+      "verified_at": "2026-11-02T17:43:11.111999+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:68361d30c280a0e9176d3c80c585fdc140c5c3a416e8e98d4992e06e23d3522c": {
+    "artifact_id": "sha256:68361d30c280a0e9176d3c80c585fdc140c5c3a416e8e98d4992e06e23d3522c",
+    "sha256": "68361d30c280a0e9176d3c80c585fdc140c5c3a416e8e98d4992e06e23d3522c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/293-2025-nd-cp/68361d30c280a0e9_vbpl_content.html",
+    "bytes": 19166,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-293-2025-nd-cp-quy-dinh-muc-luong-toi-thieu-doi-voi-nguoi-lao-dong-lam-viec-theo-hop-dong-lao-dong--183939",
+    "downloaded_at": "2026-11-02T16:48:31.901173+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "293-2025-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-293-2025-nd-cp-quy-dinh-muc-luong-toi-thieu-doi-voi-nguoi-lao-dong-lam-viec-theo-hop-dong-lao-dong--183939",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/68/68361d30c280a0e9176d3c80c585fdc140c5c3a416e8e98d4992e06e23d3522c",
+      "sha256": "68361d30c280a0e9176d3c80c585fdc140c5c3a416e8e98d4992e06e23d3522c",
+      "bytes": 19166,
+      "etag": "\"cfee2157698fa2323016c1ceea4568da\"",
+      "verified_at": "2026-11-02T17:43:10.859554+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:80d2943b04403338a18af20c488b4f215a98b023046ba3775f99b6e2cda93169": {
+    "artifact_id": "sha256:80d2943b04403338a18af20c488b4f215a98b023046ba3775f99b6e2cda93169",
+    "sha256": "80d2943b04403338a18af20c488b4f215a98b023046ba3775f99b6e2cda93169",
+    "file_name": "VanBanGoc_293-cp.signed.pdf",
+    "path": "data/raw/appendix/293-2025-nd-cp/80d2943b04403338_VanBanGoc_293-cp.signed.pdf",
+    "bytes": 711910,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/183939/VanBanGoc_293-cp.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:33.934662+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "293-2025-nd-cp",
+        "file_name": "VanBanGoc_293-cp.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/183939/VanBanGoc_293-cp.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/80/80d2943b04403338a18af20c488b4f215a98b023046ba3775f99b6e2cda93169",
+      "sha256": "80d2943b04403338a18af20c488b4f215a98b023046ba3775f99b6e2cda93169",
+      "bytes": 711910,
+      "etag": "\"4801e0b6b334aae8bbc82a62865d42db\"",
+      "verified_at": "2026-11-02T17:43:11.782554+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:760593976ce92cb1826d07df8ca0530f1f797df1ea1ef1377e96874e764a139d": {
+    "artifact_id": "sha256:760593976ce92cb1826d07df8ca0530f1f797df1ea1ef1377e96874e764a139d",
+    "sha256": "760593976ce92cb1826d07df8ca0530f1f797df1ea1ef1377e96874e764a139d",
+    "file_name": "293_2025_ND-CP_665866.doc",
+    "path": "data/raw/appendix/293-2025-nd-cp/760593976ce92cb1_293_2025_ND-CP_665866.doc",
+    "bytes": 102400,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/183939/293_2025_ND-CP_665866.doc/download",
+    "downloaded_at": "2026-11-02T16:48:35.830884+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "293-2025-nd-cp",
+        "file_name": "293_2025_ND-CP_665866.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/183939/293_2025_ND-CP_665866.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/76/760593976ce92cb1826d07df8ca0530f1f797df1ea1ef1377e96874e764a139d",
+      "sha256": "760593976ce92cb1826d07df8ca0530f1f797df1ea1ef1377e96874e764a139d",
+      "bytes": 102400,
+      "etag": "\"1209b27f80ed0f29bab86076882e79fd\"",
+      "verified_at": "2026-11-02T17:43:12.006569+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:2375288e5176fdd01e2fe20f14d58e60278749fe4b87f0b3627869f3cec82a6e": {
+    "artifact_id": "sha256:2375288e5176fdd01e2fe20f14d58e60278749fe4b87f0b3627869f3cec82a6e",
+    "sha256": "2375288e5176fdd01e2fe20f14d58e60278749fe4b87f0b3627869f3cec82a6e",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/40-2021-qd-ttg/2375288e5176fdd0_vbpl_content.html",
+    "bytes": 117732,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/quyet-dinh-so-40-2021-qd-ttg-ve-quy-ho-tro-viec-lam-ngoai-nuoc--162454",
+    "downloaded_at": "2026-11-02T16:48:37.951154+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "40-2021-qd-ttg",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/quyet-dinh-so-40-2021-qd-ttg-ve-quy-ho-tro-viec-lam-ngoai-nuoc--162454",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/23/2375288e5176fdd01e2fe20f14d58e60278749fe4b87f0b3627869f3cec82a6e",
+      "sha256": "2375288e5176fdd01e2fe20f14d58e60278749fe4b87f0b3627869f3cec82a6e",
+      "bytes": 117732,
+      "etag": "\"f6f4f0457607b1ce7abdd8c9854e39cb\"",
+      "verified_at": "2026-11-02T17:43:12.605958+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f192947cc7f943992f99f5860cd93f02927c99f9c8b64f4054d47486ddc31b84": {
+    "artifact_id": "sha256:f192947cc7f943992f99f5860cd93f02927c99f9c8b64f4054d47486ddc31b84",
+    "sha256": "f192947cc7f943992f99f5860cd93f02927c99f9c8b64f4054d47486ddc31b84",
+    "file_name": "quyet-dinh-40-2021-qd-ttg-thu-tuong-chinh-phu.doc",
+    "path": "data/raw/appendix/40-2021-qd-ttg/f192947cc7f94399_quyet-dinh-40-2021-qd-ttg-thu-tuong-chinh-phu.doc",
+    "bytes": 316416,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162454/quyet-dinh-40-2021-qd-ttg-thu-tuong-chinh-phu.doc/download",
+    "downloaded_at": "2026-11-02T16:48:41.861471+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "40-2021-qd-ttg",
+        "file_name": "quyet-dinh-40-2021-qd-ttg-thu-tuong-chinh-phu.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162454/quyet-dinh-40-2021-qd-ttg-thu-tuong-chinh-phu.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f1/f192947cc7f943992f99f5860cd93f02927c99f9c8b64f4054d47486ddc31b84",
+      "sha256": "f192947cc7f943992f99f5860cd93f02927c99f9c8b64f4054d47486ddc31b84",
+      "bytes": 316416,
+      "etag": "\"b24f3b2e878243e61728731ccb070d10\"",
+      "verified_at": "2026-11-02T17:43:12.909651+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:bcd484a4f8be29fd3bf4ea5b3e8d380e3d3e61fed9038c8ed0a07730eb8f4fa7": {
+    "artifact_id": "sha256:bcd484a4f8be29fd3bf4ea5b3e8d380e3d3e61fed9038c8ed0a07730eb8f4fa7",
+    "sha256": "bcd484a4f8be29fd3bf4ea5b3e8d380e3d3e61fed9038c8ed0a07730eb8f4fa7",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/38-2015-tt-bldtbxh/bcd484a4f8be29fd_vbpl_content.html",
+    "bytes": 35409,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-38-2015-tt-bldtbxh-quy-dinh-ve-chung-chi-ky-nang-nghe-quoc-gia-cap-va-quan-ly-viec-cap-chung-chi-ky-nang-nghe-quoc-gia--92723",
+    "downloaded_at": "2026-11-02T16:48:37.002013+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "38-2015-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-38-2015-tt-bldtbxh-quy-dinh-ve-chung-chi-ky-nang-nghe-quoc-gia-cap-va-quan-ly-viec-cap-chung-chi-ky-nang-nghe-quoc-gia--92723",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/bc/bcd484a4f8be29fd3bf4ea5b3e8d380e3d3e61fed9038c8ed0a07730eb8f4fa7",
+      "sha256": "bcd484a4f8be29fd3bf4ea5b3e8d380e3d3e61fed9038c8ed0a07730eb8f4fa7",
+      "bytes": 35409,
+      "etag": "\"038064c65a5f3393d9caf2d2a2188f9f\"",
+      "verified_at": "2026-11-02T17:43:13.418427+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ea71cfaf48351ad39d64059b0609bf724a3b51cc3ba01315210928191aa04d7e": {
+    "artifact_id": "sha256:ea71cfaf48351ad39d64059b0609bf724a3b51cc3ba01315210928191aa04d7e",
+    "sha256": "ea71cfaf48351ad39d64059b0609bf724a3b51cc3ba01315210928191aa04d7e",
+    "file_name": "VanBanGoc_38.2015.TT.BLĐTBXH.pdf",
+    "path": "data/raw/appendix/38-2015-tt-bldtbxh/ea71cfaf48351ad3_VanBanGoc_38.2015.TT.BLĐTBXH.pdf",
+    "bytes": 456654,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/VanBanGoc_38.2015.TT.BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:38.929231+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "38-2015-tt-bldtbxh",
+        "file_name": "VanBanGoc_38.2015.TT.BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/VanBanGoc_38.2015.TT.BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ea/ea71cfaf48351ad39d64059b0609bf724a3b51cc3ba01315210928191aa04d7e",
+      "sha256": "ea71cfaf48351ad39d64059b0609bf724a3b51cc3ba01315210928191aa04d7e",
+      "bytes": 456654,
+      "etag": "\"63dd5dd16822e757db67aa9f640d5bb1\"",
+      "verified_at": "2026-11-02T17:43:13.926769+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:73815a8f2ee147436c72f47f988d827f8d8d318c02d7c0d631517bade33c2333": {
+    "artifact_id": "sha256:73815a8f2ee147436c72f47f988d827f8d8d318c02d7c0d631517bade33c2333",
+    "sha256": "73815a8f2ee147436c72f47f988d827f8d8d318c02d7c0d631517bade33c2333",
+    "file_name": "38.2015.TT.BLĐTBXH.doc",
+    "path": "data/raw/appendix/38-2015-tt-bldtbxh/73815a8f2ee14743_38.2015.TT.BLĐTBXH.doc",
+    "bytes": 115200,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/38.2015.TT.BL%C4%90TBXH.doc/download",
+    "downloaded_at": "2026-11-02T16:48:41.853471+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "38-2015-tt-bldtbxh",
+        "file_name": "38.2015.TT.BLĐTBXH.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/38.2015.TT.BL%C4%90TBXH.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/73/73815a8f2ee147436c72f47f988d827f8d8d318c02d7c0d631517bade33c2333",
+      "sha256": "73815a8f2ee147436c72f47f988d827f8d8d318c02d7c0d631517bade33c2333",
+      "bytes": 115200,
+      "etag": "\"20f1f573e1b374d8e6fab681049e08e1\"",
+      "verified_at": "2026-11-02T17:43:14.254123+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:e3f96e5c0f154e9e4c38435de2d9c83cf1d9f5007bb32a8c45da84e4b51420ba": {
+    "artifact_id": "sha256:e3f96e5c0f154e9e4c38435de2d9c83cf1d9f5007bb32a8c45da84e4b51420ba",
+    "sha256": "e3f96e5c0f154e9e4c38435de2d9c83cf1d9f5007bb32a8c45da84e4b51420ba",
+    "file_name": "Phụ lục.doc",
+    "path": "data/raw/appendix/38-2015-tt-bldtbxh/e3f96e5c0f154e9e_Phụ lục.doc",
+    "bytes": 221696,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+    "downloaded_at": "2026-11-02T16:48:42.848205+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "38-2015-tt-bldtbxh",
+        "file_name": "Phụ lục.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/92723/Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/e3/e3f96e5c0f154e9e4c38435de2d9c83cf1d9f5007bb32a8c45da84e4b51420ba",
+      "sha256": "e3f96e5c0f154e9e4c38435de2d9c83cf1d9f5007bb32a8c45da84e4b51420ba",
+      "bytes": 221696,
+      "etag": "\"e5947517253c85493c42426a8305e574\"",
+      "verified_at": "2026-11-02T17:43:15.064623+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:e6b714dbcbb02388bdf9a9fdf9cb52d8784f0a89bafb59e48a960ee918f5033c": {
+    "artifact_id": "sha256:e6b714dbcbb02388bdf9a9fdf9cb52d8784f0a89bafb59e48a960ee918f5033c",
+    "sha256": "e6b714dbcbb02388bdf9a9fdf9cb52d8784f0a89bafb59e48a960ee918f5033c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/43-2016-tt-bldtbxh/e6b714dbcbb02388_vbpl_content.html",
+    "bytes": 85666,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-43-2016-tt-bldtbxh-huong-dan-thuc-hien-chinh-sach-ho-tro-dao-tao-nghe-cho-cac-doi-tuong-quy-dinh-tai-dieu-14-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--117542",
+    "downloaded_at": "2026-11-02T16:48:43.939741+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "43-2016-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-43-2016-tt-bldtbxh-huong-dan-thuc-hien-chinh-sach-ho-tro-dao-tao-nghe-cho-cac-doi-tuong-quy-dinh-tai-dieu-14-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--117542",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/e6/e6b714dbcbb02388bdf9a9fdf9cb52d8784f0a89bafb59e48a960ee918f5033c",
+      "sha256": "e6b714dbcbb02388bdf9a9fdf9cb52d8784f0a89bafb59e48a960ee918f5033c",
+      "bytes": 85666,
+      "etag": "\"4b62b41e903983b0d0887fbe55b801ff\"",
+      "verified_at": "2026-11-02T17:43:15.055690+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:771ed2986c0fc6763f9efbefde603db92731c4cf49ca80c6471962c45cdcdb52": {
+    "artifact_id": "sha256:771ed2986c0fc6763f9efbefde603db92731c4cf49ca80c6471962c45cdcdb52",
+    "sha256": "771ed2986c0fc6763f9efbefde603db92731c4cf49ca80c6471962c45cdcdb52",
+    "file_name": "VanBanGoc_TT 43 BLÐTBXH.pdf",
+    "path": "data/raw/appendix/43-2016-tt-bldtbxh/771ed2986c0fc676_VanBanGoc_TT 43 BLÐTBXH.pdf",
+    "bytes": 183723,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117542/VanBanGoc_TT%2043%20BL%C3%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:46.068727+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "43-2016-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 43 BLÐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117542/VanBanGoc_TT%2043%20BL%C3%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/77/771ed2986c0fc6763f9efbefde603db92731c4cf49ca80c6471962c45cdcdb52",
+      "sha256": "771ed2986c0fc6763f9efbefde603db92731c4cf49ca80c6471962c45cdcdb52",
+      "bytes": 183723,
+      "etag": "\"ad88db377af7606e28ffdb695c2cc553\"",
+      "verified_at": "2026-11-02T17:43:16.159219+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:5c582b48415e6785fdcd4fe25d435c457f9de51beed6e0a9e50e2d73ba048397": {
+    "artifact_id": "sha256:5c582b48415e6785fdcd4fe25d435c457f9de51beed6e0a9e50e2d73ba048397",
+    "sha256": "5c582b48415e6785fdcd4fe25d435c457f9de51beed6e0a9e50e2d73ba048397",
+    "file_name": "Phu luc 3.doc",
+    "path": "data/raw/appendix/43-2016-tt-bldtbxh/5c582b48415e6785_Phu luc 3.doc",
+    "bytes": 101888,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117542/Phu%20luc%203.doc/download",
+    "downloaded_at": "2026-11-02T16:48:47.896092+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "43-2016-tt-bldtbxh",
+        "file_name": "Phu luc 3.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117542/Phu%20luc%203.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/5c/5c582b48415e6785fdcd4fe25d435c457f9de51beed6e0a9e50e2d73ba048397",
+      "sha256": "5c582b48415e6785fdcd4fe25d435c457f9de51beed6e0a9e50e2d73ba048397",
+      "bytes": 101888,
+      "etag": "\"0ae29d757132c99cd0b6006601a78cb4\"",
+      "verified_at": "2026-11-02T17:43:15.930005+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:53a17e31b25a3b3056ec25c7fd9d50644116815db5aa7e48cb338f909afe840c": {
+    "artifact_id": "sha256:53a17e31b25a3b3056ec25c7fd9d50644116815db5aa7e48cb338f909afe840c",
+    "sha256": "53a17e31b25a3b3056ec25c7fd9d50644116815db5aa7e48cb338f909afe840c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/44-2016-nd-cp/53a17e31b25a3b30_vbpl_content.html",
+    "bytes": 209522,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-44-2016-nd-cp-quy-dinh-chi-tiet-mot-so-dieu-cua-luat-an-toan-ve-sinh-lao-dong-ve-hoat-dong-kiem-dinh-ky-thuat-an-toan-lao-dong-huan-luyen-an-toan-ve-sinh-lao-dong-va-quan-trac-moi-truong-lao-dong--117760",
+    "downloaded_at": "2026-11-02T16:48:45.099510+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "44-2016-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-44-2016-nd-cp-quy-dinh-chi-tiet-mot-so-dieu-cua-luat-an-toan-ve-sinh-lao-dong-ve-hoat-dong-kiem-dinh-ky-thuat-an-toan-lao-dong-huan-luyen-an-toan-ve-sinh-lao-dong-va-quan-trac-moi-truong-lao-dong--117760",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/53/53a17e31b25a3b3056ec25c7fd9d50644116815db5aa7e48cb338f909afe840c",
+      "sha256": "53a17e31b25a3b3056ec25c7fd9d50644116815db5aa7e48cb338f909afe840c",
+      "bytes": 209522,
+      "etag": "\"5fab5f506694765366c442f1a5115886\"",
+      "verified_at": "2026-11-02T17:43:17.155613+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f8b1a471e94332dc11c7ed8c5f519b384fae5d3b30fe3ef84ad69a38c96fbd70": {
+    "artifact_id": "sha256:f8b1a471e94332dc11c7ed8c5f519b384fae5d3b30fe3ef84ad69a38c96fbd70",
+    "sha256": "f8b1a471e94332dc11c7ed8c5f519b384fae5d3b30fe3ef84ad69a38c96fbd70",
+    "file_name": "VanBanGoc_ND44CP.pdf",
+    "path": "data/raw/appendix/44-2016-nd-cp/f8b1a471e94332dc_VanBanGoc_ND44CP.pdf",
+    "bytes": 1085346,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117760/VanBanGoc_ND44CP.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:47.086786+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "44-2016-nd-cp",
+        "file_name": "VanBanGoc_ND44CP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117760/VanBanGoc_ND44CP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f8/f8b1a471e94332dc11c7ed8c5f519b384fae5d3b30fe3ef84ad69a38c96fbd70",
+      "sha256": "f8b1a471e94332dc11c7ed8c5f519b384fae5d3b30fe3ef84ad69a38c96fbd70",
+      "bytes": 1085346,
+      "etag": "\"307350afd40d5ce39233a7c16df86261\"",
+      "verified_at": "2026-11-02T17:43:17.055080+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:74ebffaad089998c4d181968677688bd918a89101b47748f5155bed79abf0375": {
+    "artifact_id": "sha256:74ebffaad089998c4d181968677688bd918a89101b47748f5155bed79abf0375",
+    "sha256": "74ebffaad089998c4d181968677688bd918a89101b47748f5155bed79abf0375",
+    "file_name": "44_2016_ND-CP_299837.doc",
+    "path": "data/raw/appendix/44-2016-nd-cp/74ebffaad089998c_44_2016_ND-CP_299837.doc",
+    "bytes": 998912,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117760/44_2016_ND-CP_299837.doc/download",
+    "downloaded_at": "2026-11-02T16:48:49.041349+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "44-2016-nd-cp",
+        "file_name": "44_2016_ND-CP_299837.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/117760/44_2016_ND-CP_299837.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/74/74ebffaad089998c4d181968677688bd918a89101b47748f5155bed79abf0375",
+      "sha256": "74ebffaad089998c4d181968677688bd918a89101b47748f5155bed79abf0375",
+      "bytes": 998912,
+      "etag": "\"5745656cfa4923adf06275aaef5b3603\"",
+      "verified_at": "2026-11-02T17:43:17.985580+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ddd1e208b17a9a6aae813e5f492b514e683cb9b71e6504d99a182428b2e4ceb7": {
+    "artifact_id": "sha256:ddd1e208b17a9a6aae813e5f492b514e683cb9b71e6504d99a182428b2e4ceb7",
+    "sha256": "ddd1e208b17a9a6aae813e5f492b514e683cb9b71e6504d99a182428b2e4ceb7",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/45-2015-tt-bldtbxh/ddd1e208b17a9a6a_vbpl_content.html",
+    "bytes": 10742,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-24-2017-tt-bldtbxh-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-45-2015-tt-bldtbxh-ngay-11-11-2015-cua-bo-truong-bo-lao-dong-thuong-binh-va-xa-hoi-huong-dan-thuc-hien-mot-so-dieu-ve-quy-quoc-gia-ve-viec-lam-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-ve-quy-quoc-gia-ve-viec-lam--124570",
+    "downloaded_at": "2026-11-02T16:48:49.909879+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "24-2017-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-24-2017-tt-bldtbxh-sua-doi-bo-sung-mot-so-dieu-cua-thong-tu-so-45-2015-tt-bldtbxh-ngay-11-11-2015-cua-bo-truong-bo-lao-dong-thuong-binh-va-xa-hoi-huong-dan-thuc-hien-mot-so-dieu-ve-quy-quoc-gia-ve-viec-lam-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-07-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-ve-quy-quoc-gia-ve-viec-lam--124570",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/dd/ddd1e208b17a9a6aae813e5f492b514e683cb9b71e6504d99a182428b2e4ceb7",
+      "sha256": "ddd1e208b17a9a6aae813e5f492b514e683cb9b71e6504d99a182428b2e4ceb7",
+      "bytes": 10742,
+      "etag": "\"4c6855a7b88d5cae498ef07317f9f398\"",
+      "verified_at": "2026-11-02T17:43:18.044560+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:0613662d33b819f582448709543e6a89b4f6a577bab849d7c77d2716a0e686cb": {
+    "artifact_id": "sha256:0613662d33b819f582448709543e6a89b4f6a577bab849d7c77d2716a0e686cb",
+    "sha256": "0613662d33b819f582448709543e6a89b4f6a577bab849d7c77d2716a0e686cb",
+    "file_name": "VanBanGoc_TT 24 2017 BLÐTBXH.pdf",
+    "path": "data/raw/appendix/45-2015-tt-bldtbxh/0613662d33b819f5_VanBanGoc_TT 24 2017 BLÐTBXH.pdf",
+    "bytes": 107133,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/124570/VanBanGoc_TT%2024%202017%20BL%C3%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:51.877683+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "24-2017-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 24 2017 BLÐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/124570/VanBanGoc_TT%2024%202017%20BL%C3%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/06/0613662d33b819f582448709543e6a89b4f6a577bab849d7c77d2716a0e686cb",
+      "sha256": "0613662d33b819f582448709543e6a89b4f6a577bab849d7c77d2716a0e686cb",
+      "bytes": 107133,
+      "etag": "\"e17b7d72d447e61ec5c342d0345c3861\"",
+      "verified_at": "2026-11-02T17:43:18.817629+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:141c81e6b3fd61ad0b7d32e085e752dede288e7372bafe5536d6f35f11af472c": {
+    "artifact_id": "sha256:141c81e6b3fd61ad0b7d32e085e752dede288e7372bafe5536d6f35f11af472c",
+    "sha256": "141c81e6b3fd61ad0b7d32e085e752dede288e7372bafe5536d6f35f11af472c",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/56-2015-tt-bldtbxh/141c81e6b3fd61ad_vbpl_content.html",
+    "bytes": 65919,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-56-2015-tt-bldtbxh-huong-dan-viec-xay-dung-tham-dinh-va-cong-bo-tieu-chuan-ky-nang-nghe-quoc-gia--99135",
+    "downloaded_at": "2026-11-02T16:48:52.958537+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "56-2015-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-56-2015-tt-bldtbxh-huong-dan-viec-xay-dung-tham-dinh-va-cong-bo-tieu-chuan-ky-nang-nghe-quoc-gia--99135",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/14/141c81e6b3fd61ad0b7d32e085e752dede288e7372bafe5536d6f35f11af472c",
+      "sha256": "141c81e6b3fd61ad0b7d32e085e752dede288e7372bafe5536d6f35f11af472c",
+      "bytes": 65919,
+      "etag": "\"e7c1dbf3806179d13f15ebcf2b42cd29\"",
+      "verified_at": "2026-11-02T17:43:18.898137+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:e6ac75364a21590448e61795704e202430bcca987032ef4f194b1b6e4ba28ffc": {
+    "artifact_id": "sha256:e6ac75364a21590448e61795704e202430bcca987032ef4f194b1b6e4ba28ffc",
+    "sha256": "e6ac75364a21590448e61795704e202430bcca987032ef4f194b1b6e4ba28ffc",
+    "file_name": "VanBanGoc_56.2015.TT.BLĐTBXH.pdf",
+    "path": "data/raw/appendix/56-2015-tt-bldtbxh/e6ac75364a215904_VanBanGoc_56.2015.TT.BLĐTBXH.pdf",
+    "bytes": 456547,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/99135/VanBanGoc_56.2015.TT.BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:54.408539+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "56-2015-tt-bldtbxh",
+        "file_name": "VanBanGoc_56.2015.TT.BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/99135/VanBanGoc_56.2015.TT.BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/e6/e6ac75364a21590448e61795704e202430bcca987032ef4f194b1b6e4ba28ffc",
+      "sha256": "e6ac75364a21590448e61795704e202430bcca987032ef4f194b1b6e4ba28ffc",
+      "bytes": 456547,
+      "etag": "\"10ea342a22336a998957e94d7f21be29\"",
+      "verified_at": "2026-11-02T17:43:19.715704+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:c6f586b45c0acc6ba7f04489e15655c6032876777fdd8d7e25ec87dbabd8107e": {
+    "artifact_id": "sha256:c6f586b45c0acc6ba7f04489e15655c6032876777fdd8d7e25ec87dbabd8107e",
+    "sha256": "c6f586b45c0acc6ba7f04489e15655c6032876777fdd8d7e25ec87dbabd8107e",
+    "file_name": "56.2015.TT.BLĐTBXH và Phụ lục.doc",
+    "path": "data/raw/appendix/56-2015-tt-bldtbxh/c6f586b45c0acc6b_56.2015.TT.BLĐTBXH và Phụ lục.doc",
+    "bytes": 270848,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/99135/56.2015.TT.BL%C4%90TBXH%20v%C3%A0%20Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+    "downloaded_at": "2026-11-02T16:48:55.913227+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "56-2015-tt-bldtbxh",
+        "file_name": "56.2015.TT.BLĐTBXH và Phụ lục.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/99135/56.2015.TT.BL%C4%90TBXH%20v%C3%A0%20Ph%E1%BB%A5%20l%E1%BB%A5c.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/c6/c6f586b45c0acc6ba7f04489e15655c6032876777fdd8d7e25ec87dbabd8107e",
+      "sha256": "c6f586b45c0acc6ba7f04489e15655c6032876777fdd8d7e25ec87dbabd8107e",
+      "bytes": 270848,
+      "etag": "\"fa8ecd60b7dd873cd8d4972696c1efa3\"",
+      "verified_at": "2026-11-02T17:43:20.252300+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:fe5262fc9233d9f6ff39725ffea9ee55a8a5feee99e72587e3d61501881a1ce9": {
+    "artifact_id": "sha256:fe5262fc9233d9f6ff39725ffea9ee55a8a5feee99e72587e3d61501881a1ce9",
+    "sha256": "fe5262fc9233d9f6ff39725ffea9ee55a8a5feee99e72587e3d61501881a1ce9",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/54-2016-tt-bldtbxh/fe5262fc9233d9f6_vbpl_content.html",
+    "bytes": 7163352,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-54-2016-tt-bldtbxh-ban-hanh-30-quy-trinh-kiem-dinh-ky-thuat-an-toan-doi-voi-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-thuoc-tham-quyen-quan-ly-cua-bo-lao-dong-thuong-binh-va-xa-hoi--121979",
+    "downloaded_at": "2026-11-02T16:48:53.148653+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "54-2016-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-54-2016-tt-bldtbxh-ban-hanh-30-quy-trinh-kiem-dinh-ky-thuat-an-toan-doi-voi-may-thiet-bi-vat-tu-co-yeu-cau-nghiem-ngat-ve-an-toan-lao-dong-thuoc-tham-quyen-quan-ly-cua-bo-lao-dong-thuong-binh-va-xa-hoi--121979",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/fe/fe5262fc9233d9f6ff39725ffea9ee55a8a5feee99e72587e3d61501881a1ce9",
+      "sha256": "fe5262fc9233d9f6ff39725ffea9ee55a8a5feee99e72587e3d61501881a1ce9",
+      "bytes": 7163352,
+      "etag": "\"4e88c696a9034677de44be619b61af1f\"",
+      "verified_at": "2026-11-02T17:43:21.232152+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:57fc12573a733dac4bb68183ef4970d7f9647fd8b7b71ee91ba4c0a98de64cf4": {
+    "artifact_id": "sha256:57fc12573a733dac4bb68183ef4970d7f9647fd8b7b71ee91ba4c0a98de64cf4",
+    "sha256": "57fc12573a733dac4bb68183ef4970d7f9647fd8b7b71ee91ba4c0a98de64cf4",
+    "file_name": "VanBanGoc_TT 54 BLDTBXH (1).pdf",
+    "path": "data/raw/appendix/54-2016-tt-bldtbxh/57fc12573a733dac_VanBanGoc_TT 54 BLDTBXH (1).pdf",
+    "bytes": 10536558,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/121979/VanBanGoc_TT%2054%20BLDTBXH%20%281%29.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:57.321298+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "54-2016-tt-bldtbxh",
+        "file_name": "VanBanGoc_TT 54 BLDTBXH (1).pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/121979/VanBanGoc_TT%2054%20BLDTBXH%20%281%29.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/57/57fc12573a733dac4bb68183ef4970d7f9647fd8b7b71ee91ba4c0a98de64cf4",
+      "sha256": "57fc12573a733dac4bb68183ef4970d7f9647fd8b7b71ee91ba4c0a98de64cf4",
+      "bytes": 10536558,
+      "etag": "\"b8f0beb6b31a49ad3940319d8a2db7b2\"",
+      "verified_at": "2026-11-02T17:43:22.329464+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:bcd5d8f9159a7911c09a05b37d419127d77bf6c7486e60c25d3dd88150af2562": {
+    "artifact_id": "sha256:bcd5d8f9159a7911c09a05b37d419127d77bf6c7486e60c25d3dd88150af2562",
+    "sha256": "bcd5d8f9159a7911c09a05b37d419127d77bf6c7486e60c25d3dd88150af2562",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/61-2015-nd-cp/bcd5d8f9159a7911_vbpl_content.html",
+    "bytes": 44378,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-74-2019-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--138058",
+    "downloaded_at": "2026-11-02T16:48:57.030151+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "74-2019-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-74-2019-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--138058",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/bc/bcd5d8f9159a7911c09a05b37d419127d77bf6c7486e60c25d3dd88150af2562",
+      "sha256": "bcd5d8f9159a7911c09a05b37d419127d77bf6c7486e60c25d3dd88150af2562",
+      "bytes": 44378,
+      "etag": "\"4a7b592dc564ad350a626a62f8f86d12\"",
+      "verified_at": "2026-11-02T17:43:22.047407+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:5507fa147f62dfacb228531c89ded4ee3ce6af57abb7a4a81a5603079ad1161d": {
+    "artifact_id": "sha256:5507fa147f62dfacb228531c89ded4ee3ce6af57abb7a4a81a5603079ad1161d",
+    "sha256": "5507fa147f62dfacb228531c89ded4ee3ce6af57abb7a4a81a5603079ad1161d",
+    "file_name": "VanBanGoc_74.signed.pdf",
+    "path": "data/raw/appendix/61-2015-nd-cp/5507fa147f62dfac_VanBanGoc_74.signed.pdf",
+    "bytes": 770547,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/138058/VanBanGoc_74.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:48:58.079040+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "74-2019-nd-cp",
+        "file_name": "VanBanGoc_74.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/138058/VanBanGoc_74.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/55/5507fa147f62dfacb228531c89ded4ee3ce6af57abb7a4a81a5603079ad1161d",
+      "sha256": "5507fa147f62dfacb228531c89ded4ee3ce6af57abb7a4a81a5603079ad1161d",
+      "bytes": 770547,
+      "etag": "\"2dd6ffada6f080d93cbfe7fbe9111823\"",
+      "verified_at": "2026-11-02T17:43:22.989411+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:451b83f2c70a76f0a53cc0902c472ca23f8ac5fb935a9be340d13c5c93c20c32": {
+    "artifact_id": "sha256:451b83f2c70a76f0a53cc0902c472ca23f8ac5fb935a9be340d13c5c93c20c32",
+    "sha256": "451b83f2c70a76f0a53cc0902c472ca23f8ac5fb935a9be340d13c5c93c20c32",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/97-2022-nd-cp/451b83f2c70a76f0_vbpl_content.html",
+    "bytes": 436402,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-97-2022-nd-cp-quy-dinh-chinh-sach-doi-voi-nguoi-lao-dong-doi-du-khi-chuyen-doi-so-huu-sap-xep-lai-cong-ty-trach-nhiem-huu-han-mot-thanh-vien-do-nha-nuoc-nam-giu-100-von-dieu-le--169619",
+    "downloaded_at": "2026-11-02T16:49:00.066512+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "97-2022-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-97-2022-nd-cp-quy-dinh-chinh-sach-doi-voi-nguoi-lao-dong-doi-du-khi-chuyen-doi-so-huu-sap-xep-lai-cong-ty-trach-nhiem-huu-han-mot-thanh-vien-do-nha-nuoc-nam-giu-100-von-dieu-le--169619",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/45/451b83f2c70a76f0a53cc0902c472ca23f8ac5fb935a9be340d13c5c93c20c32",
+      "sha256": "451b83f2c70a76f0a53cc0902c472ca23f8ac5fb935a9be340d13c5c93c20c32",
+      "bytes": 436402,
+      "etag": "\"4d27877b9aa69de9b3b4d3f4a1de5edf\"",
+      "verified_at": "2026-11-02T17:43:23.231903+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:0e134593d1fcce158a43f0e5e91392cc88524f15ad162edbbf5abf2f3c399212": {
+    "artifact_id": "sha256:0e134593d1fcce158a43f0e5e91392cc88524f15ad162edbbf5abf2f3c399212",
+    "sha256": "0e134593d1fcce158a43f0e5e91392cc88524f15ad162edbbf5abf2f3c399212",
+    "file_name": "VanBanGoc_97.signed.pdf",
+    "path": "data/raw/appendix/97-2022-nd-cp/0e134593d1fcce15_VanBanGoc_97.signed.pdf",
+    "bytes": 1156921,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/169619/VanBanGoc_97.signed.pdf/download",
+    "downloaded_at": "2026-11-02T16:49:02.164341+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "97-2022-nd-cp",
+        "file_name": "VanBanGoc_97.signed.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/169619/VanBanGoc_97.signed.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/0e/0e134593d1fcce158a43f0e5e91392cc88524f15ad162edbbf5abf2f3c399212",
+      "sha256": "0e134593d1fcce158a43f0e5e91392cc88524f15ad162edbbf5abf2f3c399212",
+      "bytes": 1156921,
+      "etag": "\"195c54d36d979e1f611f779df935ba37\"",
+      "verified_at": "2026-11-02T17:43:23.780327+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:af277296d2d38d3947129f2e03a61b3520dd7db7447310e386e5af7985fa439e": {
+    "artifact_id": "sha256:af277296d2d38d3947129f2e03a61b3520dd7db7447310e386e5af7985fa439e",
+    "sha256": "af277296d2d38d3947129f2e03a61b3520dd7db7447310e386e5af7985fa439e",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/70-2023-nd-cp/af277296d2d38d39_vbpl_content.html",
+    "bytes": 255166,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-70-2023-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-152-2020-nd-cp-ngay-30-thang-12-nam-2020-cua-chinh-phu-quy-dinh-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam-va-tuyen-dung-quan-ly-nguoi-lao-dong-viet-nam-lam-viec-cho-to-chuc-ca-nhan-nuoc-ngoai-tai-viet-nam--162330",
+    "downloaded_at": "2026-11-02T16:48:59.021689+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "70-2023-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-70-2023-nd-cp-sua-doi-bo-sung-mot-so-dieu-cua-nghi-dinh-so-152-2020-nd-cp-ngay-30-thang-12-nam-2020-cua-chinh-phu-quy-dinh-ve-nguoi-lao-dong-nuoc-ngoai-lam-viec-tai-viet-nam-va-tuyen-dung-quan-ly-nguoi-lao-dong-viet-nam-lam-viec-cho-to-chuc-ca-nhan-nuoc-ngoai-tai-viet-nam--162330",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/af/af277296d2d38d3947129f2e03a61b3520dd7db7447310e386e5af7985fa439e",
+      "sha256": "af277296d2d38d3947129f2e03a61b3520dd7db7447310e386e5af7985fa439e",
+      "bytes": 255166,
+      "etag": "\"51d1fb563573c5953bbe7b8e1959ba6d\"",
+      "verified_at": "2026-11-02T17:43:24.191897+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:323f28188f977c0f04cf1fa8937e37fd80659928d0598ce04ccf6a11ba5f9d0e": {
+    "artifact_id": "sha256:323f28188f977c0f04cf1fa8937e37fd80659928d0598ce04ccf6a11ba5f9d0e",
+    "sha256": "323f28188f977c0f04cf1fa8937e37fd80659928d0598ce04ccf6a11ba5f9d0e",
+    "file_name": "VanBanGoc_70.2023.NĐ-CP.pdf",
+    "path": "data/raw/appendix/70-2023-nd-cp/323f28188f977c0f_VanBanGoc_70.2023.NĐ-CP.pdf",
+    "bytes": 824237,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162330/VanBanGoc_70.2023.N%C4%90-CP.pdf/download",
+    "downloaded_at": "2026-11-02T16:49:00.981330+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "70-2023-nd-cp",
+        "file_name": "VanBanGoc_70.2023.NĐ-CP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162330/VanBanGoc_70.2023.N%C4%90-CP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/32/323f28188f977c0f04cf1fa8937e37fd80659928d0598ce04ccf6a11ba5f9d0e",
+      "sha256": "323f28188f977c0f04cf1fa8937e37fd80659928d0598ce04ccf6a11ba5f9d0e",
+      "bytes": 824237,
+      "etag": "\"8e2808ad9e639772844ee177a87f65cf\"",
+      "verified_at": "2026-11-02T17:43:24.699632+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:80422299cc28ac4d5c2675fcacd427f679951bab521cfa61e8ca5ba6ee54d1c4": {
+    "artifact_id": "sha256:80422299cc28ac4d5c2675fcacd427f679951bab521cfa61e8ca5ba6ee54d1c4",
+    "sha256": "80422299cc28ac4d5c2675fcacd427f679951bab521cfa61e8ca5ba6ee54d1c4",
+    "file_name": "nghi-dinh-70-2023-nd-cp-sua-doi-nghi-dinh-152-2020-quy-dinh-nld-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+    "path": "data/raw/appendix/70-2023-nd-cp/80422299cc28ac4d_nghi-dinh-70-2023-nd-cp-sua-doi-nghi-dinh-152-2020-quy-dinh-nld-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+    "bytes": 337408,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162330/nghi-dinh-70-2023-nd-cp-sua-doi-nghi-dinh-152-2020-quy-dinh-nld-nuoc-ngoai-lam-viec-tai-viet-nam.doc/download",
+    "downloaded_at": "2026-11-02T16:49:02.897797+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "70-2023-nd-cp",
+        "file_name": "nghi-dinh-70-2023-nd-cp-sua-doi-nghi-dinh-152-2020-quy-dinh-nld-nuoc-ngoai-lam-viec-tai-viet-nam.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/162330/nghi-dinh-70-2023-nd-cp-sua-doi-nghi-dinh-152-2020-quy-dinh-nld-nuoc-ngoai-lam-viec-tai-viet-nam.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/80/80422299cc28ac4d5c2675fcacd427f679951bab521cfa61e8ca5ba6ee54d1c4",
+      "sha256": "80422299cc28ac4d5c2675fcacd427f679951bab521cfa61e8ca5ba6ee54d1c4",
+      "bytes": 337408,
+      "etag": "\"58a9dae7bdd255a1f5a52f91e2594552\"",
+      "verified_at": "2026-11-02T17:43:25.551182+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:c0d53f4839f06dfcd964b6fb25de58c38f889f706102b808e5ddab5dcb6e71d8": {
+    "artifact_id": "sha256:c0d53f4839f06dfcd964b6fb25de58c38f889f706102b808e5ddab5dcb6e71d8",
+    "sha256": "c0d53f4839f06dfcd964b6fb25de58c38f889f706102b808e5ddab5dcb6e71d8",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/28-2015-nd-cp/c0d53f4839f06dfc_vbpl_content.html",
+    "bytes": 126881,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-28-2015-nd-cp-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--55726",
+    "downloaded_at": "2026-11-02T17:03:21.979778+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "28-2015-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-28-2015-nd-cp-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-bao-hiem-that-nghiep--55726",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/c0/c0d53f4839f06dfcd964b6fb25de58c38f889f706102b808e5ddab5dcb6e71d8",
+      "sha256": "c0d53f4839f06dfcd964b6fb25de58c38f889f706102b808e5ddab5dcb6e71d8",
+      "bytes": 126881,
+      "etag": "\"29fe88fcf5b9eb1a41e9224d5fcf9e7b\"",
+      "verified_at": "2026-11-02T17:43:25.530628+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:fd3424e025e9b974c728d2fdbdde7a627e0c73a117ae2973d6dae44c0b6c1f53": {
+    "artifact_id": "sha256:fd3424e025e9b974c728d2fdbdde7a627e0c73a117ae2973d6dae44c0b6c1f53",
+    "sha256": "fd3424e025e9b974c728d2fdbdde7a627e0c73a117ae2973d6dae44c0b6c1f53",
+    "file_name": "VanBanGoc_28.2015.NĐ.CP.pdf",
+    "path": "data/raw/appendix/28-2015-nd-cp/fd3424e025e9b974_VanBanGoc_28.2015.NĐ.CP.pdf",
+    "bytes": 506697,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/55726/VanBanGoc_28.2015.N%C4%90.CP.pdf/download",
+    "downloaded_at": "2026-11-02T17:03:23.937679+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "28-2015-nd-cp",
+        "file_name": "VanBanGoc_28.2015.NĐ.CP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/55726/VanBanGoc_28.2015.N%C4%90.CP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/fd/fd3424e025e9b974c728d2fdbdde7a627e0c73a117ae2973d6dae44c0b6c1f53",
+      "sha256": "fd3424e025e9b974c728d2fdbdde7a627e0c73a117ae2973d6dae44c0b6c1f53",
+      "bytes": 506697,
+      "etag": "\"0cbf7f9315d690f2201aabfcc330f920\"",
+      "verified_at": "2026-11-02T17:43:26.517267+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:162998d67eeb6659970201af3cbc60cf439374fe319ffda16a96d2898c483fe1": {
+    "artifact_id": "sha256:162998d67eeb6659970201af3cbc60cf439374fe319ffda16a96d2898c483fe1",
+    "sha256": "162998d67eeb6659970201af3cbc60cf439374fe319ffda16a96d2898c483fe1",
+    "file_name": "28.2015.ND.CP.doc",
+    "path": "data/raw/appendix/28-2015-nd-cp/162998d67eeb6659_28.2015.ND.CP.doc",
+    "bytes": 184320,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/55726/28.2015.ND.CP.doc/download",
+    "downloaded_at": "2026-11-02T17:03:25.645874+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "28-2015-nd-cp",
+        "file_name": "28.2015.ND.CP.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/55726/28.2015.ND.CP.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/16/162998d67eeb6659970201af3cbc60cf439374fe319ffda16a96d2898c483fe1",
+      "sha256": "162998d67eeb6659970201af3cbc60cf439374fe319ffda16a96d2898c483fe1",
+      "bytes": 184320,
+      "etag": "\"d8517b58d1da9020519c7f463d793c28\"",
+      "verified_at": "2026-11-02T17:43:26.401339+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:c2a7250cac6266e9b0e7b19beb9f24b0f740a7be98d18954d58fcdc813e5bcb7": {
+    "artifact_id": "sha256:c2a7250cac6266e9b0e7b19beb9f24b0f740a7be98d18954d58fcdc813e5bcb7",
+    "sha256": "c2a7250cac6266e9b0e7b19beb9f24b0f740a7be98d18954d58fcdc813e5bcb7",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/31-2015-nd-cp/c2a7250cac6266e9_vbpl_content.html",
+    "bytes": 104795,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-31-2015-nd-cp-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-danh-gia-cap-chung-chi-ky-nang-nghe-quoc-gia--57544",
+    "downloaded_at": "2026-11-02T17:03:24.825108+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "31-2015-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-31-2015-nd-cp-quy-dinh-chi-tiet-thi-hanh-mot-so-dieu-cua-luat-viec-lam-ve-danh-gia-cap-chung-chi-ky-nang-nghe-quoc-gia--57544",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/c2/c2a7250cac6266e9b0e7b19beb9f24b0f740a7be98d18954d58fcdc813e5bcb7",
+      "sha256": "c2a7250cac6266e9b0e7b19beb9f24b0f740a7be98d18954d58fcdc813e5bcb7",
+      "bytes": 104795,
+      "etag": "\"01e5c27a6c1b79c062fa964d2414a228\"",
+      "verified_at": "2026-11-02T17:43:27.303012+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:0e5343c5a47eed7d6209872f1e1f47cbaca77cfd79c3117893a35dfcb7e7d760": {
+    "artifact_id": "sha256:0e5343c5a47eed7d6209872f1e1f47cbaca77cfd79c3117893a35dfcb7e7d760",
+    "sha256": "0e5343c5a47eed7d6209872f1e1f47cbaca77cfd79c3117893a35dfcb7e7d760",
+    "file_name": "VanBanGoc_31.2015.NĐ.CP.pdf",
+    "path": "data/raw/appendix/31-2015-nd-cp/0e5343c5a47eed7d_VanBanGoc_31.2015.NĐ.CP.pdf",
+    "bytes": 459857,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/57544/VanBanGoc_31.2015.N%C4%90.CP.pdf/download",
+    "downloaded_at": "2026-11-02T17:03:26.725647+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "31-2015-nd-cp",
+        "file_name": "VanBanGoc_31.2015.NĐ.CP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/57544/VanBanGoc_31.2015.N%C4%90.CP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/0e/0e5343c5a47eed7d6209872f1e1f47cbaca77cfd79c3117893a35dfcb7e7d760",
+      "sha256": "0e5343c5a47eed7d6209872f1e1f47cbaca77cfd79c3117893a35dfcb7e7d760",
+      "bytes": 459857,
+      "etag": "\"e67dd23d5d9fda77a42c2963a21505b3\"",
+      "verified_at": "2026-11-02T17:43:27.566827+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:baeedf49cf966499bb9cf20b70e909825b0ce39f64fd8016255ca9596f8a674b": {
+    "artifact_id": "sha256:baeedf49cf966499bb9cf20b70e909825b0ce39f64fd8016255ca9596f8a674b",
+    "sha256": "baeedf49cf966499bb9cf20b70e909825b0ce39f64fd8016255ca9596f8a674b",
+    "file_name": "31.2015.ND.CP.doc",
+    "path": "data/raw/appendix/31-2015-nd-cp/baeedf49cf966499_31.2015.ND.CP.doc",
+    "bytes": 207872,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/57544/31.2015.ND.CP.doc/download",
+    "downloaded_at": "2026-11-02T17:03:28.640062+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "31-2015-nd-cp",
+        "file_name": "31.2015.ND.CP.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/57544/31.2015.ND.CP.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/ba/baeedf49cf966499bb9cf20b70e909825b0ce39f64fd8016255ca9596f8a674b",
+      "sha256": "baeedf49cf966499bb9cf20b70e909825b0ce39f64fd8016255ca9596f8a674b",
+      "bytes": 207872,
+      "etag": "\"7ec14f08e32e79d6716fd6830c20f46b\"",
+      "verified_at": "2026-11-02T17:43:28.211644+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:92e4b322c265f019f8f662956f28daa9b30d9a4c4b8e7859179e25952bddc78f": {
+    "artifact_id": "sha256:92e4b322c265f019f8f662956f28daa9b30d9a4c4b8e7859179e25952bddc78f",
+    "sha256": "92e4b322c265f019f8f662956f28daa9b30d9a4c4b8e7859179e25952bddc78f",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/45-2015-tt-bldtbxh/92e4b322c265f019_vbpl_content.html",
+    "bytes": 278054,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-45-2015-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-ve-quy-quoc-gia-ve-viec-lam-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--94582",
+    "downloaded_at": "2026-11-02T17:03:30.828173+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "45-2015-tt-bldtbxh",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-45-2015-tt-bldtbxh-huong-dan-thuc-hien-mot-so-dieu-ve-quy-quoc-gia-ve-viec-lam-quy-dinh-tai-nghi-dinh-so-61-2015-nd-cp-ngay-09-thang-7-nam-2015-cua-chinh-phu-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--94582",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/92/92e4b322c265f019f8f662956f28daa9b30d9a4c4b8e7859179e25952bddc78f",
+      "sha256": "92e4b322c265f019f8f662956f28daa9b30d9a4c4b8e7859179e25952bddc78f",
+      "bytes": 278054,
+      "etag": "\"01a55397305645da58b48d6f964bf75c\"",
+      "verified_at": "2026-11-02T17:43:28.346789+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:791da0afc56b0b03aaab8a04ff833150a2ec4499465b0876ca703bc22f85d5b7": {
+    "artifact_id": "sha256:791da0afc56b0b03aaab8a04ff833150a2ec4499465b0876ca703bc22f85d5b7",
+    "sha256": "791da0afc56b0b03aaab8a04ff833150a2ec4499465b0876ca703bc22f85d5b7",
+    "file_name": "VanBanGoc_45.2015.TT.BLĐTBXH.pdf",
+    "path": "data/raw/appendix/45-2015-tt-bldtbxh/791da0afc56b0b03_VanBanGoc_45.2015.TT.BLĐTBXH.pdf",
+    "bytes": 475786,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/94582/VanBanGoc_45.2015.TT.BL%C4%90TBXH.pdf/download",
+    "downloaded_at": "2026-11-02T17:03:32.700878+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "45-2015-tt-bldtbxh",
+        "file_name": "VanBanGoc_45.2015.TT.BLĐTBXH.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/94582/VanBanGoc_45.2015.TT.BL%C4%90TBXH.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/79/791da0afc56b0b03aaab8a04ff833150a2ec4499465b0876ca703bc22f85d5b7",
+      "sha256": "791da0afc56b0b03aaab8a04ff833150a2ec4499465b0876ca703bc22f85d5b7",
+      "bytes": 475786,
+      "etag": "\"11553fa714166cf3e6f756ce910c3652\"",
+      "verified_at": "2026-11-02T17:43:29.118880+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f1caa5695fa185b3ba5dc5f4df5b0f88372b971fe73a614bfbdb91e7b333a106": {
+    "artifact_id": "sha256:f1caa5695fa185b3ba5dc5f4df5b0f88372b971fe73a614bfbdb91e7b333a106",
+    "sha256": "f1caa5695fa185b3ba5dc5f4df5b0f88372b971fe73a614bfbdb91e7b333a106",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/61-2015-nd-cp/f1caa5695fa185b3_vbpl_content.html",
+    "bytes": 39118,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-61-2015-nd-cp-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--70173",
+    "downloaded_at": "2026-11-02T17:03:31.839020+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "61-2015-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-61-2015-nd-cp-quy-dinh-ve-chinh-sach-ho-tro-tao-viec-lam-va-quy-quoc-gia-ve-viec-lam--70173",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f1/f1caa5695fa185b3ba5dc5f4df5b0f88372b971fe73a614bfbdb91e7b333a106",
+      "sha256": "f1caa5695fa185b3ba5dc5f4df5b0f88372b971fe73a614bfbdb91e7b333a106",
+      "bytes": 39118,
+      "etag": "\"e128576425cedf3adf325ff30f6babc3\"",
+      "verified_at": "2026-11-02T17:43:29.346148+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:fec87c9e7167dde612921398f460adeed623b7cb713c4c748e8aba644b30ac96": {
+    "artifact_id": "sha256:fec87c9e7167dde612921398f460adeed623b7cb713c4c748e8aba644b30ac96",
+    "sha256": "fec87c9e7167dde612921398f460adeed623b7cb713c4c748e8aba644b30ac96",
+    "file_name": "VanBanGoc_61.2015.NĐ.CP.pdf",
+    "path": "data/raw/appendix/61-2015-nd-cp/fec87c9e7167dde6_VanBanGoc_61.2015.NĐ.CP.pdf",
+    "bytes": 369275,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/70173/VanBanGoc_61.2015.N%C4%90.CP.pdf/download",
+    "downloaded_at": "2026-11-02T17:03:33.676484+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "61-2015-nd-cp",
+        "file_name": "VanBanGoc_61.2015.NĐ.CP.pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/70173/VanBanGoc_61.2015.N%C4%90.CP.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/fe/fec87c9e7167dde612921398f460adeed623b7cb713c4c748e8aba644b30ac96",
+      "sha256": "fec87c9e7167dde612921398f460adeed623b7cb713c4c748e8aba644b30ac96",
+      "bytes": 369275,
+      "etag": "\"e8f5460895eacf4c357d13516f15c723\"",
+      "verified_at": "2026-11-02T17:43:30.250574+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:6d4e345ba8224432e1dd1588984223de606fdc2d5eb52d1005fd343148e70153": {
+    "artifact_id": "sha256:6d4e345ba8224432e1dd1588984223de606fdc2d5eb52d1005fd343148e70153",
+    "sha256": "6d4e345ba8224432e1dd1588984223de606fdc2d5eb52d1005fd343148e70153",
+    "file_name": "61.2015.ND.CP.doc",
+    "path": "data/raw/appendix/61-2015-nd-cp/6d4e345ba8224432_61.2015.ND.CP.doc",
+    "bytes": 107008,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/70173/61.2015.ND.CP.doc/download",
+    "downloaded_at": "2026-11-02T17:03:35.684239+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "61-2015-nd-cp",
+        "file_name": "61.2015.ND.CP.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/70173/61.2015.ND.CP.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/6d/6d4e345ba8224432e1dd1588984223de606fdc2d5eb52d1005fd343148e70153",
+      "sha256": "6d4e345ba8224432e1dd1588984223de606fdc2d5eb52d1005fd343148e70153",
+      "bytes": 107008,
+      "etag": "\"d6ea9f11aee754a27986dd9ab00b30a0\"",
+      "verified_at": "2026-11-02T17:43:30.182488+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:9f0cd1a1f104b968df4218596f2770f7d72a2b547ec2f544fe7112f2b665bc53": {
+    "artifact_id": "sha256:9f0cd1a1f104b968df4218596f2770f7d72a2b547ec2f544fe7112f2b665bc53",
+    "sha256": "9f0cd1a1f104b968df4218596f2770f7d72a2b547ec2f544fe7112f2b665bc53",
+    "file_name": "vbpl_content.html",
+    "path": "data/raw/appendix/140-2018-nd-cp/9f0cd1a1f104b968_vbpl_content.html",
+    "bytes": 421899,
+    "format": "html",
+    "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-140-2018-nd-cp-sua-doi-bo-sung-cac-nghi-dinh-lien-quan-den-dieu-kien-dau-tu-kinh-doanh-va-thu-tuc-hanh-chinh-thuoc-pham-vi-quan-ly-nha-nuoc-cua-bo-lao-dong-thuong-binh-va-xa-hoi--131493",
+    "downloaded_at": "2026-11-02T17:03:39.765174+00:00",
+    "storage_backend": "r2",
+    "role": "document_html",
+    "sources": [
+      {
+        "document_id": "140-2018-nd-cp",
+        "file_name": "vbpl_content.html",
+        "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-140-2018-nd-cp-sua-doi-bo-sung-cac-nghi-dinh-lien-quan-den-dieu-kien-dau-tu-kinh-doanh-va-thu-tuc-hanh-chinh-thuoc-pham-vi-quan-ly-nha-nuoc-cua-bo-lao-dong-thuong-binh-va-xa-hoi--131493",
+        "role": "document_html"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/9f/9f0cd1a1f104b968df4218596f2770f7d72a2b547ec2f544fe7112f2b665bc53",
+      "sha256": "9f0cd1a1f104b968df4218596f2770f7d72a2b547ec2f544fe7112f2b665bc53",
+      "bytes": 421899,
+      "etag": "\"2a43cd9d131264086fe8af94148116f6\"",
+      "verified_at": "2026-11-02T17:43:31.213437+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:f53ea03405c28b95c8782a16bf65bd9aa3c4ce4c4d979e56b568654fbb13586c": {
+    "artifact_id": "sha256:f53ea03405c28b95c8782a16bf65bd9aa3c4ce4c4d979e56b568654fbb13586c",
+    "sha256": "f53ea03405c28b95c8782a16bf65bd9aa3c4ce4c4d979e56b568654fbb13586c",
+    "file_name": "VanBanGoc_140 2018 ND-CP.signed (1).pdf",
+    "path": "data/raw/appendix/140-2018-nd-cp/f53ea03405c28b95_VanBanGoc_140 2018 ND-CP.signed (1).pdf",
+    "bytes": 3850911,
+    "format": "pdf",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/131493/VanBanGoc_140%202018%20ND-CP.signed%20%281%29.pdf/download",
+    "downloaded_at": "2026-11-02T17:03:40.563668+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "140-2018-nd-cp",
+        "file_name": "VanBanGoc_140 2018 ND-CP.signed (1).pdf",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/131493/VanBanGoc_140%202018%20ND-CP.signed%20%281%29.pdf/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/f5/f53ea03405c28b95c8782a16bf65bd9aa3c4ce4c4d979e56b568654fbb13586c",
+      "sha256": "f53ea03405c28b95c8782a16bf65bd9aa3c4ce4c4d979e56b568654fbb13586c",
+      "bytes": 3850911,
+      "etag": "\"03cf3dd0d70a92d512080d292380298f\"",
+      "verified_at": "2026-11-02T17:43:31.677538+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:ebb6c4000f2ee1178705055807acece80f204306efb6e71d434a1e2f8bdf4f7c": {
+    "artifact_id": "sha256:ebb6c4000f2ee1178705055807acece80f204306efb6e71d434a1e2f8bdf4f7c",
+    "sha256": "ebb6c4000f2ee1178705055807acece80f204306efb6e71d434a1e2f8bdf4f7c",
+    "file_name": "140_2018_ND-CP_396446.doc",
+    "path": "data/raw/appendix/140-2018-nd-cp/ebb6c4000f2ee117_140_2018_ND-CP_396446.doc",
+    "bytes": 526336,
+    "format": "doc",
+    "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/131493/140_2018_ND-CP_396446.doc/download",
+    "downloaded_at": "2026-11-02T17:03:41.984401+00:00",
+    "storage_backend": "r2",
+    "role": "original",
+    "sources": [
+      {
+        "document_id": "140-2018-nd-cp",
+        "file_name": "140_2018_ND-CP_396446.doc",
+        "source_url": "https://vbpl-bientap-gateway.moj.gov.vn/api/qtdc/public/doc/minio/buckets/vbpl/131493/140_2018_ND-CP_396446.doc/download",
+        "role": "original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/eb/ebb6c4000f2ee1178705055807acece80f204306efb6e71d434a1e2f8bdf4f7c",
+      "sha256": "ebb6c4000f2ee1178705055807acece80f204306efb6e71d434a1e2f8bdf4f7c",
+      "bytes": 526336,
+      "etag": "\"37984abe991a427bb91c3adaf98760bc\"",
+      "verified_at": "2026-11-02T17:43:32.165090+00:00",
+      "status": "uploaded"
+    }
+  },
+  "sha256:96d9570d72cb698894392248baae9cf3d904a33f1eb7a9d2039a3b1a8e61ba23": {
+    "artifact_id": "sha256:96d9570d72cb698894392248baae9cf3d904a33f1eb7a9d2039a3b1a8e61ba23",
+    "sha256": "96d9570d72cb698894392248baae9cf3d904a33f1eb7a9d2039a3b1a8e61ba23",
+    "file_name": "31418-1-2020635-63661-2020-nd-cp.pdf",
+    "path": "data/raw/appendix/61-2020-nd-cp/96d9570d72cb6988_31418-1-2020635-63661-2020-nd-cp.pdf",
+    "bytes": 511336,
+    "format": "pdf",
+    "source_url": "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2020/5/31455/31418-1-2020635-63661-2020-nd-cp.pdf",
+    "downloaded_at": "2026-11-02T17:19:05.920765+00:00",
+    "storage_backend": "r2",
+    "role": "alternative_original",
+    "landing_url": "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-61-2020-nd-cp-31455/31418.htm",
+    "sources": [
+      {
+        "document_id": "61-2020-nd-cp",
+        "file_name": "31418-1-2020635-63661-2020-nd-cp.pdf",
+        "source_url": "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2020/5/31455/31418-1-2020635-63661-2020-nd-cp.pdf",
+        "role": "alternative_original"
+      }
+    ],
+    "r2": {
+      "bucket": "pbl6-legal-files",
+      "key": "appendices_v1/artifacts/96/96d9570d72cb698894392248baae9cf3d904a33f1eb7a9d2039a3b1a8e61ba23",
+      "sha256": "96d9570d72cb698894392248baae9cf3d904a33f1eb7a9d2039a3b1a8e61ba23",
+      "bytes": 511336,
+      "etag": "\"a6f57d71b14e3f5b2523c999d20086e4\"",
+      "verified_at": "2026-11-02T17:43:32.620845+00:00",
+      "status": "uploaded"
+    }
+  }
+}

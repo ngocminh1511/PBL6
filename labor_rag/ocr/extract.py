@@ -74,8 +74,15 @@ class ExtractionResult:
         return sum(values) / len(values) if values else None
 
     def clean_text(self) -> str:
-        """Pages merged, with headers/footers, page numbers and broken lines fixed."""
-        return clean_and_merge([p.text for p in self.pages if p.text])
+        """Pages merged, with headers/footers, page numbers, footnotes and broken lines fixed."""
+        return self.clean_text_and_footnotes()[0]
+
+    def clean_text_and_footnotes(self) -> tuple[str, list[dict]]:
+        """(clean text, [{page, number, text}]) -- the footnotes cut from the page bottoms."""
+        pages = [p for p in self.pages if p.text]
+        footnotes: list[dict] = []
+        text = clean_and_merge([p.text for p in pages], footnotes, [p.page_number for p in pages])
+        return text, footnotes
 
     def ocr_quality(self) -> dict | None:
         """Heuristic quality report over the OCR'd pages, None if nothing was OCR'd."""

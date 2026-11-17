@@ -14,16 +14,18 @@ Dieu.  Labels are LLM-assisted but human-verified:
   export    Excel workbook for human review; re-running it keeps
             every value a reviewer has already typed                 -> review.xlsx
   finalize  reviewed workbook -> benchmark_questions_v2.jsonl
+  import    questions written by a person (or Claude) with their gold
+            Dieu and a reference answer, appended as more seeds/drafts
   stats     coverage report                                          -> testset_stats.json
 
-The 30 v1 questions are carried over (ids q01..q30) and re-pooled against the
-full topic, because Dieu outside 20.5 (e.g. the Bo luat Lao dong chapter on
-an toan lao dong) may now also answer them.
+The 30 v1 questions (q01..q30) are left out by default: they mostly restate
+the Dieu title, so they measure little.  --with-v1 brings them back.
 
 Run from the repository root:
 
     python -m labor_rag.evaluation.build_testset sample
     python -m labor_rag.evaluation.build_testset draft
+    python -m labor_rag.evaluation.build_testset import --input authored.jsonl --drafted-by claude
     python -m labor_rag.evaluation.build_testset pool
     python -m labor_rag.evaluation.build_testset judge
     python -m labor_rag.evaluation.build_testset export
@@ -46,10 +48,11 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
-from labor_rag.config import ANNOTATION_DIR, EVALUATION_DIR, LAO_DONG_V4_DIR, TESTSET_CACHE_DIR
+from labor_rag.config import ANNOTATION_DIR, EVALUATION_DIR, LAO_DONG_DIR, TESTSET_CACHE_DIR
+from labor_rag.ingest.chunk_schema import article_id, join_parts, part_number
 
-DEFAULT_CHUNKS = LAO_DONG_V4_DIR / "chunks.jsonl"
-DEFAULT_EDGES = LAO_DONG_V4_DIR / "kg_edges.jsonl"
+DEFAULT_CHUNKS = LAO_DONG_DIR / "chunks.jsonl"
+DEFAULT_EDGES = LAO_DONG_DIR / "kg_edges.jsonl"
 V1_QUESTIONS = EVALUATION_DIR / "benchmark_questions.jsonl"
 OUTPUT_QUESTIONS = EVALUATION_DIR / "benchmark_questions_v2.jsonl"
 
@@ -180,12 +183,12 @@ def doc_type_of(mapc: str) -> str:
 
 
 def article_body(chunk: dict[str, Any]) -> str:
-    """Chunk text is 'breadcrumb / title / citation / body'; return the body."""
+    """Chunk text is 'context / Điều n. Tên / body' (schema v5); return the body."""
 
     lines = chunk.get("text", "").split("\n")
-    citation = (chunk.get("citation") or "").strip()
+    title = f"Điều {chunk.get('meta_dieu')}. {chunk.get('ten') or ''}".strip()
     for index, line in enumerate(lines):
-        if citation and line.strip() == citation:
+        if chunk.get("meta_dieu") and line.strip() == title:
             return "\n".join(lines[index + 1 :]).strip()
     return chunk.get("text", "").strip()
 
@@ -248,10 +251,25 @@ class TokenCounter:
 
 
 def load_chunks(path: Path) -> dict[str, dict[str, Any]]:
+    """One whole Dieu per mapc: the parts of a split Dieu are joined back."""
+
     chunks = read_jsonl(path)
     if not chunks:
         raise SystemExit(f"No chunks at {path}. Build them first (see docs in this module).")
-    return {str(chunk["mapc"]): chunk for chunk in chunks}
+    parts: dict[str, list[dict[str, Any]]] = {}
+    for chunk in chunks:
+        if chunk.get("mapc"):
+            parts.setdefault(str(chunk["mapc"]), []).append(chunk)
+    articles = {}
+    for mapc, group in parts.items():
+        group.sort(key=lambda chunk: part_number(chunk["chunk_id"]))
+        articles[mapc] = {
+            **group[0],
+            "chunk_id": article_id(group[0]["chunk_id"]),
+            "meta_khoan": None,
+            "text": join_parts([chunk["text"] for chunk in group]),
+        }
+    return articles
 
 
 # ------------------------------------------------------------------------ llm
@@ -565,6 +583,83 @@ def cmd_draft(args: argparse.Namespace) -> int:
     return 0
 
 
+# --------------------------------------------------------------------- import
+
+AUTHORED_KEYS = {"style", "question", "gold", "tags", "target_khoan", "answer_hint", "category"}
+
+
+def cmd_import(args: argparse.Namespace) -> int:
+    """Append questions written outside `draft` as seeds + ok drafts.
+
+    Each input line: {"style", "question", "gold": {mapc: 2|3}, "tags",
+    "target_khoan", "answer_hint", "category"}.  The gold goes into the pool
+    as seeds and shows up in review.xlsx as the suggested grade.
+    """
+
+    chunks = load_chunks(args.chunks)
+    seeds = read_jsonl(SEEDS_PATH)
+    known_questions = {normalize(d["question"]) for d in read_jsonl(DRAFTS_PATH) if d.get("question")}
+    numbers = [int(s["qid"][2:]) for s in seeds if re.fullmatch(r"ld\d+", s["qid"])]
+    next_number = max(numbers, default=0) + 1
+    rows = read_jsonl(args.input)
+    errors = []
+    for line, row in enumerate(rows, start=1):
+        missing = AUTHORED_KEYS - set(row)
+        if missing:
+            errors.append(f"line {line}: missing {sorted(missing)}")
+            continue
+        if row["style"] not in STYLE_INSTRUCTIONS:
+            errors.append(f"line {line}: unknown style {row['style']}")
+        gold = row["gold"]
+        if not gold or not all(m in chunks and MAPC_RE.match(m) for m in gold):
+            errors.append(f"line {line}: gold must be known, stable mapc values: {list(gold)}")
+        elif not any(int(g) == 3 for g in gold.values()) or any(int(g) not in (2, 3) for g in gold.values()):
+            errors.append(f"line {line}: gold grades must be 2 or 3, with at least one 3")
+        seed_like = {"seed_mapcs": [m for m in gold if m in chunks]}
+        problem = check_draft(row["question"], seed_like, chunks)
+        if problem:
+            errors.append(f"line {line}: {problem}")
+        if normalize(row["question"]) in known_questions:
+            errors.append(f"line {line}: question already imported/drafted")
+        if row["category"] not in CATEGORIES:
+            errors.append(f"line {line}: unknown category {row['category']}")
+    if errors:
+        print("Nothing imported:\n- " + "\n- ".join(errors))
+        return 1
+
+    for row in rows:
+        gold = {m: int(g) for m, g in sorted(row["gold"].items(), key=lambda kv: -int(kv[1]))}
+        mapcs = list(gold)
+        qid = f"ld{next_number:03d}"
+        next_number += 1
+        tags = list(row["tags"])
+        if len(mapcs) > 1 and "multi_dieu" not in tags:
+            tags.append("multi_dieu")
+        append_jsonl(SEEDS_PATH, {
+            "qid": qid,
+            "de_muc": de_muc_of(mapcs[0]),
+            "style": row["style"],
+            "seed_mapcs": mapcs,
+            "doc_types": [doc_type_of(m) for m in mapcs],
+            "tags": tags,
+            "target_khoan": row["target_khoan"],
+            "target_khoan_text": None,
+            "origin": "authored",
+            "author_relevance": gold,
+        })
+        append_jsonl(DRAFTS_PATH, {
+            "qid": qid,
+            "status": "ok",
+            "drafted_by": args.drafted_by,
+            "question": row["question"].strip(),
+            "answer_hint": row["answer_hint"].strip(),
+            "category": row["category"],
+            "error": None,
+        })
+    print(f"Imported {len(rows)} questions as ld{next_number - len(rows):03d}..ld{next_number - 1:03d}")
+    return 0
+
+
 # ----------------------------------------------------------------------- pool
 
 
@@ -603,13 +698,14 @@ def corpus_embeddings(key: str, model: Any, texts: list[str], max_seq_length: in
     return vectors
 
 
-def current_questions() -> list[dict[str, Any]]:
-    """v1 questions + successful drafts, with text edited in review.xlsx taking precedence."""
+def current_questions(with_v1: bool = False) -> list[dict[str, Any]]:
+    """Successful drafts (plus the v1 questions with ``with_v1``), with text
+    edited in review.xlsx taking precedence."""
 
     seeds = {s["qid"]: s for s in read_jsonl(SEEDS_PATH)}
     drafts = latest_by_qid(read_jsonl(DRAFTS_PATH))
     questions: list[dict[str, Any]] = []
-    for row in read_jsonl(V1_QUESTIONS):
+    for row in read_jsonl(V1_QUESTIONS) if with_v1 else []:
         questions.append(
             {
                 "qid": row["id"],
@@ -625,6 +721,7 @@ def current_questions() -> list[dict[str, Any]]:
                 "origin": "manual_v1",
                 "drafted_by": "human",
                 "v1_relevance": {m: int(g) for m, g in row["relevance"].items()},
+                "author_relevance": {},
                 "notes": row.get("notes", ""),
             }
         )
@@ -644,9 +741,12 @@ def current_questions() -> list[dict[str, Any]]:
                 "target_khoan": seed.get("target_khoan"),
                 "answer_hint": draft.get("answer_hint", ""),
                 "category": draft.get("category", "khac"),
-                "origin": "llm_draft",
+                "origin": seed.get("origin", "llm_draft"),
                 "drafted_by": draft.get("drafted_by", "gemini"),
                 "v1_relevance": {},
+                # Gold chosen by whoever wrote an imported question: shown as a
+                # suggestion in review.xlsx, never as a reviewer grade.
+                "author_relevance": seed.get("author_relevance", {}),
                 "notes": "",
             }
         )
@@ -665,7 +765,7 @@ def cmd_pool(args: argparse.Namespace) -> int:
     chunks = load_chunks(args.chunks)
     mapcs = list(chunks)
     texts = [chunks[m]["text"] for m in mapcs]
-    questions = current_questions()
+    questions = current_questions(args.with_v1)
     if not questions:
         raise SystemExit("No questions yet; run `draft` first.")
     query_texts = [q["question"] for q in questions]
@@ -822,7 +922,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     from openpyxl.worksheet.datavalidation import DataValidation
 
     chunks = load_chunks(args.chunks)
-    questions = current_questions()
+    questions = current_questions(args.with_v1)
     pools = {p["qid"]: p for p in read_jsonl(POOLS_PATH)}
     judged = latest_by_qid(read_jsonl(JUDGMENTS_PATH))
     old_q = read_review_questions() if REVIEW_PATH.exists() else {}
@@ -874,7 +974,10 @@ def cmd_export(args: argparse.Namespace) -> int:
         pool = pools.get(qid)
         if not pool:
             continue
-        suggestions = judged.get(qid, {}).get("grades", {})
+        suggestions = {
+            **{m: {"grade": g, "why": "Điều gold do người soạn câu hỏi chọn"} for m, g in question["author_relevance"].items()},
+            **judged.get(qid, {}).get("grades", {}),
+        }
         candidates = pool["candidates"]
 
         def order(mapc: str) -> tuple:
@@ -971,7 +1074,20 @@ def cmd_finalize(args: argparse.Namespace) -> int:
     if not REVIEW_PATH.exists():
         raise SystemExit("Run `export` and review the workbook first.")
     chunks = load_chunks(args.chunks)
-    meta = {q["qid"]: q for q in current_questions()}
+    raw_chunks = read_jsonl(args.chunks)
+    mapc_to_raw: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for c in raw_chunks:
+        if c.get("mapc"):
+            mapc_to_raw[str(c["mapc"])].append(c)
+
+    edges_path = getattr(args, "edges", DEFAULT_EDGES)
+    edge_map: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    if edges_path.exists():
+        for e in read_jsonl(edges_path):
+            if e.get("type") in ("REFERS_TO", "PART_OF"):
+                edge_map[str(e.get("source"))].append(e)
+
+    meta = {q["qid"]: q for q in current_questions(getattr(args, "with_v1", False))}
     reviewed_q = read_review_questions()
     judgments: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in _read_sheet(REVIEW_PATH, "judgments"):
@@ -1019,8 +1135,76 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         info = meta.get(qid, {})
         edited = question_text != str(info.get("question_draft", question_text)).strip()
         origin = info.get("origin", "llm_draft")
-        if origin == "llm_draft":
-            origin = "llm_draft_edited" if edited else "llm_draft_reviewed"
+        if origin in ("llm_draft", "authored"):
+            origin = f"{origin}_edited" if edited else f"{origin}_reviewed"
+
+        # Chunk relevance mapping
+        chunk_rel: dict[str, int] = {}
+        target_khoan = info.get("target_khoan")
+        tags = info.get("tags", [])
+        if "deep_khoan" in tags and target_khoan:
+            seed_m = (info.get("seed_mapcs") or [list(relevance.keys())[0]])[0]
+            c_list = mapc_to_raw.get(seed_m, [])
+            matched_cid = None
+            for c in c_list:
+                mk = str(c.get("meta_khoan") or "")
+                if "-" in mk:
+                    parts = mk.split("-")
+                    if parts[0].isdigit() and parts[1].isdigit() and int(parts[0]) <= target_khoan <= int(parts[1]):
+                        matched_cid = c["chunk_id"]
+                        break
+                elif mk.isdigit() and int(mk) == target_khoan:
+                    matched_cid = c["chunk_id"]
+                    break
+            if not matched_cid and c_list:
+                for c in c_list:
+                    if re.search(rf'(?:^|\n){target_khoan}\.\s', c["text"]):
+                        matched_cid = c["chunk_id"]
+                        break
+            if matched_cid:
+                chunk_rel[matched_cid] = 3
+                for c in c_list:
+                    if c["chunk_id"] != matched_cid:
+                        chunk_rel[c["chunk_id"]] = 1
+            else:
+                for c in c_list:
+                    chunk_rel[c["chunk_id"]] = 3
+        else:
+            for m, g in relevance.items():
+                for c in mapc_to_raw.get(m, []):
+                    chunk_rel[c["chunk_id"]] = g
+
+        # Knowledge Graph relevance mapping
+        seed_mapcs = info.get("seed_mapcs") or [list(relevance.keys())[0]]
+        connected_edges = []
+        expanded_mapcs = []
+        for sm in seed_mapcs:
+            for edge in edge_map.get(sm, []):
+                tgt = edge.get("target")
+                if tgt in relevance and tgt not in seed_mapcs:
+                    connected_edges.append({
+                        "source": sm,
+                        "type": edge.get("type"),
+                        "target": tgt,
+                        "predicate": edge.get("predicate_iri", ""),
+                    })
+                    if tgt not in expanded_mapcs:
+                        expanded_mapcs.append(tgt)
+                elif "multi_dieu" in tags and tgt in seed_mapcs and tgt != sm:
+                    connected_edges.append({
+                        "source": sm,
+                        "type": edge.get("type"),
+                        "target": tgt,
+                        "predicate": edge.get("predicate_iri", ""),
+                    })
+
+        retrieval_type = "chunk_only"
+        if "multi_dieu" in tags or connected_edges:
+            retrieval_type = "graph_expanded"
+        elif "deep_khoan" in tags:
+            retrieval_type = "deep_khoan"
+        elif len(chunk_rel) > 1:
+            retrieval_type = "multi_chunk"
         output.append(
             {
                 "id": qid,
@@ -1028,10 +1212,17 @@ def cmd_finalize(args: argparse.Namespace) -> int:
                 "de_muc": info.get("de_muc", row.get("de_muc")),
                 "category": row.get("category") or info.get("category", "khac"),
                 "style": info.get("style", row.get("style")),
-                "tags": info.get("tags", []),
+                "tags": tags,
+                "retrieval_type": retrieval_type,
                 "relevance": dict(sorted(relevance.items(), key=lambda kv: -kv[1])),
-                "seed_mapcs": info.get("seed_mapcs", []),
-                "target_khoan": info.get("target_khoan"),
+                "chunk_relevance": dict(sorted(chunk_rel.items(), key=lambda kv: -kv[1])),
+                "kg_relevance": {
+                    "seed_mapcs": seed_mapcs,
+                    "graph_edges": connected_edges,
+                    "expanded_mapcs": expanded_mapcs,
+                },
+                "seed_mapcs": seed_mapcs,
+                "target_khoan": target_khoan,
                 "origin": origin,
                 "drafted_by": info.get("drafted_by", "unknown"),
                 "grades_from_suggestion": from_suggestion,
@@ -1079,13 +1270,14 @@ def cmd_stats(args: argparse.Namespace) -> int:
             {"de_muc": q["de_muc"], "style": q["style"], "tags": q.get("tags", []), "relevance": q["relevance"]}
             for q in questions
         ]
-    else:  # before finalize: plan coverage from seeds + v1
-        source = f"{SEEDS_PATH} + {V1_QUESTIONS} (not finalized yet)"
+    else:  # before finalize: plan coverage from the seeds (+ v1)
+        source = f"{SEEDS_PATH}" + (f" + {V1_QUESTIONS}" if args.with_v1 else "") + " (not finalized yet)"
         rows = [
             {"de_muc": "20.5", "style": "truc_tiep", "tags": [], "relevance": q["relevance"]}
-            for q in read_jsonl(V1_QUESTIONS)
+            for q in (read_jsonl(V1_QUESTIONS) if args.with_v1 else [])
         ] + [
-            {"de_muc": s["de_muc"], "style": s["style"], "tags": s["tags"], "relevance": {m: 3 for m in s["seed_mapcs"]}}
+            {"de_muc": s["de_muc"], "style": s["style"], "tags": s["tags"],
+             "relevance": s.get("author_relevance") or {m: 3 for m in s["seed_mapcs"]}}
             for s in read_jsonl(SEEDS_PATH)
         ]
     gold = [m for r in rows for m in r["relevance"]]
@@ -1116,6 +1308,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--chunks", type=Path, default=DEFAULT_CHUNKS)
+    parser.add_argument("--with-v1", action="store_true", help="also include the 30 v1 questions (q01..q30)")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sample = sub.add_parser("sample", help="choose seed Dieu")
@@ -1130,6 +1323,11 @@ def build_parser() -> argparse.ArgumentParser:
     draft.add_argument("--sleep", type=float, default=4.0, help="seconds between calls (free-tier RPM)")
     draft.add_argument("--qids", nargs="+", help="only these seeds (e.g. a trial run)")
     draft.set_defaults(func=cmd_draft)
+
+    authored = sub.add_parser("import", help="append questions written outside `draft` (with gold + answer)")
+    authored.add_argument("--input", type=Path, required=True)
+    authored.add_argument("--drafted-by", required=True, help="who wrote them, e.g. claude or a name")
+    authored.set_defaults(func=cmd_import)
 
     pool = sub.add_parser("pool", help="candidate Dieu from BM25 + embedding models")
     pool.add_argument("--models", nargs="+", default=list(DENSE_MODELS), choices=list(DENSE_MODELS))

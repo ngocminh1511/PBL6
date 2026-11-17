@@ -1,0 +1,20 @@
+{
+  "triples": 2869,
+  "nodes": 300,
+  "edges": 1161,
+  "unresolved_links": [
+    {
+      "appendix_id": "02-2023-tt-byt:pl35",
+      "article": {
+        "mapc": "20.5.TT.21.8",
+        "document_id": "02-2023-tt-byt",
+        "article_number": "8",
+        "basis": "explicit_text_reference"
+      },
+      "reason": "source_article_not_in_base_projection"
+    }
+  ],
+  "dataset_id": "lao_dong_v5",
+  "shacl_conforms": true,
+  "shacl_report": "Validation Report\nConforms: True\n"
+}

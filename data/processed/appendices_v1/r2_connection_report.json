@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-02T17:42:31.425145+00:00",
+  "bucket": "pbl6-legal-files",
+  "prefix": "appendices_v1",
+  "source_files": 116,
+  "normalized_files": 208,
+  "status": "connected",
+  "write_access": "verified",
+  "upload_started": true
+}

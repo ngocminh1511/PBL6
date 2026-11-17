@@ -1,0 +1,1602 @@
+{
+ "049522e0-fec2-4d52-916d-dd103ba69627": {
+  "path": "linh_vuc/dan_toc/cong_tac_dan_toc.html",
+  "chu_de": "Dân tộc",
+  "de_muc": "Công tác dân tộc"
+ },
+ "06936689-e896-45ee-9486-99b9370f31bc": {
+  "path": "linh_vuc/dat_dai/dat_dai.html",
+  "chu_de": "Đất đai",
+  "de_muc": "Đất đai"
+ },
+ "0d5b64ca-267f-4cb9-9400-63448387b0d6": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/cap_ban_sao_tu_so_goc_chung_thuc_ban_sao_tu_ban_chinh_chung_thuc_chu_ky.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Cấp bản sao từ sổ gốc, chứng thực bản sao từ bản chính, chứng thực chữ ký"
+ },
+ "0cf69ad9-6f29-4ee4-8e16-2c3aa65c3a52": {
+  "path": "linh_vuc/y_te_duoc/an_toan_thuc_pham.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "An toàn thực phẩm"
+ },
+ "12f7dcb6-5ab4-4b7e-a248-2a5e09c113f5": {
+  "path": "linh_vuc/tai_nguyen/do_dac_va_ban_do.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Đo đạc và bản đồ"
+ },
+ "13bbc44f-b9ad-49f2-b66b-65da10d2dd34": {
+  "path": "linh_vuc/thong_ke/thong_ke.html",
+  "chu_de": "Thống kê",
+  "de_muc": "Thống kê"
+ },
+ "18250665-85b4-4ab9-b862-4eb8afbde3fa": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/du_tru_quoc_gia.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Dự trữ quốc gia"
+ },
+ "23e1929c-6151-4f15-9d67-11d4f7964dc8": {
+  "path": "linh_vuc/dan_so_gia_dinh_tre_em_binh_dang_gioi/tre_em.html",
+  "chu_de": "Dân số, gia đình, trẻ em, bình đẳng giới",
+  "de_muc": "Trẻ em"
+ },
+ "295ceaf7-684c-42a9-9f57-c60ff5581bcc": {
+  "path": "linh_vuc/xay_dung_nha_o_do_thi/kien_truc.html",
+  "chu_de": "Xây dựng, nhà ở, đô thị",
+  "de_muc": "Kiến trúc"
+ },
+ "2ff062eb-86aa-4bce-9967-19141cc239f8": {
+  "path": "linh_vuc/chu_de_test/test_3.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Test 3"
+ },
+ "319387a3-090a-47a5-82f6-a9bacbe5d341": {
+  "path": "linh_vuc/doanh_nghiep_hop_tac_xa/doanh_nghiep.html",
+  "chu_de": "Doanh nghiệp, hợp tác xã",
+  "de_muc": "Doanh nghiệp"
+ },
+ "3284cd8d-f598-48ea-b425-53e118893530": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/bao_ve_quyen_loi_nguoi_tieu_dung.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Bảo vệ quyền lợi người tiêu dùng"
+ },
+ "3285256c-25e1-4621-afdc-647fbdd766ea": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/bau_cu_dai_bieu_quoc_hoi_va_dai_bieu_hoi_dong_nhan_dan.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Bầu cử đại biểu Quốc hội và đại biểu Hội đồng nhân dân"
+ },
+ "3a8413a9-7763-4a9b-93f8-dd5f18ba1594": {
+  "path": "linh_vuc/chinh_sach_xa_hoi/chinh_sach_tro_giup_xa_hoi_doi_voi_doi_tuong_bao_tro_xa_hoi.html",
+  "chu_de": "Chính sách xã hội",
+  "de_muc": "Chính sách trợ giúp xã hội đối với đối tượng bảo trợ xã hội"
+ },
+ "4062b86e-ef5c-4ea4-af09-45d8b23978d2": {
+  "path": "linh_vuc/thi_hanh_an/dac_xa.html",
+  "chu_de": "Thi hành án",
+  "de_muc": "Đặc xá"
+ },
+ "467d54d1-b81e-49a0-a066-21e2c9b191fc": {
+  "path": "linh_vuc/thi_dua_khen_thuong_cac_danh_hieu_vinh_du_nha_nuoc/thi_dua_khen_thuong.html",
+  "chu_de": "Thi đua, khen thưởng, các danh hiệu vinh dự nhà nước",
+  "de_muc": "Thi đua, khen thưởng"
+ },
+ "47316aca-6f15-49c8-b604-5a6c87351849": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/chat_luong_san_pham_hang_hoa.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Chất lượng sản phẩm, hàng hóa"
+ },
+ "4b6f90cb-015c-4cdd-9c87-b8ecc0470fdb": {
+  "path": "linh_vuc/ton_giao_tin_nguong/tin_nguong_ton_giao.html",
+  "chu_de": "Tôn giáo, tín ngưỡng",
+  "de_muc": "Tín ngưỡng, tôn giáo"
+ },
+ "4b42f45d-8952-4cd2-a4fd-d9cf9a843601": {
+  "path": "linh_vuc/chu_de_test/test_10.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Test 10"
+ },
+ "55323c64-e78f-4537-afcd-6a3c2af3c71d": {
+  "path": "linh_vuc/an_ninh_quoc_gia/an_ninh_quoc_gia.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "An ninh quốc gia"
+ },
+ "589326fb-24ce-48e8-8826-737d8267e470": {
+  "path": "linh_vuc/chu_de_test/test.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Test"
+ },
+ "59750dbc-0ac3-4d75-928e-18983dc7ecf6": {
+  "path": "linh_vuc/van_thu_luu_tru/cong_tac_van_thu.html",
+  "chu_de": "Văn thư lưu trữ",
+  "de_muc": "Công tác văn thư"
+ },
+ "64789888-f101-40de-8358-cfc5ebad260b": {
+  "path": "linh_vuc/chu_de_test/de_muc_test.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test"
+ },
+ "66c59035-9acd-430a-affd-86563bc7ce77": {
+  "path": "linh_vuc/buu_chinh_vien_thong/an_toan_thong_tin_mang.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "An toàn thông tin mạng"
+ },
+ "673fcdfe-cda8-43aa-b3b9-f3e1e4710027": {
+  "path": "linh_vuc/khieu_nai_to_cao/khieu_nai.html",
+  "chu_de": "Khiếu nại, tố cáo",
+  "de_muc": "Khiếu nại"
+ },
+ "78cd97a5-7ff4-48b4-affc-42cd96aeec18": {
+  "path": "linh_vuc/thong_tin_bao_chi_xuat_ban/bao_chi.html",
+  "chu_de": "Thông tin, báo chí, xuất bản",
+  "de_muc": "Báo chí"
+ },
+ "87ca311f-a832-430e-993a-ffef40ef4043": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/ban_hanh_van_ban_quy_pham_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Ban hành văn bản quy phạm pháp luật"
+ },
+ "93c2e70c-57d6-4c12-8911-b345dcb69597": {
+  "path": "linh_vuc/ngan_hang_tien_te/bao_hiem_tien_gui.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Bảo hiểm tiền gửi"
+ },
+ "9692aa2c-e220-4b39-9385-c1b837149556": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/bao_ve_va_kiem_dich_thuc_vat.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Bảo vệ và kiểm dịch thực vật"
+ },
+ "985838c2-d5e2-423d-9253-7f95ea82af57": {
+  "path": "linh_vuc/lao_dong/giao_duc_nghe_nghiep.html",
+  "chu_de": "Lao động",
+  "de_muc": "Giáo dục nghề nghiệp"
+ },
+ "b444d15f-0b38-474b-bf13-5188e9a517bb": {
+  "path": "linh_vuc/quoc_phong/quan_ly_bao_ve_cong_trinh_quoc_phong_va_khu_quan_su.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Quản lý, bảo vệ công trình quốc phòng và khu quân sự"
+ },
+ "bac21193-4c90-4e8c-a274-ffce8648c505": {
+  "path": "linh_vuc/giao_thong_van_tai/duong_sat.html",
+  "chu_de": "Giao thông, vận tải",
+  "de_muc": "Đường sắt"
+ },
+ "bcc2a59a-ccbe-4739-afd4-f45811a15122": {
+  "path": "linh_vuc/hinh_su/hinh_su.html",
+  "chu_de": "Hình sự",
+  "de_muc": "Hình sự"
+ },
+ "c20ba1de-f6cb-4b91-9d2c-05eabd8e0c2e": {
+  "path": "linh_vuc/moi_truong/bao_ve_moi_truong.html",
+  "chu_de": "Môi trường",
+  "de_muc": "Bảo vệ môi trường"
+ },
+ "c281cd7b-893d-4490-b9da-b226d670363c": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/co_quan_dai_dien_nuoc_cong_hoa_xa_hoi_chu_nghia_viet_nam_o_nuoc_ngoai.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Cơ quan đại diện nước Cộng hòa Xã hội Chủ nghĩa Việt Nam ở nước ngoài"
+ },
+ "c8ba5bc7-224a-4f31-8d92-567613f68ca9": {
+  "path": "linh_vuc/bao_hiem/bao_hiem_xa_hoi.html",
+  "chu_de": "Bảo hiểm",
+  "de_muc": "Bảo hiểm xã hội"
+ },
+ "cd978e77-1991-4698-a663-ad2013c7a9f1": {
+  "path": "linh_vuc/giao_duc_dao_tao/giao_duc.html",
+  "chu_de": "Giáo dục, đào tạo",
+  "de_muc": "Giáo dục"
+ },
+ "dc2982c9-7809-4a04-9aa3-282ec196e883": {
+  "path": "linh_vuc/chu_de_test/test_2.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Test 2"
+ },
+ "e7b9346d-dea5-49c5-a166-bd41599dd9e7": {
+  "path": "linh_vuc/bo_tro_tu_phap/dau_gia_tai_san.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Đấu giá tài sản"
+ },
+ "e8e1515c-249d-4a9b-af30-ac0d8a3aac7d": {
+  "path": "linh_vuc/tuong_tro_tu_phap/tuong_tro_tu_phap.html",
+  "chu_de": "Tương trợ tư pháp",
+  "de_muc": "Tương trợ tư pháp"
+ },
+ "e982aa33-8e27-4d94-99e9-b513b6993c6d": {
+  "path": "linh_vuc/tai_chinh/gia.html",
+  "chu_de": "Tài chính",
+  "de_muc": "Giá"
+ },
+ "e5ca7d0c-8da3-49f6-b631-e061b904c687": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/an_phi_le_phi_toa_an_loai_bo.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Án phí, lệ phí Tòa án (loại bỏ)"
+ },
+ "e6c9c518-5eb6-4bee-a980-e144e80fc213": {
+  "path": "linh_vuc/can_bo_cong_chuc_vien_chuc/can_bo_cong_chuc.html",
+  "chu_de": "Cán bộ, công chức, viên chức",
+  "de_muc": "Cán bộ, công chức"
+ },
+ "eb0e4753-243e-4344-90e6-70aaf5188a6d": {
+  "path": "linh_vuc/dan_su/dan_su.html",
+  "chu_de": "Dân sự",
+  "de_muc": "Dân sự"
+ },
+ "ed278a00-f167-476a-8719-bffc8cb3a4c8": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/hoat_dong_nghe_thuat_bieu_dien.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Hoạt động nghệ thuật biểu diễn"
+ },
+ "eeffe922-dc02-4aef-89a3-3f26e19a2e62": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/chung_minh_nhan_dan.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Chứng minh nhân dân"
+ },
+ "f2acb04f-e4ba-46eb-bd03-0bcc847034fa": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_111.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 11.1"
+ },
+ "f5a43ce4-3b6e-4fc6-8c1e-eb7222d51d27": {
+  "path": "linh_vuc/ke_toan_kiem_toan/ke_toan.html",
+  "chu_de": "Kế toán, kiểm toán",
+  "de_muc": "Kế toán"
+ },
+ "f7d0fe22-a98a-4ae1-922a-d88a7970be32": {
+  "path": "linh_vuc/cong_nghiep/co_che_ho_tro_phat_trien_cac_du_an_dien_gio_tai_viet_nam_loai_bo.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Cơ chế hỗ trợ phát triển các dự án điện gió tại Việt Nam (loại bỏ)"
+ },
+ "fbf9236f-3c9e-4041-a782-fcd3318434b0": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_8.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 8"
+ },
+ "fc3ab628-e974-4615-9209-270bd558b40e": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/cong_doan.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Công đoàn"
+ },
+ "fe2f89c2-15c9-4a77-bdf8-f4898d545be7": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/hoa_giai_o_co_so.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Hòa giải ở cơ sở"
+ },
+ "ff7a2466-8f89-4d2b-9031-b99e8ca02a4a": {
+  "path": "linh_vuc/moi_truong/da_dang_sinh_hoc.html",
+  "chu_de": "Môi trường",
+  "de_muc": "Đa dạng sinh học"
+ },
+ "f601c67b-6eec-4cc8-9f5a-848dcd4e2329": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/quan_ly_no_cong.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Quản lý nợ công"
+ },
+ "f79b4160-3a6b-4eb2-8854-ac95a79a0b81": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/nhuan_but_thu_lao_doi_voi_tac_pham_dien_anh_my_thuat_nhiep_anh_san_khau_va_cac_loai_hinh_nghe_thuat_bieu_dien_khac.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Nhuận bút, thù lao đối với tác phẩm điện ảnh, mỹ thuật, nhiếp ảnh, sân khấu và các loại hình nghệ thuật biểu diễn khác"
+ },
+ "f4428e88-cf73-4d8f-920d-ae402512fe94": {
+  "path": "linh_vuc/chinh_sach_xa_hoi/nguoi_cao_tuoi.html",
+  "chu_de": "Chính sách xã hội",
+  "de_muc": "Người cao tuổi"
+ },
+ "e51fdb4d-9c73-44bc-9fae-10c4cde48953": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/cong_an_xa.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Công an xã"
+ },
+ "e78855bc-bfb3-4c1f-8582-168945065e04": {
+  "path": "linh_vuc/y_te_duoc/bao_ve_suc_khoe_nhan_dan.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Bảo vệ sức khỏe nhân dân"
+ },
+ "db2f0e24-579c-40dc-ba36-8a3f27dddffb": {
+  "path": "linh_vuc/tai_chinh/hai_quan.html",
+  "chu_de": "Tài chính",
+  "de_muc": "Hải quan"
+ },
+ "cff88bae-70b7-4ad7-84ca-cdeecfaf89aa": {
+  "path": "linh_vuc/giao_duc_dao_tao/giao_duc_dai_hoc.html",
+  "chu_de": "Giáo dục, đào tạo",
+  "de_muc": "Giáo dục đại học"
+ },
+ "d1ac30ec-b37c-448d-90c2-cf94b0794564": {
+  "path": "linh_vuc/xay_dung_nha_o_do_thi/kinh_doanh_bat_dong_san.html",
+  "chu_de": "Xây dựng, nhà ở, đô thị",
+  "de_muc": "Kinh doanh bất động sản"
+ },
+ "d64f8c97-3668-442d-bac4-81b91c0c3816": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_2.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 2"
+ },
+ "d8e4a3a0-254c-4593-967c-214ae12bcb0f": {
+  "path": "linh_vuc/ngan_hang_tien_te/cac_cong_cu_chuyen_nhuong.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Các công cụ chuyển nhượng"
+ },
+ "d9e2a674-7659-4e9d-9cdd-5aa21a50cb69": {
+  "path": "linh_vuc/khieu_nai_to_cao/phong_chong_tham_nhung.html",
+  "chu_de": "Khiếu nại, tố cáo",
+  "de_muc": "Phòng, chống tham nhũng"
+ },
+ "c2d76287-6995-4aed-8dfa-c3029a2e24e2": {
+  "path": "linh_vuc/bo_tro_tu_phap/cong_chung.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Công chứng"
+ },
+ "c1ceaaf5-7a2d-4763-9a40-9a5c5a2d183c": {
+  "path": "linh_vuc/thong_tin_bao_chi_xuat_ban/hoat_dong_thong_tin_bao_chi_cua_bao_chi_nuoc_ngoai_co_quan_dai_dien_nuoc_ngoai_to_chuc_nuoc_ngoai_tai_viet_nam.html",
+  "chu_de": "Thông tin, báo chí, xuất bản",
+  "de_muc": "Hoạt động thông tin, báo chí của báo chí nước ngoài, cơ quan đại diện nước ngoài, tổ chức nước ngoài tại Việt Nam"
+ },
+ "bc6d8c20-c34f-4bd7-a17d-0f29f1abb7ac": {
+  "path": "linh_vuc/can_bo_cong_chuc_vien_chuc/vien_chuc.html",
+  "chu_de": "Cán bộ, công chức, viên chức",
+  "de_muc": "Viên chức"
+ },
+ "a2005eb5-2c8c-4ca0-910d-8d73efabab5a": {
+  "path": "linh_vuc/giao_thong_van_tai/giao_thong_duong_bo.html",
+  "chu_de": "Giao thông, vận tải",
+  "de_muc": "Giao thông đường bộ"
+ },
+ "a6f7334f-42bb-4437-a03f-e6a04816dc9c": {
+  "path": "linh_vuc/tai_nguyen/khi_tuong_thuy_van.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Khí tượng thủy văn"
+ },
+ "ad9817c1-1032-4748-97f7-fd4db42fd04e": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/lam_nghiep.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Lâm nghiệp"
+ },
+ "ae5932bb-132b-4ac1-8231-ae7812efcdb3": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/ban_hanh_van_ban_quy_pham_phap_luat_cua_hoi_dong_nhan_dan_va_uy_ban_nhan_dan_loai_bo.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Ban hành văn bản quy phạm pháp luật của Hội đồng nhân dân và Ủy ban nhân dân (loại bỏ)"
+ },
+ "82e15104-9b5b-4b48-94f2-4ab37fc8e8a1": {
+  "path": "linh_vuc/buu_chinh_vien_thong/buu_chinh.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "Bưu chính"
+ },
+ "83242e4c-1738-4140-afe5-a5d4f0b8d776": {
+  "path": "linh_vuc/dan_so_gia_dinh_tre_em_binh_dang_gioi/binh_dang_gioi.html",
+  "chu_de": "Dân số, gia đình, trẻ em, bình đẳng giới",
+  "de_muc": "Bình đẳng giới"
+ },
+ "84a4b90e-6b07-41ca-919d-759cfb657f3f": {
+  "path": "linh_vuc/an_ninh_quoc_gia/bao_ve_bi_mat_nha_nuoc.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Bảo vệ bí mật nhà nước"
+ },
+ "7434b4be-95be-4913-b9a4-7d67671c4466": {
+  "path": "linh_vuc/thi_hanh_an/thi_hanh_an_dan_su.html",
+  "chu_de": "Thi hành án",
+  "de_muc": "Thi hành án dân sự"
+ },
+ "76b5a1aa-cc76-45cf-9e54-837937d1a754": {
+  "path": "linh_vuc/van_thu_luu_tru/luu_tru.html",
+  "chu_de": "Văn thư lưu trữ",
+  "de_muc": "Lưu trữ"
+ },
+ "6ae40c23-0862-4cc6-9faf-a6591febd46e": {
+  "path": "linh_vuc/cong_nghiep/dau_khi.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Dầu khí"
+ },
+ "6b408d5f-24e1-4144-8bf6-123e3225f567": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/canh_tranh.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Cạnh tranh"
+ },
+ "62aa0284-6ac0-4c02-8504-945335930df9": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/hoat_dong_chu_thap_do.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Hoạt động chữ thập đỏ"
+ },
+ "583b913f-4d4b-46da-911c-112342c6ea49": {
+  "path": "linh_vuc/bao_hiem/bao_hiem_y_te.html",
+  "chu_de": "Bảo hiểm",
+  "de_muc": "Bảo hiểm y tế"
+ },
+ "554293de-37dd-4111-896d-420469f81e92": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/chi_phi_to_tung.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Chi phí tố tụng"
+ },
+ "4e35f01e-45ff-4fc6-a105-37b0a7de5979": {
+  "path": "linh_vuc/quoc_phong/bien_phong_viet_nam.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Biên phòng Việt Nam"
+ },
+ "4872e9d9-201e-4ef6-bab9-e49d7e505f0c": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/chung_thuc_loai_bo.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Chứng thực (loại bỏ)"
+ },
+ "414ba2e8-f259-4b94-a478-102ba6e5a180": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/bau_cu_dai_bieu_quoc_hoi_loai_bo.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Bầu cử đại biểu Quốc hội (loại bỏ)"
+ },
+ "41bd48e0-70b5-4e06-8a55-6fae3449472f": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/dich_quoc_hieu_ten_cac_co_quan_don_vi_va_chuc_danh_lanh_dao_can_bo_cong_chuc_trong_he_thong_hanh_chinh_nha_nuoc_sang_tieng_anh_de_giao_dich_doi_ngoai.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Dịch Quốc hiệu, tên các cơ quan, đơn vị và chức danh lãnh đạo, cán bộ công chức trong hệ thống hành chính nhà nước sang tiếng Anh để giao dịch đối ngoại"
+ },
+ "3e044577-82d7-4a50-b5ed-42a1231c6f80": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/pha_san.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Phá sản"
+ },
+ "2cf19c6c-277f-4f20-820f-e8caf00fe650": {
+  "path": "linh_vuc/doanh_nghiep_hop_tac_xa/ho_tro_phap_ly_cho_doanh_nghiep.html",
+  "chu_de": "Doanh nghiệp, hợp tác xã",
+  "de_muc": "Hỗ trợ pháp lý cho doanh nghiệp"
+ },
+ "2efd8c6f-509f-4207-84b6-6b22ff780f2a": {
+  "path": "linh_vuc/lao_dong/lao_dong.html",
+  "chu_de": "Lao động",
+  "de_muc": "Lao động"
+ },
+ "24a6c4d2-66f1-4e91-b25e-5526c4f71ae9": {
+  "path": "linh_vuc/thong_tin_bao_chi_xuat_ban/tiep_can_thong_tin.html",
+  "chu_de": "Thông tin, báo chí, xuất bản",
+  "de_muc": "Tiếp cận thông tin"
+ },
+ "1e2a6395-d769-4414-bf58-53b250c89583": {
+  "path": "linh_vuc/can_bo_cong_chuc_vien_chuc/kiem_sat_vien_vien_kiem_sat_nhan_dan.html",
+  "chu_de": "Cán bộ, công chức, viên chức",
+  "de_muc": "Kiểm sát viên Viện kiểm sát nhân dân"
+ },
+ "22643fdd-9668-4407-968a-ceac2101f1a0": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/chuyen_giao_cong_nghe.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Chuyển giao công nghệ"
+ },
+ "1261f60d-7916-4275-a63d-da426d1a955d": {
+  "path": "linh_vuc/ke_toan_kiem_toan/kiem_toan_doc_lap.html",
+  "chu_de": "Kế toán, kiểm toán",
+  "de_muc": "Kiểm toán độc lập"
+ },
+ "176d1e26-86ea-43d0-a30b-0436225de492": {
+  "path": "linh_vuc/dan_su/dang_ky_bien_phap_bao_dam.html",
+  "chu_de": "Dân sự",
+  "de_muc": "Đăng ký biện pháp bảo đảm"
+ },
+ "0b675c1b-8f59-429c-ac5f-cdfed4072cab": {
+  "path": "linh_vuc/y_te_duoc/co_che_hoat_dong_co_che_tai_chinh_doi_voi_cac_don_vi_su_nghiep_y_te_cong_lap_va_gia_dich_vu_kham_benh_chua_benh_cua_cac_co_so_kham_benh_chua_benh_cong_lap.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Cơ chế hoạt động, cơ chế tài chính đối với các đơn vị sự nghiệp y tế công lập và giá dịch vụ khám bệnh, chữa bệnh của các cơ sở khám bệnh, chữa bệnh công lập"
+ },
+ "07929ef0-f5ac-4870-886c-2e8195fa39f4": {
+  "path": "linh_vuc/tai_nguyen/dia_chat_va_khoang_san.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Địa chất và Khoáng sản"
+ },
+ "012d9b93-c11d-48b6-b08e-14d77515ca1e": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/thanh_nien.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Thanh niên"
+ },
+ "024d0bdb-4439-40e4-90ae-f3525f58351b": {
+  "path": "linh_vuc/giao_thong_van_tai/giao_thong_duong_thuy_noi_dia.html",
+  "chu_de": "Giao thông, vận tải",
+  "de_muc": "Giao thông đường thủy nội địa"
+ },
+ "29f5421a-be82-4114-9002-8d58cef7f0fa": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/hoat_dong_giam_sat_cua_quoc_hoi_va_hoi_dong_nhan_dan.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Hoạt động giám sát của Quốc hội và Hội đồng nhân dân"
+ },
+ "2afc8615-c2a3-4d3a-b77a-fd4f71142375": {
+  "path": "linh_vuc/ngan_hang_tien_te/cac_to_chuc_tin_dung.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Các tổ chức tín dụng"
+ },
+ "3c2e5819-1141-455c-a5a6-1597ea904830": {
+  "path": "linh_vuc/thong_tin_bao_chi_xuat_ban/xuat_ban.html",
+  "chu_de": "Thông tin, báo chí, xuất bản",
+  "de_muc": "Xuất bản"
+ },
+ "4a142ced-63ce-410b-9bfd-60923fd10bc1": {
+  "path": "linh_vuc/doanh_nghiep_hop_tac_xa/ho_tro_doanh_nghiep_nho_va_vua.html",
+  "chu_de": "Doanh nghiệp, hợp tác xã",
+  "de_muc": "Hỗ trợ doanh nghiệp nhỏ và vừa"
+ },
+ "4b27a678-6cea-4635-9bf3-4f3655ca74af": {
+  "path": "linh_vuc/bao_hiem/kinh_doanh_bao_hiem.html",
+  "chu_de": "Bảo hiểm",
+  "de_muc": "Kinh doanh bảo hiểm"
+ },
+ "4f1e7688-a75f-471f-b053-75eab7c11188": {
+  "path": "linh_vuc/ke_toan_kiem_toan/kiem_toan_nha_nuoc.html",
+  "chu_de": "Kế toán, kiểm toán",
+  "de_muc": "Kiểm toán Nhà nước"
+ },
+ "526b44e7-b7f6-49dc-86fd-062aeae93568": {
+  "path": "linh_vuc/quoc_phong/cong_nghiep_quoc_phong_an_ninh_va_dong_vien_cong_nghiep.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Công nghiệp quốc phòng, an ninh và động viên công nghiệp"
+ },
+ "527141b6-8429-4502-868e-f34c7b180e0c": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/cong_nghe_cao.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Công nghệ cao"
+ },
+ "62a101f0-01c7-41a9-b6b9-a4c04a4bb34b": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/chuc_nang_nhiem_vu_quyen_han_va_to_chuc_bo_may_cua_to_chuc_phap_che.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Chức năng, nhiệm vụ, quyền hạn và tổ chức bộ máy của tổ chức pháp chế"
+ },
+ "62ca4694-ef40-4288-8ab4-e7098e95cd5c": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/thu_tuc_bat_giu_tau_bay.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Thủ tục bắt giữ tàu bay"
+ },
+ "68079655-45cb-43a1-8c03-6603a7c52ec6": {
+  "path": "linh_vuc/an_ninh_quoc_gia/bao_ve_cong_trinh_quan_trong_lien_quan_den_an_ninh_quoc_gia.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Bảo vệ công trình quan trọng liên quan đến an ninh quốc gia"
+ },
+ "6a501e4a-ba3f-40e2-902f-af4a52b14bb4": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/cu_tru.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Cư trú"
+ },
+ "70094636-89bd-45c5-90d2-14e1c13e8621": {
+  "path": "linh_vuc/lao_dong/nguoi_lao_dong_viet_nam_di_lam_viec_o_nuoc_ngoai_theo_hop_dong.html",
+  "chu_de": "Lao động",
+  "de_muc": "Người lao động Việt Nam đi làm việc ở nước ngoài theo hợp đồng"
+ },
+ "7812bcbd-b493-41bd-9787-2589fde15e8f": {
+  "path": "linh_vuc/buu_chinh_vien_thong/cong_nghe_thong_tin.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "Công nghệ thông tin"
+ },
+ "a90329db-1e81-4442-af57-d69748e5bdb7": {
+  "path": "linh_vuc/can_bo_cong_chuc_vien_chuc/tham_phan_va_hoi_tham_toa_an_nhan_dan.html",
+  "chu_de": "Cán bộ, công chức, viên chức",
+  "de_muc": "Thẩm phán và Hội thẩm Tòa án nhân dân"
+ },
+ "a5dd4141-f13c-40f3-802d-a6175684bb0a": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/quan_ly_ngoai_thuong.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Quản lý ngoại thương"
+ },
+ "9fbd9627-0235-4d28-92c7-e4b4c6e96577": {
+  "path": "linh_vuc/dan_su/quy_dinh_thi_hanh_bo_luat_dan_su_ve_bao_dam_thuc_hien_nghia_vu.html",
+  "chu_de": "Dân sự",
+  "de_muc": "Quy định thi hành Bộ luật Dân sự về bảo đảm thực hiện nghĩa vụ"
+ },
+ "bacdbd85-9876-46f4-a7e7-3575950d10f7": {
+  "path": "linh_vuc/chinh_sach_xa_hoi/nguoi_khuyet_tat.html",
+  "chu_de": "Chính sách xã hội",
+  "de_muc": "Người khuyết tật"
+ },
+ "b6636e7a-49fa-4669-8671-c36aa06dc4b0": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_3.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 3"
+ },
+ "af0d43c4-2550-49ed-b13a-11ca72d1028c": {
+  "path": "linh_vuc/khieu_nai_to_cao/thanh_tra.html",
+  "chu_de": "Khiếu nại, tố cáo",
+  "de_muc": "Thanh tra"
+ },
+ "b10f42da-f79a-463d-98e0-cffc1df99fda": {
+  "path": "linh_vuc/cong_nghiep/dien_luc.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Điện lực"
+ },
+ "c9f81fd6-ecf4-4c63-a44c-6d59a4daac9c": {
+  "path": "linh_vuc/tai_chinh/ngan_sach_nha_nuoc.html",
+  "chu_de": "Tài chính",
+  "de_muc": "Ngân sách nhà nước"
+ },
+ "c57132ec-b2a3-4e38-9433-afd6cc770a8c": {
+  "path": "linh_vuc/dan_so_gia_dinh_tre_em_binh_dang_gioi/dan_so.html",
+  "chu_de": "Dân số, gia đình, trẻ em, bình đẳng giới",
+  "de_muc": "Dân số"
+ },
+ "c8ac5011-9b1f-4056-943c-e38b120b88c4": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/dang_ky_va_quan_ly_hoat_dong_cua_cac_to_chuc_phi_chinh_phu_nuoc_ngoai_tai_viet_nam.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Đăng ký và quản lý hoạt động của các tổ chức phi chính phủ nước ngoài tại Việt Nam"
+ },
+ "d0a39796-1eb4-4862-972b-87d5ad87ae2c": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/ho_tich.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Hộ tịch"
+ },
+ "da2154d2-f8c9-434c-b94c-e17fea6bc416": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/cong_bo_pho_bien_tac_pham_ra_nuoc_ngoai.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Công bố, phổ biến tác phẩm ra nước ngoài"
+ },
+ "dc9295ff-6fda-47b1-854e-4cc831d036da": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/quan_ly_su_dung_tai_san_cong.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Quản lý, sử dụng tài sản công"
+ },
+ "f549c597-2521-4480-bc28-505b06f2e22f": {
+  "path": "linh_vuc/thi_hanh_an/thi_hanh_an_hinh_su.html",
+  "chu_de": "Thi hành án",
+  "de_muc": "Thi hành án hình sự"
+ },
+ "f607aadf-fb26-4b0e-bc95-276da24e5b5d": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/phi_va_le_phi.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Phí và lệ phí"
+ },
+ "fed3bc5b-86a8-41a4-a1b6-2a47e30c77d1": {
+  "path": "linh_vuc/bo_tro_tu_phap/giam_dinh_tu_phap.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Giám định tư pháp"
+ },
+ "fcd37748-c924-4971-9ce2-a63754a138b0": {
+  "path": "linh_vuc/xay_dung_nha_o_do_thi/nha_o.html",
+  "chu_de": "Xây dựng, nhà ở, đô thị",
+  "de_muc": "Nhà ở"
+ },
+ "fbbe39e6-c4bc-41d7-ad09-af874ca0893c": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/de_dieu.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Đê điều"
+ },
+ "ea9167c8-2106-4c53-b57d-1244d9604b71": {
+  "path": "linh_vuc/xay_dung_nha_o_do_thi/quy_hoach_do_thi.html",
+  "chu_de": "Xây dựng, nhà ở, đô thị",
+  "de_muc": "Quy hoạch đô thị"
+ },
+ "d23549c3-e7ec-4158-9864-35fc6aefc1cc": {
+  "path": "linh_vuc/khieu_nai_to_cao/tiep_cong_dan.html",
+  "chu_de": "Khiếu nại, tố cáo",
+  "de_muc": "Tiếp công dân"
+ },
+ "d762a424-dab9-400c-b04f-9a03fe7085fa": {
+  "path": "linh_vuc/bo_tro_tu_phap/luat_su.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Luật sư"
+ },
+ "d87ac709-a919-4bdb-8777-9696f549c433": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/dieu_uoc_quoc_te.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Điều ước quốc tế"
+ },
+ "c9269682-f64e-4a54-a352-98e10cadaf26": {
+  "path": "linh_vuc/giao_thong_van_tai/hang_hai_viet_nam.html",
+  "chu_de": "Giao thông, vận tải",
+  "de_muc": "Hàng hải Việt Nam"
+ },
+ "be7352a9-a7bd-40e6-86cc-86e18772a8fe": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/thu_tuc_bat_giu_tau_bien.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Thủ tục bắt giữ tàu biển"
+ },
+ "ab2a3ec6-2176-4dac-a836-cde2cae944b1": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/hop_nhat_van_ban_quy_pham_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Hợp nhất văn bản quy phạm pháp luật"
+ },
+ "a1df366a-8d87-4f3f-9aa9-2a14ab8c2a3a": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/chung_khoan.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Chứng khoán"
+ },
+ "9d3b3dad-7259-40ca-a446-261a7e528988": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/to_chuc_hoat_dong_cua_quy_xa_hoi_quy_tu_thien.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Tổ chức, hoạt động của quỹ xã hội, quỹ từ thiện"
+ },
+ "a2284f91-14b5-47f5-b05d-51bf84d8a561": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/ly_lich_tu_phap.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Lý lịch tư pháp"
+ },
+ "aac1fa20-8498-4c00-b5f3-a9c1a75b0df1": {
+  "path": "linh_vuc/buu_chinh_vien_thong/giao_dich_dien_tu.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "Giao dịch điện tử"
+ },
+ "aeb7c71a-4628-4414-bc92-b822e26bd237": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/quan_ly_va_su_dung_nguon_ho_tro_phat_trien_chinh_thuc_oda_va_nguon_von_vay_uu_dai_cua_cac_nha_tai_tro.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Quản lý và sử dụng nguồn hỗ trợ phát triển chính thức (ODA) và nguồn vốn vay ưu đãi của các nhà tài trợ"
+ },
+ "ae3606a8-ef39-4d23-a46e-becbc1f86038": {
+  "path": "linh_vuc/tai_nguyen/tai_nguyen_moi_truong_bien_va_hai_dao.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Tài nguyên, môi trường biển và hải đảo"
+ },
+ "7aa2408a-41e6-4271-99e4-7b85a55ba7d6": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/quan_ly_thue.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Quản lý thuế"
+ },
+ "7b384cc2-bbb1-436c-a9fb-35487e6dc2ae": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/mat_tran_to_quoc_viet_nam.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Mặt trận Tổ quốc Việt Nam"
+ },
+ "916a0b51-9d2e-4256-be6e-14c2e4b059ae": {
+  "path": "linh_vuc/lao_dong/viec_lam.html",
+  "chu_de": "Lao động",
+  "de_muc": "Việc làm"
+ },
+ "8b06986b-89cf-4a8d-8a2f-e14ff9e3123e": {
+  "path": "linh_vuc/an_ninh_quoc_gia/bien_gioi_quoc_gia.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Biên giới quốc gia"
+ },
+ "74254489-5f53-472e-978a-f6af98103323": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/trong_trot.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Trồng trọt"
+ },
+ "669be92e-f0d5-4aa5-a6c9-4c9817a8fe40": {
+  "path": "linh_vuc/thi_hanh_an/thi_hanh_tam_giu_tam_giam.html",
+  "chu_de": "Thi hành án",
+  "de_muc": "Thi hành tạm giữ, tạm giam"
+ },
+ "69c5de18-47ab-4e67-a069-08c27a6e1ba7": {
+  "path": "linh_vuc/y_te_duoc/duoc.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Dược"
+ },
+ "59d6a8e8-a660-4c2e-b438-50123aee8ce2": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/ham_cap_ngoai_giao.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Hàm, cấp ngoại giao"
+ },
+ "4342e880-6160-4d52-85ba-671ad605adae": {
+  "path": "linh_vuc/cong_nghiep/hoa_chat.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Hóa chất"
+ },
+ "4913a1cf-5f78-471c-a807-ed5f8c57aaee": {
+  "path": "linh_vuc/dan_so_gia_dinh_tre_em_binh_dang_gioi/hon_nhan_va_gia_dinh.html",
+  "chu_de": "Dân số, gia đình, trẻ em, bình đẳng giới",
+  "de_muc": "Hôn nhân và gia đình"
+ },
+ "4920f114-9be7-403d-8de8-4d9340680d4e": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/dieu_kien_ve_an_ninh_trat_tu_doi_voi_mot_so_nganh_nghe_kinh_doanh_co_dieu_kien.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Điều kiện về an ninh, trật tự đối với một số ngành, nghề kinh doanh có điều kiện"
+ },
+ "47d2af30-c19b-4481-a0e1-47045635b0a3": {
+  "path": "linh_vuc/thi_hanh_an/to_chuc_va_hoat_dong_cua_thua_phat_lai.html",
+  "chu_de": "Thi hành án",
+  "de_muc": "Tổ chức và hoạt động của Thừa phát lại"
+ },
+ "3ab62963-aeea-43da-b7b9-209ebdb37946": {
+  "path": "linh_vuc/chinh_sach_xa_hoi/phong_chong_mai_dam.html",
+  "chu_de": "Chính sách xã hội",
+  "de_muc": "Phòng, chống mại dâm"
+ },
+ "3ed05e51-5d2b-483a-a770-238f62a6ad25": {
+  "path": "linh_vuc/quoc_phong/phong_khong_nhan_dan.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Phòng không nhân dân"
+ },
+ "3f44200e-79eb-4b26-b2fe-024109b0ce0a": {
+  "path": "linh_vuc/thong_tin_bao_chi_xuat_ban/hoat_dong_in.html",
+  "chu_de": "Thông tin, báo chí, xuất bản",
+  "de_muc": "Hoạt động in"
+ },
+ "41685e38-e7ab-4c85-a35e-fb1557319a78": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/do_luong.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Đo lường"
+ },
+ "3fc237d4-1e47-4b5e-a651-aa7e2002bc48": {
+  "path": "linh_vuc/ngan_hang_tien_te/ngan_hang_nha_nuoc_viet_nam.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Ngân hàng Nhà nước Việt Nam"
+ },
+ "1dc74584-acb9-4572-95f5-3e46bb5524d2": {
+  "path": "linh_vuc/doanh_nghiep_hop_tac_xa/hop_tac_xa.html",
+  "chu_de": "Doanh nghiệp, hợp tác xã",
+  "de_muc": "Hợp tác xã"
+ },
+ "242e5300-f9aa-4c65-8994-69ad6850c5b4": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_4.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 4"
+ },
+ "28115daa-9d22-4d88-8690-c08d3c85b96f": {
+  "path": "linh_vuc/tai_chinh/thuc_hanh_tiet_kiem_chong_lang_phi.html",
+  "chu_de": "Tài chính",
+  "de_muc": "Thực hành tiết kiệm, chống lãng phí"
+ },
+ "02ffb112-0020-4201-a689-eb3c4b60d1a9": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/di_san_van_hoa.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Di sản văn hóa"
+ },
+ "0abd54e4-923f-48a3-9f22-b9672dcf4185": {
+  "path": "linh_vuc/y_te_duoc/hien_lay_ghep_mo_bo_phan_co_the_nguoi_va_hien_lay_xac.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Hiến, lấy, ghép mô, bộ phận cơ thể người và hiến, lấy xác"
+ },
+ "0dc5ba03-9284-4d66-88c9-d24c3ce5b1fe": {
+  "path": "linh_vuc/chinh_sach_xa_hoi/uu_dai_nguoi_co_cong_voi_cach_mang.html",
+  "chu_de": "Chính sách xã hội",
+  "de_muc": "Ưu đãi người có công với cách mạng"
+ },
+ "178b89ce-ae3f-4a79-9785-467a03ed47e5": {
+  "path": "linh_vuc/xay_dung_nha_o_do_thi/xay_dung.html",
+  "chu_de": "Xây dựng, nhà ở, đô thị",
+  "de_muc": "Xây dựng"
+ },
+ "11be5109-f55e-41ed-b890-0168cc4aacbc": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/ham_cap_ngoai_giao_2.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Hàm, cấp ngoại giao"
+ },
+ "19cf24e0-40e1-4a77-b7d6-977575e0e5f2": {
+  "path": "linh_vuc/cong_nghiep/khuyen_cong.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Khuyến công"
+ },
+ "29b3d08e-82e7-404c-8607-26db1a607f84": {
+  "path": "linh_vuc/buu_chinh_vien_thong/tan_so_vo_tuyen_dien.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "Tần số vô tuyến điện"
+ },
+ "26f7a2a3-4962-4fda-852b-49da69886c12": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/du_lich.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Du lịch"
+ },
+ "1be13677-e642-46c3-9f06-1f9510c3ee84": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/quan_ly_va_su_dung_vien_tro_khong_hoan_lai_khong_thuoc_ho_tro_phat_trien_chinh_thuc_cua_cac_co_quan_to_chuc_ca_nhan_nuoc_ngoai_danh_cho_viet_nam.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Quản lý và sử dụng viện trợ không hoàn lại không thuộc hỗ trợ phát triển chính thức của các cơ quản, tổ chức, cá nhân nước ngoài dành cho Việt Nam"
+ },
+ "213aa299-188e-4c1d-af68-ba87a99d849b": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/quyen_lap_hoi_va_to_chuc_hoat_dong_quan_ly_hoi.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Quyền lập hội và tổ chức, hoạt động, quản lý hội"
+ },
+ "2b14c823-f513-4350-9d72-94a30840c722": {
+  "path": "linh_vuc/tai_nguyen/tai_nguyen_nuoc.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Tài nguyên nước"
+ },
+ "2a0ee4ce-22b7-4228-902b-c91c426ec79f": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/to_tung_dan_su.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Tố tụng dân sự"
+ },
+ "32791cd9-b864-47f1-aefa-bd5d57cd3202": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/thu_do.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Thủ đô"
+ },
+ "30eb5989-103c-41de-9b52-3047233f2d9f": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/khoa_hoc_va_cong_nghe.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Khoa học và công nghệ"
+ },
+ "52317ae7-0750-40bf-b5ff-6f4630b1a5b5": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_5.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 5"
+ },
+ "5679c4d3-5ccc-4bd8-8ed9-e849a866f444": {
+  "path": "linh_vuc/giao_thong_van_tai/hang_khong_dan_dung_viet_nam.html",
+  "chu_de": "Giao thông, vận tải",
+  "de_muc": "Hàng không dân dụng Việt Nam"
+ },
+ "606f1686-5fd0-4a16-aa1b-21acef306e78": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/kiem_soat_thu_tuc_hanh_chinh.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Kiểm soát thủ tục hành chính"
+ },
+ "8bf5b97d-4c67-45ea-92b7-d2e2c28bca6a": {
+  "path": "linh_vuc/doanh_nghiep_hop_tac_xa/to_hop_tac.html",
+  "chu_de": "Doanh nghiệp, hợp tác xã",
+  "de_muc": "Tổ hợp tác"
+ },
+ "8fcdd797-43ee-4c72-924d-119a7395ed59": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/nuoi_con_nuoi.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Nuôi con nuôi"
+ },
+ "74c5ded7-629a-4da1-b2ed-f8f29866d114": {
+  "path": "linh_vuc/quoc_phong/dan_quan_tu_ve.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Dân quân tự vệ"
+ },
+ "7c82e103-c4c2-4dbe-8ce1-3710f38bfc16": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_bao_ve_moi_truong.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế bảo vệ môi trường"
+ },
+ "bc9a9ade-0c9f-43cc-8cc2-8c69773d163e": {
+  "path": "linh_vuc/khieu_nai_to_cao/to_cao.html",
+  "chu_de": "Khiếu nại, tố cáo",
+  "de_muc": "Tố cáo"
+ },
+ "b10e4fa0-bfe1-42c1-8ff0-0af74ec834ed": {
+  "path": "linh_vuc/lao_dong/an_toan_ve_sinh_lao_dong.html",
+  "chu_de": "Lao động",
+  "de_muc": "An toàn, vệ sinh lao động"
+ },
+ "da0b1767-9a75-469a-b2d9-47038a564c65": {
+  "path": "linh_vuc/ngan_hang_tien_te/ngoai_hoi.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Ngoại hối"
+ },
+ "d92bb10f-899d-478f-a0c3-605cce865129": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/chan_nuoi.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Chăn nuôi"
+ },
+ "d41ae77e-7fa3-4db3-b810-d4019ad6db18": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/dau_thau.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Đấu thầu"
+ },
+ "d4bc3980-2c1f-4dfc-b2e9-0943e6aa611d": {
+  "path": "linh_vuc/bo_tro_tu_phap/tro_giup_phap_ly.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Trợ giúp pháp lý"
+ },
+ "cf43428f-7076-42b8-b0ef-678f73203eef": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/mot_so_bien_phap_bao_dam_trat_tu_cong_cong.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Một số biện pháp bảo đảm trật tự công cộng"
+ },
+ "e499d586-a641-4a44-8591-7814730dc583": {
+  "path": "linh_vuc/an_ninh_quoc_gia/bien_viet_nam.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Biển Việt Nam"
+ },
+ "dae8ac70-fd7f-41ed-84e8-90980ae92475": {
+  "path": "linh_vuc/dan_so_gia_dinh_tre_em_binh_dang_gioi/phong_chong_bao_luc_gia_dinh.html",
+  "chu_de": "Dân số, gia đình, trẻ em, bình đẳng giới",
+  "de_muc": "Phòng, chống bạo lực gia đình"
+ },
+ "ccc43f43-94e8-47f7-a669-677d5a9e3c08": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_gia_tri_gia_tang.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế giá trị gia tăng"
+ },
+ "e30822e9-e0e3-4359-9866-bc8892d06202": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/trung_mua_trung_dung_tai_san.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Trưng mua, trưng dụng tài sản"
+ },
+ "c56140e5-f4ce-4cbd-ac38-a4e2cd3f4169": {
+  "path": "linh_vuc/cong_nghiep/quan_ly_phan_bon.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Quản lý phân bón"
+ },
+ "7cdd63fb-16ea-4ed4-bf3c-6529a021b3d2": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/to_tung_hanh_chinh.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Tố tụng hành chính"
+ },
+ "8585b6f4-56c8-457e-afd1-c8e17d60afcb": {
+  "path": "linh_vuc/tai_nguyen/hoat_dong_vien_tham.html",
+  "chu_de": "Tài nguyên",
+  "de_muc": "Hoạt động viễn thám"
+ },
+ "7e486c5b-907f-4a92-9c0f-1742c0d013fb": {
+  "path": "linh_vuc/y_te_duoc/kham_benh_chua_benh.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Khám bệnh, chữa bệnh"
+ },
+ "a69013cd-2792-4838-8fac-76a54ec31022": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/phong_chay_chua_chay_va_cuu_nan_cuu_ho.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Phòng cháy, chữa cháy và cứu nạn, cứu hộ"
+ },
+ "a6942cbd-cf83-4f3f-b314-27a25a014442": {
+  "path": "linh_vuc/quoc_phong/dong_vien_cong_nghiep_loai_bo.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Động viên công nghiệp (loại bỏ)"
+ },
+ "9a0e0abb-24e0-4cf1-95a0-9597195ae845": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/kiem_tra_va_xu_ly_van_ban_quy_pham_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Kiểm tra và xử lý văn bản quy phạm pháp luật"
+ },
+ "a20d4a54-701d-4ef7-9593-75068883d1d9": {
+  "path": "linh_vuc/buu_chinh_vien_thong/vien_thong.html",
+  "chu_de": "Bưu chính, viễn thông",
+  "de_muc": "Viễn thông"
+ },
+ "a1971a0f-7216-4ee2-b312-9b376f35fbd8": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/thoa_thuan_quoc_te.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Thỏa thuận quốc tế"
+ },
+ "68aef5c8-dbb5-4e57-9d86-564d971b622a": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/dien_anh.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Điện ảnh"
+ },
+ "6b4d44e7-dd9d-4879-bab2-c8c46de13d06": {
+  "path": "linh_vuc/ngan_hang_tien_te/phong_chong_rua_tien.html",
+  "chu_de": "Ngân hàng, tiền tệ",
+  "de_muc": "Phòng, chống rửa tiền"
+ },
+ "34708b80-eee9-443c-aa12-de41c9afebd5": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/kiem_tra_va_xu_ly_van_ban_quy_pham_phap_luat_loai_bo.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Kiểm tra và xử lý văn bản quy phạm pháp luật (loại bỏ)"
+ },
+ "427ac7e7-cae1-474a-9284-28eeada93cd6": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/thuy_loi.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Thủy lợi"
+ },
+ "316fd577-4857-4351-aa3e-ad9eba3ceaaf": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/nang_luong_nguyen_tu.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Năng lượng nguyên tử"
+ },
+ "2bcac534-554f-47d3-b299-bd9cfc1b92d5": {
+  "path": "linh_vuc/to_chuc_chinh_tri_xa_hoi_hoi/cuu_chien_binh.html",
+  "chu_de": "Tổ chức chính trị - xã hội, hội",
+  "de_muc": "Cựu chiến binh"
+ },
+ "22caf491-de7a-428a-888a-ed629c7f7a35": {
+  "path": "linh_vuc/bo_tro_tu_phap/tu_van_phap_luat.html",
+  "chu_de": "Bổ trợ tư pháp",
+  "de_muc": "Tư vấn pháp luật"
+ },
+ "18b6dee2-0ff9-4cb7-b2b4-fb6ee352013e": {
+  "path": "linh_vuc/an_ninh_quoc_gia/cong_an_nhan_dan.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Công an nhân dân"
+ },
+ "0d0054b3-a177-40d7-98da-f6850d1b8e75": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_6.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 6"
+ },
+ "fa4dfe9e-3948-4137-8164-88c8612fa68d": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/dau_tu.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Đầu tư"
+ },
+ "ff9bd05c-2e15-4b95-9b1c-26dbd5684060": {
+  "path": "linh_vuc/hanh_chinh_tu_phap/quoc_tich_viet_nam.html",
+  "chu_de": "Hành chính tư pháp",
+  "de_muc": "Quốc tịch Việt Nam"
+ },
+ "ee26521a-9b59-4b41-898b-0ffe23805c9a": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_chinh_phu.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức Chính phủ"
+ },
+ "ecc7fc57-1135-48c4-8472-3ecaa5427829": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/so_huu_tri_tue.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Sở hữu trí tuệ"
+ },
+ "11c45594-f8b8-4299-9b1b-ee6c01f943e5": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_chinh_quyen_dia_phuong.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức chính quyền địa phương"
+ },
+ "05a9e8b3-09c8-4c0c-a99e-117a864efe3d": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/phong_chong_ma_tuy.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Phòng, chống ma túy"
+ },
+ "0e10d80f-a915-4cc9-999c-99eaefed23d0": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/to_tung_hinh_su.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Tố tụng hình sự"
+ },
+ "0e1e64e3-6100-4378-9c55-e0b559148ee1": {
+  "path": "linh_vuc/chu_de_test/de_muc_test_7.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Đề mục test 7"
+ },
+ "2f7bed93-ec8e-4d43-9111-7f1caa9cc74f": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/hoat_dong_my_thuat.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Hoạt động mỹ thuật"
+ },
+ "3049f520-19c1-439b-ab42-3994f94824cc": {
+  "path": "linh_vuc/quoc_phong/giao_duc_quoc_phong_va_an_ninh.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Giáo dục quốc phòng và an ninh"
+ },
+ "59a38639-f218-4f4d-872e-c2d9f9a69dd0": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/phap_dien_he_thong_quy_pham_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Pháp điển hệ thống quy phạm pháp luật"
+ },
+ "a650d744-65b5-4ec6-a985-8a52d5e6a524": {
+  "path": "linh_vuc/y_te_duoc/phong_chong_benh_truyen_nhiem.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Phòng, chống bệnh truyền nhiễm"
+ },
+ "913b88fd-89da-4fc5-8268-477ae6d71bac": {
+  "path": "linh_vuc/cong_nghiep/su_dung_nang_luong_tiet_kiem_va_hieu_qua.html",
+  "chu_de": "Công nghiệp",
+  "de_muc": "Sử dụng năng lượng tiết kiệm và hiệu quả"
+ },
+ "9307592e-075c-4fed-ae43-f64ba345399c": {
+  "path": "linh_vuc/tai_san_cong_no_cong_du_tru_nha_nuoc/quan_ly_su_dung_von_nha_nuoc_dau_tu_vao_san_xuat_kinh_doanh_tai_doanh_nghiep.html",
+  "chu_de": "Tài sản công, nợ công, dự trữ nhà nước",
+  "de_muc": "Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp"
+ },
+ "7d8d6ae7-3937-4b64-aa21-9f5260ea2a31": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/lap_va_hoat_dong_cua_van_phong_dai_dien_cua_cac_to_chuc_hop_tac_nghien_cuu_cua_nuoc_ngoai_tai_viet_nam.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Lập và hoạt động của văn phòng đại diện của các tổ chức hợp tác, nghiên cứu của nước ngoài tại Việt Nam"
+ },
+ "7ca2c60d-7e8f-4604-b622-7d297acd506f": {
+  "path": "linh_vuc/an_ninh_quoc_gia/co_yeu.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Cơ yếu"
+ },
+ "74578908-a474-48ba-a2e1-488ce45475aa": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_su_dung_dat_nong_nghiep.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế sử dụng đất nông nghiệp"
+ },
+ "c0ed6aee-d94b-4d9c-8af8-d51501df344e": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/khuyen_nong_loai_bo.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Khuyến nông (loại bỏ)"
+ },
+ "d5ad4f7a-8411-47ad-a46a-1c6d6dfd46b2": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/dau_tu_cong.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Đầu tư công"
+ },
+ "d6bb8050-369a-41fb-b2ad-11dc28ebd3b8": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/quan_ly_san_xuat_kinh_doanh_muoi.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Quản lý sản xuất, kinh doanh muối"
+ },
+ "bfffac09-7a35-4529-8a83-5849b3267f3f": {
+  "path": "linh_vuc/y_te_duoc/phong_chong_nhiem_vi_rut_gay_ra_hoi_chung_suy_giam_mien_dich_mac_phai_o_nguoi.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Phòng, chống nhiễm vi rút gây ra hội chứng suy giảm miễn dịch mắc phải ở người"
+ },
+ "b22e0b0a-4de6-4d97-8f57-5a8f4d4a9b09": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_quoc_hoi.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức Quốc hội"
+ },
+ "b8f68141-2d67-4c85-886c-58a9bbf45472": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/hoat_dong_van_hoa_va_kinh_doanh_dich_vu_van_hoa_cong_cong.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Hoạt động văn hóa và kinh doanh dịch vụ văn hóa công cộng"
+ },
+ "74d84211-de1e-44b4-b2c2-976d87c3190b": {
+  "path": "linh_vuc/an_ninh_quoc_gia/nhap_canh_xuat_canh_qua_canh_cu_tru_cua_nguoi_nuoc_ngoai_tai_viet_nam.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Nhập cảnh, xuất cảnh, quá cảnh, cư trú của người nước ngoài tại Việt Nam"
+ },
+ "7e3aa61c-90f6-4d9d-9cc7-522ed4a5cea2": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/khu_cong_nghiep_khu_che_xuat_va_khu_kinh_te.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Khu công nghiệp, khu chế xuất và khu kinh tế"
+ },
+ "6d281129-df44-468d-91ef-0e75fa435310": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/trach_nhiem_boi_thuong_cua_nha_nuoc.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Trách nhiệm bồi thường của Nhà nước"
+ },
+ "34030833-66c0-4966-9dff-1f02e805d94f": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/pho_bien_giao_duc_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Phổ biến, giáo dục pháp luật"
+ },
+ "20c13bd9-9dee-45c7-a6f5-11d531e74da8": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/phong_chong_mua_ban_nguoi.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Phòng, chống mua bán người"
+ },
+ "04e3798c-9ab3-4896-a06a-dbc630f8d59c": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/mot_so_chinh_sach_doi_voi_nguoi_viet_nam_o_nuoc_ngoai.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Một số chính sách đối với người Việt Nam ở nước ngoài"
+ },
+ "059ac230-9bb7-4445-b8e1-20819540ccd9": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_su_dung_dat_phi_nong_nghiep.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế sử dụng đất phi nông nghiệp"
+ },
+ "1a6472e3-9daf-4b62-b672-1f0dd9f8450f": {
+  "path": "linh_vuc/quoc_phong/canh_sat_bien_viet_nam.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Cảnh sát biển Việt Nam"
+ },
+ "f48e34a3-d808-406e-911d-c5b9fd05e693": {
+  "path": "linh_vuc/khoa_hoc_cong_nghe/tieu_chuan_va_quy_chuan_ky_thuat.html",
+  "chu_de": "Khoa học, công nghệ",
+  "de_muc": "Tiêu chuẩn và quy chuẩn kỹ thuật"
+ },
+ "6d681037-f829-4df0-be87-0d964f5141a4": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/lap_phe_duyet_va_quan_ly_quy_hoach_tong_the_phat_trien_kinh_te_xa_hoi.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Lập, phê duyệt và quản lý quy hoạch tổng thể phát triển kinh tế - xã hội"
+ },
+ "5f523176-05b6-4d4e-903d-a12faffaa759": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/quang_cao.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Quảng cáo"
+ },
+ "53892a89-6ea2-44c2-8f84-840fab0e8c47": {
+  "path": "linh_vuc/an_ninh_quoc_gia/phong_chong_khung_bo.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Phòng, chống khủng bố"
+ },
+ "3c3bfd95-920c-404d-82f9-c95af4d8b4e1": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/trong_tai_thuong_mai.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Trọng tài thương mại"
+ },
+ "3cd17527-175c-446a-8b09-5c4cbfcb4f1f": {
+  "path": "linh_vuc/y_te_duoc/phong_chong_tac_hai_cua_thuoc_la.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Phòng, chống tác hại của thuốc lá"
+ },
+ "472928db-3e71-4968-934b-5c4d9720e40e": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_toa_an_nhan_dan.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức Tòa án nhân dân"
+ },
+ "7bafb7cc-e2e8-4dc1-8a43-6ce1b5015e9c": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/quy_che_cac_doan_cua_ta_ra_nuoc_ngoai_va_cac_doan_nuoc_ngoai_vao_nuoc_ta.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Quy chế các đoàn của ta ra nước ngoài và các đoàn nước ngoài vào nước ta"
+ },
+ "a7598f56-47fc-48c0-855f-30e4a34cb4f5": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/mot_so_hoat_dong_kinh_doanh_dac_thu.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Một số hoạt động kinh doanh đặc thù"
+ },
+ "aec013b7-861e-4925-be1f-a8a2469346e4": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_tai_nguyen.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế tài nguyên"
+ },
+ "9fcc00f2-817c-4857-9347-1a65efa9c0cd": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/canh_sat_moi_truong.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Cảnh sát môi trường"
+ },
+ "9b1d96e2-feb2-4e7f-824b-b50ed8ee2a7a": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/phat_trien_nganh_nghe_nong_thon.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Phát triển ngành nghề nông thôn"
+ },
+ "96d672a7-a611-424b-bbf5-31467640284c": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/quan_ly_hop_tac_quoc_te_ve_phap_luat_va_cai_cach_tu_phap.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Quản lý hợp tác quốc tế về pháp luật và cải cách tư pháp"
+ },
+ "ca22c0ee-5a52-4a85-bfe6-06919ef05ce7": {
+  "path": "linh_vuc/quoc_phong/luc_luong_du_bi_dong_vien.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Lực lượng dự bị động viên"
+ },
+ "caa9cca3-02cc-4751-b79c-6e668f6b5e37": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/quyen_uu_dai_mien_tru_danh_cho_co_quan_dai_dien_ngoai_giao_co_quan_lanh_su_va_co_quan_dai_dien_cua_to_chuc_quoc_te_tai_viet_nam.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Quyền ưu đãi, miễn trừ dành cho cơ quan đại diện ngoại giao, cơ quan lãnh sự và cơ quan đại diện của tổ chức quốc tế tại Việt Nam"
+ },
+ "b60f2225-2af4-4339-9980-3e1a78bc9ea5": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/to_chuc_quan_ly_hoi_nghi_hoi_thao_quoc_te_tai_viet_nam.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Tổ chức, quản lý hội nghị, hội thảo quốc tế tại Việt Nam"
+ },
+ "cf97fc4b-c101-4750-a556-063f0d29e520": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/quan_ly_su_dung_phao.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Quản lý, sử dụng pháo"
+ },
+ "e071327d-c715-4ad2-9dd7-e8c2aa4e912a": {
+  "path": "linh_vuc/an_ninh_quoc_gia/xuat_canh_nhap_canh_cua_cong_dan_viet_nam.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Xuất cảnh, nhập cảnh của công dân Việt Nam"
+ },
+ "995b0a50-c2a1-45d8-baf6-a0b02c7821cf": {
+  "path": "linh_vuc/quoc_phong/mot_so_che_do_doi_voi_doi_tuong_tham_gia_chien_tranh_bao_ve_to_quoc_lam_nhiem_vu_quoc_te_o_cam_pu_chia_giup_ban_lao_sau_ngay_30_thang_4_nam_1975_co_tu_du_20_nam_tro_len_phuc_vu_trong_quan_doi_cong_an_da_phuc_vien_xuat_ngu_thoi_viec.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Một số chế độ đối với đối tượng tham gia chiến tranh bảo vệ Tổ quốc, làm nhiệm vụ quốc tế ở Căm-pu-chia, giúp bạn Lào sau ngày 30 tháng 4 năm 1975 có từ đủ 20 năm trở lên phục vụ trong quân đội, công an đã phục viên, xuất ngũ, thôi việc"
+ },
+ "ab116df3-d3ed-4a95-95bf-0d6b8962e724": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_thu_nhap_ca_nhan.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế thu nhập cá nhân"
+ },
+ "7d0dfc81-bcee-4437-9236-9066a6f45d3f": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_vien_kiem_sat_nhan_dan.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức Viện kiểm sát nhân dân"
+ },
+ "3bcee07e-6c24-43df-9c31-c8850ed610a8": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/mot_so_hoat_dong_kinh_doanh_dac_thu_2.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Một số hoạt động kinh doanh đặc thù"
+ },
+ "410d4005-c2b8-4f05-b9c0-96ec01b866d7": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/quy_che_dat_ten_doi_ten_duong_pho_va_cong_trinh_cong_cong.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Quy chế đặt tên, đổi tên đường, phố và công trình công cộng"
+ },
+ "18c03099-0cb1-433e-ace2-68b646075d1e": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/ra_soat_he_thong_hoa_van_ban_quy_pham_phap_luat_loai_bo.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Rà soát, hệ thống hóa văn bản quy phạm pháp luật (loại bỏ)"
+ },
+ "09fb5301-812d-4630-8f9a-9c8cac67a21c": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/thi_hanh_tam_giu_tam_giam.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Thi hành tạm giữ, tạm giam"
+ },
+ "2162aa7c-d532-413b-8704-b82973267484": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/phong_chong_thien_tai.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Phòng, chống thiên tai"
+ },
+ "f807bad9-3b81-41c5-bbc1-b4ab37a89431": {
+  "path": "linh_vuc/y_te_duoc/dieu_kien_san_xuat_my_pham.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Điều kiện sản xuất mỹ phẩm"
+ },
+ "fbe36156-5fe3-4ddd-a36a-4052eb2f6be0": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/quan_ly_thuc_an_chan_nuoi.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Quản lý thức ăn chăn nuôi"
+ },
+ "1fd42d83-9d78-4dd4-b6b6-73e9bd3472e1": {
+  "path": "linh_vuc/an_ninh_quoc_gia/an_ninh_mang.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "An ninh mạng"
+ },
+ "044627ad-52ff-4294-90d6-8b129b705963": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/quan_ly_thuc_an_chan_nuoi_loai_bo.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Quản lý thức ăn chăn nuôi (loại bỏ)"
+ },
+ "3ed8ea3a-aaad-4012-a348-630079ea8834": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/cong_tac_lanh_su.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Công tác lãnh sự"
+ },
+ "6d1742f8-bf8d-45f2-a18b-44fa107c360a": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/to_chuc_co_quan_dieu_tra_hinh_su.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Tổ chức cơ quan điều tra hình sự"
+ },
+ "93811189-2f4e-4bb7-90ce-cd15c0a093b7": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/theo_doi_tinh_hinh_thi_hanh_phap_luat.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Theo dõi tình hình thi hành pháp luật"
+ },
+ "8e9f6ba1-5870-479a-8030-0fa7c13c2d1a": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/the_duc_the_thao.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Thể dục, thể thao"
+ },
+ "9bd8b88d-65b4-44e2-b4b0-34c74810af4a": {
+  "path": "linh_vuc/quoc_phong/nghia_vu_quan_su.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Nghĩa vụ quân sự"
+ },
+ "db87752b-26a5-4f34-8dc2-bd8e6a823c21": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_thu_nhap_doanh_nghiep.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế thu nhập doanh nghiệp"
+ },
+ "e30bae87-de7f-4082-b4da-a4ace65447a0": {
+  "path": "linh_vuc/to_chuc_bo_may_nha_nuoc/to_chuc_chinh_quyen_dia_phuong_2.html",
+  "chu_de": "Tổ chức bộ máy nhà nước",
+  "de_muc": "Tổ chức chính quyền địa phương"
+ },
+ "e3dbc67f-7664-4196-b4b9-a785a0075b2a": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/quan_ly_su_dung_vu_khi_vat_lieu_no_va_cong_cu_ho_tro.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Quản lý, sử dụng vũ khí, vật liệu nổ và công cụ hỗ trợ"
+ },
+ "e50cbcc9-5eb2-4a22-b6c4-2f08f2811fdb": {
+  "path": "linh_vuc/y_te_duoc/phong_chong_tac_hai_cua_ruou_bia.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Phòng, chống tác hại của rượu, bia"
+ },
+ "c8606224-625f-4a7c-9054-b81d95af4068": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/quan_ly_thi_truong.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Quản lý thị trường"
+ },
+ "a00dc7cc-0fdb-4553-a3b6-9984e9a9d196": {
+  "path": "linh_vuc/ngoai_giao_dieu_uoc_quoc_te/le_tan_ngoai_giao.html",
+  "chu_de": "Ngoại giao, điều ước quốc tế",
+  "de_muc": "Lễ tân ngoại giao"
+ },
+ "956c36d8-0ced-4865-a298-51759c932274": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/thu_vien.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Thư viện"
+ },
+ "87bb6177-4c03-4173-8a12-9a75337bb2e0": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/tiep_nhan_xu_ly_phan_anh_kien_nghi_cua_ca_nhan_to_chuc_ve_quy_dinh_hanh_chinh.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Tiếp nhận, xử lý phản ánh, kiến nghị của cá nhân, tổ chức về quy định hành chính"
+ },
+ "0cf4f78c-b5f8-4618-8803-41a226c2ab84": {
+  "path": "linh_vuc/y_te_duoc/quan_ly_trang_thiet_bi_y_te.html",
+  "chu_de": "Y tế, dược",
+  "de_muc": "Quản lý trang thiết bị y tế"
+ },
+ "1acc68c2-3a9e-4a00-b5f2-74a47a31b7ae": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/quy_hoach.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Quy hoạch"
+ },
+ "1a57cf9e-7470-4872-ab8e-19658d465dc5": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/hoa_giai_doi_thoai_tai_toa_an.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Hòa giải, đối thoại tại Tòa án"
+ },
+ "2fe0aa65-9b7f-4df7-859e-a5aab478512d": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/thu_y.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Thú y"
+ },
+ "2e267ed0-726e-456e-b9be-4fd43101bdf7": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_tieu_thu_dac_biet.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế tiêu thụ đặc biệt"
+ },
+ "fa959814-d73c-4253-8857-795185e44d16": {
+  "path": "linh_vuc/quoc_phong/quan_nhan_chuyen_nghiep_cong_nhan_va_vien_chuc_quoc_phong.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Quân nhân chuyên nghiệp, công nhân và viên chức quốc phòng"
+ },
+ "f459bbbc-e15c-416d-b9f4-086464028e0f": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/quan_ly_va_su_dung_con_dau.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Quản lý và sử dụng con dấu"
+ },
+ "f0f0c740-cb1f-4013-b5bc-9e14672d586d": {
+  "path": "linh_vuc/an_ninh_quoc_gia/canh_ve.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Cảnh vệ"
+ },
+ "f9c15fe6-0ef1-4870-959e-d0cf1a2deb41": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/thuc_hien_dan_chu_o_co_so.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Thực hiện dân chủ ở cơ sở"
+ },
+ "60e61f6a-bddb-4e43-94a0-59e153947e7a": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/thuong_mai.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Thương mại"
+ },
+ "648b0c74-76a8-45ea-b1b6-2ce7c08f5043": {
+  "path": "linh_vuc/to_tung_va_cac_phuong_thuc_giai_quyet_tranh_chap/tu_phap_nguoi_chua_thanh_nien.html",
+  "chu_de": "Tố tụng và các phương thức giải quyết tranh chấp",
+  "de_muc": "Tư pháp người chưa thành niên"
+ },
+ "4b478410-d0e7-4487-9d32-889cd067b4fb": {
+  "path": "linh_vuc/thue_phi_le_phi_cac_khoan_thu_khac/thue_xuat_khau_thue_nhap_khau.html",
+  "chu_de": "Thuế, phí, lệ phí, các khoản thu khác",
+  "de_muc": "Thuế xuất khẩu, thuế nhập khẩu"
+ },
+ "7fe4f772-662c-4807-b5b3-d259807e94a4": {
+  "path": "linh_vuc/an_ninh_quoc_gia/du_lieu.html",
+  "chu_de": "An ninh quốc gia",
+  "de_muc": "Dữ liệu"
+ },
+ "8235ccff-cbf5-4e10-a1a5-20842940408f": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/thuc_hien_nep_song_van_minh_trong_viec_cuoi_viec_tang.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Thực hiện nếp sống văn minh trong việc cưới, việc tang"
+ },
+ "9d9a7001-0799-4bd8-8c31-964f9a7b9603": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/xu_ly_vi_pham_hanh_chinh.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Xử lý vi phạm hành chính"
+ },
+ "97b77c60-c651-4741-9728-b69544031858": {
+  "path": "linh_vuc/quoc_phong/quoc_phong.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Quốc phòng"
+ },
+ "a3eb99fa-1160-42b1-90ff-39fe66fd4f85": {
+  "path": "linh_vuc/nong_nghiep_nong_thon/thuy_san.html",
+  "chu_de": "Nông nghiệp, nông thôn",
+  "de_muc": "Thủy sản"
+ },
+ "9d6584a0-df4f-4235-8661-3ae7f788053f": {
+  "path": "linh_vuc/thuong_mai_dau_tu_chung_khoan/dau_tu_theo_phuong_thuc_doi_tac_cong_tu.html",
+  "chu_de": "Thương mại, đầu tư, chứng khoán",
+  "de_muc": "Đầu tư theo phương thức đối tác công tư"
+ },
+ "c78e4b28-0d12-4211-98a5-47fbbd144f7b": {
+  "path": "linh_vuc/van_hoa_the_thao_du_lich/to_chuc_le_tang_can_bo_cong_chuc_vien_chuc.html",
+  "chu_de": "Văn hóa, thể thao, du lịch",
+  "de_muc": "Tổ chức lễ tang cán bộ, công chức, viên chức"
+ },
+ "d8bc3d2e-b1e3-4023-a2dd-23005a3ca616": {
+  "path": "linh_vuc/quoc_phong/si_quan_quan_doi_nhan_dan_viet_nam.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Sĩ quan Quân đội nhân dân Việt Nam"
+ },
+ "51ae5342-6f32-4eaf-9b8b-01add97cbee4": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/canh_sat_co_dong.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Cảnh sát cơ động"
+ },
+ "6e01ee92-35fd-4279-9b99-695c406b0785": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/thuc_hien_dan_chu_trong_hoat_dong_cua_co_quan_hanh_chinh_nha_nuoc_va_don_vi_su_nghiep_cong_lap.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Thực hiện dân chủ trong hoạt động của cơ quan hành chính nhà nước và đơn vị sự nghiệp công lập"
+ },
+ "0aeb67ae-9e3e-42c0-830e-33cc254cf384": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/can_cuoc.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Căn cước"
+ },
+ "b892dee4-ee6e-4228-988f-7101b89443de": {
+  "path": "linh_vuc/xay_dung_phap_luat_va_thi_hanh_phap_luat/trung_cau_y_dan.html",
+  "chu_de": "Xây dựng pháp luật và thi hành pháp luật",
+  "de_muc": "Trưng cầu ý dân"
+ },
+ "a19e4401-8e66-438e-9f76-f769826ebbe3": {
+  "path": "linh_vuc/quoc_phong/thuc_hien_che_do_huu_tri_doi_voi_quan_nhan_truc_tiep_tham_gia_khang_chien_chong_my_cuu_nuoc_tu_ngay_30_thang_4_nam_1975_tro_ve_truoc_co_20_nam_tro_len_phuc_vu_quan_doi_da_phuc_vien_xuat_ngu.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Thực hiện chế độ hưu trí đối với quân nhân trực tiếp tham gia kháng chiến chống Mỹ cứu nước từ ngày 30 tháng 4 năm 1975 trở về trước có 20 năm trở lên phục vụ quân đội đã phục viên, xuất ngũ"
+ },
+ "a961acf6-a158-4092-90f0-2eaae8369800": {
+  "path": "linh_vuc/quoc_phong/phong_thu_dan_su.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Phòng thủ dân sự"
+ },
+ "87ed8af5-652f-4b67-8ce0-26632dc76ef6": {
+  "path": "linh_vuc/quoc_phong/tieu_chuan_vat_chat_hau_can_doi_voi_quan_nhan_tai_ngu_loai_bo.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Tiêu chuẩn vật chất hậu cần đối với quân nhân tại ngũ (loại bỏ)"
+ },
+ "bd2ff552-4422-4a34-bca1-50f21240fa4a": {
+  "path": "linh_vuc/quoc_phong/phong_thu_dan_su_2.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Phòng thủ dân sự"
+ },
+ "6253effb-3357-41d8-b22c-f81f24361e83": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/luc_luong_tham_gia_bao_ve_an_ninh_trat_tu_o_co_so.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Lực lượng tham gia bảo vệ an ninh, trật tự ở cơ sở"
+ },
+ "f8762999-e69f-43a1-9ec8-8d6793fa3de1": {
+  "path": "linh_vuc/quoc_phong/phong_khong_nhan_dan_2.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Phòng không nhân dân"
+ },
+ "6c89ce43-0cc2-43c1-a456-54a982c64c8c": {
+  "path": "linh_vuc/trat_tu_an_toan_xa_hoi/trat_tu_an_toan_giao_thong_duong_bo.html",
+  "chu_de": "Trật tự, an toàn xã hội",
+  "de_muc": "Trật tự an toàn, giao thông đường bộ"
+ },
+ "3fc0832b-cbff-4eac-adb4-5dc950d2e7a0": {
+  "path": "linh_vuc/quoc_phong/luat_phong_thu_dan_su.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Luật Phòng thủ dân sự"
+ },
+ "8861bd59-1f8b-49d5-b976-f3cf2af15874": {
+  "path": "linh_vuc/quoc_phong/quan_ly_bao_ve_khu_di_tich_lang_chu_tich_ho_chi_minh.html",
+  "chu_de": "Quốc phòng",
+  "de_muc": "Quản lý, bảo vệ Khu Di tích Lăng Chủ tịch Hồ Chí Minh"
+ },
+ "dec87cc4-8835-4c84-9cbc-45d2c1d8723f": {
+  "path": "linh_vuc/chu_de_test/test_100.html",
+  "chu_de": "Chủ đề test",
+  "de_muc": "Test 100"
+ }
+}

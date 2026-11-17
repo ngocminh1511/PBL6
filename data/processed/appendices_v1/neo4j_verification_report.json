@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-11-02T17:31:01.711595+00:00",
+  "status": "verified",
+  "dataset_id": "lao_dong_v5",
+  "loaded": {
+    "status": "loaded",
+    "nodes": 300,
+    "edges": 1161,
+    "dataset_id": "lao_dong_v5"
+  },
+  "before": {
+    "base_nodes": {
+      "count": 11744,
+      "sha256": "659839122297175d7e704c0281c9a0a6528547314c5a6cd90a295900a4b82ff6"
+    },
+    "base_edges": {
+      "count": 33357,
+      "sha256": "7eb0bc033abb8fdd6f4dac2cad0fa24561b095ea7948b84102bf9208a4997e74"
+    },
+    "totals": {
+      "nodes": 11744,
+      "edges": 33357
+    }
+  },
+  "after": {
+    "base_nodes": {
+      "count": 11744,
+      "sha256": "659839122297175d7e704c0281c9a0a6528547314c5a6cd90a295900a4b82ff6"
+    },
+    "base_edges": {
+      "count": 33357,
+      "sha256": "7eb0bc033abb8fdd6f4dac2cad0fa24561b095ea7948b84102bf9208a4997e74"
+    },
+    "totals": {
+      "nodes": 12044,
+      "edges": 34518
+    }
+  },
+  "after_repeat": {
+    "base_nodes": {
+      "count": 11744,
+      "sha256": "659839122297175d7e704c0281c9a0a6528547314c5a6cd90a295900a4b82ff6"
+    },
+    "base_edges": {
+      "count": 33357,
+      "sha256": "7eb0bc033abb8fdd6f4dac2cad0fa24561b095ea7948b84102bf9208a4997e74"
+    },
+    "totals": {
+      "nodes": 12044,
+      "edges": 34518
+    }
+  },
+  "base_unchanged": true,
+  "idempotent": true,
+  "addon_nodes_verified": 300,
+  "addon_edges_verified": 1161,
+  "tt09_mapping": {
+    "8": [
+      "II"
+    ],
+    "9": [
+      "III",
+      "IV"
+    ],
+    "10": [
+      "V"
+    ]
+  },
+  "missing_nodes": [],
+  "invalid_edges": [],
+  "r2_uploaded": false
+}

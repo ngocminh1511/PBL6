@@ -97,14 +97,77 @@ def detect_duplicate_pages(pages_text: list[str]) -> set[int]:
 # Start of a new structural unit: never joined to the previous line.
 _STRUCTURE_START = re.compile(
     r"^("
-    r"Phần\s+|Chương\s+|Mục\s+|Tiểu mục\s+|[ĐD]i[eêèéềếểễệ]u\s+\d+"  # incl. OCR variants of Điều
-    r"|\d+[.,]\s+"  # Khoan
+    r"Phần\s+|Chương\s+|M[ụu]c\s+|Tiểu mục\s+|(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+\d+"  # incl. OCR variants of Mục, Điều
+    r"|\d+[a-zđ]?[.,]\s+"  # Khoan, incl. an inserted "1a."
     r"|[a-zđ]\)\s+"  # Diem
     r"|PHỤ LỤC|CỘNG HÒA|Căn cứ"
     r")",
     re.IGNORECASE | re.UNICODE,
 )
 _NATURAL_LINE_END = re.compile(r'[.;:!?"]$')
+# "Điều 1. Phạm vi điều chỉnh" has no closing punctuation; the line after it
+# is the Dieu's first sentence unless it continues the title in lower case.
+_ARTICLE_HEADING = re.compile(r"^(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+\d+[a-zđ]?[.,:]?\s", re.UNICODE | re.IGNORECASE)
+_STARTS_UPPER = re.compile(r"^[A-ZĐÀ-Ỹ0-9\"“(]")
+
+_REF_PREFIX_RE = re.compile(
+    r"\b(?:theo(?:\s+quy\s+đ[iì]nh)?\s+tại|tại|ở|khoản\s+\d+[a-zđ]?|điểm\s+[a-zđ]|các|và|hoặc|đến|của)\s+$",
+    re.IGNORECASE | re.UNICODE,
+)
+
+_EMBEDDED_HEADING_RE = re.compile(
+    r"(?<![a-zA-ZÀ-Ỹà-ỹ0-9])((?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+(\d+[a-zđ]?)(?:[.,:\s-]\s*|[.,]\s*)(?=[A-ZĐÀ-Ỹ]))",
+    re.UNICODE,
+)
+
+
+def preprocess_legal_text(text: str) -> str:
+    """Normalize common OCR tone/spelling errors in Vietnamese legal documents
+    and split embedded Article headings that were glued onto preceding lines."""
+    # 1. Common Vietnamese legal terminology OCR typos
+    text = re.sub(r"\bĐiêu\b", "Điều", text)
+    text = re.sub(r"\bDiều\b", "Điều", text)
+    text = re.sub(r"\b(?:Diệu|Điên|Điền|Điềp)\s+(?=\d+)", "Điều ", text)
+    text = re.sub(r"\bhợp đông\b", "hợp đồng", text)
+    text = re.sub(r"\btiêu chuâ\b", "tiêu chuẩn", text)
+    text = re.sub(r"\bchâm dứt\b", "chấm dứt", text)
+    text = re.sub(r"\btiên lương\b", "tiền lương", text)
+    text = re.sub(r"\bnghĩa vu\b", "nghĩa vụ", text)
+    text = re.sub(r"\bthực hiên\b", "thực hiện", text)
+    text = re.sub(r"\bbảo hiêm\b", "bảo hiểm", text)
+
+    # 2. Split embedded Article headings glued to preceding text
+    lines = text.split("\n")
+    new_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            new_lines.append("")
+            continue
+
+        matches = list(_EMBEDDED_HEADING_RE.finditer(stripped))
+        if not matches:
+            new_lines.append(stripped)
+            continue
+
+        last_idx = 0
+        for m in matches:
+            start = m.start()
+            if start == 0:
+                continue
+            prefix = stripped[last_idx:start]
+            if _REF_PREFIX_RE.search(prefix):
+                continue
+
+            if prefix.strip():
+                new_lines.append(prefix.strip())
+            last_idx = start
+
+        remaining = stripped[last_idx:].strip()
+        if remaining:
+            new_lines.append(remaining)
+
+    return "\n".join(new_lines)
 
 
 def fix_line_breaks(text: str) -> str:
@@ -126,6 +189,7 @@ def fix_line_breaks(text: str) -> str:
                 or _NATURAL_LINE_END.search(current)
                 or _STRUCTURE_START.match(next_line)
                 or (current.isupper() and len(current) > 5)
+                or (_ARTICLE_HEADING.match(current) and _STARTS_UPPER.match(next_line))
             ):
                 break
             current = current + " " + next_line
@@ -151,10 +215,73 @@ def normalize_punctuation(text: str) -> str:
 
 
 # ============================================================
+# Footnotes
+# ============================================================
+
+# "5 Khoản này được ..." / "12 Luật ..." -- a superscript read as a plain number.
+# A footnote opens with a capital; "6 tháng tuổi, ..." or "01 tháng 01 năm
+# 2026 ..." at a line start is body text that wrapped after a number.
+_FOOTNOTE_START = re.compile(r"^(\d{1,3})\s+(?=[A-ZĐÀ-Ỹ])")
+_CLAUSE_LIKE = re.compile(r"^\d+[a-zđ]?[.,]\s")
+_FOOTNOTE_KEYWORDS = re.compile(
+    r"sửa đổi|bổ sung|bãi bỏ|thay thế|hợp nhất|căn cứ ban hành|có hiệu lực",
+    re.IGNORECASE | re.UNICODE,
+)
+_MAX_FOOTNOTE_LINES = 30
+_BODY_START = re.compile(
+    r"^(?:(?:ĐIỀU|[ĐD]i[eêèéềếểễệ]u)\s+\d|(?:CHƯƠNG|Chương|M[ỤU]C|M[ụu]c|PHẦN|Phần)\s|\d+[a-zđ]?[.,]\s|[a-zđ]\)\s)",
+    re.UNICODE,
+)
+
+
+# ============================================================
 # Pipeline
 # ============================================================
 
-def clean_pages(pages_text: list[str]) -> list[str]:
+def split_footnotes(page_text: str) -> tuple[str, list[dict]]:
+    """(page body, [{number, text}]): the footnote block at the bottom of a
+    page, as in a van ban hop nhat ("5 Khoản này được sửa đổi, bổ sung theo
+    quy định tại ..."). The block is the longest run of lines at the end of
+    the page whose numbered lines count up by one and that mentions an
+    amendment or a legal basis; anything else is left in the body."""
+    lines = page_text.split("\n")
+    starts = [
+        i for i, line in enumerate(lines)
+        if _FOOTNOTE_START.match(line.strip()) and not _CLAUSE_LIKE.match(line.strip())
+    ]
+    block_start = None
+    for start in reversed(starts):
+        if len(lines) - start > _MAX_FOOTNOTE_LINES:
+            break
+        # Body text (a Dieu/Chuong heading, a khoan, a diem) never follows the
+        # footnotes on a page; if it does, these numbered lines are not footnotes.
+        if any(_BODY_START.match(line.strip()) for line in lines[start:]):
+            break
+        numbers = [int(_FOOTNOTE_START.match(lines[i].strip()).group(1)) for i in starts if i >= start]
+        if numbers != list(range(numbers[0], numbers[0] + len(numbers))):
+            break
+        if _FOOTNOTE_KEYWORDS.search("\n".join(lines[start:])):
+            block_start = start
+    if block_start is None:
+        return page_text, []
+
+    notes: list[dict] = []
+    for line in lines[block_start:]:
+        match = _FOOTNOTE_START.match(line.strip())
+        if match and not _CLAUSE_LIKE.match(line.strip()):
+            notes.append({"number": int(match.group(1)), "text": line.strip()[match.end():].strip()})
+        elif line.strip():
+            notes[-1]["text"] = f"{notes[-1]['text']} {line.strip()}"
+    return "\n".join(lines[:block_start]), notes
+
+
+def clean_pages(
+    pages_text: list[str],
+    footnotes: list[dict] | None = None,
+    page_numbers: list[int] | None = None,
+) -> list[str]:
+    """Cleaned page texts. Footnotes cut from the page bottoms are appended
+    to ``footnotes`` (with the page number) when a list is given."""
     headers, footers = detect_headers_footers(pages_text)
     duplicates = detect_duplicate_pages(pages_text)
 
@@ -164,15 +291,25 @@ def clean_pages(pages_text: list[str]) -> list[str]:
             continue
         text = remove_lines(page_text, headers | footers)
         text = remove_page_numbers(text)
+        text, notes = split_footnotes(text)
+        if footnotes is not None:
+            page = page_numbers[i] if page_numbers else i
+            footnotes += [{"page": page, **note} for note in notes]
         text = full_normalize(text)
         text = normalize_whitespace(text)
         text = normalize_punctuation(text)
+        text = preprocess_legal_text(text)
         if text.strip():
             cleaned.append(text)
     return cleaned
 
 
-def clean_and_merge(pages_text: list[str]) -> str:
-    full_text = "\n".join(clean_pages(pages_text))
+def clean_and_merge(
+    pages_text: list[str],
+    footnotes: list[dict] | None = None,
+    page_numbers: list[int] | None = None,
+) -> str:
+    full_text = "\n".join(clean_pages(pages_text, footnotes, page_numbers))
+    full_text = preprocess_legal_text(full_text)
     full_text = fix_line_breaks(full_text)
     return normalize_whitespace(full_text)

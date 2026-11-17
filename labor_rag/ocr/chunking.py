@@ -176,16 +176,19 @@ def _recursive_split(text: str, separators: list[re.Pattern], max_chars: int) ->
 # --- semantic splitting --------------------------------------
 
 _embedding_model = None
+_embedding_model_key = None
 _SENTENCE_SPLIT = re.compile(r"(?<=[.;!?])\s+(?=[A-ZÀ-Ỹa-zà-ỹ\d\(])")
 
 
 def _get_embedding_model():
-    global _embedding_model
-    if _embedding_model is None:
+    global _embedding_model, _embedding_model_key
+    key = (settings.SEMANTIC_MODEL, settings.HF_TOKEN)
+    if _embedding_model is None or _embedding_model_key != key:
         from sentence_transformers import SentenceTransformer
 
         logger.info("Loading semantic-chunking model %s", settings.SEMANTIC_MODEL)
-        _embedding_model = SentenceTransformer(settings.SEMANTIC_MODEL)
+        _embedding_model = SentenceTransformer(settings.SEMANTIC_MODEL, token=settings.HF_TOKEN or None)
+        _embedding_model_key = key
     return _embedding_model
 
 

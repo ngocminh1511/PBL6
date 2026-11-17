@@ -1,80 +1,116 @@
-"""Thin, provider-agnostic LLM wrapper used by query rewriting, reranking,
-and answer generation. Reads provider/model/key from env vars so no
-credentials are hard-coded:
-
-  LLM_PROVIDER      "anthropic" (default), "openai", or "gemini"
-  ANTHROPIC_API_KEY / ANTHROPIC_MODEL   (default model: claude-sonnet-4-5)
-  OPENAI_API_KEY    / OPENAI_MODEL      (default model: gpt-4o-mini)
-  GEMINI_API_KEY    / GEMINI_MODEL      (default model: gemini-3.6-flash,
-                                         free-tier friendly on Google AI Studio)
-"""
+"""Scoped LLM clients shared by rewrite, rerank, generation and the CLI."""
 from __future__ import annotations
 
-import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 
-from dotenv import load_dotenv
+from labor_rag.settings import Settings
+from labor_rag.llm_providers import base_url_field, model_field, secret_field
 
-load_dotenv()
+_request_settings = ContextVar("llm_settings", default=None)
+_request_client = ContextVar("llm_client", default=None)
+
+
+class LLMClient:
+    """An application-owned resource. Construction does not open a connection."""
+
+    def __init__(self, settings, *, timeout=60):
+        self.settings = settings
+        self.timeout = timeout
+        self._client = None
+
+    @property
+    def model(self):
+        provider = self.settings.LLM_PROVIDER
+        return getattr(self.settings, model_field(provider).upper())
+
+    def client(self):
+        if self._client is not None:
+            return self._client
+        config = self.settings
+        provider = config.LLM_PROVIDER
+        key = getattr(config, secret_field(provider).upper())
+        if provider != "local" and not key:
+            raise ValueError("Chưa thiết lập API key cho LLM đã chọn.")
+        if provider == "gemini":
+            from google import genai
+            self._client = genai.Client(api_key=key, http_options={
+                "timeout": self.timeout * 1000, "retry_options": {"attempts": 1},
+            })
+        elif provider == "anthropic":
+            from anthropic import Anthropic
+            self._client = Anthropic(api_key=key, timeout=self.timeout, max_retries=0)
+        else:
+            from openai import OpenAI
+            options = {"api_key": key or "local-no-auth", "timeout": self.timeout, "max_retries": 0}
+            endpoint_field = base_url_field(provider)
+            if endpoint_field:
+                endpoint = getattr(config, endpoint_field.upper()).strip()
+                if not endpoint:
+                    raise ValueError("Chưa thiết lập địa chỉ API cho nhà cung cấp đã chọn.")
+                options["base_url"] = endpoint
+            self._client = OpenAI(**options)
+        return self._client
+
+    def complete(self, system, user, max_tokens=1024):
+        if not self.model.strip():
+            raise ValueError("Chưa chọn model LLM.")
+        client = self.client()
+        provider = self.settings.LLM_PROVIDER
+        if provider == "gemini":
+            from google.genai import types
+            options = {"system_instruction": system, "max_output_tokens": max_tokens}
+            if "2.5-flash" in self.model:
+                options["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+            response = client.models.generate_content(
+                model=self.model, contents=user, config=types.GenerateContentConfig(**options))
+            result = response.text
+        elif provider == "anthropic":
+            response = client.messages.create(model=self.model, max_tokens=max_tokens,
+                system=system, messages=[{"role": "user", "content": user}])
+            result = "".join(block.text for block in response.content if block.type == "text")
+        else:
+            response = client.chat.completions.create(model=self.model, max_tokens=max_tokens,
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
+            result = response.choices[0].message.content
+        if not result or not result.strip():
+            raise RuntimeError("LLM chưa trả về nội dung văn bản.")
+        return result
+
+    def models(self):
+        client = self.client()
+        if self.settings.LLM_PROVIDER == "gemini":
+            return sorted({m.name.removeprefix("models/") for m in client.models.list()
+                if m.name and "generateContent" in (m.supported_actions or [])})
+        return sorted({m.id for m in client.models.list() if m.id})
+
+    def close(self):
+        if self._client is not None:
+            self._client.close()
+            self._client = None
+
+
+@contextmanager
+def use_settings(settings, client=None):
+    owned = client is None
+    client = client or LLMClient(settings)
+    settings_token = _request_settings.set(settings)
+    client_token = _request_client.set(client)
+    try:
+        yield
+    finally:
+        _request_client.reset(client_token)
+        _request_settings.reset(settings_token)
+        if owned:
+            client.close()
 
 
 def complete(system: str, user: str, max_tokens: int = 1024) -> str:
-    provider = os.environ.get("LLM_PROVIDER", "gemini")
-
-    if provider == "gemini":
-        from google import genai
-        from google.genai import types
-
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            raise RuntimeError("Set GEMINI_API_KEY to use LLM_PROVIDER=gemini.")
-        client = genai.Client(api_key=api_key)
-        model = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
-        resp = client.models.generate_content(
-            model=model,
-            contents=user,
-            config=types.GenerateContentConfig(
-                system_instruction=system,
-                max_output_tokens=max_tokens,
-                # Thinking tokens count against max_output_tokens; without
-                # disabling this, short-budget calls (rewrite/rerank) can be
-                # truncated by MAX_TOKENS before any visible text is emitted.
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
-        )
-        return resp.text
-
-    if provider == "anthropic":
-        import anthropic
-
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
-        if not api_key:
-            raise RuntimeError(
-                "Set ANTHROPIC_API_KEY (or LLM_PROVIDER=openai + OPENAI_API_KEY) "
-                "to use the LLM-backed pipeline stages."
-            )
-        client = anthropic.Anthropic(api_key=api_key)
-        model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
-        resp = client.messages.create(
-            model=model,
-            max_tokens=max_tokens,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-        )
-        return "".join(block.text for block in resp.content if block.type == "text")
-
-    if provider == "openai":
-        from openai import OpenAI
-
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            raise RuntimeError("Set OPENAI_API_KEY to use LLM_PROVIDER=openai.")
-        client = OpenAI(api_key=api_key)
-        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
-        resp = client.chat.completions.create(
-            model=model,
-            max_tokens=max_tokens,
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-        )
-        return resp.choices[0].message.content
-
-    raise ValueError(f"Unknown LLM_PROVIDER: {provider!r}")
+    client = _request_client.get()
+    if client is not None:
+        return client.complete(system, user, max_tokens)
+    client = LLMClient(_request_settings.get() or Settings())
+    try:
+        return client.complete(system, user, max_tokens)
+    finally:
+        client.close()

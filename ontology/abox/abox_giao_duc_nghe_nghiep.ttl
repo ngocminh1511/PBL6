@@ -1,0 +1,7 @@
+@prefix inst: <https://example.org/vn-legal/instance#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vlp: <https://example.org/vn-legal/phapdien#> .
+
+inst:Topic_20_1 a vlp:LegalTopic ;
+    rdfs:label "Đề mục 20.1 Giáo dục nghề nghiệp"@vi .
+
