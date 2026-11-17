@@ -170,20 +170,18 @@ export const SessionList: React.FC<SessionListProps> = ({
                 <div
                   key={s.id}
                   onClick={() => selectSession(s.id)}
-                  className={`group relative p-space-sm rounded-xl cursor-pointer transition-all flex flex-col gap-1 ${
-                    isActive
+                  className={`group relative p-space-sm rounded-xl cursor-pointer transition-all flex flex-col gap-1 ${isActive
                       ? 'bg-surface-container-lowest shadow-sm border-l-4 border-secondary'
                       : 'bg-surface-container hover:bg-surface-container-high'
-                  }`}
+                    }`}
                 >
                   {/* Top metadata line: Domain badge + Pin/Time + 3-dots trigger */}
                   <div className="flex items-center justify-between">
                     <span
-                      className={`font-label-statute text-label-statute px-1.5 py-0.5 rounded font-semibold ${
-                        isActive
+                      className={`font-label-statute text-label-statute px-1.5 py-0.5 rounded font-semibold ${isActive
                           ? 'bg-secondary-fixed text-on-secondary-fixed'
                           : 'bg-surface-variant text-on-surface-variant'
-                      }`}
+                        }`}
                     >
                       {s.domain === 'lao_dong' ? 'Lao động' : s.domain === 'bhxh' ? 'BHXH' : 'Tổng hợp'}
                     </span>
@@ -208,11 +206,10 @@ export const SessionList: React.FC<SessionListProps> = ({
                           e.stopPropagation();
                           setMenuOpenSessionId(isMenuOpen ? null : s.id);
                         }}
-                        className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
-                          isMenuOpen
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isMenuOpen
                             ? 'bg-surface-container-highest text-on-surface'
                             : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest opacity-70 group-hover:opacity-100'
-                        }`}
+                          }`}
                         title="Tùy chọn phiên"
                       >
                         <span className="material-symbols-outlined text-[16px]">more_vert</span>
@@ -400,11 +397,10 @@ export const SessionList: React.FC<SessionListProps> = ({
 
           <div className="flex flex-col gap-1.5 max-h-[150px] overflow-y-auto pr-1">
             <label
-              className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all ${
-                selectedDomain === 'all'
+              className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all ${selectedDomain === 'all'
                   ? 'bg-surface-container shadow-xs border border-secondary/30'
                   : 'hover:bg-surface-container'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <input
@@ -422,11 +418,10 @@ export const SessionList: React.FC<SessionListProps> = ({
             </label>
 
             <label
-              className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all ${
-                selectedDomain === 'lao_dong'
+              className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all ${selectedDomain === 'lao_dong'
                   ? 'bg-surface-container shadow-xs border border-secondary/30'
                   : 'hover:bg-surface-container'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <input
