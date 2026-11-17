@@ -64,7 +64,7 @@ def _document_id(so_hieu: str, text: str) -> str:
     return f"doc-{hashlib.sha1(text.encode('utf-8')).hexdigest()[:12]}"
 
 
-def process_document(
+def _process_document(
     source: str | Path | bytes,
     *,
     filename: str | None = None,
@@ -96,6 +96,15 @@ def process_document(
     if output_dir and formats:
         result.outputs = export_document(document, records, output_dir, formats)
     return result
+
+
+def process_document(source, *, filename=None, output_dir=None, formats=(), use_ocr=True,
+                     progress=None, settings=None) -> ProcessedDocument:
+    """Process an upload using one configuration snapshot, including OCR and chunking."""
+    from labor_rag.ocr.settings import use_settings
+    with use_settings(settings):
+        return _process_document(source, filename=filename, output_dir=output_dir, formats=formats,
+                                 use_ocr=use_ocr, progress=progress)
 
 
 # ============================================================

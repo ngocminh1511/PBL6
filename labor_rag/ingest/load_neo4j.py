@@ -20,9 +20,9 @@ from collections import defaultdict
 from pathlib import Path
 
 from dotenv import load_dotenv
-from neo4j import GraphDatabase
 
 from labor_rag.config import LAO_DONG_DIR
+from labor_rag.services.neo4j import create_neo4j_driver
 
 load_dotenv()
 
@@ -72,7 +72,7 @@ def load_projection(args):
     for edge in edges:
         edge.setdefault("dataset_id", dataset_id)
 
-    driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
+    driver = create_neo4j_driver(args.uri, auth=(args.user, args.password))
     try:
         driver.verify_connectivity()
         print(f"Connected to Neo4j database={args.database}.")

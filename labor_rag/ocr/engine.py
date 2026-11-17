@@ -58,6 +58,7 @@ _MIN_PIECE_WIDTH = 6
 _MIN_PIECE_INK = 15  # ink pixels; below this a piece is noise and VietOCR would hallucinate
 
 _predictor = None
+_predictor_key = None
 _predictor_lock = threading.Lock()
 
 
@@ -125,9 +126,10 @@ def _resolve_device() -> str:
 
 def get_predictor():
     """Load the VietOCR predictor once per process."""
-    global _predictor
+    global _predictor, _predictor_key
     with _predictor_lock:
-        if _predictor is None:
+        key = (settings.OCR_MODEL, settings.OCR_DEVICE, settings.OCR_BEAMSEARCH)
+        if _predictor is None or _predictor_key != key:
             try:
                 from vietocr.tool.predictor import Predictor
 
@@ -139,6 +141,7 @@ def get_predictor():
                 cfg["predictor"]["beamsearch"] = settings.OCR_BEAMSEARCH
                 logger.info("Loading VietOCR %s on %s", settings.OCR_MODEL, cfg["device"])
                 _predictor = Predictor(cfg)
+                _predictor_key = key
             except Exception as e:
                 raise OCRUnavailableError(
                     "VietOCR could not be loaded. Install the OCR dependencies "

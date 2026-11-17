@@ -24,10 +24,11 @@ def evidence_dict(evidence, catalog):
 
 
 class ChatPipeline:
-    def __init__(self, retriever, catalog, settings):
+    def __init__(self, retriever, catalog, settings, *, llm=None):
         self.retriever = retriever
         self.catalog = catalog
         self.settings = settings
+        self.llm = llm
 
     def ask(self, question, *, history=None, top_k=8, rerank_top_n=5, mode="hybrid"):
         # These imports are deliberately absent from the retrieval-only HTTP path.
@@ -49,7 +50,7 @@ class ChatPipeline:
             finally:
                 timings[stage] = round((perf_counter() - before) * 1000, 2)
 
-        with use_settings(self.settings):
+        with use_settings(self.settings, self.llm):
             query = run("query_rewrite", lambda: rewrite_query(history, question)) if history else question
 
             def retrieve():

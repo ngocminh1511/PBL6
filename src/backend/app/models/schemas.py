@@ -221,6 +221,7 @@ class UploadResponse(BaseModel):
 
 # ================= ADMIN SCHEMAS =================
 class AdminConfigUpdate(BaseModel):
+    reset_fields: List[str] = Field(default_factory=list)
     config_version: Optional[int] = None
     query_embedding_backend: Optional[EmbeddingBackend] = None
     neo4j_uri: Optional[str] = None
@@ -235,8 +236,48 @@ class AdminConfigUpdate(BaseModel):
     llm_provider: Optional[LLMProvider] = None
     gemini_model: Optional[str] = None
     modal_app_name: Optional[str] = None
+    gemini_api_key: Optional[str] = Field(default=None, repr=False)
+    openai_api_key: Optional[str] = Field(default=None, repr=False)
+    anthropic_api_key: Optional[str] = Field(default=None, repr=False)
+    openrouter_api_key: Optional[str] = Field(default=None, repr=False)
+    openrouter_model: Optional[str] = None
+    openrouter_base_url: Optional[str] = None
+    groq_api_key: Optional[str] = Field(default=None, repr=False)
+    groq_model: Optional[str] = None
+    groq_base_url: Optional[str] = None
+    qwen_api_key: Optional[str] = Field(default=None, repr=False)
+    qwen_model: Optional[str] = None
+    qwen_base_url: Optional[str] = None
+    local_llm_base_url: Optional[str] = None
+    local_llm_model: Optional[str] = None
+    local_llm_api_key: Optional[str] = Field(default=None, repr=False)
+    hf_token: Optional[str] = Field(default=None, repr=False)
+    qdrant_api_key: Optional[str] = Field(default=None, repr=False)
+    qdrant_timeout: Optional[int] = None
+    collection_models: Optional[Dict[str, str]] = None
+    neo4j_user: Optional[str] = None
+    neo4j_password: Optional[str] = Field(default=None, repr=False)
+    neo4j_database: Optional[str] = None
+    object_storage_provider: Optional[Literal["s3", "r2"]] = None
+    object_storage_endpoint_url: Optional[str] = None
+    object_storage_region: Optional[str] = None
+    object_storage_bucket: Optional[str] = None
+    object_storage_prefix: Optional[str] = None
+    object_storage_access_key_id: Optional[str] = Field(default=None, repr=False)
+    object_storage_secret_access_key: Optional[str] = Field(default=None, repr=False)
+    redis_url: Optional[str] = Field(default=None, repr=False)
+    embedding_cache_ttl: Optional[int] = None
+    session_cache_ttl: Optional[int] = None
+    ocr_model: Optional[Literal["vgg_transformer", "vgg_seq2seq"]] = None
+    ocr_device: Optional[Literal["", "cpu", "cuda", "cuda:0"]] = None
+    ocr_dpi: Optional[int] = None
+    ocr_beamsearch: Optional[bool] = None
+    ocr_semantic_chunking: Optional[bool] = None
+    ocr_semantic_model: Optional[str] = None
+    max_upload_bytes: Optional[int] = None
 
 class AdminConfigResponse(BaseModel):
+    active_llm_profile_id: Optional[str] = None
     config_version: int
     demo_mode: bool
     dataset_id: str
@@ -244,6 +285,12 @@ class AdminConfigResponse(BaseModel):
     available_collections: Dict[str, str]
     anthropic_model: str
     openai_model: str
+    openrouter_model: str
+    openrouter_base_url: str
+    groq_model: str
+    groq_base_url: str
+    qwen_model: str
+    qwen_base_url: str
     embedding_model: str
     embedding_backend: str
     vector_db: str
@@ -254,6 +301,144 @@ class AdminConfigResponse(BaseModel):
     modal_app_name: str
     neo4j_uri: str
     redis_enabled: bool
+    local_llm_base_url: str
+    local_llm_model: str
+    qdrant_timeout: int
+    collection_models: Dict[str, str]
+    neo4j_user: str
+    neo4j_database: str
+    object_storage_provider: str
+    object_storage_endpoint_url: str
+    object_storage_region: str
+    object_storage_bucket: str
+    object_storage_prefix: str
+    embedding_cache_ttl: int
+    session_cache_ttl: int
+    ocr_model: str
+    ocr_device: str
+    ocr_dpi: int
+    ocr_beamsearch: bool
+    ocr_semantic_chunking: bool
+    ocr_semantic_model: str
+    max_upload_bytes: int
+    sources: Dict[str, Literal["saved", "environment", "default"]]
+    secret_configured: Dict[str, bool]
+    environment_values: Dict[str, Any]
+    environment_secret_configured: Dict[str, bool]
+    environment_sources: Dict[str, Literal["environment", "default"]]
+    query_embedding_inherits: bool
+    environment_query_embedding_inherits: bool
+    can_save: bool
+    encryption_ready: bool
+    configuration_error: Optional[str] = None
+    postgres_status: str
+    postgres_endpoint: str
+    redis_endpoint: str
+    startup: Dict[str, Any]
+
+
+ConfigService = Literal["llm", "embedding", "qdrant", "neo4j", "r2", "redis", "ocr"]
+
+
+class ConfigCheckRequest(BaseModel):
+    service: ConfigService
+    overrides: AdminConfigUpdate = Field(default_factory=AdminConfigUpdate)
+
+
+class ConfigCheckResponse(BaseModel):
+    service: ConfigService
+    status: Literal["passed", "failed", "not_configured", "disabled"]
+    message: str
+    checked_at: str
+    latency_ms: int
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class LLMModelsRequest(BaseModel):
+    overrides: AdminConfigUpdate = Field(default_factory=AdminConfigUpdate)
+
+
+class LLMModelsResponse(BaseModel):
+    provider: str
+    models: List[str]
+
+
+class LLMProfileInput(BaseModel):
+    config_version: Optional[int] = None
+    name: str = Field(default="", max_length=100)
+    mode: Literal["cloud", "local"]
+    provider: Literal["gemini", "openai", "anthropic", "openrouter", "groq", "qwen", "local"]
+    model: str = ""
+    base_url: str = ""
+    local_runtime: Literal["ollama", "lmstudio", "compatible"] = "ollama"
+    api_key_source: Literal["custom", "environment", "none"] = "custom"
+    api_key: Optional[str] = Field(default=None, repr=False)
+    profile_id: Optional[str] = None
+    copy_key_from: Optional[str] = None
+    activate: bool = False
+
+
+class LLMProfileResponse(BaseModel):
+    id: str
+    name: str
+    mode: Literal["cloud", "local"]
+    provider: str
+    model: str
+    base_url: str
+    local_runtime: str
+    api_key_source: str
+    key_configured: bool
+    read_only: bool = False
+    verification: Optional[ConfigCheckResponse] = None
+
+
+class LLMProfilesResponse(BaseModel):
+    profiles: List[LLMProfileResponse]
+    active_profile_id: str
+    config_version: int
+    can_save: bool
+    encryption_ready: bool
+
+
+class LLMProfileAction(BaseModel):
+    config_version: Optional[int] = None
+
+
+class PostgresConfigInput(BaseModel):
+    mode: Literal["url", "fields"] = "url"
+    url: Optional[str] = Field(default=None, repr=False)
+    host: str = ""
+    port: int = Field(default=5432, ge=1, le=65535)
+    database: str = ""
+    username: str = ""
+    password: Optional[str] = Field(default=None, repr=False)
+    sslmode: Literal["require", "verify-full", "verify-ca", "prefer", "allow", "disable"] = "require"
+
+
+class PostgresConfigResponse(BaseModel):
+    configured: bool
+    connection_status: str
+    host: str
+    port: int
+    database: str
+    username: str
+    sslmode: str
+    password_configured: bool
+    source: Literal["environment", "env_file", "default"]
+    environment_override: bool = Field(description="True only when the process DATABASE_URL conflicts with the saved .env URL.")
+    pending_restart: bool
+    pending_apply: bool
+    can_apply: bool
+    saved: bool = False
+    message: str = ""
+
+
+class PostgresCheckResponse(BaseModel):
+    status: Literal["passed", "failed", "not_configured"]
+    message: str
+    checked_at: str
+    latency_ms: int
+    details: Dict[str, Any] = Field(default_factory=dict)
 
 
 class GraphNode(BaseModel):
@@ -277,6 +462,7 @@ class GraphResponse(BaseModel):
     warnings: List[str] = Field(default_factory=list)
 
 class SystemStatsResponse(BaseModel):
+    checked_at: Optional[str] = None
     total_documents: Optional[int] = None
     total_chunks: Optional[int] = None
     total_nodes: Optional[int] = None
