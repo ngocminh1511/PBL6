@@ -9,7 +9,7 @@ from src.backend.app.models.database import User, ChatSession, ChatMessage
 from src.backend.app.models.schemas import (
     ChatSessionCreate, ChatSessionUpdate, ChatSessionResponse, ChatMessageResponse,
     SessionDetailResponse, ChatAskRequest, ChatAskResponse,
-    CursorPage, PipelineTrace
+    CursorPage, PipelineTrace, ChatAskErrorResponse
 )
 from src.backend.app.repositories.postgres import ChatRepository
 from fastapi import Request
@@ -103,7 +103,7 @@ def delete_session(
         raise HTTPException(status_code=404, detail="Phiên hỏi đáp không tồn tại")
     return {"ok": True, "session_id": session_id}
 
-@router.post("/ask", response_model=ChatAskResponse)
+@router.post("/ask", response_model=ChatAskResponse, responses={503: {"model": ChatAskErrorResponse}})
 def ask_legal_question(req: ChatAskRequest, request: Request,
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return answer_question(req, current_user, db, request.app.state.runtime)
@@ -111,7 +111,7 @@ def ask_legal_question(req: ChatAskRequest, request: Request,
 
 legacy_router = APIRouter(tags=["Compatibility"])
 
-@legacy_router.post("/chat")
+@legacy_router.post("/chat", responses={503: {"model": ChatAskErrorResponse}})
 def legacy_chat(req: ChatAskRequest, request: Request,
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     result = answer_question(req, current_user, db, request.app.state.runtime)
@@ -120,4 +120,5 @@ def legacy_chat(req: ChatAskRequest, request: Request,
             "standalone_query": message.standalone_query,
             "evidence": [e.model_dump() for e in message.legal_evidence or []],
             "citation_check": message.citation_check,
-            "attachments": message.attachments, "warnings": message.warnings}
+            "attachments": message.attachments, "warnings": message.warnings,
+            "token_usage": message.token_usage}

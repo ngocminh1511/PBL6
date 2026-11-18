@@ -53,6 +53,12 @@ class LLMClient:
         return self._client
 
     def complete(self, system, user, max_tokens=1024):
+        from labor_rag.generation.usage import record_call
+        with record_call(self.settings.LLM_PROVIDER, self.model) as call:
+            return self._complete(system, user, max_tokens, call)
+
+    def _complete(self, system, user, max_tokens, call):
+        from labor_rag.generation.usage import response_usage
         if not self.model.strip():
             raise ValueError("Chưa chọn model LLM.")
         client = self.client()
@@ -64,14 +70,17 @@ class LLMClient:
                 options["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
             response = client.models.generate_content(
                 model=self.model, contents=user, config=types.GenerateContentConfig(**options))
+            call.update(response_usage(response, provider))
             result = response.text
         elif provider == "anthropic":
             response = client.messages.create(model=self.model, max_tokens=max_tokens,
                 system=system, messages=[{"role": "user", "content": user}])
+            call.update(response_usage(response, provider))
             result = "".join(block.text for block in response.content if block.type == "text")
         else:
             response = client.chat.completions.create(model=self.model, max_tokens=max_tokens,
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
+            call.update(response_usage(response, provider))
             result = response.choices[0].message.content
         if not result or not result.strip():
             raise RuntimeError("LLM chưa trả về nội dung văn bản.")

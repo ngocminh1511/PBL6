@@ -103,6 +103,35 @@ class CitationCheckResult(BaseModel):
     all_verified: bool = True
 
 # ================= CHAT SCHEMAS =================
+class LLMCallUsage(BaseModel):
+    stage: str
+    provider: str
+    model: str
+    status: Literal["succeeded", "failed"]
+    input_tokens: Optional[int] = Field(None, ge=0)
+    output_tokens: Optional[int] = Field(None, ge=0)
+    total_tokens: Optional[int] = Field(None, ge=0)
+    cached_input_tokens: Optional[int] = Field(None, ge=0)
+    reasoning_tokens: Optional[int] = Field(None, ge=0)
+    requested_tokens: Optional[int] = Field(None, ge=0)
+    error_type: Optional[str] = None
+    http_status: Optional[int] = None
+
+
+class TokenUsage(BaseModel):
+    status: Literal["complete", "partial", "unavailable"]
+    input_tokens: Optional[int] = Field(None, ge=0)
+    output_tokens: Optional[int] = Field(None, ge=0)
+    total_tokens: Optional[int] = Field(None, ge=0)
+    executed_stages: List[str] = Field(default_factory=list)
+    calls: List[LLMCallUsage] = Field(default_factory=list)
+
+
+class ChatAskErrorResponse(BaseModel):
+    detail: str
+    token_usage: Optional[TokenUsage] = None
+
+
 class ChatSessionCreate(BaseModel):
     title: Optional[str] = "Phiên tra cứu mới"
     domain: Literal["all", "lao_dong"] = "all"
@@ -133,6 +162,7 @@ class ChatMessageResponse(BaseModel):
     legal_evidence: Optional[List[EvidenceItem]] = None
     citation_check: Optional[CitationCheckResult] = None
     execution_time_ms: Optional[int] = None
+    token_usage: Optional[TokenUsage] = None
     attachments: List[Dict[str, Any]] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     created_at: datetime

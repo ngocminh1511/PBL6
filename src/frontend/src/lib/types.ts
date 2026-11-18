@@ -93,9 +93,39 @@ export interface ChatMessage {
   legal_evidence?: EvidenceItem[];
   citation_check?: CitationCheckResult;
   execution_time_ms?: number;
+  token_usage?: TokenUsage | null;
   created_at: string;
   attachments?: AppendixItem[];
   warnings?: string[];
+}
+
+export interface LLMCallUsage {
+  stage: string;
+  provider: string;
+  model: string;
+  status: 'succeeded' | 'failed';
+  input_tokens: number | null;
+  output_tokens: number | null;
+  total_tokens: number | null;
+  cached_input_tokens?: number | null;
+  reasoning_tokens?: number | null;
+  requested_tokens?: number | null;
+  error_type?: string | null;
+  http_status?: number | null;
+}
+
+export interface TokenUsage {
+  status: 'complete' | 'partial' | 'unavailable';
+  input_tokens: number | null;
+  output_tokens: number | null;
+  total_tokens: number | null;
+  executed_stages: string[];
+  calls: LLMCallUsage[];
+}
+
+export interface ChatAskErrorResponse {
+  detail: string;
+  token_usage?: TokenUsage | null;
 }
 
 export interface ChatSession {

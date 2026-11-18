@@ -1,5 +1,12 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, TokenUsage } from './types';
+
+export function errorTokenUsage(error: unknown): TokenUsage | null {
+  if (!axios.isAxiosError(error)) return null;
+  const usage = error.response?.data?.token_usage;
+  return usage && Array.isArray(usage.calls) && Array.isArray(usage.executed_stages)
+    && ['complete', 'partial', 'unavailable'].includes(usage.status) ? usage : null;
+}
 
 export function errorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {

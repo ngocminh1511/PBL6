@@ -14,6 +14,12 @@ from src.backend.app.models.schemas import EvidenceItem
 from src.backend.app.models.database import ChatMessage, IngestionTask
 
 
+@pytest.fixture(autouse=True)
+def mock_intent_llm(monkeypatch):
+    import labor_rag.generation.intent as intent
+    monkeypatch.setattr(intent, "complete", lambda *args, **kwargs: "LEGAL")
+
+
 def config(tmp_path, **changes):
     return Settings(_env_file=None, DATABASE_URL="sqlite://", REDIS_URL="", REDIS_ENABLED=False,
         UPLOAD_DIR=tmp_path / "uploads", INTERIM_DIR=tmp_path / "interim",
@@ -220,10 +226,26 @@ def test_versioned_migration_preserves_existing_content():
         connection.execute(text("INSERT INTO chat_messages VALUES ('old', 'keep me')"))
     upgrade(engine)
     upgrade(engine)
-    assert {"attachments", "warnings"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
+    assert {"attachments", "warnings", "token_usage"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
     with engine.connect() as connection:
         assert connection.execute(text("SELECT content FROM chat_messages WHERE id='old'")).scalar() == "keep me"
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 1
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
+
+
+def test_token_usage_migration_upgrades_an_already_versioned_database():
+    from src.backend.app.migrations import upgrade
+    engine = create_engine("sqlite://")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE app_schema_versions (revision VARCHAR(100) PRIMARY KEY)"))
+        connection.execute(text("INSERT INTO app_schema_versions VALUES ('001_unified_backend')"))
+        connection.execute(text("CREATE TABLE chat_messages (id VARCHAR(36) PRIMARY KEY, content TEXT)"))
+        connection.execute(text("INSERT INTO chat_messages VALUES ('old', 'keep me')"))
+    upgrade(engine)
+    upgrade(engine)
+    with engine.connect() as connection:
+        old = connection.execute(text("SELECT content, token_usage FROM chat_messages WHERE id='old'")).one()
+        assert old == ("keep me", None)
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
 
 
 @pytest.mark.parametrize("fail", [False, True])

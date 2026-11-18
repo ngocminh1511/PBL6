@@ -4,6 +4,7 @@ import React from 'react';
 import { ChatMessage as ChatMessageType } from '../../lib/types';
 import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
+import { TokenUsage } from './TokenUsage';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -38,7 +39,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
         <span className="material-symbols-outlined text-[16px]">neurology</span>
       </div>
 
-      <div className="flex flex-col gap-space-md flex-1 w-full">
+      <div className="flex flex-col gap-space-md flex-1 w-full min-w-0">
         {/* Header Meta */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-space-xs">
@@ -123,6 +124,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
             </div>
           </div>
         </article>
+        <TokenUsage usage={message.token_usage} />
       </div>
     </div>
   );

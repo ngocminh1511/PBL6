@@ -32,6 +32,9 @@ Frontend dev dùng `.next-dev`, build/start production dùng `.next`, nên chạ
 `BACKEND_ORIGIN` là biến phía server của Next.js, không có hậu tố `/api`; browser luôn gọi `/api` cùng origin.
 Proxy `/api` chờ tối đa 5 phút cho truy hồi cloud và các lượt gọi LLM. Lỗi hạn mức (429) hoặc yêu cầu quá lớn (413)
 được chat trả thành `503` kèm nguyên nhân an toàn; kiểm tra quota/model trên `/admin`, không coi đó là câu trả lời thành công.
+Mỗi phản hồi mới hiển thị token đầu vào/đầu ra/tổng do LLM báo cáo, kèm chi tiết từng bước (cả đặt tên phiên).
+Số liệu lưu cùng lịch sử; phản hồi cũ hoặc provider thiếu `usage` hiển thị chưa có số liệu, không ước tính từ ký tự.
+Tổng chưa đủ số liệu được ghi rõ; token yêu cầu trong lỗi 413/429 không cộng vào token đã xử lý.
 
 Mặc định dùng Qdrant/Neo4j cloud, Modal và R2 đã cấu hình trong `.env`. Bổ sung PostgreSQL và Redis cloud:
 
@@ -106,6 +109,7 @@ trong môi trường tiến trình/container và khác giá trị trong `.env`, 
 Thông tin xác thực đã lưu không được trả lại qua API; ô nhập trống giữ thông tin hiện có cho cùng máy chủ/tài khoản.
 
 Khởi động có migration **bổ sung** theo revision trong `app_schema_versions`; dữ liệu cũ được giữ nguyên.
+Revision `002_chat_token_usage` thêm cột JSON nullable vào lịch sử chat; bản ghi cũ giữ giá trị null.
 Không tự nạp tài liệu mẫu, recreate collection hoặc xóa dataset. Upload dùng một worker; tác vụ gián đoạn do restart
 được đánh dấu thất bại để nạp lại. Chạy **một process backend** trong phiên bản này.
 
@@ -117,6 +121,7 @@ Compose giữ tên project `labor_rag` và các volume Neo4j/Qdrant cũ. Không 
 ```powershell
 python -m pytest tests/test_postgres_configuration.py tests/test_admin_configuration.py tests/test_unified_backend.py tests/test_retrieval_inspect.py tests/test_appendices.py tests/test_r2_storage.py -q
 npm --prefix src/frontend run test:config
+npm --prefix src/frontend run test:chat
 npm --prefix src/frontend run build
 ```
 

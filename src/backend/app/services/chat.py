@@ -3,12 +3,19 @@ import logging
 
 from fastapi import HTTPException
 from labor_rag.services.chat import PipelineError, evidence_dict
+from labor_rag.generation.usage import collect_usage, usage_stage
 from src.backend.app.models.schemas import ChatAskResponse, ChatMessageResponse
 from src.backend.app.repositories.postgres import ChatRepository
 from src.backend.app.services.configuration import failure_message
 
 
 logger = logging.getLogger(__name__)
+
+
+class ChatRequestError(HTTPException):
+    def __init__(self, detail, token_usage):
+        super().__init__(503, detail)
+        self.token_usage = token_usage
 
 
 def generate_session_title(runtime, question: str) -> str:
@@ -21,8 +28,9 @@ def generate_session_title(runtime, question: str) -> str:
         f"Câu hỏi: {question}"
     )
     try:
-        pipeline = runtime.chat()
-        title = pipeline.llm.complete("Bạn là trợ lý pháp luật chuyên đặt tên phiên tra cứu ngắn gọn.", prompt, max_tokens=30).strip()
+        with usage_stage("session_title"):
+            pipeline = runtime.chat()
+            title = pipeline.llm.complete("Bạn là trợ lý pháp luật chuyên đặt tên phiên tra cứu ngắn gọn.", prompt, max_tokens=30).strip()
         title = title.strip('"\':\n\r').split('\n')[0].strip()
         if title:
             return title[:60]
@@ -32,7 +40,7 @@ def generate_session_title(runtime, question: str) -> str:
 
 
 def answer_question(req, user, db, runtime):
-    with runtime.operation():
+    with runtime.operation(), collect_usage() as usage:
         repo = ChatRepository(db)
         if req.session_id:
             session = repo.get_session(req.session_id, user_id=user.id)
@@ -54,11 +62,11 @@ def answer_question(req, user, db, runtime):
         except PipelineError as exc:
             code, message = failure_message(exc.cause)
             logger.warning("Chat stage %s failed (%s, %s)", exc.stage, exc.error_type, code)
-            raise HTTPException(503, f"Bước {exc.stage} chưa hoàn tất: {message} ({exc.error_type}).") from None
+            raise ChatRequestError(f"Bước {exc.stage} chưa hoàn tất: {message} ({exc.error_type}).", usage.snapshot()) from None
         except Exception as exc:
             code, message = failure_message(exc)
             logger.warning("Chat initialization failed (%s, %s)", type(exc).__name__, code)
-            raise HTTPException(503, f"Hỏi đáp chưa hoàn tất: {message} ({type(exc).__name__}).") from None
+            raise ChatRequestError(f"Hỏi đáp chưa hoàn tất: {message} ({type(exc).__name__}).", usage.snapshot()) from None
         if result.get("pipeline_trace"):
             result["pipeline_trace"]["config_version"] = runtime.version
         user_msg = repo.add_message(session.id, "user", req.question)
@@ -66,7 +74,7 @@ def answer_question(req, user, db, runtime):
             standalone_query=result["standalone_query"], pipeline_trace=result["pipeline_trace"],
             legal_evidence=[evidence_dict(e, runtime.catalog) for e in result["evidence"]],
             citation_check=result["citation_check"], execution_time_ms=result["execution_time_ms"],
-            attachments=result["attachments"], warnings=result["warnings"])
+            attachments=result["attachments"], warnings=result["warnings"], token_usage=usage.snapshot())
         return ChatAskResponse(session_id=session.id,
             user_message=ChatMessageResponse.model_validate(user_msg),
             assistant_message=ChatMessageResponse.model_validate(assistant))
