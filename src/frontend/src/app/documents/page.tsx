@@ -49,9 +49,9 @@ export default function DocumentsPage() {
       if (t === 'chuong' || t === 'chapter') chuong++;
       else if (t === 'muc' || t === 'section') muc++;
 
-      if (node.article_number || t === 'dieu' || t === 'article') dieu++;
+      if (node.point_number || t === 'diem' || t === 'point') diem++;
       else if (node.clause_number || t === 'khoan' || t === 'clause') khoan++;
-      else if (node.point_number || t === 'diem' || t === 'point') diem++;
+      else if (node.article_number || t === 'dieu' || t === 'article') dieu++;
 
       if (Array.isArray(node.children)) {
         for (const child of node.children) walk(child);

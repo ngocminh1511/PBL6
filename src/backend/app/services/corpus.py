@@ -17,7 +17,7 @@ class Corpus:
         self.chunks = rows(LAO_DONG_DIR / "chunks.jsonl")
         self.documents = {}
         self.total_articles = sum(1 for n in self.nodes if n.get("label") == "Dieu")
-        self.total_clauses = sum(1 for n in self.nodes if n.get("clause_number"))
+        self.total_clauses = sum(1 for n in self.nodes if n.get("clause_number") and not n.get("point_number"))
         self.total_points = sum(1 for n in self.nodes if n.get("point_number"))
         counts = Counter(c["document_id"] for c in self.chunks)
         nodes_by_doc = defaultdict(list)
@@ -37,7 +37,7 @@ class Corpus:
                     "status": "versioned_corpus", "chunks_count": counts[identity],
                     "nodes_count": len(owned), "edges_count": sum(e["source"] in owned for e in self.edges),
                     "articles_count": sum(1 for n in owned_nodes if n.get("label") == "Dieu"),
-                    "clauses_count": sum(1 for n in owned_nodes if n.get("clause_number")),
+                    "clauses_count": sum(1 for n in owned_nodes if n.get("clause_number") and not n.get("point_number")),
                     "points_count": sum(1 for n in owned_nodes if n.get("point_number")),
                     "created_at": "1970-01-01T00:00:00", "updated_at": "1970-01-01T00:00:00",
                 }
