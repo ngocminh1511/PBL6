@@ -54,16 +54,20 @@ PATTERNS = {
         re.IGNORECASE | re.UNICODE,
     ),
     StructureLevel.CHAPTER: re.compile(r"^\s*(?:CHƯƠNG|Chương)\s+([IVXLCDM]+|[0-9]+)\b\.?\s*"),
-    # OCR often drops the dot below: "Muc 3".
-    StructureLevel.SECTION: re.compile(r"^\s*(?:M[ỤU]C|M[ụu]c)\s+(\d+)\b\.?\s*"),
+    # OCR often drops the dot below or space: "Muc 3", "Muc4".
+    StructureLevel.SECTION: re.compile(r"^\s*(?:M[ỤU]C|M[ụu]c)\s*(\d+)\b\.?\s*"),
     # OCR often gets the tone mark or ending of "Điều" wrong ("Điêu", "Diều", "Diệu", "Điên", "Điền", "Điềp").
     # An inserted Dieu keeps its neighbour's number plus a letter: "Điều 35a".
     StructureLevel.ARTICLE: re.compile(
-        r"^\s*(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+(\d+[a-zđ]?)(?=[.,:\s-]|$)[.,:]?\s*",
+        r"^\s*(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+([1-9]\d*[a-zđ]?)(?=[.,:\s-]|$)[.,:]?\s*",
         re.UNICODE | re.IGNORECASE,
     ),
-    # "1." or, as OCR often reads it, "1," before a capitalised sentence; "1a." when inserted.
-    StructureLevel.CLAUSE: re.compile(r"^\s*(\d+[a-zđ]?)(?:\.\s+|,\s+(?=[A-ZĐÀ-Ỹ]))"),
+    # "1." (with or without space after dot, avoiding decimals like 1.5), or OCR variants
+    # ("1,", "1/", "1:", "1)") before a capitalised sentence, optionally with a leading bullet.
+    StructureLevel.CLAUSE: re.compile(
+        r"^\s*(?:[-*•]\s*)?(\d+[a-zđ]?)(?:\.(?!\d)\s*|[,/:)]\s+(?=[A-ZĐÀ-Ỹ]))",
+        re.UNICODE,
+    ),
     # Điểm labels are lower-case; OCR often capitalises them ("A) ").
     StructureLevel.POINT: re.compile(r"^\s*([a-zđA-ZĐ])\)\s+"),
 }
@@ -74,7 +78,10 @@ _DOC_TYPES = [
     "BỘ LUẬT", "LUẬT", "PHÁP LỆNH", "NGHỊ QUYẾT", "NGHỊ ĐỊNH",
     "QUYẾT ĐỊNH", "THÔNG TƯ LIÊN TỊCH", "THÔNG TƯ", "CHỈ THỊ",
 ]
-_APPENDIX = re.compile(r"^\s*PHỤ\s+LỤC", re.IGNORECASE)
+_APPENDIX = re.compile(
+    r"^\s*(?:PHỤ\s+LỤC(?:\s|$)|Phụ\s+lục(?:\s+(?:[IVXLCDM]+|\d+|số\s+\d+))?(?:\s*[:.\-–]|\s*$))",
+    re.UNICODE,
+)
 
 
 @dataclass

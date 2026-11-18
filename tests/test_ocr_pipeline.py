@@ -27,7 +27,7 @@ from labor_rag.ocr.cleaner import (
     remove_page_numbers,
     split_footnotes,
 )
-from labor_rag.ocr.engine import _cut_wide, _find_lines, _line_pieces
+from labor_rag.ocr.engine import _clean_ocr_piece, _cut_wide, _deskew_image, _find_lines, _ink_mask, _line_pieces
 from labor_rag.ocr.export import export_document
 from labor_rag.ocr.normalize import full_normalize, replace_special_chars
 from labor_rag.ocr.quality import cer, quality_report, wer
@@ -91,15 +91,22 @@ def test_legal_ocr_preprocessing_and_embedded_headings():
     raw = (
         "Quy định về hợp đông và tiêu chuâ lao động, châm dứt quan hệ lao động.\n"
         "ít nhất bằng 02 tháng tiền lương Thuận đời Điều 42, Nghĩa vị của người sử dụng lao động trong trường hợp\n"
-        "theo quy định tại Điều 35 của Bộ luật này."
+        "Điều 14. Hình thức hợp đồng lao động - 1. Hợp đồng lao động phải được giao kết bằng văn bản. 2. Hai bên có thể thỏa thuận.\n"
+        "quyền liều 32/ Trưởng hợp người sử dụng lao động không được thực hiện\n"
+        "theo quy định tại Điều 35 và khoản 2. Người lao động phải tuân thủ từ ngày 1.1.2021."
     )
     processed = preprocess_legal_text(raw)
     assert "hợp đồng" in processed
     assert "tiêu chuẩn" in processed
     assert "chấm dứt" in processed
     assert "\nĐiều 42, Nghĩa vị" in processed
-    # Cross reference line should NOT be split into a new heading
+    assert "Điều 14. Hình thức hợp đồng lao động\n1. Hợp đồng lao động" in processed
+    assert "\n2. Hai bên có thể thỏa thuận." in processed
+    assert "Điều 37. Trường hợp người sử dụng lao động" in processed
+    # Cross reference line and dates should NOT be split into new headings/clauses
     assert "theo quy định tại Điều 35" in processed
+    assert "\n2. Người lao động phải tuân thủ" not in processed
+    assert "1.1.2021" in processed
 
 
 # --- structure ------------------------------------------------
@@ -111,14 +118,20 @@ def test_parse_line_levels():
         "Chương I. NHỮNG QUY ĐỊNH CHUNG": StructureLevel.CHAPTER,
         "CHƯƠNG XIV": StructureLevel.CHAPTER,
         "Mục 1. Quy định chung": StructureLevel.SECTION,
+        "Muc4 QUY ĐỊNH": StructureLevel.SECTION,
         "Điều 220. Quy định cuối": StructureLevel.ARTICLE,
         "25. Nội dung khoản 25": StructureLevel.CLAUSE,
+        "-1. Người lao động hưởng lương hưu": StructureLevel.CLAUSE,
+        "2/ Trường hợp khác": StructureLevel.CLAUSE,
+        "3.Không có khoảng trắng": StructureLevel.CLAUSE,
+        "1.5 triệu đồng": StructureLevel.TEXT,
         "đ) Điểm đ rất hay bị bỏ qua": StructureLevel.POINT,
         "2019. Không phải khoản": StructureLevel.TEXT,
         "Điêu 25. Thời gian thử việc": StructureLevel.ARTICLE,  # OCR tone-mark error
         "4, Người có liên quan": StructureLevel.CLAUSE,
         "4, 5 và 6 tháng": StructureLevel.TEXT,
         "Đây là nội dung bình thường": StructureLevel.TEXT,
+        "điều 03 ước quốc tế": StructureLevel.TEXT,
     }
     for line, level in cases.items():
         assert parse_line(line).level == level, line
@@ -151,6 +164,20 @@ def test_document_id_falls_back_to_unknown_only_without_id():
 def test_section_without_chapter_keeps_articles():
     doc = parse_structure("Mục 1. Chung\nĐiều 1. A\n1. Nội dung.", document_id="x")
     assert [a.article_number for a in doc.articles] == ["Điều 1"]
+
+
+def test_appendix_prose_not_treated_as_appendix_section():
+    text = (
+        "Điều 22. Phụ lục hợp đồng lao động\n"
+        "1. Phụ lục hợp đồng lao động là bộ phận của hợp đồng lao động.\n"
+        "Phụ lục hợp đồng lao động quy định chi tiết một số điều khoản.\n"
+        "Điều 23. Hiệu lực của hợp đồng lao động\n"
+        "Hợp đồng có hiệu lực từ ngày giao kết.\n"
+        "PHỤ LỤC I\nMẫu số 01"
+    )
+    doc = parse_structure(text, document_id="x")
+    assert [a.article_number for a in doc.iter_articles()] == ["Điều 22", "Điều 23"]
+    assert doc.appendices == ["PHỤ LỤC I", "Mẫu số 01"]
 
 
 def test_metadata():
@@ -236,6 +263,41 @@ def test_cut_wide_prefers_word_gaps():
     pieces = _cut_wide(0, 1000, has_ink, max_width=500)
     assert pieces[0] == (0, 390)
     assert all(b - a <= 500 for a, b in pieces) and pieces[-1][1] == 1000
+
+
+def test_deskew_separates_tilted_lines():
+    from PIL import Image, ImageDraw
+
+    # Synthetic white page with 12 rows of glyph-like strokes tilted by 2.2 degrees.
+    img = Image.new("RGB", (1200, 1000), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    for y in range(100, 820, 60):
+        for x in range(120, 1080, 14):
+            draw.rectangle((x, y, x + 6, y + 32), fill=(0, 0, 0))
+    tilted = img.rotate(2.2, fillcolor=(255, 255, 255))
+    before = _find_lines(_ink_mask(tilted))
+    deskewed = _deskew_image(tilted)
+    after = _find_lines(_ink_mask(deskewed))
+    assert len(before) < 12
+    assert len(after) == 12
+
+
+def test_majority_merged_tall_bands_still_split():
+    # 2 single lines (50px) and 4 two-line merged bands (116px) so median is 116px.
+    ink = np.zeros((1000, 800), dtype=bool)
+    for top in (40, 130):
+        ink[top:top + 50, 100:700] = True
+    for top in (240, 400, 560, 720):
+        ink[top:top + 56, 100:700] = True
+        ink[top + 56:top + 60, 350:360] = True  # thin diacritic bridge
+        ink[top + 60:top + 116, 100:700] = True
+    lines = _find_lines(ink)
+    assert len(lines) == 10
+
+
+def test_clean_ocr_piece_collapses_repetition_loops():
+    assert _clean_ocr_piece("  thời thời thời thời thời thời  ") == "thời"
+    assert _clean_ocr_piece("quy định tại Điều 35") == "quy định tại Điều 35"
 
 
 # --- quality --------------------------------------------------

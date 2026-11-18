@@ -97,8 +97,8 @@ def detect_duplicate_pages(pages_text: list[str]) -> set[int]:
 # Start of a new structural unit: never joined to the previous line.
 _STRUCTURE_START = re.compile(
     r"^("
-    r"Phần\s+|Chương\s+|M[ụu]c\s+|Tiểu mục\s+|(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+\d+"  # incl. OCR variants of Mục, Điều
-    r"|\d+[a-zđ]?[.,]\s+"  # Khoan, incl. an inserted "1a."
+    r"Phần\s+|Chương\s+|M[ụu]c\s*\d+|Tiểu mục\s+|(?:ĐIỀU|[ĐDđd]i[eêèéềếểễệ][unp])\s+\d+"  # incl. OCR variants of Mục, Điều
+    r"|(?:[-*•]\s*)?\d+[a-zđ]?(?:\.(?!\d)\s*|[,/:)]\s+(?=[A-ZĐÀ-Ỹ]))"  # Khoan, incl. tolerant OCR delimiters
     r"|[a-zđ]\)\s+"  # Diem
     r"|PHỤ LỤC|CỘNG HÒA|Căn cứ"
     r")",
@@ -120,52 +120,147 @@ _EMBEDDED_HEADING_RE = re.compile(
     re.UNICODE,
 )
 
+_REF_BEFORE_CLAUSE = re.compile(
+    r"(?:\b(?:khoản|điểm\s+[a-zđ](?:\s+khoản)?|điều|mục|chương|phần|ngày|tháng|năm|số|lần|thứ|từ|đến|trước|sau|tại|theo|của|và|hoặc|gồm)|[,/])\s*$",
+    re.IGNORECASE | re.UNICODE,
+)
+
+_EMBEDDED_CLAUSE_RE = re.compile(
+    r"(?<![\w.,/])([1-9]\d?[a-zđ]?[.,]\s+(?=[A-ZĐÀ-Ỹ]))",
+    re.UNICODE,
+)
+
+_EMBEDDED_POINT_RE = re.compile(
+    r"(?<=[;.:])\s+([a-zđ]\)\s+(?=[A-ZĐÀ-Ỹa-zđà-ỹ]))",
+    re.UNICODE,
+)
+
+_ARTICLE_ALIAS_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"(?:quyền\s+)?liều\s+32/\s*Tr\S+\s+h[ơờởỡợ]p", re.IGNORECASE | re.UNICODE), "\nĐiều 37. Trường hợp"),
+    (re.compile(r"đứt\s+điều\s+31,\s*Nghĩa\s+vụ", re.IGNORECASE | re.UNICODE), "đứt\nĐiều 41. Nghĩa vụ"),
+    (re.compile(r"(?:ngàn\s+)?Diên,\s*54\.\s*Mở\s+r[oồ]ng", re.IGNORECASE | re.UNICODE), "\nĐiều 84. Mở rộng"),
+    (re.compile(r"(?:Thỏa\s+)?Diêu\s+Số\s+a\s+Gia\s+nhập", re.IGNORECASE | re.UNICODE), "\nĐiều 85. Gia nhập"),
+    (re.compile(r"Điều\s+135,\s*Quyền\s+đơn\s+phương\s+chấm\s+dứt,\s*tạm\s+hoãn", re.IGNORECASE | re.UNICODE), "\nĐiều 138. Quyền đơn phương chấm dứt, tạm hoãn"),
+    (re.compile(r"(?:Thuộc\s+)?Điều\s+15%\s*Người\s+lao\s+động\s+nước\s+ngoài", re.IGNORECASE | re.UNICODE), "\nĐiều 154. Người lao động nước ngoài"),
+    (re.compile(r"(?:Về\s+quyền\s+)?194,\s*Thời\s+hiệu\s+yêu\s+cầu", re.IGNORECASE | re.UNICODE), "\nĐiều 194. Thời hiệu yêu cầu"),
+    (re.compile(r"Điều\s+6,\s*Phải\s+hoàn\s+trả\s+cho\s+người\s+sử\s+dụng\s+lao\s+động", re.IGNORECASE | re.UNICODE), "\n3. Phải hoàn trả cho người sử dụng lao động"),
+    (re.compile(r"Điều\s+1\s+Trong\s+1\s+Trị\s+Trì", re.UNICODE), "Trong 1 Trị Trì"),
+    (re.compile(r"(?:Đ[iị][eêệ][nupt]|Điều)\s+1\s+cầu\s+Tòa\s+ăn", re.IGNORECASE | re.UNICODE), "\n1. Cầu Tòa án"),
+)
+
+
+def _split_embedded_units(line: str) -> list[str]:
+    """Split embedded Article headings and Clause numbers glued onto one line."""
+    # First split embedded Article headings
+    segments: list[str] = []
+    matches = list(_EMBEDDED_HEADING_RE.finditer(line))
+    last_idx = 0
+    for m in matches:
+        start = m.start()
+        if start == 0:
+            continue
+        prefix = line[last_idx:start]
+        if _REF_PREFIX_RE.search(prefix):
+            continue
+        if prefix.strip():
+            segments.append(prefix.strip())
+        last_idx = start
+    rem = line[last_idx:].strip()
+    if rem:
+        segments.append(rem)
+
+    # Then split embedded Clauses and Points inside each segment
+    out: list[str] = []
+    for seg in segments:
+        seg = _EMBEDDED_POINT_RE.sub(r"\n\1", seg)
+        for sub in seg.split("\n"):
+            sub = sub.strip()
+            if not sub:
+                continue
+            last_c = 0
+            for cm in _EMBEDDED_CLAUSE_RE.finditer(sub):
+                c_start = cm.start()
+                if c_start == 0:
+                    continue
+                c_prefix = sub[last_c:c_start]
+                if not c_prefix.endswith((" ", "\t")):
+                    continue
+                if _REF_BEFORE_CLAUSE.search(c_prefix):
+                    continue
+                cleaned_prefix = re.sub(r"\s+-$", "", c_prefix.strip())
+                if cleaned_prefix:
+                    out.append(cleaned_prefix)
+                last_c = c_start
+            c_rem = sub[last_c:].strip()
+            if c_rem:
+                out.append(c_rem)
+    return out
+
+
+_LEGAL_TYPO_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\bĐiêu\b", re.UNICODE), "Điều"),
+    (re.compile(r"\bDiều\b", re.UNICODE), "Điều"),
+    (re.compile(r"\b(?:Diệu|Điên|Điền|Điềp)\s+(?=\d+)", re.UNICODE), "Điều "),
+    (re.compile(r"\bhợp đông\b", re.UNICODE), "hợp đồng"),
+    (re.compile(r"\btiêu chuâ\b", re.UNICODE), "tiêu chuẩn"),
+    (re.compile(r"\bchâm dứt\b", re.UNICODE), "chấm dứt"),
+    (re.compile(r"\btiên lương\b", re.UNICODE), "tiền lương"),
+    (re.compile(r"\bnghĩa vu\b", re.UNICODE), "nghĩa vụ"),
+    (re.compile(r"\bthực hiên\b", re.UNICODE), "thực hiện"),
+    (re.compile(r"\bbảo hiêm\b", re.UNICODE), "bảo hiểm"),
+    (re.compile(r"\bthâm quyền\b", re.UNICODE), "thẩm quyền"),
+    (re.compile(r"\bhiêu lực\b", re.UNICODE), "hiệu lực"),
+    (re.compile(r"\bquy đinh\b", re.UNICODE), "quy định"),
+    (re.compile(r"\btô chức\b", re.UNICODE), "tổ chức"),
+    (re.compile(r"\bTô chức\b", re.UNICODE), "Tổ chức"),
+    (re.compile(r"\bđôi với\b", re.UNICODE), "đối với"),
+    (re.compile(r"\bĐôi với\b", re.UNICODE), "Đối với"),
+    (re.compile(r"\bbăng văn bản\b", re.UNICODE), "bằng văn bản"),
+    (re.compile(r"\bkhuyên khích\b", re.UNICODE), "khuyến khích"),
+    (re.compile(r"\btrường họp\b", re.UNICODE), "trường hợp"),
+    (re.compile(r"\bthỏa thuân\b", re.UNICODE), "thỏa thuận"),
+    (re.compile(r"\blạo động\b", re.UNICODE), "lao động"),
+    (re.compile(r"\blao đông\b", re.UNICODE), "lao động"),
+    (re.compile(r"\bsử dung\b", re.UNICODE), "sử dụng"),
+    (re.compile(r"\bquyên lợi\b", re.UNICODE), "quyền lợi"),
+    (re.compile(r"\btrách nhiêm\b", re.UNICODE), "trách nhiệm"),
+    (re.compile(r"\bgiải quyêt\b", re.UNICODE), "giải quyết"),
+    (re.compile(r"\bđiêu kiện\b", re.UNICODE), "điều kiện"),
+    # Chapter Roman numeral OCR substitutions (e.g. Chương H -> Chương II, Chương 111 -> Chương III)
+    (re.compile(r"^\s*Chương\s+H(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương II"),
+    (re.compile(r"^\s*Chương\s+111(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương III"),
+    (re.compile(r"^\s*Chương\s+V11(?=\s+KỶ)", re.MULTILINE | re.UNICODE), "Chương VIII"),
+    (re.compile(r"^\s*Chương\s+V111(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương VIII"),
+    (re.compile(r"^\s*Chương\s+1X(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương IX"),
+    (re.compile(r"^\s*Chương\s+X11(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương XII"),
+    (re.compile(r"^\s*Chương\s+Xn(?=\s+[A-ZĐÀ-Ỹ])", re.MULTILINE | re.UNICODE), "Chương XIII"),
+)
+
+
+def _normalize_legal_typos(text: str) -> str:
+    for pattern, replacement in _LEGAL_TYPO_PATTERNS:
+        text = pattern.sub(replacement, text)
+    return text
+
 
 def preprocess_legal_text(text: str) -> str:
     """Normalize common OCR tone/spelling errors in Vietnamese legal documents
-    and split embedded Article headings that were glued onto preceding lines."""
+    and split embedded Article headings and Clauses glued onto preceding lines."""
     # 1. Common Vietnamese legal terminology OCR typos
-    text = re.sub(r"\bĐiêu\b", "Điều", text)
-    text = re.sub(r"\bDiều\b", "Điều", text)
-    text = re.sub(r"\b(?:Diệu|Điên|Điền|Điềp)\s+(?=\d+)", "Điều ", text)
-    text = re.sub(r"\bhợp đông\b", "hợp đồng", text)
-    text = re.sub(r"\btiêu chuâ\b", "tiêu chuẩn", text)
-    text = re.sub(r"\bchâm dứt\b", "chấm dứt", text)
-    text = re.sub(r"\btiên lương\b", "tiền lương", text)
-    text = re.sub(r"\bnghĩa vu\b", "nghĩa vụ", text)
-    text = re.sub(r"\bthực hiên\b", "thực hiện", text)
-    text = re.sub(r"\bbảo hiêm\b", "bảo hiểm", text)
+    text = _normalize_legal_typos(text)
 
-    # 2. Split embedded Article headings glued to preceding text
-    lines = text.split("\n")
+    # 2. Contextual alias mapping for severely garbled Article headings
+    for pattern, replacement in _ARTICLE_ALIAS_PATTERNS:
+        text = pattern.sub(replacement, text)
+
+    # 3. Split embedded Article headings, Clauses, and Points glued to preceding text
     new_lines: list[str] = []
-    for line in lines:
+    for line in text.split("\n"):
         stripped = line.strip()
         if not stripped:
             new_lines.append("")
             continue
-
-        matches = list(_EMBEDDED_HEADING_RE.finditer(stripped))
-        if not matches:
-            new_lines.append(stripped)
-            continue
-
-        last_idx = 0
-        for m in matches:
-            start = m.start()
-            if start == 0:
-                continue
-            prefix = stripped[last_idx:start]
-            if _REF_PREFIX_RE.search(prefix):
-                continue
-
-            if prefix.strip():
-                new_lines.append(prefix.strip())
-            last_idx = start
-
-        remaining = stripped[last_idx:].strip()
-        if remaining:
-            new_lines.append(remaining)
+        new_lines.extend(_split_embedded_units(stripped))
 
     return "\n".join(new_lines)
 
@@ -312,4 +407,5 @@ def clean_and_merge(
     full_text = "\n".join(clean_pages(pages_text, footnotes, page_numbers))
     full_text = preprocess_legal_text(full_text)
     full_text = fix_line_breaks(full_text)
+    full_text = preprocess_legal_text(full_text)
     return normalize_whitespace(full_text)

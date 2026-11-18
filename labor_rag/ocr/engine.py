@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import logging
 import math
+import re
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -47,7 +48,7 @@ _MODEL_CONFIG_FILES = {
 _ROW_INK_RATIO = 0.02  # a row is text when its ink exceeds this share of the densest row
 _LINE_MERGE_GAP = 9  # bands closer than this are one line (diacritics, underlines)
 _LINE_MIN_HEIGHT = 10  # shorter bands are specks
-_LINE_PAD = 2
+_LINE_PAD = 3
 _COLUMN_GAP_RATIO = 0.04  # a horizontal gap this wide (share of page width) separates columns
 _CROP_PAD = 4
 # White margin (x, y) added around each crop. Without it VietOCR tends to
@@ -155,6 +156,56 @@ def get_predictor():
 # Segmentation
 # ============================================================
 
+_DESKEW_MIN_DIM = 200
+_DESKEW_MAX_ANGLE = 4.0
+_REPEAT_WORD_RE = re.compile(r"\b([^\W\d_]+)(?:\s+\1){4,}\b", re.IGNORECASE | re.UNICODE)
+
+
+def _deskew_image(image: Image.Image) -> Image.Image:
+    """Correct slight scan tilt (-4..+4 deg) by maximising horizontal-projection
+    variance on a fast 4x downscaled mask so tilted lines do not merge."""
+    rgb = np.asarray(image.convert("RGB"))
+    h, w = rgb.shape[:2]
+    if min(h, w) < _DESKEW_MIN_DIM:
+        return image
+
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    small = cv2.resize(gray, (max(1, w // 4), max(1, h // 4)), interpolation=cv2.INTER_AREA)
+    mask = (
+        cv2.adaptiveThreshold(small, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 6) > 0
+    ).astype(np.uint8)
+    if int(mask.sum()) < 200:
+        return image
+
+    sh, sw = mask.shape
+    center = (sw / 2.0, sh / 2.0)
+    base_var = float(np.var(mask.sum(axis=1)))
+    best_angle, best_var = 0.0, base_var
+
+    # Coarse 0.25 deg sweep, then fine 0.05 deg sweep around the peak.
+    for angle in np.linspace(-_DESKEW_MAX_ANGLE, _DESKEW_MAX_ANGLE, 33):
+        M = cv2.getRotationMatrix2D(center, float(angle), 1.0)
+        rot = cv2.warpAffine(mask, M, (sw, sh), flags=cv2.INTER_NEAREST)
+        var = float(np.var(rot.sum(axis=1)))
+        if var > best_var:
+            best_var, best_angle = var, float(angle)
+
+    coarse_best = best_angle
+    for angle in np.linspace(coarse_best - 0.3, coarse_best + 0.3, 13):
+        M = cv2.getRotationMatrix2D(center, float(angle), 1.0)
+        rot = cv2.warpAffine(mask, M, (sw, sh), flags=cv2.INTER_NEAREST)
+        var = float(np.var(rot.sum(axis=1)))
+        if var > best_var:
+            best_var, best_angle = var, float(angle)
+
+    if abs(best_angle) < 0.05 or best_var <= base_var * 1.02:
+        return image
+
+    M_full = cv2.getRotationMatrix2D((w / 2.0, h / 2.0), best_angle, 1.0)
+    rotated = cv2.warpAffine(rgb, M_full, (w, h), flags=cv2.INTER_CUBIC, borderValue=(255, 255, 255))
+    return Image.fromarray(rotated)
+
+
 def _ink_mask(image: Image.Image) -> np.ndarray:
     gray = cv2.cvtColor(np.asarray(image.convert("RGB")), cv2.COLOR_RGB2GRAY)
     gray = cv2.fastNlMeansDenoising(gray, h=10)
@@ -190,11 +241,17 @@ def _split_tall_bands(bands: list[tuple[int, int]], profile: np.ndarray) -> list
     """
     heights = sorted(y1 - y0 for y0, y1 in bands)
     median = heights[len(heights) // 2]
+    ref_h = median
+    if len(heights) >= 4:
+        p25 = heights[len(heights) // 4]
+        if median > 1.7 * p25 and p25 >= _LINE_MIN_HEIGHT * 2:
+            ref_h = p25
     # Single lines vary in height (with or without descenders and stacked
     # diacritics); the pitch is close to the tallest of them plus leading.
-    single = [h for h in heights if h < 1.6 * median]
+    single = [h for h in heights if h < 1.6 * ref_h] or heights[:1]
     pitch = 1.1 * single[int(len(single) * 0.8)]
     window = max(1, int(pitch // 3))
+    smooth = np.convolve(profile.astype(np.float32), [0.25, 0.5, 0.25], mode="same")
     out = []
     for y0, y1 in bands:
         n_lines = round((y1 - y0) / pitch)
@@ -206,7 +263,7 @@ def _split_tall_bands(bands: list[tuple[int, int]], profile: np.ndarray) -> list
         for i in range(1, n_lines):
             expected = int(y0 + i * step)
             lo, hi = max(edges[-1] + 1, expected - window), min(y1 - 1, expected + window)
-            edges.append(lo + int(np.argmin(profile[lo:hi])) if hi > lo else expected)
+            edges.append(lo + int(np.argmin(smooth[lo:hi])) if hi > lo else expected)
         edges.append(y1)
         out.extend(zip(edges[:-1], edges[1:]))
     return out
@@ -263,10 +320,15 @@ def _line_pieces(ink_line: np.ndarray, page_width: int, max_width: int) -> list[
 # Recognition
 # ============================================================
 
+def _clean_ocr_piece(text: str) -> str:
+    """Collapse Transformer repetition loops (e.g. 'thời thời thời thời thời')."""
+    return _REPEAT_WORD_RE.sub(r"\1", text.strip())
+
+
 def ocr_image(image: Image.Image) -> OCRPage:
     """OCR one page image (a rendered PDF page or a photo)."""
     predictor = get_predictor()
-    image = image.convert("RGB")
+    image = _deskew_image(image.convert("RGB"))
     ink = _ink_mask(image)
     dataset_cfg = predictor.config["dataset"]
     # Width/height ratio the model accepts without squeezing, with some slack
@@ -293,7 +355,7 @@ def ocr_image(image: Image.Image) -> OCRPage:
     line_texts: list[list[str]] = [[] for _ in lines]
     kept_probs = []
     for line_idx, text, prob in zip(owners, texts, probs):
-        text = text.strip()
+        text = _clean_ocr_piece(text)
         if text:
             line_texts[line_idx].append(text)
             if not math.isnan(prob):
