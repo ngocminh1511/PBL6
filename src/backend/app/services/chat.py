@@ -1,8 +1,14 @@
 """Session persistence around the shared RAG pipeline."""
+import logging
+
 from fastapi import HTTPException
 from labor_rag.services.chat import PipelineError, evidence_dict
 from src.backend.app.models.schemas import ChatAskResponse, ChatMessageResponse
 from src.backend.app.repositories.postgres import ChatRepository
+from src.backend.app.services.configuration import failure_message
+
+
+logger = logging.getLogger(__name__)
 
 
 def generate_session_title(runtime, question: str) -> str:
@@ -46,9 +52,13 @@ def answer_question(req, user, db, runtime):
                 rerank_top_n=req.rerank_top_n,
                 mode=req.retrieval_mode.value if req.retrieval_mode else session.retrieval_mode)
         except PipelineError as exc:
-            raise HTTPException(503, f"Bước {exc.stage} chưa hoàn tất ({exc.error_type}).") from None
+            code, message = failure_message(exc.cause)
+            logger.warning("Chat stage %s failed (%s, %s)", exc.stage, exc.error_type, code)
+            raise HTTPException(503, f"Bước {exc.stage} chưa hoàn tất: {message} ({exc.error_type}).") from None
         except Exception as exc:
-            raise HTTPException(503, f"Hỏi đáp chưa hoàn tất ({type(exc).__name__}).") from None
+            code, message = failure_message(exc)
+            logger.warning("Chat initialization failed (%s, %s)", type(exc).__name__, code)
+            raise HTTPException(503, f"Hỏi đáp chưa hoàn tất: {message} ({type(exc).__name__}).") from None
         if result.get("pipeline_trace"):
             result["pipeline_trace"]["config_version"] = runtime.version
         user_msg = repo.add_message(session.id, "user", req.question)

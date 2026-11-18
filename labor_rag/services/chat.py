@@ -9,6 +9,7 @@ from uuid import uuid4
 class PipelineError(RuntimeError):
     def __init__(self, stage, cause):
         self.stage = stage
+        self.cause = cause
         self.error_type = type(cause).__name__
         super().__init__(f"{stage}: {self.error_type}")
 

@@ -30,6 +30,8 @@ npm --prefix src/frontend run dev
 Frontend: http://localhost:3000 · Phụ lục: http://localhost:3000/appendices · API: http://127.0.0.1:8000/docs.
 Frontend dev dùng `.next-dev`, build/start production dùng `.next`, nên chạy build không ghi đè cache của dev server đang mở.
 `BACKEND_ORIGIN` là biến phía server của Next.js, không có hậu tố `/api`; browser luôn gọi `/api` cùng origin.
+Proxy `/api` chờ tối đa 5 phút cho truy hồi cloud và các lượt gọi LLM. Lỗi hạn mức (429) hoặc yêu cầu quá lớn (413)
+được chat trả thành `503` kèm nguyên nhân an toàn; kiểm tra quota/model trên `/admin`, không coi đó là câu trả lời thành công.
 
 Mặc định dùng Qdrant/Neo4j cloud, Modal và R2 đã cấu hình trong `.env`. Bổ sung PostgreSQL và Redis cloud:
 

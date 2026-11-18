@@ -149,6 +149,34 @@ def test_pipeline_failure_never_saves_fake_success(tmp_path, monkeypatch):
             assert db.query(ChatMessage).count() == 0
 
 
+@pytest.mark.parametrize("status, message", [(429, "hạn mức"), (413, "vượt giới hạn"), (401, "xác thực")])
+def test_chat_reports_safe_provider_failure_without_saving_an_answer(tmp_path, monkeypatch, caplog, status, message):
+    from labor_rag.services.chat import ChatPipeline
+    import labor_rag.generation.answer as generation
+    import labor_rag.generation.intent as intent
+
+    cause = RuntimeError("private-provider-key-and-prompt")
+    cause.status_code = status
+
+    def fail_generation(*args, **kwargs):
+        raise cause
+
+    monkeypatch.setattr(intent, "is_legal_query", lambda *args: True)
+    monkeypatch.setattr(generation, "generate_answer", fail_generation)
+    app = create_app(settings=config(tmp_path))
+    retriever = SimpleNamespace(retrieve=lambda *args, **kwargs: [], graph_warning=None)
+    monkeypatch.setattr(app.state.runtime, "chat",
+        lambda: ChatPipeline(retriever, app.state.runtime.catalog, app.state.runtime.settings))
+
+    with TestClient(app) as client:
+        response = client.post("/api/chat/ask", json={"question": "Người dưới 15 tuổi không được làm gì?"})
+        assert response.status_code == 503
+        assert "generation" in response.json()["detail"] and message in response.json()["detail"]
+        assert "private-provider-key-and-prompt" not in response.text + caplog.text
+        with app.state.database.session() as db:
+            assert db.query(ChatMessage).count() == 0
+
+
 def test_config_persists_and_failed_or_busy_update_keeps_old_runtime(tmp_path, monkeypatch):
     database_url = "sqlite:///" + str(tmp_path / "application.db")
     settings = config(tmp_path).model_copy(update={"DATABASE_URL": database_url})

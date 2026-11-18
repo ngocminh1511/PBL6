@@ -117,11 +117,13 @@ def failure_message(exc):
         return "authentication", "Thông tin xác thực không hợp lệ hoặc chưa đủ quyền."
     if code == 429 or "ratelimit" in name or "resourceexhausted" in name:
         return "quota", "Đã đạt hạn mức dịch vụ; kiểm tra quota và thử lại sau."
+    if code == 413:
+        return "request_too_large", "Nội dung yêu cầu vượt giới hạn dịch vụ; giảm dữ liệu gửi hoặc chọn hạn mức phù hợp."
     if code == 404 or "notfound" in name or "databasenotfound" in name:
         return "not_found", "Không tìm thấy model, collection, database hoặc bucket đã chọn."
     if isinstance(exc, TimeoutError) or "timeout" in name:
         return "timeout", "Dịch vụ không phản hồi trong thời gian cho phép."
-    return "unavailable", "Chưa kiểm tra thành công; kiểm tra địa chỉ, cấu hình và trạng thái dịch vụ."
+    return "unavailable", "Dịch vụ chưa hoàn tất thao tác; kiểm tra địa chỉ, cấu hình và trạng thái dịch vụ."
 
 
 def check_service(service, config):
