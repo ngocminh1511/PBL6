@@ -30,7 +30,7 @@ def generate_session_title(runtime, question: str) -> str:
     try:
         with usage_stage("session_title"):
             pipeline = runtime.chat()
-            title = pipeline.llm.complete("Bạn là trợ lý pháp luật chuyên đặt tên phiên tra cứu ngắn gọn.", prompt, max_tokens=30).strip()
+            title = pipeline.llm.complete("Bạn là trợ lý pháp luật chuyên đặt tên phiên tra cứu ngắn gọn.", prompt, max_tokens=30, reasoning="off").strip()
         title = title.strip('"\':\n\r').split('\n')[0].strip()
         if title:
             return title[:60]

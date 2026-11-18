@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 from src.backend.app.models.enums import RetrievalMode, DocumentType, TaskStatus, EmbeddingBackend, LLMProvider
 
 T = TypeVar("T")
+LLMReasoning = Literal["default", "off", "low", "medium", "high"]
 
 # ================= AUTH SCHEMAS =================
 class UserRegister(BaseModel):
@@ -267,6 +268,7 @@ class AdminConfigUpdate(BaseModel):
     qdrant_url: Optional[str] = None
     qdrant_collection: Optional[str] = None
     llm_provider: Optional[LLMProvider] = None
+    llm_reasoning: Optional[LLMReasoning] = None
     gemini_model: Optional[str] = None
     modal_app_name: Optional[str] = None
     gemini_api_key: Optional[str] = Field(default=None, repr=False)
@@ -330,6 +332,7 @@ class AdminConfigResponse(BaseModel):
     qdrant_url: str
     qdrant_collection: str
     llm_provider: str
+    llm_reasoning: str
     gemini_model: str
     modal_app_name: str
     neo4j_uri: str
@@ -406,6 +409,7 @@ class LLMProfileInput(BaseModel):
     local_runtime: Literal["ollama", "lmstudio", "compatible"] = "ollama"
     api_key_source: Literal["custom", "environment", "none"] = "custom"
     api_key: Optional[str] = Field(default=None, repr=False)
+    reasoning: LLMReasoning = "default"
     profile_id: Optional[str] = None
     copy_key_from: Optional[str] = None
     activate: bool = False
@@ -420,6 +424,7 @@ class LLMProfileResponse(BaseModel):
     base_url: str
     local_runtime: str
     api_key_source: str
+    reasoning: str = "default"
     key_configured: bool
     read_only: bool = False
     verification: Optional[ConfigCheckResponse] = None

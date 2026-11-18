@@ -7,7 +7,7 @@ from urllib.parse import urlsplit, urlunsplit
 from labor_rag.llm_providers import CLOUD_API_PROVIDERS, base_url_field, model_field, secret_field
 
 GROUP_FIELDS = {
-    "llm": {"llm_provider", "gemini_model", "gemini_api_key", "openai_model", "openai_api_key",
+    "llm": {"llm_provider", "llm_reasoning", "gemini_model", "gemini_api_key", "openai_model", "openai_api_key",
             "anthropic_model", "anthropic_api_key", "local_llm_base_url", "local_llm_model", "local_llm_api_key"},
     "embedding": {"embedding_model", "embedding_backend", "query_embedding_backend", "modal_app_name", "hf_token"},
     "qdrant": {"qdrant_url", "qdrant_api_key", "qdrant_collection", "qdrant_timeout", "collection_models"},
@@ -102,6 +102,11 @@ def failure_message(exc):
     """Never include exception text: SDK errors may echo keys, URLs or payloads."""
     if isinstance(exc, DiagnosticFailure):
         return exc.code, exc.safe_message
+    from labor_rag.generation.llm_client import EmptyCompletion
+    if isinstance(exc, EmptyCompletion):
+        if exc.truncated:
+            return "output_limit", "Model dùng hết giới hạn token đầu ra trước khi trả lời; giảm mức suy luận hoặc chọn model khác."
+        return "empty_response", "Model không trả về nội dung văn bản; kiểm tra model và mức suy luận."
     code = getattr(exc, "status_code", None) or getattr(exc, "code", None)
     response = getattr(exc, "response", None)
     if isinstance(response, dict):
@@ -123,6 +128,8 @@ def failure_message(exc):
         return "not_found", "Không tìm thấy model, collection, database hoặc bucket đã chọn."
     if isinstance(exc, TimeoutError) or "timeout" in name:
         return "timeout", "Dịch vụ không phản hồi trong thời gian cho phép."
+    if isinstance(code, int) and 500 <= code < 600:
+        return "provider_error", "Nhà cung cấp đang quá tải hoặc gặp lỗi tạm thời; thử lại sau."
     return "unavailable", "Dịch vụ chưa hoàn tất thao tác; kiểm tra địa chỉ, cấu hình và trạng thái dịch vụ."
 
 
@@ -162,7 +169,7 @@ def _check(service, config):
     if service == "llm":
         from labor_rag.generation.llm_client import LLMClient
         with closing(LLMClient(config)) as client:
-            client.complete("Connection test. Reply with OK only.", "OK", max_tokens=256)
+            client.complete("Connection test. Reply with OK only.", "OK", max_tokens=64, reasoning="off")
         return {"provider": config.LLM_PROVIDER, "model": client.model}
     if service == "embedding":
         from labor_rag.services.embedding import EmbeddingProvider

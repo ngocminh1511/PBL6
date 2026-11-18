@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     QUERY_EMBEDDING_BACKEND: Literal["local", "modal"] | None = None
     MODAL_APP_NAME: str = "labor-rag-embed"
     LLM_PROVIDER: Literal["gemini", "anthropic", "openai", "openrouter", "groq", "qwen", "local"] = "gemini"
+    # Reasoning ("thinking") tokens count toward the output limit of every call.
+    LLM_REASONING: Literal["default", "off", "low", "medium", "high"] = "default"
     GEMINI_API_KEY: str = Field(default="", repr=False)
     GEMINI_MODEL: str = "gemini-3.6-flash"
     ANTHROPIC_API_KEY: str = Field(default="", repr=False)

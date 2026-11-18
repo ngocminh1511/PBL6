@@ -195,6 +195,7 @@ export interface AdminConfigValues {
   qdrant_url: string;
   qdrant_collection: string;
   llm_provider: LLMProvider;
+  llm_reasoning: LLMReasoning;
   gemini_model: string;
   openrouter_model: string;
   openrouter_base_url: string;
@@ -284,6 +285,7 @@ export interface ConfigCheckResult {
 }
 
 export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'groq' | 'qwen' | 'local';
+export type LLMReasoning = 'default' | 'off' | 'low' | 'medium' | 'high';
 export interface LLMProfileInput {
   name: string;
   mode: 'cloud' | 'local';
@@ -293,6 +295,7 @@ export interface LLMProfileInput {
   local_runtime: 'ollama' | 'lmstudio' | 'compatible';
   api_key_source: 'custom' | 'environment' | 'none';
   api_key?: string;
+  reasoning: LLMReasoning;
   profile_id?: string;
   copy_key_from?: string;
   config_version?: number;

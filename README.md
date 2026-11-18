@@ -88,6 +88,7 @@ API không trả lại secret đã lưu; Redis URL được xem là secret vì c
 LLM local dùng `LLM_PROVIDER=local`, `LOCAL_LLM_BASE_URL` (ví dụ `http://127.0.0.1:11434/v1`), `LOCAL_LLM_MODEL`
 và API key tùy chọn. Server/model phải được chuẩn bị sẵn. Nút **Tải danh sách model** dùng thông tin đang nhập,
 vẫn cho nhập tên thủ công; danh sách không xác nhận quyền dùng miễn phí. Kiểm tra LLM sinh một phản hồi ngắn và dùng hạn mức API.
+Mỗi cấu hình LLM có **Mức suy luận** (`LLM_REASONING`: default/off/low/medium/high), được chuyển thành `thinking_level`/`thinking_budget` (Gemini) hoặc `reasoning_effort` (Groq, OpenAI-compatible). Token suy luận tính vào giới hạn đầu ra nên backend cộng thêm khoảng dự phòng theo mức; phân loại ý định, đặt tên phiên, viết lại truy vấn, rerank và kiểm tra kết nối luôn dùng mức thấp nhất. Model từ chối tham số sẽ được gọi lại một lần không kèm tham số.
 Các địa chỉ local được truy cập từ **máy chạy backend**. R2 kiểm tra bucket chỉ đọc; đổi bucket không di chuyển file cũ.
 Kiểm tra OCR cần dependency và file model đã có; đổi OCR chỉ áp dụng cho tài liệu xử lý tiếp theo.
 

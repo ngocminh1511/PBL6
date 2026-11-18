@@ -54,7 +54,7 @@ def is_legal_query(question: str, history: list[dict] | None = None) -> bool:
     )
 
     try:
-        decision = complete(SYSTEM_CLASSIFY, user_prompt, max_tokens=10).strip().upper()
+        decision = complete(SYSTEM_CLASSIFY, user_prompt, max_tokens=10, reasoning="off").strip().upper()
         if "GENERAL" in decision and "LEGAL" not in decision:
             return False
         return True
