@@ -35,6 +35,7 @@ class ChatPipeline:
         from labor_rag.generation.llm_client import use_settings
         from labor_rag.generation.answer import generate_answer
         from labor_rag.generation.citation_verify import verify_citations
+        from labor_rag.generation.intent import is_legal_query, generate_direct_answer
         from labor_rag.retrieval.query_rewrite import rewrite_query
         from labor_rag.retrieval.rerank import rerank
         started = perf_counter()
@@ -51,6 +52,20 @@ class ChatPipeline:
                 timings[stage] = round((perf_counter() - before) * 1000, 2)
 
         with use_settings(self.settings, self.llm):
+            if not is_legal_query(question, history):
+                direct_ans = run("generation", lambda: generate_direct_answer(question, history))
+                elapsed = round((perf_counter() - started) * 1000)
+                return {
+                    "standalone_query": question,
+                    "answer": direct_ans,
+                    "evidence": [],
+                    "citation_check": {"all_verified": True, "verified": [], "unverified": []},
+                    "attachments": [],
+                    "warnings": [],
+                    "pipeline_trace": None,
+                    "execution_time_ms": elapsed,
+                }
+
             query = run("query_rewrite", lambda: rewrite_query(history, question)) if history else question
 
             def retrieve():

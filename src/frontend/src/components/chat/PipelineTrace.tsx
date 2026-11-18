@@ -20,10 +20,7 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
         <div className="flex items-center gap-space-xs">
           <span className="material-symbols-outlined text-secondary text-[20px]">account_tree</span>
           <span className="font-headline-sm text-headline-sm text-on-surface">
-            Tiến trình Xử lý Suy luận (Truy vết LexRAG)
-          </span>
-          <span className="font-label-statute text-label-statute px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-semibold">
-            {trace.step4_verification.status}
+            Tiến trình xử lý suy luận
           </span>
         </div>
         <div className="flex items-center gap-1 font-label-code text-label-code text-secondary">
