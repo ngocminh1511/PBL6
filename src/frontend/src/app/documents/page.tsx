@@ -12,10 +12,11 @@ import type { HealthResponse } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 
 export default function DocumentsPage() {
-  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, error } = useDocumentStore();
+  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, updateDocumentDomain, error } = useDocumentStore();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [probeError, setProbeError] = useState('');
   const [probing, setProbing] = useState(false);
+  const [updatingDomain, setUpdatingDomain] = useState(false);
 
   async function probe() {
     setProbing(true); setProbeError('');
@@ -144,8 +145,8 @@ export default function DocumentsPage() {
                   <span>{activeTask?.current_step || 'Không có tác vụ nạp mới đang chạy.'}</span>
                 </div>
                 <div className="flex items-center gap-space-xs text-on-surface">
-                  <span className="font-bold text-on-surface">[VĂN BẢN]</span>
-                  <span>{selectedDoc ? `${selectedDoc.title} (Số hiệu: ${selectedDoc.document_number || 'Chưa có'})` : 'Chưa chọn văn bản.'}</span>
+                  <span className="font-bold text-on-surface">[ĐANG CHỌN]</span>
+                  <span>{selectedDoc ? `${selectedDoc.title}${selectedDoc.document_number ? ` (${selectedDoc.document_number})` : ''}` : 'Chưa chọn mục.'}</span>
                 </div>
                 <div className="flex items-center gap-space-xs text-secondary">
                   <span className="font-bold text-emerald-700">[TRẠNG THÁI]</span>
@@ -162,19 +163,52 @@ export default function DocumentsPage() {
               <div className="flex flex-col gap-space-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-label-statute text-label-statute uppercase tracking-wider text-secondary font-bold">
-                    Cấu trúc Chi tiết Văn bản
+                    {selectedDoc?.document_type === 'phap_dien_html'
+                      ? 'Cấu trúc Chi tiết Đề mục'
+                      : 'Cấu trúc Chi tiết Văn bản'}
                   </span>
                   {selectedDoc?.document_number && (
                     <span className="font-label-code text-label-statute px-2 py-0.5 rounded bg-surface-container text-secondary font-semibold">
-                      Số hiệu: {selectedDoc.document_number}
+                      {selectedDoc.document_type === 'phap_dien_html'
+                        ? selectedDoc.document_number
+                        : `Số hiệu: ${selectedDoc.document_number}`}
                     </span>
                   )}
                 </div>
                 <h2 className="font-headline-md text-headline-md text-on-surface leading-snug">
-                  {selectedDoc?.title || 'Chưa chọn văn bản'}
+                  {selectedDoc?.title || 'Chưa chọn mục'}
                 </h2>
-                <div className="font-label-code text-label-code text-on-surface-variant text-[11px]">
-                  Hiệu lực: {selectedDoc?.effective_from_date || 'Chưa xác định'} • Lĩnh vực: {selectedDoc?.domain === 'lao_dong' ? 'Lao động' : selectedDoc?.domain || 'Chung'}
+                <div className="font-label-code text-label-code text-on-surface-variant text-[11px] flex flex-wrap items-center gap-1.5">
+                  <span>
+                    {selectedDoc?.document_type === 'phap_dien_html'
+                      ? 'Nguồn: Bộ Pháp điển • Hiệu lực: Hiện hành'
+                      : `Nguồn: PDF (OCR) • Hiệu lực: ${selectedDoc?.effective_from_date || 'Chưa xác định'}`}
+                  </span>
+                  <span>• Lĩnh vực:</span>
+                  {selectedDoc?.document_type === 'pdf' ? (
+                    <select
+                      aria-label="Đổi lĩnh vực văn bản"
+                      disabled={updatingDomain}
+                      value={selectedDoc.domain === 'khac' ? 'khac' : 'lao_dong'}
+                      onChange={async (e) => {
+                        setUpdatingDomain(true);
+                        await updateDocumentDomain(selectedDoc.id, e.target.value as 'lao_dong' | 'khac');
+                        setUpdatingDomain(false);
+                      }}
+                      className="bg-surface-container text-on-surface px-1.5 py-0.5 rounded font-label-code text-[11px] border border-outline-variant/40 cursor-pointer disabled:opacity-50"
+                    >
+                      <option value="lao_dong">Lao động</option>
+                      <option value="khac">Lĩnh vực khác</option>
+                    </select>
+                  ) : (
+                    <span>
+                      {selectedDoc?.domain === 'lao_dong'
+                        ? 'Lao động'
+                        : selectedDoc?.domain === 'khac'
+                        ? 'Lĩnh vực khác'
+                        : selectedDoc?.domain || 'Chung'}
+                    </span>
+                  )}
                 </div>
               </div>
 

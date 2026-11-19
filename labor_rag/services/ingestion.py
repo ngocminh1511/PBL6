@@ -13,6 +13,10 @@ class IngestionInputError(ValueError):
     """Safe, user-facing validation failure."""
 
 
+class IngestionCancelledError(Exception):
+    """Raised when the user requests cancellation of an active ingestion task."""
+
+
 def jsonl(path):
     if not path.exists():
         return []
@@ -21,17 +25,34 @@ def jsonl(path):
 
 def document_tree(document):
     """Normalize OCR's actual hierarchy to the common UI tree."""
+    def strip_num(val, prefix):
+        text = str(val or "").strip()
+        if text.lower().startswith(prefix.lower()):
+            text = text[len(prefix):].strip()
+        return text or None
+
     def node(item, kind):
         number = getattr(item, kind + "_number", "")
         title = getattr(item, kind + "_title", "") or getattr(item, "title", "")
+        text = "" if kind == "document" else (getattr(item, "text", "") or getattr(item, "full_text", ""))
         children = []
         for child_kind, field in [("part", "parts"), ("chapter", "chapters"), ("section", "sections"),
                                    ("article", "articles"), ("clause", "clauses"), ("point", "points")]:
             children.extend(node(child, child_kind) for child in getattr(item, field, []))
-        return {"id": getattr(item, kind + "_id", document.document_id), "type": kind,
-                "title": " ".join(v for v in [number, title] if v),
-                "text": getattr(item, "text", "") or getattr(item, "full_text", ""),
-                "children": children}
+        payload = {
+            "id": getattr(item, kind + "_id", document.document_id),
+            "type": kind,
+            "title": title if kind == "article" else (text[:90] if kind in {"clause", "point"} and not title else " ".join(v for v in [number, title] if v)),
+            "text": text,
+            "children": children,
+        }
+        if kind == "article":
+            payload["article_number"] = strip_num(number, "Điều")
+        elif kind == "clause":
+            payload["clause_number"] = strip_num(number, "Khoản")
+        elif kind == "point":
+            payload["point_number"] = getattr(item, "point_label", None) or strip_num(number, "Điểm")
+        return payload
     return node(document, "document")
 
 
@@ -52,35 +73,65 @@ class IngestionPipeline:
         self.store = store
         self.embedder = embedder or EmbeddingProvider(settings)
 
-    def run(self, path, task_id, document_type, *, de_muc_id=None, progress=None):
+    def run(self, path, task_id, document_type, *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None):
         from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
         from labor_rag.ingest.chunk_schema import TokenCounter
         from labor_rag.ingest.ontology_to_jsonl import project
         progress = progress or (lambda *args, **kwargs: None)
+
+        def check_cancelled():
+            if cancel_check and cancel_check():
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+
+        check_cancelled()
         config = self.settings
         work = config.INTERIM_DIR / "ingestion" / task_id
         work.mkdir(parents=True, exist_ok=True)
-        kg = KgIndex.load(LAO_DONG_DIR)
+        kg = KgIndex.load(LAO_DONG_DIR) if domain == "lao_dong" and (LAO_DONG_DIR / "kg_nodes.jsonl").exists() else None
         abox_dir = work / "abox"
         abox_dir.mkdir(exist_ok=True)
-        progress(10, "parsing", "Đang phân tích tài liệu.")
+        progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
         trees = {}
         warnings = []
         if document_type == "pdf":
+            from labor_rag.ocr.export import export_hierarchical
             from labor_rag.ocr.pipeline import process_document
             from labor_rag.ingest.pdf_abox import document_abox
-            document = process_document(path, settings=config).document
+
+            def ocr_progress(msg: str, pct: float):
+                check_cancelled()
+                progress(round(10 + 0.18 * pct, 1), "parsing", f"Đang nhận dạng văn bản ({msg})...")
+
+            document = process_document(path, settings=config, progress=ocr_progress).document
+            check_cancelled()
+            progress(28, "parsing", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm...")
             if not document.metadata.so_hieu or not list(document.iter_articles()):
-                raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra nguồn OCR.")
+                raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra lại tài liệu nguồn.")
             chunks, warnings = document_to_chunks(document, kg=kg, count=TokenCounter(config.EMBEDDING_MODEL))
+            for chunk in chunks:
+                chunk["domain"] = domain
             builder, _ = document_abox(document, kg)
             if builder is None:
-                raise IngestionInputError("Không dựng được ABox cho PDF.")
+                raise IngestionInputError("Không dựng được cấu trúc dữ liệu pháp lý cho PDF.")
             abox_path = abox_dir / (document.document_id + ".ttl")
             builder.serialize(abox_path)
             trees[document.document_id] = document_tree(document)
             (work / "document.json").write_text(document.model_dump_json(indent=2), encoding="utf-8")
-            projection_source = LAO_DONG_ABOX_PATH
+
+            # Lưu kết quả OCR chuẩn vào thư mục interim gitignored để dùng lại và đồng bộ Corpus
+            pdf_chunks_dir = config.INTERIM_DIR / "pdf_chunks"
+            pdf_chunks_dir.mkdir(parents=True, exist_ok=True)
+            export_hierarchical(document, pdf_chunks_dir / f"{document.document_id}_hierarchical.jsonl")
+            with (pdf_chunks_dir / f"{document.document_id}_chunks.jsonl").open("w", encoding="utf-8") as f:
+                for chunk in chunks:
+                    f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
+
+            if domain == "lao_dong" and LAO_DONG_ABOX_PATH.exists():
+                projection_source = LAO_DONG_ABOX_PATH
+                pdf_abox_arg = abox_dir
+            else:
+                projection_source = abox_path
+                pdf_abox_arg = work / "empty_pdf_abox"
         elif document_type == "phap_dien_html":
             from labor_rag.ingest.parse_demuc_html import parse_demuc_nodes
             from labor_rag.ingest.build_abox import AboxBuilder
@@ -106,18 +157,23 @@ class IngestionPipeline:
             abox_path = work / "phap_dien.ttl"
             builder.serialize(abox_path)
             projection_source = abox_path
+            pdf_abox_arg = abox_dir
             chunks = []
         else:
             raise IngestionInputError("Chỉ hỗ trợ PDF và HTML Pháp điển.")
-        progress(30, "chunking", "Đang dựng ABox và projection schema v5.")
+        check_cancelled()
+        progress(32, "chunking", "Đang chuẩn hóa cấu trúc dữ liệu và lưu trữ bản gốc...")
         projection = work / "projection"
-        project(SimpleNamespace(abox=projection_source, pdf_abox_dir=abox_dir,
+        project(SimpleNamespace(abox=projection_source, pdf_abox_dir=pdf_abox_arg,
             schema=SCHEMA_V4_PATH, out_dir=projection, dataset_id=config.DATASET_ID,
             max_tokens=1024 if document_type == "phap_dien_html" else 0, text_variant="full"))
         if document_type == "phap_dien_html":
             chunks = jsonl(projection / "chunks.jsonl")
+            for chunk in chunks:
+                chunk["domain"] = domain
         if not chunks:
-            raise IngestionInputError("Tài liệu không tạo được chunk hợp lệ.")
+            raise IngestionInputError("Tài liệu không tạo được đoạn nội dung hợp lệ.")
+        check_cancelled()
         ids = sorted({c["document_id"] for c in chunks})
         nodes, edges = jsonl(projection / "kg_nodes.jsonl"), jsonl(projection / "kg_edges.jsonl")
         # All durable objects are content-addressed; retries cannot overwrite an unrelated source.
@@ -125,8 +181,9 @@ class IngestionPipeline:
                      store_artifact(abox_path, self.store, "ontology")]
         if (work / "document.json").exists():
             artifacts.append(store_artifact(work / "document.json", self.store, "hierarchy"))
-        progress(45, "embedding", "Đang embedding và chuẩn bị cập nhật cloud.", total_chunks=len(chunks))
-        indexed = self.index(chunks, projection, progress)
+        check_cancelled()
+        progress(45, "embedding", "Đang xử lý ngữ nghĩa văn bản phục vụ tìm kiếm...", total_chunks=len(chunks))
+        indexed = self.index(chunks, projection, progress, cancel_check=cancel_check)
         warnings.extend(indexed["warnings"])
         documents = []
         for document_id in ids:
@@ -134,24 +191,27 @@ class IngestionPipeline:
             own_ids = {n["id"] for n in own_nodes}
             document = next((n for n in own_nodes if n.get("label") == "VanBan"), {})
             own_chunks = [c for c in chunks if c["document_id"] == document_id]
+            doc_title = document.get("ten") or own_chunks[0].get("meta_de_muc") or document_id
             tree = trees.get(document_id) or {
-                "id": document_id, "type": "document", "title": document.get("ten") or document_id,
+                "id": document_id, "type": "document", "title": doc_title,
                 "children": [{"id": c["chunk_id"], "type": "article", "title": c.get("ten", ""),
                     "text": c["text"], "children": []} for c in own_chunks],
             }
-            documents.append({"id": document_id, "title": document.get("ten") or own_chunks[0].get("meta_de_muc") or document_id,
+            if not tree.get("title"):
+                tree["title"] = doc_title
+            documents.append({"id": document_id, "title": doc_title,
                 "document_number": document.get("document_number"),
                 "effective_from_date": document.get("effective_date"),
                 "chunks_count": len(own_chunks), "nodes_count": len(own_nodes),
                 "edges_count": sum(e["source"] in own_ids for e in edges),
-                "ast_tree_json": tree, "document_type": document_type, "domain": "lao_dong",
+                "ast_tree_json": tree, "document_type": document_type, "domain": domain,
                 "status": "completed", "file_path": artifacts[0]["artifact_id"]})
         return {"document_ids": ids, "documents": documents, "artifacts": artifacts,
                 "warnings": warnings, "total_chunks": len(chunks),
                 "embedded_chunks": indexed["embedded_chunks"],
                 "reused_chunks": len(chunks) - indexed["embedded_chunks"]}
 
-    def index(self, chunks, projection, progress):
+    def index(self, chunks, projection, progress, cancel_check=None):
         from qdrant_client import QdrantClient
         from qdrant_client.models import PointStruct, PointIdsList
         from labor_rag.ingest.chunk_schema import point_id
@@ -169,6 +229,8 @@ class IngestionPipeline:
                 raise IngestionInputError("Cloud đã có phiên bản mới hơn; không cập nhật tài liệu cũ.")
             points = []
             for start in range(0, len(plan.upsert), 16):
+                if cancel_check and cancel_check():
+                    raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
                 batch = plan.upsert[start:start + 16]
                 vectors = self.embedder.encode([c["text"] for c in batch], batch_size=16)
                 params = info.config.params.vectors
@@ -176,9 +238,11 @@ class IngestionPipeline:
                     raise IngestionInputError("Số chiều embedding không khớp collection cloud.")
                 points.extend(PointStruct(id=point_id(c["chunk_id"]), vector=v.tolist(),
                     payload={**c, "dataset_id": config.DATASET_ID}) for c, v in zip(batch, vectors))
-                progress(45 + 30 * min(start + 16, len(plan.upsert)) / max(len(plan.upsert), 1),
-                    "embedding", "Đang embedding.", embedded_chunks=min(start + 16, len(plan.upsert)))
-            progress(80, "indexing", "Đang MERGE đồ thị Neo4j.")
+                progress(round(45 + 30 * min(start + 16, len(plan.upsert)) / max(len(plan.upsert), 1), 1),
+                    "embedding", "Đang tạo chỉ mục tìm kiếm ngữ nghĩa...", embedded_chunks=min(start + 16, len(plan.upsert)))
+            if cancel_check and cancel_check():
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+            progress(80, "indexing", "Đang cập nhật liên kết điều khoản vào kho dữ liệu...")
             load_projection(SimpleNamespace(data_dir=projection, uri=config.NEO4J_URI,
                 user=config.NEO4J_USER, password=config.NEO4J_PASSWORD, database=config.NEO4J_DATABASE,
                 dataset_id=config.DATASET_ID, replace_dataset=False))
@@ -194,5 +258,31 @@ class IngestionPipeline:
                 client.set_payload(config.QDRANT_COLLECTION,
                     payload={**chunk, "dataset_id": config.DATASET_ID}, points=[point_id(chunk["chunk_id"])], wait=True)
             sync_validity(client, config.QDRANT_COLLECTION, projection)
-        progress(95, "indexing", "Đã cập nhật Neo4j và Qdrant.")
+        progress(95, "indexing", "Đang hoàn tất đồng bộ kho dữ liệu tra cứu...")
         return {"warnings": plan.warnings, "embedded_chunks": len(plan.upsert)}
+
+
+def update_document_domain(settings, document_id: str, domain: str) -> bool:
+    """Update domain metadata on local OCR chunks and Qdrant points without re-running OCR."""
+    updated = False
+    chunks_path = settings.INTERIM_DIR / "pdf_chunks" / f"{document_id}_chunks.jsonl"
+    if chunks_path.exists():
+        lines = []
+        for raw in chunks_path.read_text(encoding="utf-8").splitlines():
+            if not raw.strip():
+                continue
+            item = json.loads(raw)
+            item["domain"] = domain
+            lines.append(json.dumps(item, ensure_ascii=False))
+        chunks_path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+        updated = True
+    if settings.QDRANT_URL:
+        from qdrant_client import QdrantClient
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
+        with closing(QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY or None,
+                                  timeout=settings.QDRANT_TIMEOUT)) as client:
+            selector = Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))])
+            if client.count(settings.QDRANT_COLLECTION, count_filter=selector, exact=True).count:
+                client.set_payload(settings.QDRANT_COLLECTION, payload={"domain": domain}, points=selector, wait=True)
+                updated = True
+    return updated

@@ -17,6 +17,7 @@ class TaskStatus(str, Enum):
     INDEXING = "indexing"
     COMPLETED = "completed"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 class UserRole(str, Enum):
     USER = "user"

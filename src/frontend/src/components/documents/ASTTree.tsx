@@ -3,12 +3,18 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { ASTNode } from '../../lib/types';
 import type { TreeFocus } from '../../lib/locate';
 
-const names: Record<string, string> = { document: 'Văn bản', part: 'Phần', chapter: 'Chương', section: 'Mục', article: 'Điều', clause: 'Khoản', point: 'Điểm', Dieu: 'Điều' };
+const names: Record<string, string> = {
+  document: 'Văn bản', DeMuc: 'Đề mục', part: 'Phần',
+  chapter: 'Chương', Chuong: 'Chương',
+  section: 'Mục', Muc: 'Mục',
+  article: 'Điều', Dieu: 'Điều',
+  clause: 'Khoản', point: 'Điểm',
+};
 
 function typeLabel(node: ASTNode) {
-  if (node.point_number) return 'Điểm ' + node.point_number;
-  if (node.clause_number) return 'Khoản ' + node.clause_number;
-  if (node.article_number) return 'Điều ' + node.article_number;
+  if (node.point_number) return node.point_number.startsWith('Điểm') ? node.point_number : 'Điểm ' + node.point_number;
+  if (node.clause_number) return node.clause_number.startsWith('Khoản') ? node.clause_number : 'Khoản ' + node.clause_number;
+  if (node.article_number) return node.article_number.startsWith('Điều') ? node.article_number : 'Điều ' + node.article_number;
   return names[node.type] || node.type;
 }
 
@@ -30,7 +36,7 @@ export function ASTTree({ node, level = 0, focus, tick = 0 }: { node: ASTNode; l
       <span className="font-headline-sm text-body-sm font-semibold break-words min-w-0">{node.title || ''}</span>
       {!!node.children?.length && <span className="font-label-code text-[10px] text-on-surface-variant ml-auto shrink-0">{node.children.length}</span>}
     </summary>
-    {node.text && <p className="p-space-sm mt-space-xs bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface-variant whitespace-pre-wrap leading-relaxed">{node.text}</p>}
+    {node.text && (level > 0 || !node.children?.length) && <p className="p-space-sm mt-space-xs bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface-variant whitespace-pre-wrap leading-relaxed">{node.text}</p>}
     {!!node.children?.length && <div className="ml-space-sm mt-space-xs pl-space-md border-l-2 border-indigo-200">{node.children.map((child, index) => <ASTTree key={child.id + index} node={child} level={level + 1} focus={focus} tick={tick} />)}</div>}
   </details>;
 }

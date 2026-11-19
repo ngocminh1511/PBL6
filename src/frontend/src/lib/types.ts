@@ -141,7 +141,7 @@ export interface IngestionTask {
   document_id?: string;
   file_name: string;
   document_type: string;
-  status: 'pending' | 'parsing' | 'chunking' | 'embedding' | 'indexing' | 'completed' | 'failed';
+  status: 'pending' | 'parsing' | 'chunking' | 'embedding' | 'indexing' | 'completed' | 'failed' | 'cancelled';
   progress: number;
   current_step: string;
   total_chunks: number;
@@ -323,6 +323,8 @@ export interface SystemStats {
   total_articles?: number | null;
   total_clauses?: number | null;
   total_points?: number | null;
+  total_demuc?: number | null;
+  total_pdf_docs?: number | null;
   vector_db_status: string;
   graph_db_status: string;
   redis_status: string;

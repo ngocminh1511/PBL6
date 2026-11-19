@@ -1,17 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api, errorMessage } from '../../lib/api';
 import { useDocumentStore } from '../../stores/documentStore';
 
 export const UploadModal: React.FC = () => {
-  const { isUploadModalOpen, setUploadModalOpen, uploadDocument } = useDocumentStore();
+  const { isUploadModalOpen, setUploadModalOpen, uploadDocument, selectedDomain } = useDocumentStore();
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState('pdf');
   const [deMucId, setDeMucId] = useState('');
   const [domain, setDomain] = useState('lao_dong');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isUploadModalOpen) {
+      const nextDomain = selectedDomain === 'khac' ? 'khac' : 'lao_dong';
+      setDomain(nextDomain);
+      if (nextDomain === 'khac') setDocType('pdf');
+      setError(null);
+    }
+  }, [isUploadModalOpen, selectedDomain]);
 
   if (!isUploadModalOpen) return null;
 
@@ -46,6 +55,8 @@ export const UploadModal: React.FC = () => {
       } else {
         await uploadDocument(file, docType, domain);
       }
+      setFile(null);
+      setDeMucId('');
       setUploadModalOpen(false);
     } catch (err: any) {
       setError(errorMessage(err));
@@ -74,6 +85,62 @@ export const UploadModal: React.FC = () => {
 
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+          {/* Domain Selector */}
+          <div className="flex flex-col gap-1.5">
+            <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
+              Lĩnh vực Quản lý
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <label
+                onClick={() => setDomain('lao_dong')}
+                className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
+                  domain === 'lao_dong'
+                    ? 'border-secondary bg-secondary-fixed/30 text-secondary'
+                    : 'border-outline-variant/40 hover:bg-surface-container-low'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="uploadDomain"
+                  checked={domain === 'lao_dong'}
+                  onChange={() => setDomain('lao_dong')}
+                  className="accent-secondary"
+                />
+                <div className="flex flex-col text-left">
+                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Pháp luật Lao động</span>
+                  <span className="text-[11px] text-on-surface-variant font-normal">HĐLĐ, lương, BHXH...</span>
+                </div>
+              </label>
+
+              <label
+                onClick={() => {
+                  setDomain('khac');
+                  setDocType('pdf');
+                }}
+                className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
+                  domain === 'khac'
+                    ? 'border-secondary bg-secondary-fixed/30 text-secondary'
+                    : 'border-outline-variant/40 hover:bg-surface-container-low'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="uploadDomain"
+                  checked={domain === 'khac'}
+                  onChange={() => {
+                    setDomain('khac');
+                    setDocType('pdf');
+                  }}
+                  className="accent-secondary"
+                />
+                <div className="flex flex-col text-left">
+                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Lĩnh vực khác</span>
+                  <span className="text-[11px] text-on-surface-variant font-normal">Giáo dục, Dân sự, Luật khác</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
           {docType === 'phap_dien_html' && <label className="text-sm">Mã đề mục (nếu file chưa có tiêu đề nhận diện)
             <input value={deMucId} onChange={e => setDeMucId(e.target.value)} placeholder="Ví dụ: 20.2"
               className="block w-full border rounded-lg p-2 mt-1" /></label>}
@@ -105,43 +172,34 @@ export const UploadModal: React.FC = () => {
               </label>
 
               <label
-                onClick={() => setDocType('phap_dien_html')}
-                className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
-                  docType === 'phap_dien_html'
-                    ? 'border-secondary bg-secondary-fixed/30 text-secondary'
-                    : 'border-outline-variant/40 hover:bg-surface-container-low'
+                onClick={() => {
+                  if (domain !== 'khac') setDocType('phap_dien_html');
+                }}
+                title={domain === 'khac' ? 'Bộ Pháp điển chỉ hỗ trợ lĩnh vực Lao động' : undefined}
+                className={`p-3 rounded-xl border flex items-center gap-2 transition-all ${
+                  domain === 'khac'
+                    ? 'border-outline-variant/20 bg-surface-container/50 opacity-50 cursor-not-allowed'
+                    : docType === 'phap_dien_html'
+                    ? 'border-secondary bg-secondary-fixed/30 text-secondary cursor-pointer'
+                    : 'border-outline-variant/40 hover:bg-surface-container-low cursor-pointer'
                 }`}
               >
                 <input
                   type="radio"
                   name="docType"
+                  disabled={domain === 'khac'}
                   checked={docType === 'phap_dien_html'}
                   onChange={() => setDocType('phap_dien_html')}
                   className="accent-secondary"
                 />
                 <div className="flex flex-col text-left">
                   <span className="font-headline-sm text-xs font-semibold text-on-surface">Pháp điển (HTML)</span>
-                  <span className="text-[11px] text-on-surface-variant font-normal">Đề mục Bộ Pháp điển</span>
+                  <span className="text-[11px] text-on-surface-variant font-normal">
+                    {domain === 'khac' ? 'Chỉ hỗ trợ Lao động' : 'Đề mục Bộ Pháp điển'}
+                  </span>
                 </div>
               </label>
             </div>
-          </div>
-
-          {/* Domain Selector */}
-          <div className="flex flex-col gap-1.5">
-            <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
-              Lĩnh vực Quản lý
-            </label>
-            <select
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface font-body-sm text-body-sm focus:outline-none focus:border-secondary"
-            >
-              <option value="lao_dong">Pháp luật Lao động & Quan hệ lao động</option>
-
-
-              <option value="doanh_nghiep">Doanh nghiệp & Đầu tư</option>
-            </select>
           </div>
 
           {/* Drag & Drop File Zone */}
@@ -152,7 +210,7 @@ export const UploadModal: React.FC = () => {
           >
             <input
               type="file"
-              accept=".pdf,.html,.htm,.txt"
+              accept={docType === 'pdf' ? '.pdf' : '.html,.htm'}
               onChange={handleFileChange}
               className="absolute inset-0 opacity-0 cursor-pointer"
             />

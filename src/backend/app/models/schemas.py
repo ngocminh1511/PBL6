@@ -473,6 +473,8 @@ class SystemStatsResponse(BaseModel):
     total_articles: Optional[int] = None
     total_clauses: Optional[int] = None
     total_points: Optional[int] = None
+    total_demuc: Optional[int] = None
+    total_pdf_docs: Optional[int] = None
     vector_db_status: str
     graph_db_status: str
     redis_status: str

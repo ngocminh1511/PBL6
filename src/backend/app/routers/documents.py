@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 from src.backend.app.dependencies import get_current_user, get_db
@@ -18,15 +19,48 @@ from src.backend.app.utils.pagination import encode_cursor, decode_cursor
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
+def _count_ast_stats(tree: dict | None) -> tuple[int, int, int]:
+    if not isinstance(tree, dict):
+        return (0, 0, 0)
+    articles = clauses = points = 0
+    stack = [tree]
+    while stack:
+        node = stack.pop()
+        if not isinstance(node, dict):
+            continue
+        t = str(node.get("type") or "").lower()
+        if node.get("point_number") or t in {"diem", "point"}:
+            points += 1
+        elif node.get("clause_number") or t in {"khoan", "clause"}:
+            clauses += 1
+        elif node.get("article_number") or t in {"dieu", "article"}:
+            articles += 1
+        children = node.get("children")
+        if isinstance(children, list):
+            stack.extend(children)
+    return (articles, clauses, points)
+
+
 @router.get("/list", response_model=CursorPage[DocumentResponse])
-def list_documents(domain: Literal["all", "lao_dong"] = "all", search: str = "",
-    cursor: str | None = None, limit: int = Query(10, ge=1, le=50), runtime=Depends(get_runtime)):
+def list_documents(domain: Literal["all", "lao_dong", "khac"] = "all",
+    document_type: Literal["all", "phap_dien_html", "pdf"] = "all",
+    search: str = "", cursor: str | None = None, limit: int = Query(10, ge=1, le=50), runtime=Depends(get_runtime)):
     records = dict(Corpus().documents)
     if runtime.database.available:
         with runtime.database.session() as db:
-            records.update({row.id: DocumentResponse.model_validate(row).model_dump()
-                            for row in db.query(DocumentRecord).all()})
-    values = sorted(records.values(), key=lambda row: row["id"], reverse=True)
+            for row in db.query(DocumentRecord).filter(DocumentRecord.document_type == "pdf").all():
+                item = DocumentResponse.model_validate(row).model_dump()
+                a_cnt, c_cnt, p_cnt = _count_ast_stats(row.ast_tree_json)
+                if a_cnt or c_cnt or p_cnt:
+                    item["articles_count"] = a_cnt
+                    item["clauses_count"] = c_cnt
+                    item["points_count"] = p_cnt
+                records[row.id] = item
+    values = sorted(records.values(), key=lambda row: row["id"])
+    if domain != "all":
+        values = [v for v in values if v.get("domain") == domain]
+    if document_type != "all":
+        values = [v for v in values if v.get("document_type") == document_type]
     if search:
         from labor_rag.ingest.chunk_schema import ascii_fold
         needle = ascii_fold(search).lower()
@@ -35,11 +69,59 @@ def list_documents(domain: Literal["all", "lao_dong"] = "all", search: str = "",
     total = len(values)
     decoded = decode_cursor(cursor)
     if decoded:
-        values = [v for v in values if v["id"] < decoded[1]]
+        values = [v for v in values if v["id"] > decoded[1]]
     page = values[:limit]
     more = len(values) > limit
     return CursorPage(items=page, total_count=total, has_more=more,
         next_cursor=encode_cursor(datetime(1970, 1, 1), page[-1]["id"]) if more else None)
+
+class DocumentDomainUpdate(BaseModel):
+    domain: Literal["lao_dong", "khac"]
+
+
+@router.patch("/{document_id}", response_model=DocumentResponse)
+def update_document_domain_route(document_id: str, body: DocumentDomainUpdate, runtime=Depends(get_runtime),
+                                 current_user: User = Depends(get_current_user)):
+    from labor_rag.services.ingestion import update_document_domain
+    corpus_doc = Corpus().documents.get(document_id)
+    has_db_doc = False
+    if runtime.database.available:
+        with runtime.database.session() as db:
+            db_doc = db.get(DocumentRecord, document_id)
+            if db_doc is not None:
+                if db_doc.document_type != "pdf":
+                    raise HTTPException(422, "Chỉ hỗ trợ đổi lĩnh vực cho văn bản PDF.")
+                has_db_doc = True
+    if not has_db_doc:
+        if corpus_doc is None:
+            raise HTTPException(404, "Không tìm thấy văn bản.")
+        if corpus_doc.get("document_type") != "pdf":
+            raise HTTPException(422, "Chỉ hỗ trợ đổi lĩnh vực cho văn bản PDF.")
+
+    with runtime.operation(serialized=False):
+        try:
+            update_document_domain(runtime.settings, document_id, body.domain)
+        except Exception as exc:
+            raise HTTPException(503, f"Chưa đồng bộ được lĩnh vực lên Qdrant ({type(exc).__name__}).") from None
+
+    if has_db_doc and runtime.database.available:
+        with runtime.database.session() as db:
+            db_doc = db.get(DocumentRecord, document_id)
+            db_doc.domain = body.domain
+            db.commit()
+            db.refresh(db_doc)
+            item = DocumentResponse.model_validate(db_doc).model_dump()
+            a_cnt, c_cnt, p_cnt = _count_ast_stats(db_doc.ast_tree_json)
+            if a_cnt or c_cnt or p_cnt:
+                item["articles_count"] = a_cnt
+                item["clauses_count"] = c_cnt
+                item["points_count"] = p_cnt
+    else:
+        item = {**corpus_doc, "domain": body.domain}
+
+    Corpus.cache_clear()
+    return DocumentResponse(**item)
+
 
 @router.get("/{document_id}/ast", response_model=DocumentASTResponse)
 def get_ast(document_id: str, runtime=Depends(get_runtime)):
@@ -90,13 +172,15 @@ def get_graph(document_id: str, article_number: str | None = Query(None, max_len
 @router.post("/upload", response_model=UploadResponse, status_code=202)
 async def upload_document(request: Request, file: UploadFile = File(...),
     document_type: Literal["pdf", "phap_dien_html"] = Form("pdf"),
-    domain: Literal["lao_dong"] = Form("lao_dong"), de_muc_id: str | None = Form(None),
+    domain: Literal["lao_dong", "khac"] = Form("lao_dong"), de_muc_id: str | None = Form(None),
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     config = request.app.state.runtime.settings
     filename = Path((file.filename or "").replace(chr(92), "/")).name
     suffix = Path(filename).suffix.lower()
     if (document_type == "pdf" and suffix != ".pdf") or (document_type == "phap_dien_html" and suffix not in {".html", ".htm"}):
         raise HTTPException(422, "Định dạng file không khớp loại tài liệu.")
+    if document_type == "phap_dien_html" and domain == "khac":
+        raise HTTPException(422, "Bộ Pháp điển hiện chỉ hỗ trợ lĩnh vực Lao động; với lĩnh vực khác vui lòng chọn tài liệu PDF / OCR.")
     identity = str(uuid.uuid4())
     directory = config.UPLOAD_DIR.resolve() / identity
     directory.mkdir(parents=True, exist_ok=True)
@@ -118,7 +202,7 @@ async def upload_document(request: Request, file: UploadFile = File(...),
         db.add(task)
         db.commit()
         await run_in_threadpool(request.app.state.ingestion.submit,
-                                identity, destination, document_type, de_muc_id)
+                                identity, destination, document_type, de_muc_id, domain)
     except Exception:
         destination.unlink(missing_ok=True)
         raise
@@ -133,6 +217,14 @@ def task_progress(task_id: str, db: Session = Depends(get_db)):
         raise HTTPException(404, "Tác vụ không tồn tại.")
     return IngestionTaskResponse.model_validate(task)
 
+@router.post("/tasks/{task_id}/cancel", response_model=IngestionTaskResponse)
+def cancel_task(task_id: str, request: Request, current_user: User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    task = request.app.state.ingestion.cancel(task_id)
+    if task is None:
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    return IngestionTaskResponse.model_validate(task)
+
 @router.get("/tasks/{task_id}/stream")
 async def task_stream(task_id: str, request: Request, db: Session = Depends(get_db)):
     if db.get(IngestionTask, task_id) is None:
@@ -143,7 +235,7 @@ async def task_stream(task_id: str, request: Request, db: Session = Depends(get_
                 task = session.get(IngestionTask, task_id)
                 payload = IngestionTaskResponse.model_validate(task)
                 yield "data: " + payload.model_dump_json() + "\n\n"
-                if task.status in {"completed", "failed"}:
+                if task.status in {"completed", "failed", "cancelled"}:
                     break
             await asyncio.sleep(1)
     return StreamingResponse(events(), media_type="text/event-stream")

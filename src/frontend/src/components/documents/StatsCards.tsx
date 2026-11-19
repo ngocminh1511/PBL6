@@ -12,17 +12,19 @@ export const StatsCards: React.FC = () => {
   }, []);
 
   const totalDocs = stats?.total_documents ?? '—';
+  const totalDemuc = stats?.total_demuc ?? '—';
+  const totalPdfDocs = stats?.total_pdf_docs ?? '—';
   const totalArticles = stats?.total_articles ?? '—';
   const totalClauses = stats?.total_clauses ?? '—';
   const totalPoints = stats?.total_points ?? '—';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md w-full">
-      {/* Card 1: Kho Văn bản Quy phạm */}
+      {/* Card 1: Kho Pháp điển & Văn bản */}
       <div className="relative overflow-hidden bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between border border-outline-variant/30">
         <div className="flex items-center justify-between">
           <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface-variant font-bold">
-            Kho Văn bản Quy phạm
+            Kho Pháp điển & Văn bản
           </span>
           <div className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
             <span className="material-symbols-outlined text-[20px]">auto_stories</span>
@@ -32,18 +34,20 @@ export const StatsCards: React.FC = () => {
           <span className="font-display-lg text-display-lg text-on-surface font-bold">
             {typeof totalDocs === 'number' ? totalDocs.toLocaleString() : totalDocs}
           </span>
-          <span className="font-headline-sm text-headline-sm text-on-surface-variant">Văn bản</span>
+          <span className="font-headline-sm text-headline-sm text-on-surface-variant">Đề mục & Văn bản</span>
         </div>
         <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 text-[12px]">
           <div className="flex items-center justify-between font-label-code text-on-surface">
-            <span>• Pháp luật Lao động</span>
+            <span>• Đề mục Bộ Pháp điển</span>
             <span className="font-metric-num text-secondary">
-              {typeof totalDocs === 'number' ? `${totalDocs} văn bản` : 'Đang cập nhật'}
+              {typeof totalDemuc === 'number' ? `${totalDemuc} đề mục` : 'Đang cập nhật'}
             </span>
           </div>
           <div className="flex items-center justify-between font-label-code text-on-surface-variant">
-            <span>• Các lĩnh vực khác</span>
-            <span className="font-metric-num text-on-surface">Sẵn sàng mở rộng</span>
+            <span>• Văn bản PDF (OCR)</span>
+            <span className="font-metric-num text-on-surface">
+              {typeof totalPdfDocs === 'number' ? `${totalPdfDocs} văn bản` : 'Đang cập nhật'}
+            </span>
           </div>
         </div>
       </div>

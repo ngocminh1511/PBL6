@@ -12,6 +12,8 @@ export const DocumentTable: React.FC = () => {
     setSearchQuery,
     selectedDomain,
     setSelectedDomain,
+    selectedDocType,
+    setSelectedDocType,
     setUploadModalOpen,
     totalDocuments,
     hasMore, nextCursor, fetchDocuments, isLoading,
@@ -31,7 +33,7 @@ export const DocumentTable: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm số hiệu (VD: 45/2019/QH14), tên văn bản quy phạm..."
+              placeholder="Tìm mã đề mục (VD: 20.2), số hiệu (45/2019/QH14), tên văn bản..."
               className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container transition-colors border border-outline-variant/30"
             />
           </div>
@@ -58,7 +60,7 @@ export const DocumentTable: React.FC = () => {
                   : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
               }`}
             >
-              Tất cả ({totalDocuments})
+              Tất cả{selectedDomain === 'all' ? ` (${totalDocuments})` : ''}
             </button>
             <button
               onClick={() => setSelectedDomain('lao_dong')}
@@ -68,27 +70,30 @@ export const DocumentTable: React.FC = () => {
                   : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
               }`}
             >
-              Lao động ({totalDocuments})
+              Lao động{selectedDomain === 'lao_dong' ? ` (${totalDocuments})` : ''}
             </button>
             <button
-              disabled title="Lĩnh vực chưa có dữ liệu"
+              onClick={() => setSelectedDomain('khac')}
               className={`px-2.5 py-1 rounded font-label-statute text-label-statute transition-all ${
-                selectedDomain === 'bhxh'
+                selectedDomain === 'khac'
                   ? 'bg-secondary text-on-secondary shadow-sm'
                   : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
               }`}
             >
-              BHXH (chưa nạp)
+              Lĩnh vực khác{selectedDomain === 'khac' ? ` (${totalDocuments})` : ''}
             </button>
           </div>
 
           <div className="flex items-center gap-1 font-label-statute text-label-statute text-on-surface-variant">
-            <span>Loại VB:</span>
-            <select disabled title="Bộ lọc loại văn bản chưa được triển khai" className="bg-surface-container text-on-surface px-2 py-1 rounded font-label-statute text-label-statute outline-none border border-outline-variant/30">
-              <option>Tất cả loại hình</option>
-              <option>Bộ luật / Luật</option>
-              <option>Nghị định</option>
-              <option>Thông tư</option>
+            <span>Nguồn:</span>
+            <select
+              value={selectedDocType}
+              onChange={(e) => setSelectedDocType(e.target.value)}
+              className="bg-surface-container text-on-surface px-2 py-1 rounded font-label-statute text-label-statute outline-none border border-outline-variant/30 cursor-pointer"
+            >
+              <option value="all">Tất cả nguồn</option>
+              <option value="phap_dien_html">Đề mục Pháp điển</option>
+              <option value="pdf">Văn bản PDF (OCR)</option>
             </select>
           </div>
         </div>
@@ -98,10 +103,10 @@ export const DocumentTable: React.FC = () => {
       <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col border border-outline-variant/30">
         <div className="px-space-md py-space-sm bg-surface-container-low flex items-center justify-between border-b border-outline-variant/20">
           <span className="font-label-statute text-label-statute uppercase text-on-surface-variant tracking-wider font-bold">
-            Danh mục Văn bản Quy phạm Đã Số hóa
+            Danh mục Đề mục Pháp điển &amp; Văn bản OCR
           </span>
           <span className="font-label-code text-label-code text-on-surface-variant">
-            Hiển thị {documents.length} / {totalDocuments} văn bản
+            Hiển thị {documents.length} / {totalDocuments} mục
           </span>
         </div>
 
@@ -109,7 +114,7 @@ export const DocumentTable: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container text-on-surface-variant font-label-statute text-label-statute uppercase tracking-wider text-[11px]">
-                <th className="py-2.5 px-space-md">Số hiệu / Tên văn bản</th>
+                <th className="py-2.5 px-space-md">Đề mục / Tên văn bản</th>
                 <th className="py-2.5 px-space-sm">Lĩnh vực</th>
                 <th className="py-2.5 px-space-sm text-center">Cơ cấu quy định</th>
                 <th className="py-2.5 px-space-sm text-center">Ngày hiệu lực</th>
@@ -117,10 +122,11 @@ export const DocumentTable: React.FC = () => {
               </tr>
             </thead>
             <tbody className="font-body-md text-body-md divide-y divide-outline-variant/20">
-              {!documents.length && <tr><td colSpan={5} className="p-space-lg text-center text-on-surface-variant">{isLoading ? 'Đang tải văn bản…' : 'Chưa có văn bản phù hợp.'}</td></tr>}
+              {!documents.length && <tr><td colSpan={5} className="p-space-lg text-center text-on-surface-variant">{isLoading ? 'Đang tải danh mục…' : 'Chưa có mục phù hợp.'}</td></tr>}
               {documents.map((doc) => {
                 const isSelected = doc.id === selectedDocId;
-                const domainLabel = doc.domain === 'lao_dong' ? 'Lao động' : doc.domain === 'doanh_nghiep' ? 'Doanh nghiệp' : doc.domain;
+                const isPhapDien = doc.document_type === 'phap_dien_html';
+                const domainLabel = doc.domain === 'lao_dong' ? 'Lao động' : doc.domain === 'khac' ? 'Lĩnh vực khác' : doc.domain;
                 return (
                   <tr
                     key={doc.id}
@@ -134,10 +140,10 @@ export const DocumentTable: React.FC = () => {
                     <td className="py-3 px-space-md">
                       <div className="flex items-start gap-space-xs">
                         <span className="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">
-                          {isSelected ? 'verified' : 'description'}
+                          {isSelected ? 'verified' : isPhapDien ? 'menu_book' : 'picture_as_pdf'}
                         </span>
                         <div className="flex flex-col min-w-0">
-                          <div className="flex items-center gap-space-xs">
+                          <div className="flex items-center gap-space-xs flex-wrap">
                             <span
                               className={`font-headline-sm text-headline-sm font-semibold ${
                                 isSelected ? 'text-secondary' : 'text-on-surface'
@@ -152,7 +158,7 @@ export const DocumentTable: React.FC = () => {
                             )}
                           </div>
                           <span className="font-body-sm text-body-sm text-on-surface-variant truncate text-[11px]">
-                            {doc.document_type === 'phap_dien_html' ? 'Nguồn Bộ Pháp điển' : 'Văn bản số hóa'}
+                            {isPhapDien ? 'Đề mục Bộ Pháp điển' : 'Văn bản từ PDF (OCR)'}
                           </span>
                         </div>
                       </div>
@@ -169,13 +175,13 @@ export const DocumentTable: React.FC = () => {
                         {doc.articles_count ? `${doc.articles_count} Điều` : 'Toàn văn'}
                       </div>
                       <div className="font-label-statute text-label-statute text-outline text-[10px]">
-                        {doc.clauses_count ? `${doc.clauses_count} Khoản` : 'Quy chuẩn'}
+                        {doc.clauses_count ? `${doc.clauses_count.toLocaleString()} Khoản` : 'Quy chuẩn'}
                       </div>
                     </td>
 
                     <td className="py-3 px-space-sm text-center">
                       <span className="font-label-code text-[11px] text-on-surface">
-                        {doc.effective_from_date || 'Đang cập nhật'}
+                        {isPhapDien ? 'Hiện hành (Pháp điển)' : doc.effective_from_date || 'Đang cập nhật'}
                       </span>
                     </td>
 

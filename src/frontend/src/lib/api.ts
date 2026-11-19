@@ -93,13 +93,18 @@ export const api = {
   },
 
   // ================= DOCUMENTS =================
-  async listDocuments(domain?: string, search?: string, cursor?: string, limit: number = 10): Promise<CursorPage<DocumentRecord>> {
-    const res = await apiClient.get('/documents/list', { params: { domain, search, cursor, limit } });
+  async listDocuments(domain?: string, search?: string, cursor?: string, limit: number = 10, document_type?: string): Promise<CursorPage<DocumentRecord>> {
+    const res = await apiClient.get('/documents/list', { params: { domain, search, cursor, limit, document_type } });
     return res.data;
   },
 
   async getDocumentAST(documentId: string): Promise<DocumentAST> {
     const res = await apiClient.get(`/documents/${documentId}/ast`);
+    return res.data;
+  },
+
+  async updateDocumentDomain(documentId: string, domain: 'lao_dong' | 'khac'): Promise<DocumentRecord> {
+    const res = await apiClient.patch(`/documents/${encodeURIComponent(documentId)}`, { domain });
     return res.data;
   },
 
@@ -118,6 +123,11 @@ export const api = {
 
   async getTaskProgress(taskId: string): Promise<IngestionTask> {
     const res = await apiClient.get(`/documents/tasks/${taskId}/progress`);
+    return res.data;
+  },
+
+  async cancelTask(taskId: string): Promise<IngestionTask> {
+    const res = await apiClient.post(`/documents/tasks/${taskId}/cancel`);
     return res.data;
   },
 

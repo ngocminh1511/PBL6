@@ -8,6 +8,7 @@ interface DocumentState {
   isLoading: boolean;
   searchQuery: string;
   selectedDomain: string;
+  selectedDocType: string;
   nextCursor: string | null;
   hasMore: boolean;
   totalDocuments: number;
@@ -20,9 +21,12 @@ interface DocumentState {
   fetchDocuments: (cursor?: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
   setSelectedDomain: (domain: string) => void;
+  setSelectedDocType: (docType: string) => void;
   selectDocument: (docId: string) => Promise<void>;
+  updateDocumentDomain: (docId: string, domain: 'lao_dong' | 'khac') => Promise<void>;
   uploadDocument: (file: File, docType: string, domain: string) => Promise<string>;
   pollTaskProgress: (taskId: string) => void;
+  cancelTask: (taskId: string) => Promise<void>;
   setUploadModalOpen: (open: boolean) => void;
 }
 
@@ -32,6 +36,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   isLoading: false,
   searchQuery: '',
   selectedDomain: 'all',
+  selectedDocType: 'all',
   nextCursor: null,
   hasMore: false,
   totalDocuments: 0,
@@ -47,7 +52,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       const data = await api.listDocuments(
         get().selectedDomain,
         get().searchQuery,
-        cursor
+        cursor,
+        10,
+        get().selectedDocType
       );
       set((state) => ({
         documents: cursor ? [...state.documents, ...data.items] : data.items,
@@ -72,11 +79,29 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     get().fetchDocuments();
   },
 
+  setSelectedDocType: (docType) => {
+    set({ selectedDocType: docType });
+    get().fetchDocuments();
+  },
+
   selectDocument: async (docId: string) => {
     set({ selectedDocId: docId, selectedDocAST: null, error: null });
     try {
       const ast = await api.getDocumentAST(docId);
       set({ selectedDocAST: ast.ast_tree });
+    } catch (e) {
+      set({ error: errorMessage(e) });
+    }
+  },
+
+  updateDocumentDomain: async (docId: string, domain: 'lao_dong' | 'khac') => {
+    set({ error: null });
+    try {
+      const updated = await api.updateDocumentDomain(docId, domain);
+      set((state) => ({
+        documents: state.documents.map((d) => (d.id === docId ? { ...d, domain: updated.domain } : d)),
+      }));
+      await get().fetchDocuments();
     } catch (e) {
       set({ error: errorMessage(e) });
     }
@@ -94,20 +119,49 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   pollTaskProgress: (taskId: string) => {
-    const interval = setInterval(async () => {
+    const check = async (interval?: ReturnType<typeof setInterval>) => {
       try {
         const task = await api.getTaskProgress(taskId);
         set({ activeTask: task });
 
-        if (task.status === 'completed' || task.status === 'failed') {
-          clearInterval(interval);
-          get().fetchDocuments();
+        if (task.status === 'completed' || task.status === 'failed' || task.status === 'cancelled') {
+          if (interval) clearInterval(interval);
+          if (task.status === 'completed') {
+            await get().fetchDocuments();
+            const newId = task.document_id || task.result?.document_ids?.[0];
+            if (newId) {
+              if (!get().documents.some((d) => d.id === newId) && get().selectedDomain !== 'all') {
+                set({ selectedDomain: 'all', selectedDocType: 'all' });
+                await get().fetchDocuments();
+              }
+              await get().selectDocument(newId);
+            }
+          }
+          return true;
         }
       } catch (e) {
         set({ error: errorMessage(e) });
-        clearInterval(interval);
+        if (interval) clearInterval(interval);
+        return true;
       }
-    }, 1500);
+      return false;
+    };
+    void check().then((done) => {
+      if (done) return;
+      const interval = setInterval(() => {
+        void check(interval);
+      }, 1500);
+    });
+  },
+
+  cancelTask: async (taskId: string) => {
+    set({ error: null });
+    try {
+      const updated = await api.cancelTask(taskId);
+      set({ activeTask: updated });
+    } catch (e) {
+      set({ error: errorMessage(e) });
+    }
   },
 
   setUploadModalOpen: (open) => set({ isUploadModalOpen: open }),

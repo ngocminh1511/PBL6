@@ -226,6 +226,90 @@ def test_upload_only_completes_after_shared_pipeline_returns(tmp_path, monkeypat
             assert task["total_chunks"] == 2
 
 
+def test_upload_pdf_other_domain_ocr_storage_and_listing(tmp_path, monkeypatch):
+    import labor_rag.ingest.chunk_schema as chunk_schema
+    import labor_rag.ocr.pipeline as ocr_pipeline
+    import labor_rag.services.ingestion as ingestion
+    from labor_rag.ocr.schemas import Article, Chapter, Clause, DocumentMetadata, LegalDocument, Point
+
+    seen_progress = []
+    doc = LegalDocument(
+        document_id="91-2015-qh13",
+        title="Bộ luật Dân sự 2015",
+        full_text="TOÀN VĂN DÀI KHÔNG ĐƯỢC HIỂN THỊ Ở ROOT",
+        metadata=DocumentMetadata(so_hieu="91/2015/QH13", loai_van_ban="Bộ luật", ngay_hieu_luc="2017-01-01"),
+        chapters=[
+            Chapter(
+                chapter_id="chuong_1",
+                chapter_number="Chương I",
+                chapter_title="NHỮNG QUY ĐỊNH CHUNG",
+                articles=[
+                    Article(
+                        article_id="dieu_1",
+                        article_number="Điều 1",
+                        article_title="Phạm vi điều chỉnh",
+                        clauses=[
+                            Clause(
+                                clause_id="dieu_1_khoan_1",
+                                clause_number="Khoản 1",
+                                text="Bộ luật này quy định địa vị pháp lý.",
+                                points=[Point(point_id="dieu_1_khoan_1_diem_a", point_label="a", text="Quyền nhân thân.")],
+                            )
+                        ],
+                    )
+                ],
+            )
+        ],
+    )
+
+    def fake_process_document(path, settings=None, progress=None, **kwargs):
+        if progress:
+            progress("OCR trang 1/1", 100.0)
+        return SimpleNamespace(document=doc)
+
+    monkeypatch.setattr(ocr_pipeline, "process_document", fake_process_document)
+    monkeypatch.setattr(chunk_schema, "TokenCounter", lambda *args, **kwargs: (lambda text: len(text.split())))
+    monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
+        "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
+    })
+    def fake_index(self, chunks, projection, progress):
+        seen_progress.append(len(chunks))
+        assert chunks[0]["domain"] == "khac"
+        return {"warnings": [], "embedded_chunks": len(chunks)}
+    monkeypatch.setattr(ingestion.IngestionPipeline, "index", fake_index)
+
+    app = create_app(settings=config(tmp_path), storage_factory=lambda: SimpleNamespace(close=lambda: None))
+    with TestClient(app) as client:
+        bad = client.post("/api/documents/upload", data={"document_type": "phap_dien_html", "domain": "khac"},
+                          files={"file": ("item.html", b"<html></html>", "text/html")})
+        assert bad.status_code == 422
+
+        response = client.post("/api/documents/upload", data={"document_type": "pdf", "domain": "khac"},
+                               files={"file": ("blds.pdf", b"%PDF-1.4 test", "application/pdf")})
+        assert response.status_code == 202
+        app.state.ingestion.executor.shutdown(wait=True)
+        task = client.get("/api/documents/tasks/" + response.json()["task_id"] + "/progress").json()
+        assert task["status"] == "completed"
+        assert task["document_id"] == "91-2015-qh13"
+        assert seen_progress == [1]
+
+        assert (tmp_path / "interim" / "pdf_chunks" / "91-2015-qh13_hierarchical.jsonl").exists()
+        assert (tmp_path / "interim" / "pdf_chunks" / "91-2015-qh13_chunks.jsonl").exists()
+
+        listing = client.get("/api/documents/list?domain=khac")
+        assert listing.status_code == 200
+        items = listing.json()["items"]
+        assert any(i["id"] == "91-2015-qh13" and i["domain"] == "khac" and i["articles_count"] == 1
+                   and i["clauses_count"] == 1 and i["points_count"] == 1 for i in items)
+
+        ast = client.get("/api/documents/91-2015-qh13/ast")
+        assert ast.status_code == 200
+        tree = ast.json()["ast_tree"]
+        assert not tree.get("text")
+        assert tree["children"][0]["type"] == "chapter"
+        assert tree["children"][0]["children"][0]["article_number"] == "1"
+
+
 def test_demo_is_explicit_and_registration_cannot_grant_admin(tmp_path):
     app = create_app(settings=config(tmp_path).model_copy(update={"DEMO_MODE": False, "JWT_SECRET": "test-only-key"}))
     with TestClient(app) as client:

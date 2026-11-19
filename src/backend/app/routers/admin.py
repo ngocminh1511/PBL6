@@ -97,15 +97,20 @@ def statistics(runtime=Depends(get_runtime)):
     with runtime.operation(serialized=False):
         h = health_status(runtime, probe=True)
     c = Corpus()
-    documents = len(c.documents)
+    total_demuc = c.total_demuc
+    pdf_ids = {k for k, v in c.documents.items() if v.get("document_type") == "pdf"}
     sessions = None
     if runtime.database.available:
         with runtime.database.session() as db:
-            documents = len(set(c.documents) | {row[0] for row in db.query(DocumentRecord.id).all()})
+            db_pdf_ids = {row[0] for row in db.query(DocumentRecord.id).filter(DocumentRecord.document_type == "pdf").all()}
+            pdf_ids |= db_pdf_ids
             sessions = db.query(ChatSession).count()
+    total_pdf_docs = len(pdf_ids)
+    documents = total_demuc + total_pdf_docs
     return SystemStatsResponse(checked_at=h.get("checked_at"), total_documents=documents, total_chunks=h["qdrant"].get("points"),
         total_nodes=h["neo4j"].get("nodes"), total_edges=h["neo4j"].get("edges"),
         total_articles=c.total_articles, total_clauses=c.total_clauses, total_points=c.total_points,
+        total_demuc=total_demuc, total_pdf_docs=total_pdf_docs,
         vector_db_status=h["qdrant"]["connection"], graph_db_status=h["neo4j"]["connection"],
         redis_status=h["redis"]["connection"], active_sessions_count=sessions)
 
