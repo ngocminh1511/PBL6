@@ -272,7 +272,7 @@ def test_upload_pdf_other_domain_ocr_storage_and_listing(tmp_path, monkeypatch):
     monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
         "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
     })
-    def fake_index(self, chunks, projection, progress):
+    def fake_index(self, chunks, projection, progress, cancel_check=None):
         seen_progress.append(len(chunks))
         assert chunks[0]["domain"] == "khac"
         return {"warnings": [], "embedded_chunks": len(chunks)}
@@ -358,3 +358,117 @@ def test_uploaded_source_uses_registry_and_validates_local_fallback_root(tmp_pat
             record.record = {**record.record, "path": str(tmp_path / "outside-upload-root.txt")}
             db.commit()
         assert client.get("/api/files/uploaded").status_code == 410
+
+
+def test_realtime_ocr_page_callback_and_preview_endpoints(tmp_path, monkeypatch):
+    import labor_rag.ocr.extract as ocr_extract
+    import labor_rag.ocr.pipeline as ocr_pipeline
+    import labor_rag.ingest.chunk_schema as chunk_schema
+    import labor_rag.services.ingestion as ingestion
+    from labor_rag.ocr.classifier import PageClass, PageType
+    from labor_rag.ocr.extract import ExtractionResult, PageText
+    from labor_rag.ocr.schemas import Article, DocumentMetadata, LegalDocument
+
+    # 1. _extract_pdf invokes page_callback for both text and scanned OCR pages
+    class FakeDoc:
+        needs_pass = False
+        def __getitem__(self, idx):
+            return SimpleNamespace(idx=idx)
+
+    seen_callbacks = []
+    monkeypatch.setattr(
+        ocr_extract,
+        "classify_document",
+        lambda doc: [PageClass(0, PageType.TEXT, 100), PageClass(1, PageType.SCANNED, 0)],
+    )
+    monkeypatch.setattr(ocr_extract, "extract_page_text", lambda page: "QUỐC HỘI\nĐiều 1. Phạm vi")
+    monkeypatch.setattr(ocr_extract, "render_page", lambda page: SimpleNamespace())
+    monkeypatch.setattr(ocr_extract, "ocr_image", lambda img: SimpleNamespace(text="Điều 2. Đối tượng áp dụng", confidence=0.91))
+
+    extracted = ocr_extract._extract_pdf(
+        FakeDoc(),
+        "demo.pdf",
+        use_ocr=True,
+        progress=None,
+        page_callback=lambda pt, total: seen_callbacks.append((pt.page_number, pt.method, pt.confidence, total, pt.text)),
+    )
+    assert len(extracted.pages) == 2
+    assert seen_callbacks == [
+        (0, "text", None, 2, "QUỐC HỘI\nĐiều 1. Phạm vi"),
+        (1, "ocr", 0.91, 2, "Điều 2. Đối tượng áp dụng"),
+    ]
+
+    # 2. Upload flow populates realtime ocr_preview + /ocr-page/{n} + supports mid-OCR cancel
+    doc = LegalDocument(
+        document_id="12-2026-qh15",
+        title="Luật thử nghiệm OCR",
+        metadata=DocumentMetadata(so_hieu="12/2026/QH15", loai_van_ban="Luật", ngay_hieu_luc="2026-07-01"),
+        articles=[Article(article_id="dieu_1", article_number="Điều 1", article_title="Phạm vi", full_text="Nội dung.")],
+    )
+    mid_page_checked = Event()
+    release_ocr = Event()
+
+    def fake_process_document(path, settings=None, progress=None, page_callback=None, **kwargs):
+        p1 = PageText(0, "Trang một có chữ dài " + ("abc " * 200), "text")
+        if page_callback:
+            page_callback(p1, 2)
+        if progress:
+            progress("OCR trang 2/2", 50.0)
+        mid_page_checked.set()
+        assert release_ocr.wait(timeout=5)
+        p2 = PageText(1, "Điều 1. Phạm vi áp dụng OCR.", "ocr", 0.92)
+        if page_callback:
+            page_callback(p2, 2)
+        if progress:
+            progress("OCR xong", 100.0)
+        return SimpleNamespace(
+            document=doc,
+            extraction=ExtractionResult(source_name="ocr.pdf", pages=[p1, p2], warnings=[]),
+            ocr_quality={"heuristic_score": 88.5},
+        )
+
+    monkeypatch.setattr(ocr_pipeline, "process_document", fake_process_document)
+    monkeypatch.setattr(chunk_schema, "TokenCounter", lambda *args, **kwargs: (lambda text: len(text.split())))
+    monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
+        "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
+    })
+    monkeypatch.setattr(
+        ingestion.IngestionPipeline,
+        "index",
+        lambda self, chunks, projection, progress, cancel_check=None: {"warnings": [], "embedded_chunks": len(chunks)},
+    )
+
+    app = create_app(settings=config(tmp_path), storage_factory=lambda: SimpleNamespace(close=lambda: None))
+    with TestClient(app) as client:
+        res = client.post(
+            "/api/documents/upload",
+            data={"document_type": "pdf", "domain": "khac"},
+            files={"file": ("ocr.pdf", b"%PDF-1.4 demo", "application/pdf")},
+        )
+        assert res.status_code == 202
+        task_id = res.json()["task_id"]
+        assert mid_page_checked.wait(timeout=5)
+
+        mid_progress = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+        assert mid_progress["ocr_preview"]["total_pages"] == 2
+        assert mid_progress["ocr_preview"]["processed_pages"] == 1
+        assert mid_progress["ocr_preview"]["text_pages"] == 1
+        assert mid_progress["ocr_preview"]["recent_pages"][0]["page_number"] == 1
+        assert len(mid_progress["ocr_preview"]["recent_pages"][0]["preview_text"]) <= 600
+
+        full_p1 = client.get(f"/api/documents/tasks/{task_id}/ocr-page/1")
+        assert full_p1.status_code == 200
+        assert len(full_p1.json()["text"]) > 600
+
+        release_ocr.set()
+        app.state.ingestion.executor.shutdown(wait=True)
+
+        done_progress = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+        assert done_progress["status"] == "completed"
+        assert done_progress["ocr_preview"]["processed_pages"] == 2
+        assert done_progress["ocr_preview"]["ocr_pages"] == 1
+        assert done_progress["ocr_preview"]["avg_confidence"] == pytest.approx(0.92, abs=1e-4)
+        assert done_progress["ocr_preview"]["heuristic_score"] == pytest.approx(88.5, abs=1e-2)
+        assert done_progress["ocr_preview"]["articles_count"] == 1
+        assert client.get(f"/api/documents/tasks/{task_id}/ocr-page/2").json()["text"] == "Điều 1. Phạm vi áp dụng OCR."
+

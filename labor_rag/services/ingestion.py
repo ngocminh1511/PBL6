@@ -1,5 +1,6 @@
 """Legal uploads use the same ontology, chunk IDs and version merge as the CLI."""
 import hashlib
+import inspect
 import json
 from contextlib import closing
 from collections import Counter
@@ -73,7 +74,7 @@ class IngestionPipeline:
         self.store = store
         self.embedder = embedder or EmbeddingProvider(settings)
 
-    def run(self, path, task_id, document_type, *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None):
+    def run(self, path, task_id, document_type, *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_page=None, on_ocr_summary=None):
         from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
         from labor_rag.ingest.chunk_schema import TokenCounter
         from labor_rag.ingest.ontology_to_jsonl import project
@@ -93,17 +94,64 @@ class IngestionPipeline:
         progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
         trees = {}
         warnings = []
+        ocr_summary = None
         if document_type == "pdf":
             from labor_rag.ocr.export import export_hierarchical
             from labor_rag.ocr.pipeline import process_document
             from labor_rag.ingest.pdf_abox import document_abox
 
+            ocr_pages_file = work / "ocr_pages.jsonl"
+            ocr_pages_file.write_text("", encoding="utf-8")
+
+            def handle_page(page_text, total_pages: int):
+                conf = round(page_text.confidence, 4) if page_text.confidence is not None else None
+                full_entry = {
+                    "page_number": page_text.page_number + 1,
+                    "total_pages": total_pages,
+                    "method": page_text.method,
+                    "confidence": conf,
+                    "char_count": len(page_text.text),
+                    "text": page_text.text,
+                }
+                with ocr_pages_file.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(full_entry, ensure_ascii=False) + "\n")
+                if on_page:
+                    on_page({
+                        "page_number": full_entry["page_number"],
+                        "total_pages": total_pages,
+                        "method": page_text.method,
+                        "confidence": conf,
+                        "char_count": full_entry["char_count"],
+                        "preview_text": page_text.text[:600].strip(),
+                    })
+
             def ocr_progress(msg: str, pct: float):
                 check_cancelled()
                 progress(round(10 + 0.18 * pct, 1), "parsing", f"Đang nhận dạng văn bản ({msg})...")
 
-            document = process_document(path, settings=config, progress=ocr_progress).document
+            ocr_kwargs = {"settings": config, "progress": ocr_progress}
+            params = inspect.signature(process_document).parameters
+            if "page_callback" in params or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
+                ocr_kwargs["page_callback"] = handle_page
+            processed = process_document(path, **ocr_kwargs)
+            document = processed.document
             check_cancelled()
+            extraction = getattr(processed, "extraction", None)
+            ocr_quality = getattr(processed, "ocr_quality", None) or {}
+            if extraction is not None:
+                warnings.extend(getattr(extraction, "warnings", []) or [])
+            ocr_summary = {
+                "total_pages": getattr(extraction, "total_pages", 0) if extraction else 0,
+                "text_pages": sum(1 for p in getattr(extraction, "pages", []) if p.method == "text") if extraction else 0,
+                "ocr_pages": len(getattr(extraction, "scanned_pages", [])) if extraction else 0,
+                "empty_pages": sum(1 for p in getattr(extraction, "pages", []) if p.method in {"empty", "skipped"}) if extraction else 0,
+                "avg_confidence": round(extraction.ocr_confidence, 4) if extraction and extraction.ocr_confidence is not None else None,
+                "heuristic_score": ocr_quality.get("heuristic_score"),
+                "articles_count": sum(1 for _ in document.iter_articles()),
+                "warnings": list(getattr(extraction, "warnings", []) or []) if extraction else [],
+            }
+            if on_ocr_summary:
+                on_ocr_summary(ocr_summary)
             progress(28, "parsing", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm...")
             if not document.metadata.so_hieu or not list(document.iter_articles()):
                 raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra lại tài liệu nguồn.")
@@ -209,7 +257,8 @@ class IngestionPipeline:
         return {"document_ids": ids, "documents": documents, "artifacts": artifacts,
                 "warnings": warnings, "total_chunks": len(chunks),
                 "embedded_chunks": indexed["embedded_chunks"],
-                "reused_chunks": len(chunks) - indexed["embedded_chunks"]}
+                "reused_chunks": len(chunks) - indexed["embedded_chunks"],
+                "ocr_summary": ocr_summary}
 
     def index(self, chunks, projection, progress, cancel_check=None):
         from qdrant_client import QdrantClient

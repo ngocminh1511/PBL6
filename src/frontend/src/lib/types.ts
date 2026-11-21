@@ -135,8 +135,39 @@ export interface DocumentRecord {
   ast_tree_json?: any;
 }
 
+export interface OCRPagePreview {
+  page_number: number;
+  method: string;
+  confidence?: number | null;
+  char_count: number;
+  preview_text: string;
+}
+
+export interface OCRPageDetail extends OCRPagePreview {
+  text: string;
+}
+
+export interface OCRPreviewSummary {
+  total_pages: number;
+  processed_pages: number;
+  text_pages: number;
+  ocr_pages: number;
+  empty_pages: number;
+  avg_confidence?: number | null;
+  heuristic_score?: number | null;
+  articles_count?: number | null;
+  warnings: string[];
+  recent_pages: OCRPagePreview[];
+}
+
 export interface IngestionTask {
-  result?: { document_ids: string[]; artifact_ids: string[]; warnings: string[]; reused_chunks?: number };
+  result?: {
+    document_ids: string[];
+    artifact_ids: string[];
+    warnings: string[];
+    reused_chunks?: number;
+    ocr_summary?: Partial<OCRPreviewSummary>;
+  };
   id: string;
   document_id?: string;
   file_name: string;
@@ -147,6 +178,7 @@ export interface IngestionTask {
   total_chunks: number;
   embedded_chunks: number;
   error_message?: string;
+  ocr_preview?: OCRPreviewSummary | null;
   created_at: string;
 }
 

@@ -32,6 +32,8 @@ _TARGET_IMAGE_WIDTH = 2480
 
 # progress(message, percent 0-100). Raise inside it to cancel the job.
 ProgressFn = Callable[[str, float], None]
+# page_callback(page_text, total_pages) called after each page finishes extraction.
+PageCallback = Callable[["PageText", int], None]
 
 
 @dataclass
@@ -109,10 +111,17 @@ def _report(progress: ProgressFn | None, message: str, percent: float) -> None:
         progress(message, percent)
 
 
-def _extract_pdf(doc: pymupdf.Document, name: str, use_ocr: bool, progress: ProgressFn | None) -> ExtractionResult:
+def _extract_pdf(
+    doc: pymupdf.Document,
+    name: str,
+    use_ocr: bool,
+    progress: ProgressFn | None,
+    page_callback: PageCallback | None = None,
+) -> ExtractionResult:
     if doc.needs_pass:
         raise ValueError(f"{name}: PDF is password-protected")
     classes = classify_document(doc)
+    total_pages = len(classes)
     n_scanned = sum(1 for c in classes if c.page_type is PageType.SCANNED)
     result = ExtractionResult(source_name=name, pages=[])
 
@@ -120,16 +129,21 @@ def _extract_pdf(doc: pymupdf.Document, name: str, use_ocr: bool, progress: Prog
     for c in classes:
         page = doc[c.page_number]
         if c.page_type is PageType.TEXT:
-            result.pages.append(PageText(c.page_number, extract_page_text(page), "text"))
+            if n_scanned == 0 and (c.page_number == 0 or (c.page_number + 1) % 5 == 0 or c.page_number + 1 == total_pages):
+                _report(progress, f"Đọc trang {c.page_number + 1}/{total_pages}", 100 * (c.page_number + 1) / max(total_pages, 1))
+            page_text = PageText(c.page_number, extract_page_text(page), "text")
         elif c.page_type is PageType.EMPTY:
-            result.pages.append(PageText(c.page_number, "", "empty"))
+            page_text = PageText(c.page_number, "", "empty")
         elif not use_ocr:
-            result.pages.append(PageText(c.page_number, "", "skipped"))
+            page_text = PageText(c.page_number, "", "skipped")
         else:
-            _report(progress, f"OCR trang {c.page_number + 1}/{len(classes)}", 100 * done / n_scanned)
+            _report(progress, f"OCR trang {c.page_number + 1}/{total_pages}", 100 * done / n_scanned)
             ocr = ocr_image(render_page(page))
-            result.pages.append(PageText(c.page_number, ocr.text, "ocr", ocr.confidence))
+            page_text = PageText(c.page_number, ocr.text, "ocr", ocr.confidence)
             done += 1
+        result.pages.append(page_text)
+        if page_callback:
+            page_callback(page_text, total_pages)
 
     if n_scanned and not use_ocr:
         result.warnings.append(f"Skipped {n_scanned} scanned page(s): OCR is off")
@@ -138,13 +152,21 @@ def _extract_pdf(doc: pymupdf.Document, name: str, use_ocr: bool, progress: Prog
     return result
 
 
-def _extract_image(image: Image.Image, name: str, progress: ProgressFn | None) -> ExtractionResult:
+def _extract_image(
+    image: Image.Image,
+    name: str,
+    progress: ProgressFn | None,
+    page_callback: PageCallback | None = None,
+) -> ExtractionResult:
     frames = [frame.copy() for frame in ImageSequence.Iterator(image)]  # multi-page TIFF
     result = ExtractionResult(source_name=name, pages=[])
     for i, frame in enumerate(frames):
         _report(progress, f"OCR ảnh {i + 1}/{len(frames)}", 100 * i / len(frames))
         ocr = ocr_image(_prepare_image(frame))
-        result.pages.append(PageText(i, ocr.text, "ocr", ocr.confidence))
+        page_text = PageText(i, ocr.text, "ocr", ocr.confidence)
+        result.pages.append(page_text)
+        if page_callback:
+            page_callback(page_text, len(frames))
     _report(progress, "OCR xong", 100)
     return result
 
@@ -155,6 +177,7 @@ def extract_text(
     filename: str | None = None,
     use_ocr: bool = True,
     progress: ProgressFn | None = None,
+    page_callback: PageCallback | None = None,
 ) -> ExtractionResult:
     """Extract the text of a PDF or image, page by page.
 
@@ -163,6 +186,7 @@ def extract_text(
         filename: display name for bytes input (the type is sniffed from the content).
         use_ocr: when False, scanned PDF pages are skipped instead of OCR'd.
         progress: called as progress(message, percent) before each OCR'd page.
+        page_callback: called as page_callback(page_text, total_pages) after each page.
 
     Raises:
         OCRUnavailableError: a page needs OCR but VietOCR cannot be loaded.
@@ -172,19 +196,19 @@ def extract_text(
         name = filename or "upload"
         if source.startswith(b"%PDF"):
             with pymupdf.open(stream=source, filetype="pdf") as doc:
-                return _extract_pdf(doc, name, use_ocr, progress)
+                return _extract_pdf(doc, name, use_ocr, progress, page_callback=page_callback)
         try:
             image = Image.open(io.BytesIO(source))
         except Exception as e:
             raise ValueError(f"{name}: neither a PDF nor a readable image") from e
-        return _extract_image(image, name, progress)
+        return _extract_image(image, name, progress, page_callback=page_callback)
 
     path = Path(source)
     suffix = path.suffix.lower()
     if suffix == ".pdf":
         with pymupdf.open(path) as doc:
-            return _extract_pdf(doc, path.name, use_ocr, progress)
+            return _extract_pdf(doc, path.name, use_ocr, progress, page_callback=page_callback)
     if suffix in IMAGE_SUFFIXES:
         with Image.open(path) as image:
-            return _extract_image(image, path.name, progress)
+            return _extract_image(image, path.name, progress, page_callback=page_callback)
     raise ValueError(f"{path.name}: unsupported file type {suffix!r} (PDF or {sorted(IMAGE_SUFFIXES)})")

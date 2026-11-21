@@ -200,6 +200,28 @@ class DocumentASTResponse(BaseModel):
     title: str
     ast_tree: Dict[str, Any]
 
+class OCRPagePreview(BaseModel):
+    page_number: int
+    method: str
+    confidence: Optional[float] = None
+    char_count: int = 0
+    preview_text: str = ""
+
+class OCRPageDetail(OCRPagePreview):
+    text: str = ""
+
+class OCRPreviewSummary(BaseModel):
+    total_pages: int = 0
+    processed_pages: int = 0
+    text_pages: int = 0
+    ocr_pages: int = 0
+    empty_pages: int = 0
+    avg_confidence: Optional[float] = None
+    heuristic_score: Optional[float] = None
+    articles_count: Optional[int] = None
+    warnings: List[str] = Field(default_factory=list)
+    recent_pages: List[OCRPagePreview] = Field(default_factory=list)
+
 class IngestionTaskResponse(BaseModel):
     id: str
     document_id: Optional[str] = None
@@ -212,6 +234,7 @@ class IngestionTaskResponse(BaseModel):
     total_chunks: int = 0
     embedded_chunks: int = 0
     error_message: Optional[str] = None
+    ocr_preview: Optional[OCRPreviewSummary] = None
     created_at: datetime
     updated_at: datetime
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail } from './types';
 
 export function errorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
@@ -123,6 +123,11 @@ export const api = {
 
   async getTaskProgress(taskId: string): Promise<IngestionTask> {
     const res = await apiClient.get(`/documents/tasks/${taskId}/progress`);
+    return res.data;
+  },
+
+  async getTaskOCRPage(taskId: string, pageNumber: number): Promise<OCRPageDetail> {
+    const res = await apiClient.get(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`);
     return res.data;
   },
 

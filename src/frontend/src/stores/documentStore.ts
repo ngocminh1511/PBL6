@@ -150,7 +150,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       if (done) return;
       const interval = setInterval(() => {
         void check(interval);
-      }, 1500);
+      }, 1000);
     });
   },
 

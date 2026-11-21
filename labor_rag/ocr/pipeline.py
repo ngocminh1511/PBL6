@@ -22,7 +22,7 @@ from labor_rag.config import OCR_OUTPUT_DIR
 from labor_rag.ingest.chunk_schema import is_so_hieu, make_document_id
 from labor_rag.ocr.chunking import chunk_long_records, flatten_document
 from labor_rag.ocr.export import EXPORT_FORMATS, export_document
-from labor_rag.ocr.extract import IMAGE_SUFFIXES, ExtractionResult, ProgressFn, extract_text
+from labor_rag.ocr.extract import IMAGE_SUFFIXES, ExtractionResult, PageCallback, ProgressFn, extract_text
 from labor_rag.ocr.schemas import FlatRecord, LegalDocument
 from labor_rag.ocr.structure import extract_metadata, parse_structure
 
@@ -72,13 +72,20 @@ def _process_document(
     formats: tuple[str, ...] = (),
     use_ocr: bool = True,
     progress: ProgressFn | None = None,
+    page_callback: PageCallback | None = None,
 ) -> ProcessedDocument:
     """Run the whole pipeline on one PDF or image.
 
     JSONL files are written only when both output_dir and formats are given;
     otherwise everything stays in memory (the usual case for an app upload).
     """
-    extraction = extract_text(source, filename=filename, use_ocr=use_ocr, progress=progress)
+    extraction = extract_text(
+        source,
+        filename=filename,
+        use_ocr=use_ocr,
+        progress=progress,
+        page_callback=page_callback,
+    )
     text, footnotes = extraction.clean_text_and_footnotes()
     if not text:
         raise ValueError(f"{extraction.source_name}: no text could be extracted")
@@ -99,12 +106,12 @@ def _process_document(
 
 
 def process_document(source, *, filename=None, output_dir=None, formats=(), use_ocr=True,
-                     progress=None, settings=None) -> ProcessedDocument:
+                     progress=None, page_callback=None, settings=None) -> ProcessedDocument:
     """Process an upload using one configuration snapshot, including OCR and chunking."""
     from labor_rag.ocr.settings import use_settings
     with use_settings(settings):
         return _process_document(source, filename=filename, output_dir=output_dir, formats=formats,
-                                 use_ocr=use_ocr, progress=progress)
+                                 use_ocr=use_ocr, progress=progress, page_callback=page_callback)
 
 
 # ============================================================

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IngestionTask } from '../../lib/types';
+import { api, errorMessage } from '../../lib/api';
+import { IngestionTask, OCRPagePreview } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 
 interface IngestionProgressProps {
@@ -34,6 +35,11 @@ function stageIndex(status: string): number {
 export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) => {
   const cancelTask = useDocumentStore((s) => s.cancelTask);
   const [cancelling, setCancelling] = useState(false);
+  const [previewExpanded, setPreviewExpanded] = useState(true);
+  const [pinnedPage, setPinnedPage] = useState<number | null>(null);
+  const [fullPageTexts, setFullPageTexts] = useState<Record<number, string>>({});
+  const [loadingPage, setLoadingPage] = useState<number | null>(null);
+  const [pageLoadError, setPageLoadError] = useState<string | null>(null);
 
   const isCompleted = task.status === 'completed';
   const isFailed = task.status === 'failed';
@@ -46,7 +52,50 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
     if (!isRunning) {
       setCancelling(false);
     }
-  }, [isRunning, task.id]);
+  }, [isRunning]);
+
+  useEffect(() => {
+    setPinnedPage(null);
+    setFullPageTexts({});
+    setLoadingPage(null);
+    setPageLoadError(null);
+    setPreviewExpanded(true);
+  }, [task.id]);
+
+  const ocrPreview = task.ocr_preview;
+  const recentPages = ocrPreview?.recent_pages ?? [];
+  const activePage: OCRPagePreview | undefined =
+    pinnedPage !== null
+      ? recentPages.find((p) => p.page_number === pinnedPage) ?? recentPages[recentPages.length - 1]
+      : recentPages[recentPages.length - 1];
+
+  const handleLoadFullPage = async (pageNumber: number) => {
+    if (loadingPage === pageNumber) return;
+    setLoadingPage(pageNumber);
+    setPageLoadError(null);
+    try {
+      const detail = await api.getTaskOCRPage(task.id, pageNumber);
+      setFullPageTexts((prev) => ({ ...prev, [pageNumber]: detail.text }));
+    } catch (e) {
+      setPageLoadError(errorMessage(e));
+    } finally {
+      setLoadingPage(null);
+    }
+  };
+
+  const confidencePercent =
+    ocrPreview?.avg_confidence !== undefined && ocrPreview?.avg_confidence !== null
+      ? Math.round(ocrPreview.avg_confidence * 100)
+      : null;
+
+  const confidenceBadgeClass =
+    confidencePercent === null
+      ? ''
+      : confidencePercent >= 85
+      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+      : confidencePercent >= 70
+      ? 'bg-amber-50 border-amber-200 text-amber-800'
+      : 'bg-red-50 border-red-200 text-red-700';
 
   const handleCancel = async () => {
     if (!isRunning || cancelling) return;
@@ -154,6 +203,126 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
         <span className="font-semibold text-on-surface-variant shrink-0">Công việc hiện tại:</span>
         <span className="font-medium text-on-surface">{task.current_step}</span>
       </div>
+
+      {/* Realtime OCR Inspection Metrics & Live Page Preview */}
+      {task.document_type === 'pdf' && ocrPreview && (
+        <div className="flex flex-col gap-2.5 border-t border-outline-variant/20 pt-2.5">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-label-statute">
+            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-on-surface">
+              Trang đã xử lý: <strong>{ocrPreview.processed_pages}/{ocrPreview.total_pages || '?'}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-on-surface-variant">
+              Text: <strong className="text-on-surface">{ocrPreview.text_pages}</strong> · OCR scan: <strong className="text-on-surface">{ocrPreview.ocr_pages}</strong>
+              {ocrPreview.empty_pages > 0 && <> · Trống: <strong>{ocrPreview.empty_pages}</strong></>}
+            </span>
+            {confidencePercent !== null && (
+              <span className={`px-2.5 py-1 rounded-md border font-semibold ${confidenceBadgeClass}`}>
+                Độ tin cậy OCR TB: {confidencePercent}%
+              </span>
+            )}
+            {ocrPreview.heuristic_score !== undefined && ocrPreview.heuristic_score !== null && (
+              <span className="px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-800 font-semibold">
+                Chất lượng văn bản: {Math.round(ocrPreview.heuristic_score)}/100
+              </span>
+            )}
+            {ocrPreview.articles_count !== undefined && ocrPreview.articles_count !== null && (
+              <span className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">
+                Điều bóc tách: {ocrPreview.articles_count} Điều
+              </span>
+            )}
+          </div>
+
+          {recentPages.length > 0 && (
+            <div className="rounded-lg border border-outline-variant/25 bg-surface-container-low/70 overflow-hidden">
+              <div className="px-3 py-2 flex items-center justify-between gap-2 bg-surface-container-low border-b border-outline-variant/20">
+                <div className="flex items-center gap-2 text-[12px] font-semibold text-on-surface">
+                  <span className="material-symbols-outlined text-[16px] text-secondary">preview</span>
+                  <span>Kiểm tra nội dung OCR realtime</span>
+                  {activePage && (
+                    <span className="font-normal text-[11px] text-on-surface-variant">
+                      (Trang {activePage.page_number} · {activePage.method === 'ocr' ? `OCR${activePage.confidence != null ? ` ${Math.round(activePage.confidence * 100)}%` : ''}` : activePage.method === 'text' ? 'Text layer' : activePage.method} · {activePage.char_count} ký tự)
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {pinnedPage !== null && isRunning && (
+                    <button
+                      type="button"
+                      onClick={() => setPinnedPage(null)}
+                      className="text-[11px] text-secondary hover:underline font-medium cursor-pointer"
+                    >
+                      Theo trang mới nhất
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setPreviewExpanded((prev) => !prev)}
+                    className="text-[11px] text-on-surface-variant hover:text-on-surface font-medium flex items-center gap-0.5 cursor-pointer"
+                  >
+                    <span>{previewExpanded ? 'Thu gọn' : 'Mở rộng'}</span>
+                    <span className="material-symbols-outlined text-[15px]">
+                      {previewExpanded ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {previewExpanded && activePage && (
+                <div className="p-2.5 flex flex-col gap-2">
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                    {recentPages.map((p) => {
+                      const isSelected = p.page_number === activePage.page_number;
+                      const pageConf = p.confidence != null ? `${Math.round(p.confidence * 100)}%` : null;
+                      return (
+                        <button
+                          key={p.page_number}
+                          type="button"
+                          onClick={() => setPinnedPage(p.page_number)}
+                          className={`px-2 py-1 rounded text-[11px] font-label-code shrink-0 border transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-secondary text-white border-secondary font-semibold'
+                              : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant/30 hover:border-secondary/50'
+                          }`}
+                        >
+                          Tr.{p.page_number} · {p.method === 'ocr' ? (pageConf ? `OCR ${pageConf}` : 'OCR') : p.method === 'text' ? 'Text' : p.method}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <pre className="whitespace-pre-wrap break-words font-body-sm text-[12px] leading-relaxed text-on-surface bg-surface-container-lowest rounded-md border border-outline-variant/20 p-2.5 max-h-48 overflow-y-auto">
+                    {fullPageTexts[activePage.page_number] ?? (activePage.preview_text || '(Trang trống hoặc không trích xuất được văn bản)')}
+                  </pre>
+
+                  {pageLoadError && (
+                    <p className="text-[11px] text-red-600">{pageLoadError}</p>
+                  )}
+
+                  {activePage.char_count > activePage.preview_text.length &&
+                    fullPageTexts[activePage.page_number] === undefined && (
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => void handleLoadFullPage(activePage.page_number)}
+                          disabled={loadingPage === activePage.page_number}
+                          className="text-[11px] text-secondary hover:underline font-semibold disabled:opacity-60 cursor-pointer"
+                        >
+                          {loadingPage === activePage.page_number
+                            ? 'Đang tải toàn bộ trang...'
+                            : `Xem đầy đủ trang ${activePage.page_number} (${activePage.char_count} ký tự)`}
+                        </button>
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {ocrPreview.warnings.map((warning, idx) => (
+            <p key={`ocr-warn-${idx}`} className="text-xs text-amber-800">{warning}</p>
+          ))}
+        </div>
+      )}
 
       {task.result?.warnings.map((warning, index) => <p key={index} className="text-xs text-amber-800">{warning}</p>)}
       {task.result?.artifact_ids[0] && <a className="text-xs text-secondary underline" href={'/api/files/' + encodeURIComponent(task.result.artifact_ids[0]) + '?download=true'}>Tải file nguồn đã lưu</a>}

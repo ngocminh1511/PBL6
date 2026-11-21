@@ -1,5 +1,6 @@
 """One upload worker, with durable task state and no demo fallbacks."""
 from concurrent.futures import ThreadPoolExecutor
+import json
 import threading
 from sqlalchemy import update
 from src.backend.app.models.database import IngestionTask, DocumentRecord, FileArtifact
@@ -41,6 +42,8 @@ class IngestionService:
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="legal-ingestion")
         self._cancel_lock = threading.Lock()
         self._cancel_events: dict[str, threading.Event] = {}
+        self._ocr_lock = threading.Lock()
+        self._ocr_previews: dict[str, dict] = {}
 
     def recover_interrupted(self):
         if self.database.available:
@@ -102,6 +105,138 @@ class IngestionService:
                         setattr(task, key, val)
                 db.commit()
 
+    def record_ocr_page(self, task_id: str, page_info: dict):
+        with self._ocr_lock:
+            state = self._ocr_previews.get(task_id)
+            if state is None:
+                if len(self._ocr_previews) >= 20:
+                    oldest = next(iter(self._ocr_previews))
+                    self._ocr_previews.pop(oldest, None)
+                state = {
+                    "total_pages": int(page_info.get("total_pages") or 0),
+                    "processed_pages": 0,
+                    "text_pages": 0,
+                    "ocr_pages": 0,
+                    "empty_pages": 0,
+                    "_conf_sum": 0.0,
+                    "_conf_count": 0,
+                    "avg_confidence": None,
+                    "heuristic_score": None,
+                    "articles_count": None,
+                    "warnings": [],
+                    "recent_pages": [],
+                }
+                self._ocr_previews[task_id] = state
+            state["total_pages"] = max(state["total_pages"], int(page_info.get("total_pages") or 0))
+            state["processed_pages"] += 1
+            method = page_info.get("method")
+            if method == "text":
+                state["text_pages"] += 1
+            elif method == "ocr":
+                state["ocr_pages"] += 1
+            else:
+                state["empty_pages"] += 1
+            conf = page_info.get("confidence")
+            if conf is not None:
+                state["_conf_sum"] += float(conf)
+                state["_conf_count"] += 1
+                state["avg_confidence"] = round(state["_conf_sum"] / state["_conf_count"], 4)
+            state["recent_pages"].append({
+                "page_number": int(page_info["page_number"]),
+                "method": str(method or "unknown"),
+                "confidence": conf,
+                "char_count": int(page_info.get("char_count") or 0),
+                "preview_text": str(page_info.get("preview_text") or ""),
+            })
+            if len(state["recent_pages"]) > 30:
+                state["recent_pages"] = state["recent_pages"][-30:]
+
+    def finalize_ocr_summary(self, task_id: str, summary: dict):
+        if not summary:
+            return
+        with self._ocr_lock:
+            state = self._ocr_previews.get(task_id)
+            if state is None:
+                state = {
+                    "total_pages": summary.get("total_pages", 0),
+                    "processed_pages": summary.get("total_pages", 0),
+                    "text_pages": summary.get("text_pages", 0),
+                    "ocr_pages": summary.get("ocr_pages", 0),
+                    "empty_pages": summary.get("empty_pages", 0),
+                    "avg_confidence": summary.get("avg_confidence"),
+                    "heuristic_score": summary.get("heuristic_score"),
+                    "articles_count": summary.get("articles_count"),
+                    "warnings": list(summary.get("warnings") or []),
+                    "recent_pages": [],
+                }
+                self._ocr_previews[task_id] = state
+            else:
+                state["heuristic_score"] = summary.get("heuristic_score")
+                state["articles_count"] = summary.get("articles_count")
+                state["warnings"] = list(summary.get("warnings") or [])
+                if summary.get("avg_confidence") is not None:
+                    state["avg_confidence"] = summary["avg_confidence"]
+
+    def get_ocr_preview(self, task_id: str) -> dict | None:
+        with self._ocr_lock:
+            state = self._ocr_previews.get(task_id)
+            if state is not None:
+                return {
+                    "total_pages": state["total_pages"],
+                    "processed_pages": state["processed_pages"],
+                    "text_pages": state["text_pages"],
+                    "ocr_pages": state["ocr_pages"],
+                    "empty_pages": state["empty_pages"],
+                    "avg_confidence": state["avg_confidence"],
+                    "heuristic_score": state["heuristic_score"],
+                    "articles_count": state["articles_count"],
+                    "warnings": list(state["warnings"]),
+                    "recent_pages": list(state["recent_pages"]),
+                }
+        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
+        if not pages_file.exists():
+            return None
+        entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+        if not entries:
+            return None
+        confs = [float(e["confidence"]) for e in entries if e.get("confidence") is not None]
+        return {
+            "total_pages": max((int(e.get("total_pages") or 0) for e in entries), default=len(entries)),
+            "processed_pages": len(entries),
+            "text_pages": sum(1 for e in entries if e.get("method") == "text"),
+            "ocr_pages": sum(1 for e in entries if e.get("method") == "ocr"),
+            "empty_pages": sum(1 for e in entries if e.get("method") not in {"text", "ocr"}),
+            "avg_confidence": round(sum(confs) / len(confs), 4) if confs else None,
+            "heuristic_score": None,
+            "articles_count": None,
+            "warnings": [],
+            "recent_pages": [{
+                "page_number": int(e["page_number"]),
+                "method": str(e.get("method") or "unknown"),
+                "confidence": e.get("confidence"),
+                "char_count": int(e.get("char_count") or 0),
+                "preview_text": str(e.get("text") or "")[:600].strip(),
+            } for e in entries[-30:]],
+        }
+
+    def get_ocr_page_text(self, task_id: str, page_number: int) -> dict | None:
+        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
+        if not pages_file.exists():
+            return None
+        for line in pages_file.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            entry = json.loads(line)
+            if int(entry.get("page_number") or 0) == page_number:
+                return {
+                    "page_number": page_number,
+                    "method": str(entry.get("method") or "unknown"),
+                    "confidence": entry.get("confidence"),
+                    "char_count": int(entry.get("char_count") or 0),
+                    "text": str(entry.get("text") or ""),
+                }
+        return None
+
     def _run(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
         from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
         from src.backend.app.services.corpus import Corpus
@@ -112,7 +247,9 @@ class IngestionService:
                 pipeline = IngestionPipeline(self.runtime.settings, self.runtime.storage())
                 result = pipeline.run(file_path, task_id, document_type, domain=domain, de_muc_id=de_muc_id,
                     progress=lambda *args, **kwargs: self._progress(task_id, *args, **kwargs),
-                    cancel_check=lambda: self.is_cancelled(task_id))
+                    cancel_check=lambda: self.is_cancelled(task_id),
+                    on_page=lambda page: self.record_ocr_page(task_id, page),
+                    on_ocr_summary=lambda summary: self.finalize_ocr_summary(task_id, summary))
                 with self.database.session() as db:
                     for record in result["documents"]:
                         existing = db.get(DocumentRecord, record["id"])
@@ -131,7 +268,8 @@ class IngestionService:
                     task.result = {"document_ids": result["document_ids"],
                         "artifact_ids": [a["artifact_id"] for a in result["artifacts"]],
                         "warnings": result["warnings"], "config_version": self.runtime.version,
-                        "reused_chunks": result.get("reused_chunks", 0)}
+                        "reused_chunks": result.get("reused_chunks", 0),
+                        "ocr_summary": result.get("ocr_summary")}
                     task.document_id = result["document_ids"][0] if len(result["document_ids"]) == 1 else None
                     task.status, task.progress, task.current_step = "completed", 100, "Hoàn tất! Văn bản đã sẵn sàng để xem và tra cứu."
                     task.total_chunks = result["total_chunks"]

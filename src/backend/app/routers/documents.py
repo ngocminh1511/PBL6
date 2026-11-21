@@ -11,7 +11,16 @@ from starlette.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 from src.backend.app.dependencies import get_current_user, get_db
 from src.backend.app.models.database import IngestionTask, DocumentRecord, User
-from src.backend.app.models.schemas import DocumentResponse, DocumentASTResponse, IngestionTaskResponse, UploadResponse, CursorPage, GraphResponse
+from src.backend.app.models.schemas import (
+    DocumentResponse,
+    DocumentASTResponse,
+    IngestionTaskResponse,
+    OCRPageDetail,
+    OCRPreviewSummary,
+    UploadResponse,
+    CursorPage,
+    GraphResponse,
+)
 from src.backend.app.services.runtime import get_runtime
 from src.backend.app.services.corpus import Corpus
 from src.backend.app.services.graph import build_graph
@@ -210,12 +219,49 @@ async def upload_document(request: Request, file: UploadFile = File(...),
         await file.close()
     return UploadResponse(task_id=identity, message="Đã xếp hàng nạp tài liệu.")
 
+def _task_response(ingestion_svc, task: IngestionTask) -> IngestionTaskResponse:
+    payload = IngestionTaskResponse.model_validate(task)
+    preview = ingestion_svc.get_ocr_preview(task.id)
+    summary = (task.result or {}).get("ocr_summary") if isinstance(task.result, dict) else None
+    if preview is not None:
+        if summary:
+            if preview.get("heuristic_score") is None:
+                preview["heuristic_score"] = summary.get("heuristic_score")
+            if preview.get("articles_count") is None:
+                preview["articles_count"] = summary.get("articles_count")
+            if not preview.get("warnings") and summary.get("warnings"):
+                preview["warnings"] = list(summary.get("warnings") or [])
+        payload.ocr_preview = OCRPreviewSummary.model_validate(preview)
+    elif summary:
+        payload.ocr_preview = OCRPreviewSummary(
+            total_pages=summary.get("total_pages", 0),
+            processed_pages=summary.get("total_pages", 0),
+            text_pages=summary.get("text_pages", 0),
+            ocr_pages=summary.get("ocr_pages", 0),
+            empty_pages=summary.get("empty_pages", 0),
+            avg_confidence=summary.get("avg_confidence"),
+            heuristic_score=summary.get("heuristic_score"),
+            articles_count=summary.get("articles_count"),
+            warnings=list(summary.get("warnings") or []),
+            recent_pages=[],
+        )
+    return payload
+
 @router.get("/tasks/{task_id}/progress", response_model=IngestionTaskResponse)
-def task_progress(task_id: str, db: Session = Depends(get_db)):
+def task_progress(task_id: str, request: Request, db: Session = Depends(get_db)):
     task = db.get(IngestionTask, task_id)
     if task is None:
         raise HTTPException(404, "Tác vụ không tồn tại.")
-    return IngestionTaskResponse.model_validate(task)
+    return _task_response(request.app.state.ingestion, task)
+
+@router.get("/tasks/{task_id}/ocr-page/{page_number}", response_model=OCRPageDetail)
+def task_ocr_page(task_id: str, page_number: int, request: Request, db: Session = Depends(get_db)):
+    if db.get(IngestionTask, task_id) is None:
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    page = request.app.state.ingestion.get_ocr_page_text(task_id, page_number)
+    if page is None:
+        raise HTTPException(404, "Chưa có nội dung OCR cho trang này.")
+    return OCRPageDetail.model_validate(page)
 
 @router.post("/tasks/{task_id}/cancel", response_model=IngestionTaskResponse)
 def cancel_task(task_id: str, request: Request, current_user: User = Depends(get_current_user),
@@ -223,7 +269,7 @@ def cancel_task(task_id: str, request: Request, current_user: User = Depends(get
     task = request.app.state.ingestion.cancel(task_id)
     if task is None:
         raise HTTPException(404, "Tác vụ không tồn tại.")
-    return IngestionTaskResponse.model_validate(task)
+    return _task_response(request.app.state.ingestion, task)
 
 @router.get("/tasks/{task_id}/stream")
 async def task_stream(task_id: str, request: Request, db: Session = Depends(get_db)):
@@ -233,7 +279,7 @@ async def task_stream(task_id: str, request: Request, db: Session = Depends(get_
         while not await request.is_disconnected():
             with request.app.state.database.session() as session:
                 task = session.get(IngestionTask, task_id)
-                payload = IngestionTaskResponse.model_validate(task)
+                payload = _task_response(request.app.state.ingestion, task)
                 yield "data: " + payload.model_dump_json() + "\n\n"
                 if task.status in {"completed", "failed", "cancelled"}:
                     break
