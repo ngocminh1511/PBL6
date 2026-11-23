@@ -6,14 +6,13 @@ import { useChatStore } from '../../stores/chatStore';
 
 interface CitationChipProps {
   citation: string;
-  isGraphRef?: boolean;
   href?: string;
   index?: number;
   /** Opens the appendix preview in the inspector instead of navigating away. */
   appendix?: { id: string; chunkId?: string };
 }
 
-export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef, href, index, appendix }) => {
+export const CitationChip: React.FC<CitationChipProps> = ({ citation, href, index, appendix }) => {
   const router = useRouter();
   const { setSelectedCitation, setInspectorTab, openAppendix } = useChatStore();
 
@@ -27,8 +26,8 @@ export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef
       return;
     }
     setSelectedCitation(citation);
-    // Graph-reached evidence still carries its document, Dieu and khoan, so the
-    // tree can open and highlight it; the graph tab stays one click away.
+    // Every legal citation, graph-reached or not, carries its document, Dieu and
+    // khoan, so the tree opens and highlights it; the graph tab is for browsing.
     setInspectorTab('tab-hierarchy');
   };
 
@@ -41,7 +40,6 @@ export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef
     >
       {index != null && <span className="font-mono text-[11px]">[{index}]</span>}
       <span>{citation}</span>
-      {isGraphRef && <span className="text-[10.5px] font-normal text-muted">· đồ thị</span>}
       {appendix && <span className="text-[10.5px] font-normal text-muted">· xem trước</span>}
     </button>
   );

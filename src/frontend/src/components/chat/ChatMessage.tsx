@@ -109,7 +109,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
               index={i + 1}
               citation={ev.citation}
               appendix={ev.appendix_id ? { id: ev.appendix_id, chunkId: chunkFromViewUrl(ev.view_url) } : undefined}
-              isGraphRef={ev.source.includes('graph') || ev.source.includes('REFERS_TO')}
             />
           ))}
         </div>
