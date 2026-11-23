@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowUp, ChevronDown, Database, FileText, Mic, MicOff, Paperclip, X } from 'lucide-react';
+import { api } from '../../lib/api';
 import { useChatStore } from '../../stores/chatStore';
 
 export const ChatInput: React.FC = () => {
@@ -13,6 +15,25 @@ export const ChatInput: React.FC = () => {
   const recognitionRef = useRef<any>(null);
 
   const { sendMessage, isSending } = useChatStore();
+  const { selectedDomain, setSelectedDomain } = useChatStore();
+  const [scopeMenuOpen, setScopeMenuOpen] = useState(false);
+  const [documentCount, setDocumentCount] = useState<number | null>(null);
+  const scopeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    api.listDocuments('all', undefined, undefined, 1)
+      .then(page => setDocumentCount(page.total_count ?? 0))
+      .catch(() => setDocumentCount(null));
+  }, []);
+
+  useEffect(() => {
+    if (!scopeMenuOpen) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (scopeRef.current && !scopeRef.current.contains(e.target as Node)) setScopeMenuOpen(false);
+    };
+    window.addEventListener('mousedown', handleOutside);
+    return () => window.removeEventListener('mousedown', handleOutside);
+  }, [scopeMenuOpen]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -135,8 +156,15 @@ export const ChatInput: React.FC = () => {
     }
   };
 
+  const scopeOptions = [
+    { id: 'all', label: 'Toàn bộ kho số hóa' },
+    { id: 'lao_dong', label: 'Pháp luật Lao động' },
+  ];
+  const activeScopeLabel = scopeOptions.find((o) => o.id === selectedDomain)?.label ?? scopeOptions[0].label;
+  const canSend = !isSending && (!!question.trim() || !!attachedFile);
+
   return (
-    <div className="p-space-md shrink-0 bg-surface-container-lowest shadow-sm border-t border-outline-variant/30">
+    <div className="px-5 sm:px-8 pb-4 pt-2 shrink-0 bg-white">
       {/* Hidden File Input (Single file only) */}
       <input
         type="file"
@@ -146,105 +174,133 @@ export const ChatInput: React.FC = () => {
         accept=".pdf,.doc,.docx,.txt,.md,.json,.csv,.rtf,image/*"
       />
 
-      {/* Input Cockpit Dock */}
-      <div className="p-2.5 rounded-2xl bg-surface-container-low flex flex-col gap-2 focus-within:bg-surface-container-lowest transition-all shadow-xs border border-outline-variant/40">
-        {/* Single File Attachment Preview Chip */}
-        {attachedFile && (
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-container border border-secondary/30 self-start max-w-full animate-fadeIn">
-            <span className="material-symbols-outlined text-secondary text-[20px]">
-              {/\.pdf$/i.test(attachedFile.name) ? 'picture_as_pdf' : 'description'}
-            </span>
-            <div className="flex flex-col min-w-0 pr-1">
-              <span className="font-body-sm text-[12px] font-medium text-on-surface truncate max-w-[260px]">
-                {attachedFile.name}
-              </span>
-              <span className="font-label-code text-[10px] text-on-surface-variant">
-                {formatFileSize(attachedFile.size)} • 1 file đơn lẻ
-              </span>
+      <div className="max-w-[760px] mx-auto relative">
+        <div className="rounded-2xl border border-ink/14 bg-paper focus-within:bg-white focus-within:border-navy/45 shadow-[0_2px_12px_rgba(28,27,24,0.04)] transition-colors px-4 pt-3 pb-2.5">
+          {/* Single File Attachment Preview Chip */}
+          {attachedFile && (
+            <div className="mb-2 inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white border border-navy/25 max-w-full">
+              <FileText className="w-4 h-4 text-navy shrink-0" />
+              <div className="flex flex-col min-w-0 pr-1">
+                <span className="text-[12px] font-medium text-ink truncate max-w-[260px]">{attachedFile.name}</span>
+                <span className="font-mono text-[10px] text-muted">{formatFileSize(attachedFile.size)} • 1 file đơn lẻ</span>
+              </div>
+              <button
+                onClick={removeAttachedFile}
+                className="w-6 h-6 rounded-full hover:bg-stone text-muted hover:text-[#B91C1C] flex items-center justify-center transition-colors"
+                title="Gỡ bỏ tài liệu này"
+                type="button"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <button
-              onClick={removeAttachedFile}
-              className="w-6 h-6 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-red-500 flex items-center justify-center transition-colors ml-1"
-              title="Gỡ bỏ tài liệu này"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[16px]">close</span>
-            </button>
-          </div>
-        )}
+          )}
 
-        <textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={
-            isListening
-              ? '🎤 Đang lắng nghe bạn nói tiếng Việt... Hãy đặt câu hỏi.'
-              : 'Đặt câu hỏi về các trường hợp ngoại lệ, chế tài bồi thường, hoặc tra cứu thêm điều khoản...'
-          }
-          rows={2}
-          disabled={isSending}
-          maxLength={4000}
-          className="w-full bg-transparent border-0 focus:outline-none resize-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant px-1"
-        />
+          <textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              isListening
+                ? '🎤 Đang lắng nghe bạn nói tiếng Việt... Hãy đặt câu hỏi.'
+                : 'Đặt câu hỏi về các trường hợp ngoại lệ, chế tài bồi thường, hoặc tra cứu thêm điều khoản...'
+            }
+            rows={2}
+            disabled={isSending}
+            maxLength={4000}
+            className="w-full resize-none bg-transparent text-[14.5px] text-ink placeholder:text-[#8A867E] focus:outline-none leading-relaxed"
+          />
 
-        <div className="flex items-center justify-between pt-1 border-t border-outline-variant/20">
-          <div className="flex items-center gap-1.5">
-            {/* Attach Single File Button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
-                attachedFile
-                  ? 'bg-secondary/15 text-secondary font-bold'
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              title={attachedFile ? 'Đã đính kèm 1 file (bấm để đổi file khác)' : 'Đính kèm tài liệu hồ sơ (1 file đơn lẻ)'}
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">attach_file</span>
-            </button>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <div ref={scopeRef} className="relative flex items-center gap-1.5">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  attachedFile ? 'bg-navy/10 text-navy' : 'text-ink-3 hover:bg-stone hover:text-ink'
+                }`}
+                title={attachedFile ? 'Đã đính kèm 1 file (bấm để đổi file khác)' : 'Đính kèm tài liệu hồ sơ (1 file đơn lẻ)'}
+                type="button"
+              >
+                <Paperclip className="w-4 h-4" />
+              </button>
 
-            {/* Microphone Button */}
-            <button
-              onClick={toggleSpeechRecognition}
-              className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${
-                isListening
-                  ? 'bg-red-500 text-white animate-pulse shadow-sm shadow-red-500/30'
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              title={isListening ? 'Đang lắng nghe tiếng Việt... Nhấn để dừng' : 'Nhập liệu bằng giọng nói (Tiếng Việt)'}
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                {isListening ? 'mic' : 'mic_none'}
-              </span>
-            </button>
+              <button
+                onClick={toggleSpeechRecognition}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  isListening ? 'bg-[#B91C1C] text-white animate-pulse' : 'text-ink-3 hover:bg-stone hover:text-ink'
+                }`}
+                title={isListening ? 'Đang lắng nghe tiếng Việt... Nhấn để dừng' : 'Nhập liệu bằng giọng nói (Tiếng Việt)'}
+                type="button"
+              >
+                {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+              </button>
 
-            <span className="font-label-code text-label-code text-on-surface-variant px-2 py-0.5 rounded bg-surface-container text-[11px]">
-              Phạm vi: dữ liệu Lao động
-            </span>
-          </div>
+              <button
+                type="button"
+                onClick={() => setScopeMenuOpen((o) => !o)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-ink/10 hover:border-navy/35 text-[12px] font-medium text-ink-2 transition-colors"
+                title="Phạm vi lập luận"
+              >
+                <Database className="w-3.5 h-3.5 text-navy" />
+                <span>{activeScopeLabel}</span>
+                {documentCount != null && <span className="text-muted tabular-nums">({documentCount} VB)</span>}
+                <ChevronDown className="w-3 h-3 text-muted" />
+              </button>
 
-          <div className="flex items-center gap-2">
-            <span className="font-label-code text-label-code text-on-surface-variant hidden sm:inline text-[11px]">
-              Ctrl + Enter để gửi
-            </span>
-            <button
-              onClick={handleSubmit}
-              disabled={isSending || (!question.trim() && !attachedFile)}
-              className="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-sm disabled:opacity-50"
-              type="button"
-            >
-              {isSending ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              ) : (
-                <span className="material-symbols-outlined text-[20px]">arrow_upward</span>
+              {scopeMenuOpen && (
+                <div className="absolute bottom-9 left-0 z-20 w-64 rounded-xl bg-white border border-ink/12 shadow-lg p-1.5 space-y-0.5">
+                  {scopeOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDomain(option.id);
+                        setScopeMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-[12.5px] transition-colors ${
+                        option.id === selectedDomain ? 'bg-stone text-navy font-medium' : 'text-ink-2 hover:bg-paper'
+                      }`}
+                    >
+                      <span>{option.label}</span>
+                      <span className="text-[11px] font-mono text-muted">{documentCount == null ? '—' : `${documentCount} VB`}</span>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    disabled
+                    className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-[12.5px] opacity-50 cursor-not-allowed text-muted"
+                  >
+                    <span>Luật BHXH & Y tế</span>
+                    <span className="text-[11px] font-mono">Chưa nạp</span>
+                  </button>
+                </div>
               )}
-            </button>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="hidden sm:inline text-[11.5px] text-[#8A867E]">Ctrl + Enter để gửi</span>
+              <button
+                onClick={handleSubmit}
+                disabled={!canSend}
+                aria-label="Gửi câu hỏi"
+                className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                  canSend ? 'bg-navy text-white hover:bg-navy-dark' : 'bg-stone-3 text-[#9A968D] cursor-not-allowed'
+                }`}
+                type="button"
+              >
+                {isSending ? (
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <ArrowUp className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
+
+        <p className="mt-1.5 text-center text-[11.5px] text-[#8A867E]">
+          Nội dung trả lời luôn đi kèm trích dẫn từ văn bản pháp luật đã nạp chỉ mục để đối chiếu trực tiếp.
+        </p>
       </div>
     </div>
   );
 };
-

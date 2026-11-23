@@ -8,9 +8,10 @@ interface CitationChipProps {
   citation: string;
   isGraphRef?: boolean;
   href?: string;
+  index?: number;
 }
 
-export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef, href }) => {
+export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef, href, index }) => {
   const router = useRouter();
   const { setSelectedCitation, setInspectorTab } = useChatStore();
 
@@ -27,15 +28,12 @@ export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef
     <button
       onClick={handleClick}
       type="button"
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-high hover:bg-secondary-fixed text-on-surface font-label-statute text-label-statute transition-all group shadow-xs border border-outline-variant/40 hover:border-secondary"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-paper border border-ink/10 hover:border-navy/35 text-[12px] text-navy font-medium transition-colors text-left"
       title="Nhấp để đối soát Điều/Khoản/Điểm trên Cột Thanh tra Pháp lý"
     >
-      <span className="material-symbols-outlined text-[15px] text-secondary group-hover:scale-110 transition-transform">
-        {isGraphRef ? 'link' : 'gavel'}
-      </span>
-      <span className="font-medium">{citation}</span>
-      <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+      {index != null && <span className="font-mono text-[11px]">[{index}]</span>}
+      <span>{citation}</span>
+      {isGraphRef && <span className="text-[10.5px] font-normal text-muted">· đồ thị</span>}
     </button>
   );
 };
-

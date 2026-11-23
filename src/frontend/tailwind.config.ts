@@ -68,6 +68,15 @@ const config: Config = {
         navy: "#1e3a5f",
         "navy-dark": "#162c49",
       },
+      opacity: {
+        6: "0.06",
+        8: "0.08",
+        12: "0.12",
+        14: "0.14",
+        35: "0.35",
+        45: "0.45",
+        65: "0.65",
+      },
       spacing: {
         "space-xl": "2rem",
         "space-xs": "0.25rem",

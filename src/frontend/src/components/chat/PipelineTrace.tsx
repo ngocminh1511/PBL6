@@ -1,135 +1,102 @@
 'use client';
 
 import React, { useState } from 'react';
+import { CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import { PipelineTrace as PipelineTraceType } from '../../lib/types';
 
 interface PipelineTraceProps {
   trace: PipelineTraceType;
+  executionMs?: number | null;
 }
 
-export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace }) => {
-  const [isOpen, setIsOpen] = useState(true);
+interface StepRow {
+  title: string;
+  detail: React.ReactNode;
+  secondary?: React.ReactNode;
+  status: string;
+}
+
+export const PipelineTrace: React.FC<PipelineTraceProps> = ({ trace, executionMs }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ms = executionMs ?? trace.execution_time_ms;
+  const rewrite = trace.step1_query_rewrite;
+  const retrieval = trace.step2_hybrid_retrieval;
+  const rerank = trace.step3_rerank;
+
+  const steps: StepRow[] = [
+    {
+      title: 'Viết lại truy vấn & Giải quyết đại từ',
+      detail: rewrite.pronoun_resolved || 'Xử lý đại từ phụ thuộc ngữ cảnh hội thoại.',
+      secondary: <>Truy vấn độc lập: &quot;{rewrite.standalone_query}&quot;</>,
+      status: rewrite.activated ? 'Tự động kích hoạt' : 'Lượt hỏi đơn lập',
+    },
+    {
+      title: 'Truy vấn kết hợp (Vector kNN + Đồ thị tri thức)',
+      detail: (
+        <>
+          Vector ngữ nghĩa (Qdrant): {retrieval.vector_hits_count} đoạn · Cosine {retrieval.vector_score_range}
+          <br />
+          Duyệt đồ thị (Neo4j): {retrieval.graph_hops_count} chứng cứ đồ thị
+        </>
+      ),
+      secondary: retrieval.refers_to_targets.length > 0
+        ? retrieval.refers_to_targets.join(' • ')
+        : 'Không có chứng cứ đồ thị được trả về',
+      status: `${retrieval.vector_hits_count + retrieval.graph_hops_count} kết quả`,
+    },
+    {
+      title: 'Tái xếp hạng bằng LLM',
+      detail: `Giữ ${rerank.retained_count} đoạn • Loại ${rerank.pruned_count} đoạn`,
+      status: 'Chọn theo mức liên quan',
+    },
+    {
+      title: 'Kiểm chứng trích dẫn',
+      detail: 'Đối chiếu Điều / Khoản / Điểm',
+      status: trace.step4_verification.status,
+    },
+  ];
 
   return (
-    <div className="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-space-md shadow-xs border border-outline-variant/30">
-      {/* Trace Toggle Bar */}
-      <div
-        className="flex items-center justify-between cursor-pointer select-none"
+    <div className="rounded-2xl border border-ink/10 bg-paper overflow-hidden">
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-2.5 flex items-center justify-between gap-3 text-left hover:bg-stone/70 transition-colors"
       >
-        <div className="flex items-center gap-space-xs">
-          <span className="material-symbols-outlined text-secondary text-[20px]">account_tree</span>
-          <span className="font-headline-sm text-headline-sm text-on-surface">
-            Tiến trình xử lý suy luận
+        <div className="flex items-center gap-2 min-w-0">
+          <CheckCircle2 className="w-4 h-4 text-navy shrink-0" />
+          <span className="text-[13px] font-medium text-ink truncate">Tiến trình lập luận pháp lý</span>
+          <span className="text-[12px] text-muted tabular-nums hidden sm:inline">
+            · {steps.length} bước{ms == null ? '' : ` · ${(ms / 1000).toFixed(2)}s`}
           </span>
         </div>
-        <div className="flex items-center gap-1 font-label-code text-label-code text-secondary">
-          <span>{isOpen ? 'Thu gọn' : 'Chi tiết 4 bước'}</span>
-          <span className="material-symbols-outlined text-[18px]">
-            {isOpen ? 'expand_less' : 'expand_more'}
-          </span>
-        </div>
-      </div>
+        <span className="inline-flex items-center gap-1 text-[12px] font-medium text-ink-3 shrink-0">
+          <span>{isOpen ? 'Thu gọn' : 'Xem chi tiết'}</span>
+          {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </span>
+      </button>
 
-      {/* Trace Accordion Body */}
       {isOpen && (
-        <div className="flex flex-col gap-space-md pt-space-xs">
-          {/* Step 1: Context Resolution & Query Rewrite */}
-          <div className="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-lowest">
-            <div className="flex items-center justify-between">
-              <span className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
-                1. Viết lại truy vấn & Giải quyết đại từ
-              </span>
-              <span className="font-label-code text-label-code text-secondary font-semibold">
-                {trace.step1_query_rewrite.activated ? 'Tự động kích hoạt (LexRAG Context)' : 'Lượt hỏi đơn lập'}
-              </span>
-            </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              {trace.step1_query_rewrite.pronoun_resolved || 'Xử lý đại từ phụ thuộc ngữ cảnh hội thoại.'}
-            </p>
-            <div className="p-space-xs rounded bg-surface-container font-label-code text-label-code text-on-surface flex items-start gap-2">
-              <span className="material-symbols-outlined text-secondary text-[16px] shrink-0 mt-0.5">
-                prompt_suggestion
-              </span>
-              <span>
-                <strong>Truy vấn độc lập:</strong> "{trace.step1_query_rewrite.standalone_query}"
-              </span>
-            </div>
-          </div>
-
-          {/* Step 2: Hybrid Retrieval */}
-          <div className="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-lowest">
-            <div className="flex items-center justify-between">
-              <span className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
-                2. Truy vấn kết hợp (Vector kNN + Đồ thị tri thức)
-              </span>
-              <span className="font-metric-num text-metric-num text-on-tertiary-container bg-tertiary-fixed px-1.5 rounded">
-                Kết quả truy hồi
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-space-xs">
-              {/* Vector Pillar */}
-              <div className="p-space-xs rounded bg-surface-container flex flex-col gap-1">
-                <div className="flex items-center justify-between font-label-statute text-label-statute">
-                  <span className="text-on-surface font-semibold">Vector Ngữ nghĩa (Qdrant)</span>
-                  <span className="font-metric-num text-metric-num text-secondary">
-                    {trace.step2_hybrid_retrieval.vector_hits_count} Đoạn (Chunks)
-                  </span>
+        <div className="px-4 pb-4 pt-2 border-t border-ink/8 space-y-3 bg-white">
+          {steps.map((step, i) => (
+            <div key={i} className="flex items-start justify-between gap-4 py-1.5 border-b last:border-b-0 border-ink/6">
+              <div className="flex items-start gap-2.5 min-w-0">
+                <span className="font-mono text-[11.5px] font-semibold text-navy mt-0.5 tabular-nums shrink-0">0{i + 1}.</span>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="text-[13px] font-medium text-ink">{step.title}</div>
+                  <div className="text-[12.5px] text-ink-3 leading-relaxed">{step.detail}</div>
+                  {step.secondary && (
+                    <div className="text-[12px] text-[#6E6B64] font-mono bg-paper px-2.5 py-1.5 rounded-lg mt-1 break-words">
+                      {step.secondary}
+                    </div>
+                  )}
                 </div>
-                <span className="font-body-sm text-body-sm text-on-surface-variant text-[11px]">
-                  Cosine Sim: {trace.step2_hybrid_retrieval.vector_score_range}
-                </span>
               </div>
-              {/* Graph Pillar */}
-              <div className="p-space-xs rounded bg-surface-container flex flex-col gap-1">
-                <div className="flex items-center justify-between font-label-statute text-label-statute">
-                  <span className="text-on-surface font-semibold">Duyệt Đồ thị (Neo4j)</span>
-                  <span className="font-label-statute text-label-statute text-on-secondary-fixed bg-secondary-fixed px-1 rounded">
-                    {trace.step2_hybrid_retrieval.graph_hops_count} chứng cứ đồ thị
-                  </span>
-                </div>
-                <span className="font-label-code text-label-code text-on-surface truncate text-[11px]">
-                  {trace.step2_hybrid_retrieval.refers_to_targets.length > 0
-                    ? trace.step2_hybrid_retrieval.refers_to_targets.join(' • ')
-                    : 'Không có chứng cứ đồ thị được trả về'}
-                </span>
-              </div>
+              <span className="text-[11.5px] font-medium text-ink-3 text-right shrink-0 mt-0.5 max-w-[40%]">{step.status}</span>
             </div>
-          </div>
-
-          {/* Step 3 & 4: Reranker Pruning & Verification */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-xs">
-            <div className="p-space-xs rounded-lg bg-surface-container-lowest flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="font-label-statute text-label-statute text-on-surface-variant uppercase font-bold">
-                  3. Tái xếp hạng bằng LLM
-                </span>
-                <span className="font-body-sm text-body-sm text-on-surface">
-                  Giữ {trace.step3_rerank.retained_count} đoạn • Loại {trace.step3_rerank.pruned_count} đoạn
-                </span>
-              </div>
-              <span className="font-metric-num text-metric-num px-2 py-0.5 rounded bg-error-container text-on-error-container font-mono text-[11px]">
-                Chọn theo mức liên quan
-              </span>
-            </div>
-
-            <div className="p-space-xs rounded-lg bg-surface-container-lowest flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="font-label-statute text-label-statute text-on-surface-variant uppercase font-bold">
-                  4. Kiểm chứng trích dẫn
-                </span>
-                <span className="font-body-sm text-body-sm text-on-surface">
-                  Đối chiếu Điều / Khoản / Điểm
-                </span>
-              </div>
-              <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
-                {trace.step4_verification.status}
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
   );
 };
-

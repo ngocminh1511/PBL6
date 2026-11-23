@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Share2 } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 import { api, errorMessage } from '../../lib/api';
 import type { GraphResponse } from '../../lib/types';
@@ -22,44 +23,44 @@ export function GraphView() {
     y: 180 + 130 * Math.sin(index * Math.PI * 2 / Math.max(nodes.length, 1)),
   }]));
   const titleById = new Map(nodes.map(node => [node.id, node.title || node.id]));
-  return <div className="flex-1 overflow-y-auto p-space-md flex flex-col gap-space-md">
+  return <div className="flex-1 overflow-y-auto legal-scroll p-3 flex flex-col gap-3">
     <div className="flex items-center justify-between">
-      <span className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">Cấu trúc Mạng lưới Đồ thị (Neo4j)</span>
-      <span className="font-label-statute text-label-statute px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-semibold">Duyệt 1 bước (1-Hop)</span>
+      <span className="text-[11.5px] font-medium text-ink-2">Cấu trúc mạng lưới đồ thị (Neo4j)</span>
+      <span className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-navy/8 text-navy">Duyệt 1 bước (1-Hop)</span>
     </div>
-    {error && <p role="alert" className="p-space-sm rounded-lg bg-amber-50 text-amber-800 font-body-sm text-body-sm">{error}</p>}
-    <div className="w-full h-72 rounded-2xl bg-slate-900 p-4 relative overflow-hidden flex flex-col justify-between shadow-inner">
-      <div className="absolute inset-0 opacity-20 pointer-events-none"><div className="w-full h-full bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px]"></div></div>
-      <div className="relative z-10 flex items-center justify-between gap-2 font-label-code text-[10px] text-slate-300">
+    {error && <p role="alert" className="rounded-xl border border-[#9A6B2F]/25 bg-[#FAF7F0] px-3 py-2 text-[12.5px] text-[#473822]">{error}</p>}
+    <div className="w-full h-72 rounded-2xl bg-paper border border-ink/10 p-4 relative overflow-hidden flex flex-col justify-between">
+      <div className="absolute inset-0 opacity-20 pointer-events-none"><div className="w-full h-full bg-[radial-gradient(#C9C5BC_1px,transparent_1px)] [background-size:16px_16px]"></div></div>
+      <div className="relative z-10 flex items-center justify-between gap-2 font-mono text-[10.5px] text-ink-3">
         <span className="truncate" title={selected?.citation}>{selected?.citation || 'Chưa chọn chứng cứ'}</span>
         <span className="shrink-0">{graph?.status === 'connected' ? 'Đã truy vấn Neo4j' : 'Chưa có kết quả'}</span>
       </div>
       {nodes.length > 0 ? <svg viewBox="0 0 440 360" className="w-full h-44 relative z-10" aria-label="Đồ thị chứng cứ Neo4j">
-        <defs><marker id="graph-arrow" markerWidth="6" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#818cf8" /></marker></defs>
+        <defs><marker id="graph-arrow" markerWidth="6" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#1E3A5F" /></marker></defs>
         {graph?.edges.map((edge, index) => { const first = positions.get(edge.source), second = positions.get(edge.target); return first && second ?
-          <line key={index} x1={first.x} y1={first.y} x2={second.x} y2={second.y} stroke="#818cf8" strokeWidth="1.5" markerEnd="url(#graph-arrow)"><title>{edge.type}</title></line> : null; })}
+          <line key={index} x1={first.x} y1={first.y} x2={second.x} y2={second.y} stroke="#1E3A5F" strokeOpacity="0.45" strokeWidth="1.5" markerEnd="url(#graph-arrow)"><title>{edge.type}</title></line> : null; })}
         {nodes.map((node, index) => { const point = positions.get(node.id)!; return <g key={node.id}>
           <title>{(node.title || node.id) + ' · ' + node.id}</title>
-          <circle cx={point.x} cy={point.y} r={nodes.length > 15 ? 7 : 18} fill={index === 0 ? '#4f46e5' : node.document_id && node.document_id !== id ? '#d97706' : '#1e293b'} stroke="#a5b4fc" strokeWidth="2" />
-          <text x={point.x} y={point.y + (nodes.length > 15 ? 18 : 30)} textAnchor="middle" fill="#e2e8f0" fontSize="9" fontFamily="JetBrains Mono">{(node.title || node.id).slice(0, 24)}</text>
+          <circle cx={point.x} cy={point.y} r={nodes.length > 15 ? 7 : 18} fill={index === 0 ? '#1E3A5F' : node.document_id && node.document_id !== id ? '#9A6B2F' : '#FFFFFF'} stroke="#1E3A5F" strokeWidth="2" />
+          <text x={point.x} y={point.y + (nodes.length > 15 ? 18 : 30)} textAnchor="middle" fill="#3F3D37" fontSize="9" fontFamily="JetBrains Mono, monospace">{(node.title || node.id).slice(0, 24)}</text>
         </g>; })}
-      </svg> : <div className="h-44 relative z-10 flex flex-col items-center justify-center text-slate-400 gap-space-sm">
-        <span className="material-symbols-outlined text-[36px] text-indigo-300">hub</span>
-        <p className="font-body-sm text-body-sm text-center">{id && !graph && !error ? 'Đang tải đồ thị…' : 'Chọn chứng cứ để xem các node và liên kết thực tế.'}</p>
+      </svg> : <div className="h-44 relative z-10 flex flex-col items-center justify-center text-muted gap-2">
+        <Share2 className="w-7 h-7 text-navy/65" />
+        <p className="text-[12.5px] text-center">{id && !graph && !error ? 'Đang tải đồ thị…' : 'Chọn chứng cứ để xem các node và liên kết thực tế.'}</p>
       </div>}
-      <div className="relative z-10 flex items-center gap-space-md font-label-code text-[10px] text-slate-300">
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-400"></span>{graph ? nodes.length : '—'} node</span>
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span>{graph ? graph.edges.length : '—'} quan hệ</span>
+      <div className="relative z-10 flex items-center gap-space-md font-mono text-[10.5px] text-ink-3">
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-navy"></span>{graph ? nodes.length : '—'} node</span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#9A6B2F]"></span>{graph ? graph.edges.length : '—'} quan hệ</span>
       </div>
     </div>
-    <div className="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col gap-space-sm">
-      <h3 className="font-label-statute text-label-statute uppercase text-secondary font-bold">Quan hệ và đường dẫn chứng cứ</h3>
-      {graph?.edges.length ? graph.edges.map((edge, index) => <div key={index} className="p-space-sm rounded-lg bg-surface-container-low font-label-code text-[11px] break-words">
+    <div className="p-3.5 rounded-2xl bg-white border border-ink/10 flex flex-col gap-2">
+      <h3 className="text-[13px] font-semibold text-ink">Quan hệ và đường dẫn chứng cứ</h3>
+      {graph?.edges.length ? graph.edges.map((edge, index) => <div key={index} className="px-3 py-2 rounded-xl bg-paper font-mono text-[11px] text-ink-2 break-words">
         <span title={edge.source}>{titleById.get(edge.source) || edge.source}</span>
-        <span className="block text-secondary my-1">── {edge.type} →</span>
+        <span className="block text-navy my-1">── {edge.type} →</span>
         <span title={edge.target}>{titleById.get(edge.target) || edge.target}</span>
-      </div>) : <p className="font-body-sm text-body-sm text-on-surface-variant">Chưa có quan hệ được trả về.</p>}
+      </div>) : <p className="text-[12.5px] text-muted">Chưa có quan hệ được trả về.</p>}
     </div>
-    {graph?.warnings.map((warning, index) => <p className="font-body-sm text-body-sm text-amber-800" key={index}>{warning}</p>)}
+    {graph?.warnings.map((warning, index) => <p className="text-[12.5px] text-[#7A521E]" key={index}>{warning}</p>)}
   </div>;
 }

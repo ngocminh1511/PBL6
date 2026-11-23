@@ -1,16 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Download, Info, PanelLeftOpen, PanelRightClose, PanelRightOpen, Scale, Share2, Sparkles } from 'lucide-react';
 import { SessionList } from '../../components/chat/SessionList';
-import { ChatMessage } from '../../components/chat/ChatMessage';
+import { ChatMessage, type ProseFont } from '../../components/chat/ChatMessage';
 import { TokenUsage } from '../../components/chat/TokenUsage';
 import { ChatInput } from '../../components/chat/ChatInput';
 import { ShareModal } from '../../components/chat/ShareModal';
+import { PanelResizer } from '../../components/chat/PanelResizer';
+import { CollapsedRail } from '../../components/chat/CollapsedRail';
 import { HierarchyTree } from '../../components/inspector/HierarchyTree';
 import { GraphView } from '../../components/inspector/GraphView';
 import { EvidencePanel } from '../../components/inspector/EvidencePanel';
 import { useChatStore } from '../../stores/chatStore';
 import { exportSessionToPDF } from '../../lib/exportPdf';
+
+const LEFT_DEFAULT = 276;
+const RIGHT_DEFAULT = 400;
+const PROSE_FONT_KEY = 'lexgraph_prose_font';
+
+const SAMPLE_PROMPTS = [
+  'Thời hạn báo trước khi đơn phương chấm dứt hợp đồng lao động không xác định thời hạn là bao nhiêu ngày?',
+  'Đối với ngành nghề đặc thù như phi công hoặc người quản lý doanh nghiệp thì thời hạn báo trước quy định thế nào?',
+  'Người lao động có quyền đơn phương chấm dứt hợp đồng lao động mà không cần lý do chính đáng hay không?',
+];
 
 export default function ChatPage() {
   const {
@@ -21,12 +34,18 @@ export default function ChatPage() {
     inspectorTab,
     setInspectorTab,
     isLoading,
+    isSending,
+    selectedDomain,
   } = useChatStore();
 
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
+  const [leftWidth, setLeftWidth] = useState(LEFT_DEFAULT);
+  const [rightWidth, setRightWidth] = useState(RIGHT_DEFAULT);
+  const [proseFont, setProseFont] = useState<ProseFont>('sans');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -45,7 +64,26 @@ export default function ChatPage() {
     });
   }, [fetchSessions]);
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PROSE_FONT_KEY);
+      if (stored === 'serif' || stored === 'sans') setProseFont(stored);
+    } catch {}
+  }, []);
+
+  const changeProseFont = (font: ProseFont) => {
+    setProseFont(font);
+    try {
+      localStorage.setItem(PROSE_FONT_KEY, font);
+    } catch {}
+  };
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length, isSending]);
+
   const activeSession = sessions.find((s) => s.id === activeSessionId);
+  const scopeLabel = selectedDomain === 'lao_dong' ? 'Pháp luật Lao động' : 'Toàn bộ kho số hóa';
 
   const handleExportPDF = () => {
     if (messages.length === 0) {
@@ -67,257 +105,231 @@ export default function ChatPage() {
   const errorUsage = useChatStore(state => state.errorTokenUsage);
   const evidenceCount = useChatStore(state => state.selectedEvidences.length);
 
+  const inspectorTabs: Array<{ tab: typeof inspectorTab; label: string }> = [
+    { tab: 'tab-hierarchy', label: 'Cây phân cấp' },
+    { tab: 'tab-graph', label: 'Đồ thị tri thức' },
+    { tab: 'tab-rerank', label: `Bằng chứng (${evidenceCount})` },
+  ];
+
+  const headerIconBtn = 'p-1.5 rounded-lg text-[#6E6B64] hover:text-ink hover:bg-stone transition-colors';
+
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-row overflow-hidden bg-surface text-on-surface">
-      {/* ==================== CỘT TRÁI: LEGAL CONTEXT & SESSIONS ==================== */}
-      <div className={`relative flex flex-col shrink-0 transition-all duration-300 ease-in-out ${leftOpen ? 'w-[280px]' : 'w-12'} bg-surface-container-low border-r border-outline-variant/30 shadow-sm overflow-hidden`}>
-        {/* Nội dung khi thu gọn */}
-        {!leftOpen && (
-          <div className="flex flex-col items-center py-3 gap-3 w-full">
-            <button
-              onClick={() => setLeftOpen(true)}
-              className="w-8 h-8 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all shadow-xs border border-outline-variant/30"
-              title="Mở rộng thanh bên"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-            </button>
-            <button
-              onClick={() => { setLeftOpen(true); useChatStore.getState().createSession(); }}
-              className="w-8 h-8 rounded-xl text-white flex items-center justify-center shadow-sm hover:opacity-95 transition-all"
-              style={{ background: 'linear-gradient(135deg, #1565c0 0%, #0288d1 60%, #00acc1 100%)' }}
-              title="Tạo phiên hỏi đáp mới"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-            </button>
-            <div className="w-5 h-px bg-outline-variant/30 my-1" />
-            <button
-              onClick={() => setLeftOpen(true)}
-              className="w-8 h-8 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all"
-              title="Lịch sử phiên (Bấm để mở)"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">history</span>
-            </button>
-          </div>
-        )}
-        {/* Nội dung đầy đủ khi mở */}
-        {leftOpen && (
-          <SessionList
-            onToggleCollapse={() => setLeftOpen(false)}
-            onShareSession={(s) => {
-              if (s.id !== activeSessionId) {
-                useChatStore.getState().selectSession(s.id);
-              }
-              setIsShareModalOpen(true);
-            }}
+    <div className="h-screen w-screen flex bg-stone overflow-hidden p-3 text-ink">
+      {/* ==================== LEFT: SESSIONS ==================== */}
+      {leftOpen ? (
+        <>
+          <aside
+            style={{ width: leftWidth }}
+            className="shrink-0 bg-white rounded-2xl border border-ink/8 flex flex-col h-full overflow-hidden"
+          >
+            <SessionList
+              onToggleCollapse={() => setLeftOpen(false)}
+              onShareSession={(s) => {
+                if (s.id !== activeSessionId) {
+                  useChatStore.getState().selectSession(s.id);
+                }
+                setIsShareModalOpen(true);
+              }}
+            />
+          </aside>
+          <PanelResizer
+            side="left"
+            currentWidth={leftWidth}
+            minWidth={220}
+            maxWidth={420}
+            snapCollapseBelow={165}
+            onResize={setLeftWidth}
+            onCollapse={() => setLeftOpen(false)}
+            onResetWidth={() => setLeftWidth(LEFT_DEFAULT)}
           />
-        )}
-      </div>
+        </>
+      ) : (
+        <CollapsedRail
+          side="left"
+          onExpand={() => setLeftOpen(true)}
+          onDragExpand={() => {
+            setLeftWidth(LEFT_DEFAULT);
+            setLeftOpen(true);
+          }}
+          onNewSession={() => {
+            setLeftOpen(true);
+            useChatStore.getState().createSession();
+          }}
+        />
+      )}
 
-      {/* ==================== CỘT GIỮA: MULTI-TURN SYNTHESIS & REASONING (FLEX-1) ==================== */}
-      <main className="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden shadow-xs border-r border-outline-variant/30">
-        {/* Session Workspace Header Bar */}
-        <header className="h-14 px-space-lg flex items-center justify-between shrink-0 bg-surface-container-lowest shadow-xs border-b border-outline-variant/30">
-          <div className="flex items-center gap-space-sm min-w-0">
-            <div className="w-2 h-2 rounded-full bg-secondary shrink-0"></div>
-            <h1 className="font-headline-md text-headline-md text-on-surface truncate">
-              {activeSession ? activeSession.title : 'Phiên hỏi đáp mới'}
-            </h1>
+      {/* ==================== CENTER: CONVERSATION ==================== */}
+      <main className="flex-1 min-w-0 bg-white rounded-2xl border border-ink/8 flex flex-col h-full overflow-hidden">
+        <div className="h-12 px-4 sm:px-5 border-b border-ink/6 flex items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            {!leftOpen && (
+              <button type="button" onClick={() => setLeftOpen(true)} title="Mở lịch sử tra cứu" className={`${headerIconBtn} shrink-0`}>
+                <PanelLeftOpen className="w-4 h-4" />
+              </button>
+            )}
+            <div className="flex items-center gap-2 text-[13.5px] min-w-0">
+              <span className="text-muted hidden sm:inline whitespace-nowrap">{scopeLabel}</span>
+              <span className="text-[#C9C5BC] hidden sm:inline">/</span>
+              <h1 className="font-semibold text-ink truncate">
+                {activeSession ? activeSession.title : 'Phiên hỏi đáp mới'}
+              </h1>
+            </div>
           </div>
 
-          <div className="flex items-center gap-space-xs shrink-0">
-            <button
-              onClick={handleExportPDF}
-              className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors"
-              title="Xuất báo cáo PDF phiên này"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[18px]">download</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden md:flex items-center bg-stone p-0.5 rounded-lg text-[11.5px]" title="Chuyển đổi phông chữ nội dung trả lời">
+              {(['serif', 'sans'] as const).map((font) => (
+                <button
+                  key={font}
+                  type="button"
+                  onClick={() => changeProseFont(font)}
+                  className={`px-2 py-1 rounded-md transition-colors ${font === 'serif' ? 'font-serif' : 'font-sans'} ${
+                    proseFont === font
+                      ? 'bg-white text-ink font-medium shadow-[0_1px_2px_rgba(28,27,24,0.06)]'
+                      : 'text-[#6E6B64] hover:text-ink'
+                  }`}
+                >
+                  {font === 'serif' ? 'Serif' : 'Sans'}
+                </button>
+              ))}
+            </div>
+            <button type="button" onClick={handleExportPDF} title="Xuất báo cáo PDF phiên này" className={headerIconBtn}>
+              <Download className="w-4 h-4" />
             </button>
-            <button
-              onClick={handleShare}
-              className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors"
-              title="Chia sẻ phiên tra cứu này"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[18px]">share</span>
+            <button type="button" onClick={handleShare} title="Chia sẻ phiên tra cứu này" className={headerIconBtn}>
+              <Share2 className="w-4 h-4" />
             </button>
+            {!rightOpen && (
+              <button
+                type="button"
+                onClick={() => setRightOpen(true)}
+                title="Mở cây phân cấp & bằng chứng"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[12px] font-medium text-[#47453F] bg-stone hover:bg-[#EAE7DF] transition-colors"
+              >
+                <PanelRightOpen className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Tra cứu nguồn</span>
+              </button>
+            )}
           </div>
-        </header>
-
-        {error && <div className="p-3 bg-red-50 text-red-800 text-sm space-y-2">
-          <p role="alert">{error}</p>
-          {errorUsage && <TokenUsage usage={errorUsage} />}
-        </div>}
-        {/* Scrollable Multi-turn Message Stream */}
-        <div className="flex-1 overflow-y-auto px-space-lg py-space-md flex flex-col gap-space-lg">
-          {isLoading && messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-on-surface-variant">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin"></span>
-                <span>Đang tải lịch sử phiên hỏi đáp...</span>
-              </div>
-            </div>
-          ) : messages.length === 0 ? (
-            /* Interactive Welcome Prompt when session is empty */
-            <div className="flex flex-col items-center justify-center my-auto py-12 px-space-md text-center max-w-2xl mx-auto">
-              <div className="w-16 h-16 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mb-4 shadow-sm border border-secondary/20">
-                <span className="material-symbols-outlined text-[32px]">account_balance</span>
-              </div>
-              <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6 font-bold tracking-tight">
-                Hệ thống Hỏi đáp &amp; Tra cứu Pháp luật Việt Nam
-              </h2>
-
-              <div className="w-full flex flex-col gap-2.5 text-left">
-                <span className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold tracking-wider px-1">
-                  Chọn câu hỏi tình huống thực tế để kiểm tra suy luận:
-                </span>
-                {[
-                  'Thời hạn báo trước khi đơn phương chấm dứt hợp đồng lao động không xác định thời hạn là bao nhiêu ngày?',
-                  'Đối với ngành nghề đặc thù như phi công hoặc người quản lý doanh nghiệp thì thời hạn báo trước quy định thế nào?',
-                  'Người lao động có quyền đơn phương chấm dứt hợp đồng lao động mà không cần lý do chính đáng hay không?'
-                ].map((samplePrompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => useChatStore.getState().sendMessage(samplePrompt)}
-                    className="p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm transition-all flex items-center justify-between group shadow-xs border border-outline-variant/30 text-left"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-secondary text-[18px]">gavel</span>
-                      <span>{samplePrompt}</span>
-                    </span>
-                    <span className="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-[18px] transition-colors shrink-0 ml-2">
-                      arrow_forward
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            messages.map((m, idx) => <ChatMessage key={m.id} message={m} index={idx} />)
-          )}
         </div>
 
-        {/* Input Bar */}
+        {error && (
+          <div className="mx-4 sm:mx-5 mt-3 rounded-xl border border-[#B91C1C]/20 bg-[#FDF2F2] px-4 py-3 text-[13px] text-[#7F1D1D] space-y-2 shrink-0">
+            <p role="alert">{error}</p>
+            {errorUsage && <TokenUsage usage={errorUsage} />}
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto legal-scroll px-5 sm:px-8 py-6">
+          <div className="max-w-[760px] mx-auto space-y-8">
+            {isLoading && messages.length === 0 ? (
+              <div className="py-24 flex items-center justify-center gap-2 text-[13.5px] text-ink-3">
+                <span className="w-4 h-4 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+                <span>Đang tải lịch sử phiên hỏi đáp...</span>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="py-10 space-y-8">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-2xl bg-navy/8 text-navy flex items-center justify-center">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <h2 className="font-serif text-[26px] font-semibold tracking-tight text-ink">
+                    Tra cứu & lập luận pháp luật Việt Nam
+                  </h2>
+                  <p className="text-[14.5px] leading-relaxed text-ink-3 max-w-[56ch]">
+                    Đặt câu hỏi bằng ngôn ngữ tự nhiên. Hệ thống đối chiếu trực tiếp từ kho văn bản đã chuẩn hóa, hiển thị đồ thị liên kết và trích dẫn điều khoản kiểm chứng ở khung bên phải.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {SAMPLE_PROMPTS.map((prompt, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      disabled={isSending}
+                      onClick={() => useChatStore.getState().sendMessage(prompt)}
+                      className="text-left p-4 rounded-2xl border border-ink/10 bg-paper hover:bg-stone hover:border-navy/30 transition-colors space-y-1.5 disabled:opacity-60"
+                    >
+                      <div className="text-[11.5px] font-medium text-navy">Gợi ý tra cứu 0{idx + 1}</div>
+                      <div className="text-[13.5px] font-medium text-ink leading-snug">{prompt}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              messages.map((m, idx) => <ChatMessage key={m.id} message={m} index={idx} proseFont={proseFont} />)
+            )}
+
+            {isSending && (
+              <div className="rounded-2xl border border-ink/10 bg-paper p-4 flex items-center gap-3 text-[13.5px] text-ink-2">
+                <Sparkles className="w-4 h-4 text-navy animate-spin" />
+                <span>Đang truy hồi Vector kNN, duyệt Đồ thị Tri thức và đối chiếu điều khoản...</span>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+        </div>
+
         <ChatInput />
       </main>
 
-      {/* ==================== CỘT PHẢI: CONTEXT & EVIDENTIARY INSPECTOR ==================== */}
-      <div className={`relative flex flex-col shrink-0 transition-all duration-300 ease-in-out ${rightOpen ? 'w-[440px]' : 'w-12'} bg-surface-container-low overflow-hidden shadow-sm`}>
-        {/* Nội dung khi thu gọn */}
-        {!rightOpen && (
-          <div className="flex flex-col items-center py-3 gap-2.5 w-full">
-            <button
-              onClick={() => setRightOpen(true)}
-              className="w-8 h-8 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all shadow-xs border border-outline-variant/30"
-              title="Mở rộng thanh kiểm tra"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-            </button>
-            <div className="w-5 h-px bg-outline-variant/30 my-1" />
-            <button
-              onClick={() => {
-                setRightOpen(true);
-                setInspectorTab('tab-hierarchy');
-              }}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${inspectorTab === 'tab-hierarchy'
-                  ? 'bg-surface-container-highest text-secondary shadow-xs border border-secondary/40'
-                  : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
-                }`}
-              title="Cây Phân cấp (Bấm để mở)"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">account_tree</span>
-            </button>
-            <button
-              onClick={() => {
-                setRightOpen(true);
-                setInspectorTab('tab-graph');
-              }}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${inspectorTab === 'tab-graph'
-                  ? 'bg-surface-container-highest text-secondary shadow-xs border border-secondary/40'
-                  : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
-                }`}
-              title="Đồ thị Tri thức (Bấm để mở)"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">hub</span>
-            </button>
-            <button
-              onClick={() => {
-                setRightOpen(true);
-                setInspectorTab('tab-rerank');
-              }}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all relative ${inspectorTab === 'tab-rerank'
-                  ? 'bg-surface-container-highest text-secondary shadow-xs border border-secondary/40'
-                  : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
-                }`}
-              title={`Bằng chứng (${evidenceCount}) (Bấm để mở)`}
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[20px]">fact_check</span>
-              {evidenceCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[15px] h-[15px] px-0.5 rounded-full bg-secondary text-white text-[9px] flex items-center justify-center font-bold">
-                  {evidenceCount}
-                </span>
-              )}
-            </button>
-          </div>
-        )}
-        {/* Nội dung đầy đủ khi mở */}
-        {rightOpen && (
-          <>
-            {/* Inspector Tabs Bar */}
-            <nav className="h-14 px-space-md pl-11 shrink-0 bg-surface-container-lowest flex items-center justify-between gap-1 shadow-xs border-b border-outline-variant/30">
-              <button
-                onClick={() => setRightOpen(false)}
-                className="absolute top-3.5 left-2.5 z-10 w-7 h-7 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all shadow-xs border border-outline-variant/30"
-                title="Thu gọn thanh kiểm tra"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+      {/* ==================== RIGHT: INSPECTOR ==================== */}
+      {rightOpen ? (
+        <>
+          <PanelResizer
+            side="right"
+            currentWidth={rightWidth}
+            minWidth={300}
+            maxWidth={600}
+            snapCollapseBelow={215}
+            onResize={setRightWidth}
+            onCollapse={() => setRightOpen(false)}
+            onResetWidth={() => setRightWidth(RIGHT_DEFAULT)}
+          />
+          <aside
+            style={{ width: rightWidth }}
+            className="shrink-0 bg-white rounded-2xl border border-ink/8 flex flex-col h-full overflow-hidden"
+          >
+            <div className="h-12 px-3 flex items-center justify-between gap-2 border-b border-ink/6 shrink-0">
+              <div className="flex items-center gap-1 bg-stone p-1 rounded-xl min-w-0 overflow-x-auto">
+                {inspectorTabs.map(({ tab, label }) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setInspectorTab(tab)}
+                    className={`px-2.5 py-1 text-[12px] font-medium rounded-lg whitespace-nowrap transition-colors ${
+                      inspectorTab === tab
+                        ? 'bg-white text-ink shadow-[0_1px_2px_rgba(28,27,24,0.06)]'
+                        : 'text-ink-3 hover:text-ink'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={() => setRightOpen(false)} title="Thu gọn bảng tra cứu" className={`${headerIconBtn} shrink-0`}>
+                <PanelRightClose className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setInspectorTab('tab-hierarchy')}
-                className={`flex-1 py-2 rounded-lg font-headline-sm text-headline-sm text-center transition-all ${inspectorTab === 'tab-hierarchy'
-                    ? 'bg-surface-container text-on-surface shadow-xs font-bold'
-                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                  }`}
-              >
-                Cây Phân cấp
-              </button>
-              <button
-                onClick={() => setInspectorTab('tab-graph')}
-                className={`flex-1 py-2 rounded-lg font-headline-sm text-headline-sm text-center transition-all ${inspectorTab === 'tab-graph'
-                    ? 'bg-surface-container text-on-surface shadow-xs font-bold'
-                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                  }`}
-              >
-                Đồ thị Tri thức
-              </button>
-              <button
-                onClick={() => setInspectorTab('tab-rerank')}
-                className={`flex-1 py-2 rounded-lg font-headline-sm text-headline-sm text-center transition-all ${inspectorTab === 'tab-rerank'
-                    ? 'bg-surface-container text-on-surface shadow-xs font-bold'
-                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                  }`}
-              >
-                Bằng chứng ({evidenceCount})
-              </button>
-            </nav>
+            </div>
 
-            {/* Tab Content Rendering */}
             {inspectorTab === 'tab-hierarchy' && <HierarchyTree />}
             {inspectorTab === 'tab-graph' && <GraphView />}
             {inspectorTab === 'tab-rerank' && <EvidencePanel />}
-          </>
-        )}
-      </div>
+          </aside>
+        </>
+      ) : (
+        <CollapsedRail
+          side="right"
+          onExpand={() => setRightOpen(true)}
+          onDragExpand={() => {
+            setRightWidth(RIGHT_DEFAULT);
+            setRightOpen(true);
+          }}
+          onSelectTab={setInspectorTab}
+          activeTab={inspectorTab}
+          evidenceCount={evidenceCount}
+        />
+      )}
 
-      {/* Share Modal */}
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
@@ -326,10 +338,9 @@ export default function ChatPage() {
         messages={messages}
       />
 
-      {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-slate-900/90 text-white font-body-sm text-body-sm shadow-xl border border-slate-700/60 flex items-center gap-2 animate-fadeIn">
-          <span className="material-symbols-outlined text-amber-400 text-[18px]">info</span>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-ink/90 text-white text-[13px] shadow-xl flex items-center gap-2">
+          <Info className="w-4 h-4 text-amber-300" />
           <span>{toastMessage}</span>
         </div>
       )}
