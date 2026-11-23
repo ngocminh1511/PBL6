@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { api, errorMessage } from '../../lib/api';
 import { useDocumentStore } from '../../stores/documentStore';
 
-export const UploadModal: React.FC = () => {
-  const { isUploadModalOpen, setUploadModalOpen, uploadDocument, selectedDomain } = useDocumentStore();
+/** Inline upload form of the "Nạp PDF" tab. */
+export const UploadPanel: React.FC = () => {
+  const { uploadDocument, selectedDomain } = useDocumentStore();
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState('pdf');
   const [deMucId, setDeMucId] = useState('');
@@ -15,15 +16,10 @@ export const UploadModal: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isUploadModalOpen) {
-      const nextDomain = selectedDomain === 'khac' ? 'khac' : 'lao_dong';
-      setDomain(nextDomain);
-      if (nextDomain === 'khac') setDocType('pdf');
-      setError(null);
-    }
-  }, [isUploadModalOpen, selectedDomain]);
-
-  if (!isUploadModalOpen) return null;
+    const nextDomain = selectedDomain === 'khac' ? 'khac' : 'lao_dong';
+    setDomain(nextDomain);
+    if (nextDomain === 'khac') setDocType('pdf');
+  }, [selectedDomain]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,7 +54,6 @@ export const UploadModal: React.FC = () => {
       }
       setFile(null);
       setDeMucId('');
-      setUploadModalOpen(false);
     } catch (err: any) {
       setError(errorMessage(err));
     } finally {
@@ -67,25 +62,18 @@ export const UploadModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
+    <div className="w-full">
+      <div className="w-full bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
         {/* Modal Header */}
         <div className="px-6 py-4 bg-[#0F172A] text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[20px] text-secondary">post_add</span>
             <h3 className="font-headline-md text-headline-sm text-white">Nạp Văn bản Quy phạm Pháp luật</h3>
           </div>
-          <button
-            onClick={() => setUploadModalOpen(false)}
-            className="text-slate-400 hover:text-white transition-colors"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="p-space-md flex flex-col gap-4">
           {/* Domain Selector */}
           <div className="flex flex-col gap-1.5">
             <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
@@ -252,13 +240,6 @@ export const UploadModal: React.FC = () => {
           {/* Modal Footer */}
           <div className="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/30">
             <button
-              type="button"
-              onClick={() => setUploadModalOpen(false)}
-              className="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm"
-            >
-              Hủy
-            </button>
-            <button
               type="submit"
               disabled={isSubmitting || !file}
               className="px-5 py-2 rounded-xl bg-secondary text-white font-headline-sm text-body-sm shadow-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
@@ -271,7 +252,7 @@ export const UploadModal: React.FC = () => {
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-                  <span>Bắt đầu Lập chỉ mục kép</span>
+                  <span>{docType === 'pdf' && pauseForReview ? 'Tải lên & đọc OCR' : 'Tải lên & lập chỉ mục'}</span>
                 </>
               )}
             </button>

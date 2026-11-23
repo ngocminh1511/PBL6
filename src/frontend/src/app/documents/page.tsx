@@ -1,17 +1,44 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { Suspense, useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { StatsCards } from '../../components/documents/StatsCards';
 import { DocumentTable } from '../../components/documents/DocumentTable';
 import { IngestionProgress } from '../../components/documents/IngestionProgress';
-import { UploadModal } from '../../components/documents/UploadModal';
+import { UploadPanel } from '../../components/documents/UploadPanel';
+import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
 import { ASTTree } from '../../components/documents/ASTTree';
 import { api, errorMessage } from '../../lib/api';
 import type { HealthResponse } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 
+const TABS = [
+  { key: 'van-ban', icon: 'folder_special', label: 'Văn bản & Pháp điển' },
+  { key: 'nap-pdf', icon: 'upload_file', label: 'Nạp PDF' },
+  { key: 'danh-muc', icon: 'library_books', label: 'Danh mục & Biểu mẫu' },
+] as const;
+type TabKey = (typeof TABS)[number]['key'];
+const RUNNING = ['pending', 'parsing', 'chunking', 'embedding', 'indexing'];
+
+function healthLabel(health: HealthResponse | null): { text: string; tone: 'ok' | 'warn' | 'idle' } {
+  if (!health) return { text: 'Chưa kiểm tra', tone: 'idle' };
+  const states = [health.qdrant?.connection, health.neo4j?.connection];
+  if (states.every((s) => s === 'connected')) return { text: 'Sẵn sàng', tone: 'ok' };
+  if (states.some((s) => s === 'unavailable')) return { text: 'Thiếu kết nối', tone: 'warn' };
+  return { text: 'Chưa kiểm tra', tone: 'idle' };
+}
+
 export default function DocumentsPage() {
+  return <Suspense fallback={<p className="p-6">Đang mở kho văn bản…</p>}><DocumentsWorkspace /></Suspense>;
+}
+
+function DocumentsWorkspace() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const requested = params.get('tab');
+  const tab: TabKey = TABS.some((t) => t.key === requested) ? (requested as TabKey) : 'van-ban';
+  const selectTab = (key: TabKey) => router.replace('/documents?tab=' + key, { scroll: false });
   const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, updateDocumentDomain, error } = useDocumentStore();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [probeError, setProbeError] = useState('');
@@ -68,92 +95,84 @@ export default function DocumentsPage() {
     };
   }, [selectedDocAST, selectedDoc]);
 
+  const status = healthLabel(health);
+  const taskBadge = activeTask?.status === 'awaiting_review' ? 'Chờ rà soát'
+    : activeTask && RUNNING.includes(activeTask.status) ? 'Đang xử lý' : '';
+  const taskFinished = !activeTask || ['completed', 'failed', 'cancelled'].includes(activeTask.status);
+
   return (
     <div className="flex flex-col w-full bg-surface">
-      {/* Sub-Header / Workspace Strip */}
+      {/* Sub-Header: workspace tabs + data-store status */}
       <div className="w-full bg-surface-container-low px-gutter py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-sm border-b border-outline-variant/30">
-        <div className="flex items-center gap-space-md">
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-surface-container">
-            <span className="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-secondary shadow-sm font-headline-sm text-body-sm">
-              <span className="material-symbols-outlined text-[18px]">folder_special</span>
-              <span>Kho Văn bản Quy phạm Pháp luật</span>
-              <span className="w-2 h-2 rounded-full bg-secondary"></span>
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-space-xs font-label-statute text-label-statute text-on-surface-variant">
-            <span>Dữ liệu số hóa phục vụ tra cứu & hỏi đáp</span>
-          </div>
+        <div role="tablist" aria-label="Khu vực quản lý" className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-surface-container">
+          {TABS.map((t) => (
+            <button
+              key={t.key} role="tab" type="button" aria-selected={tab === t.key}
+              onClick={() => selectTab(t.key)}
+              className={`flex items-center gap-space-xs px-space-md py-1.5 rounded-lg font-headline-sm text-body-sm transition-all ${
+                tab === t.key ? 'bg-surface-container-lowest text-secondary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[18px]">{t.icon}</span>
+              <span>{t.label}</span>
+              {t.key === 'nap-pdf' && taskBadge && (
+                <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 text-[10px] font-semibold">{taskBadge}</span>
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Operational Status (Option 2: Thân thiện người dùng) */}
         <div className="flex items-center gap-space-sm">
           <div className="flex items-center gap-space-xs px-2.5 py-1 rounded-lg bg-surface-container-lowest shadow-sm border border-outline-variant/30">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
-            </span>
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${status.tone === 'ok' ? 'bg-emerald-600' : status.tone === 'warn' ? 'bg-amber-500' : 'bg-slate-400'}`}></span>
             <span className="font-label-code text-label-code text-on-surface-variant">
-              Hệ thống Dữ liệu & Đồ thị Tri thức:{' '}
-              <strong className="text-emerald-700 font-semibold">
-                {health?.neo4j?.connection === 'connected' && health?.qdrant?.connection === 'connected'
-                  ? 'Sẵn sàng'
-                  : 'Đang hoạt động'}
-              </strong>
+              Kho dữ liệu & Đồ thị:{' '}
+              <strong className={`font-semibold ${status.tone === 'ok' ? 'text-emerald-700' : status.tone === 'warn' ? 'text-amber-700' : 'text-on-surface'}`}>{status.text}</strong>
             </span>
           </div>
 
           <button
             onClick={probe} disabled={probing}
-            className="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all font-headline-sm text-body-sm"
+            className="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all font-headline-sm text-body-sm disabled:opacity-60"
           >
             <span className="material-symbols-outlined text-[17px]">verified_user</span>
-            <span>{probing ? 'Đang kiểm tra…' : 'Kiểm tra trạng thái kho dữ liệu'}</span>
+            <span>{probing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}</span>
           </button>
         </div>
       </div>
 
       <div className="p-gutter flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto">
         {(error || probeError) && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error || probeError}</p>}
-        {/* TOP KPI BANNER */}
-        <StatsCards />
 
-        {/* INGESTION REAL-TIME PROGRESS BAR (if active task) */}
-        {activeTask && <IngestionProgress task={activeTask} />}
+        {tab === 'van-ban' && <StatsCards refreshKey={activeTask?.status === 'completed' ? activeTask.id : undefined} />}
 
-        {/* MAIN WORKSPACE: 60% Left / 40% Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg w-full items-start">
+        {tab === 'nap-pdf' && (
+          <div className="flex flex-col gap-space-md">
+            {activeTask && <IngestionProgress task={activeTask} onOpenDocument={() => selectTab('van-ban')} />}
+            {taskFinished && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+                <div className="lg:col-span-7"><UploadPanel /></div>
+                <div className="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex flex-col gap-2 font-body-sm text-body-sm text-on-surface-variant">
+                  <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface font-bold">Quy trình nạp PDF</span>
+                  <ol className="list-decimal pl-5 space-y-1.5">
+                    <li><strong className="text-on-surface">Tải lên</strong>: chọn lĩnh vực và file PDF.</li>
+                    <li><strong className="text-on-surface">Rà soát OCR</strong>: đối chiếu từng trang PDF và sửa nội dung trong trình soạn thảo.</li>
+                    <li><strong className="text-on-surface">So sánh thay đổi</strong>: xem Điều nào mới, thay thế, không đổi, và các Điều của văn bản khác bị sửa đổi.</li>
+                    <li><strong className="text-on-surface">Xác nhận</strong>: lập chỉ mục vào kho tra cứu.</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === 'danh-muc' && <AppendixWorkspace basePath="/documents?tab=danh-muc" embedded />}
+
+        {/* DOCUMENT WORKSPACE: corpus table / selected document structure */}
+        {tab === 'van-ban' && <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg w-full items-start">
           {/* LEFT COLUMN: Document Corpus Management (7 cols) */}
           <div className="lg:col-span-7 flex flex-col gap-space-md">
-            <DocumentTable />
-
-            {/* Document Status Stream */}
-            <div className="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm border border-outline-variant/30">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-space-xs">
-                  <span className="material-symbols-outlined text-secondary text-[18px]">info</span>
-                  <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface font-bold">
-                    Tình trạng & Cập nhật Văn bản
-                  </span>
-                </div>
-                <span className="font-label-code text-label-statute text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                  {activeTask ? (activeTask.status === 'completed' ? 'Đã hoàn tất nạp' : 'Đang xử lý') : 'Hệ thống sẵn sàng'}
-                </span>
-              </div>
-              <div className="bg-surface-container-low p-space-sm rounded-lg font-label-code text-label-statute text-on-surface-variant flex flex-col gap-1.5 text-[11px]">
-                <div className="flex items-center gap-space-xs text-on-tertiary-container">
-                  <span className="font-bold text-secondary">[TIẾN TRÌNH]</span>
-                  <span>{activeTask?.current_step || 'Không có tác vụ nạp mới đang chạy.'}</span>
-                </div>
-                <div className="flex items-center gap-space-xs text-on-surface">
-                  <span className="font-bold text-on-surface">[ĐANG CHỌN]</span>
-                  <span>{selectedDoc ? `${selectedDoc.title}${selectedDoc.document_number ? ` (${selectedDoc.document_number})` : ''}` : 'Chưa chọn mục.'}</span>
-                </div>
-                <div className="flex items-center gap-space-xs text-secondary">
-                  <span className="font-bold text-emerald-700">[TRẠNG THÁI]</span>
-                  <span>{selectedDoc ? 'Đã hoàn tất bóc tách cấu trúc, sẵn sàng phục vụ hỏi đáp và đối soát trích dẫn.' : '—'}</span>
-                </div>
-              </div>
-            </div>
+            <DocumentTable onUpload={() => selectTab('nap-pdf')} />
           </div>
 
           {/* RIGHT COLUMN: Document Detail & Structure Inspection (5 cols) */}
@@ -270,10 +289,8 @@ export default function DocumentsPage() {
               )}
             </div>
           </div>
-        </div>
+        </div>}
       </div>
-
-      <UploadModal />
     </div>
   );
 }

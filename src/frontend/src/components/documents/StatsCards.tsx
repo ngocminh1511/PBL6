@@ -4,117 +4,39 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { SystemStats } from '../../lib/types';
 
-export const StatsCards: React.FC = () => {
+const format = (value: number | null | undefined) =>
+  typeof value === 'number' ? value.toLocaleString('vi-VN') : '—';
+
+/** One compact strip of corpus counts; '—' when the store could not be read. */
+export const StatsCards: React.FC<{ refreshKey?: unknown }> = ({ refreshKey }) => {
   const [stats, setStats] = useState<SystemStats | null>(null);
 
   useEffect(() => {
     api.getSystemStats().then(setStats).catch(() => setStats(null));
-  }, []);
+  }, [refreshKey]);
 
-  const totalDocs = stats?.total_documents ?? '—';
-  const totalDemuc = stats?.total_demuc ?? '—';
-  const totalPdfDocs = stats?.total_pdf_docs ?? '—';
-  const totalArticles = stats?.total_articles ?? '—';
-  const totalClauses = stats?.total_clauses ?? '—';
-  const totalPoints = stats?.total_points ?? '—';
+  const items = [
+    { icon: 'auto_stories', label: 'Đề mục & văn bản', value: format(stats?.total_documents),
+      hint: stats ? `${format(stats.total_demuc)} đề mục · ${format(stats.total_pdf_docs)} PDF` : '' },
+    { icon: 'gavel', label: 'Điều', value: format(stats?.total_articles), hint: '' },
+    { icon: 'format_list_numbered', label: 'Khoản', value: format(stats?.total_clauses), hint: '' },
+    { icon: 'segment', label: 'Điểm', value: format(stats?.total_points), hint: '' },
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md w-full">
-      {/* Card 1: Kho Pháp điển & Văn bản */}
-      <div className="relative overflow-hidden bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between border border-outline-variant/30">
-        <div className="flex items-center justify-between">
-          <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface-variant font-bold">
-            Kho Pháp điển & Văn bản
-          </span>
-          <div className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
-            <span className="material-symbols-outlined text-[20px]">auto_stories</span>
-          </div>
-        </div>
-        <div className="my-space-sm flex items-baseline gap-space-xs">
-          <span className="font-display-lg text-display-lg text-on-surface font-bold">
-            {typeof totalDocs === 'number' ? totalDocs.toLocaleString() : totalDocs}
-          </span>
-          <span className="font-headline-sm text-headline-sm text-on-surface-variant">Đề mục & Văn bản</span>
-        </div>
-        <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 text-[12px]">
-          <div className="flex items-center justify-between font-label-code text-on-surface">
-            <span>• Đề mục Bộ Pháp điển</span>
-            <span className="font-metric-num text-secondary">
-              {typeof totalDemuc === 'number' ? `${totalDemuc} đề mục` : 'Đang cập nhật'}
+    <div className="w-full bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 grid grid-cols-2 md:grid-cols-4 divide-x divide-outline-variant/20">
+      {items.map((item) => (
+        <div key={item.label} className="flex items-center gap-space-sm px-space-md py-space-sm min-w-0">
+          <span className="material-symbols-outlined text-[20px] text-secondary shrink-0">{item.icon}</span>
+          <div className="flex flex-col min-w-0">
+            <span className="flex items-baseline gap-1.5">
+              <span className="font-metric-num text-headline-md text-on-surface font-bold">{item.value}</span>
+              <span className="font-label-statute text-label-statute text-on-surface-variant truncate">{item.label}</span>
             </span>
-          </div>
-          <div className="flex items-center justify-between font-label-code text-on-surface-variant">
-            <span>• Văn bản PDF (OCR)</span>
-            <span className="font-metric-num text-on-surface">
-              {typeof totalPdfDocs === 'number' ? `${totalPdfDocs} văn bản` : 'Đang cập nhật'}
-            </span>
+            {item.hint && <span className="font-label-code text-[11px] text-on-surface-variant truncate">{item.hint}</span>}
           </div>
         </div>
-      </div>
-
-      {/* Card 2: Điều luật Quy chuẩn */}
-      <div className="relative overflow-hidden bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between border border-outline-variant/30">
-        <div className="flex items-center justify-between">
-          <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface-variant font-bold">
-            Điều luật Quy chuẩn
-          </span>
-          <div className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
-            <span className="material-symbols-outlined text-[20px]">gavel</span>
-          </div>
-        </div>
-        <div className="my-space-sm flex items-baseline gap-space-xs">
-          <span className="font-display-lg text-display-lg text-secondary font-bold">
-            {typeof totalArticles === 'number' ? totalArticles.toLocaleString() : totalArticles}
-          </span>
-          <span className="font-headline-sm text-headline-sm text-on-surface-variant">Điều luật</span>
-        </div>
-        <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 text-[12px]">
-          <div className="flex items-center justify-between font-label-code text-on-surface">
-            <span>• Tình trạng số hóa:</span>
-            <span className="font-metric-num text-emerald-700 font-semibold">Đầy đủ toàn văn</span>
-          </div>
-          <div className="flex items-center justify-between font-label-code text-on-surface-variant">
-            <span>• Mục đích:</span>
-            <span className="text-on-surface text-[11px]">Căn cứ pháp lý tra cứu & trích dẫn</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Card 3: Khoản & Điểm Quy định */}
-      <div className="relative overflow-hidden bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between border border-outline-variant/30">
-        <div className="flex items-center justify-between">
-          <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface-variant font-bold">
-            Khoản & Điểm Quy định
-          </span>
-          <div className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
-            <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
-          </div>
-        </div>
-        <div className="my-space-sm flex items-baseline gap-space-xs">
-          <span className="font-display-lg text-display-lg text-on-surface font-bold">
-            {typeof totalClauses === 'number' ? totalClauses.toLocaleString() : totalClauses}
-          </span>
-          <span className="font-headline-sm text-headline-sm text-on-surface-variant">Khoản</span>
-          {typeof totalPoints === 'number' && (
-            <span className="text-xs text-on-surface-variant ml-1 font-label-code">
-              ({totalPoints.toLocaleString()} Điểm)
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col gap-1 pt-space-xs bg-surface-container-low rounded-lg p-2 text-[12px]">
-          <div className="flex items-center justify-between font-label-code text-on-surface">
-            <span>• Phân rã quy định:</span>
-            <span className="font-metric-num text-secondary">Quy chuẩn chi tiết</span>
-          </div>
-          <div className="flex items-center justify-between font-label-code text-on-surface-variant">
-            <span>• Điều kiện & Chế tài:</span>
-            <span className="text-on-surface text-[11px]">Từng trường hợp áp dụng cụ thể</span>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
-
-
-

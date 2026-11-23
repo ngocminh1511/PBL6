@@ -16,7 +16,6 @@ interface DocumentState {
   selectedDocId: string;
   selectedDocAST: any | null;
   activeTask: IngestionTask | null;
-  isUploadModalOpen: boolean;
 
   fetchDocuments: (cursor?: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
@@ -28,7 +27,6 @@ interface DocumentState {
   pollTaskProgress: (taskId: string) => void;
   confirmTaskReview: (taskId: string) => Promise<void>;
   cancelTask: (taskId: string) => Promise<void>;
-  setUploadModalOpen: (open: boolean) => void;
 }
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
@@ -45,7 +43,6 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   selectedDocId: '',
   selectedDocAST: null,
   activeTask: null,
-  isUploadModalOpen: false,
 
   fetchDocuments: async (cursor) => {
     set({ isLoading: true, error: null });
@@ -182,6 +179,5 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     }
   },
 
-  setUploadModalOpen: (open) => set({ isUploadModalOpen: open }),
 }));
 

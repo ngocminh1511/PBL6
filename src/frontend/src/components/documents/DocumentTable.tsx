@@ -3,7 +3,7 @@
 import React from 'react';
 import { useDocumentStore } from '../../stores/documentStore';
 
-export const DocumentTable: React.FC = () => {
+export const DocumentTable: React.FC<{ onUpload: () => void }> = ({ onUpload }) => {
   const {
     documents,
     selectedDocId,
@@ -14,7 +14,6 @@ export const DocumentTable: React.FC = () => {
     setSelectedDomain,
     selectedDocType,
     setSelectedDocType,
-    setUploadModalOpen,
     totalDocuments,
     hasMore, nextCursor, fetchDocuments, isLoading,
   } = useDocumentStore();
@@ -40,7 +39,7 @@ export const DocumentTable: React.FC = () => {
 
           {/* Ingest Button */}
           <button
-            onClick={() => setUploadModalOpen(true)}
+            onClick={onUpload}
             type="button"
             className="shrink-0 flex items-center justify-center gap-space-xs px-space-md py-2 rounded-lg bg-[#0F172A] text-white hover:bg-opacity-90 shadow-sm transition-all font-headline-sm text-body-sm"
           >

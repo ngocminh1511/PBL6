@@ -7,6 +7,7 @@ import { useDocumentStore } from '../../stores/documentStore';
 
 interface IngestionProgressProps {
   task: IngestionTask;
+  onOpenDocument?: () => void;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -33,7 +34,7 @@ function stageIndex(status: string): number {
   return idx === -1 ? 0 : idx;
 }
 
-export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) => {
+export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOpenDocument }) => {
   const cancelTask = useDocumentStore((s) => s.cancelTask);
   const confirmTaskReview = useDocumentStore((s) => s.confirmTaskReview);
   const [cancelling, setCancelling] = useState(false);
@@ -263,6 +264,16 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task }) =>
             >
               <span className="material-symbols-outlined text-[15px]">check_circle</span>
               <span>{confirming ? 'Đang bắt đầu...' : 'Xác nhận & Lập chỉ mục'}</span>
+            </button>
+          )}
+          {isCompleted && onOpenDocument && (
+            <button
+              type="button"
+              onClick={onOpenDocument}
+              className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[12px] font-label-statute font-semibold flex items-center gap-1 shadow-sm"
+            >
+              <span className="material-symbols-outlined text-[15px]">folder_open</span>
+              <span>Xem văn bản trong kho</span>
             </button>
           )}
           {canCancel && (
