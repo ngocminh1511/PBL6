@@ -5,7 +5,8 @@ import { EditorContent, Extension, useEditor, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { LEVEL_PREFIX, findInLine, lineLevel, textToDoc, type LineLevel } from '../../lib/ocrStructure';
+import { ChevronDown, ChevronUp, ListTree, Merge, Redo2, RemoveFormatting, Replace, TextSearch, Undo2, X } from 'lucide-react';
+import { LEVEL_PREFIX, findInLine, lineLevel, stripLevelPrefix, textToDoc, type LineLevel } from '../../lib/ocrStructure';
 
 const LEVEL_LABEL: Record<Exclude<LineLevel, 'text'>, string> = {
   part: 'Phần', chapter: 'Chương', section: 'Mục', article: 'Điều', clause: 'Khoản', point: 'Điểm',
@@ -76,6 +77,9 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
   const [term, setTerm] = useState('');
   const [replacement, setReplacement] = useState('');
   const [notice, setNotice] = useState('');
+  const [showOutline, setShowOutline] = useState(false);
+  // Level of the line holding the cursor, so the toolbar shows how the parser reads it.
+  const [cursorLevel, setCursorLevel] = useState<LineLevel>('text');
   // The editor keeps its first props; read the latest callbacks through refs.
   const handlers = useRef({ onChange, onSave });
   handlers.current = { onChange, onSave };
@@ -108,7 +112,11 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
         return false;
       },
     },
-    onUpdate: ({ editor: current }) => handlers.current.onChange?.(editorText(current)),
+    onUpdate: ({ editor: current }) => {
+      handlers.current.onChange?.(editorText(current));
+      setCursorLevel(lineLevel(current.state.selection.$from.parent.textContent));
+    },
+    onSelectionUpdate: ({ editor: current }) => setCursorLevel(lineLevel(current.state.selection.$from.parent.textContent)),
   });
 
   useEffect(() => { editor?.setEditable(editable); }, [editor, editable]);
@@ -127,6 +135,13 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
     }
     return result;
   }, [value]);
+
+  // Chapters, sections and articles on the page, by line index, for the jump list.
+  const outline = useMemo(() => value.split('\n').flatMap((line, index) => {
+    const level = lineLevel(line);
+    return level === 'part' || level === 'chapter' || level === 'section' || level === 'article'
+      ? [{ index, text: line.trim() }] : [];
+  }), [value]);
 
   if (!editor) return <div className="h-full flex items-center justify-center text-xs text-ink-3">Đang mở trình soạn thảo…</div>;
 
@@ -179,49 +194,83 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
     setNotice(`Đã thay ${found.length} chỗ.`);
   };
 
-  const tool = 'h-7 min-w-7 px-1.5 rounded flex items-center justify-center gap-1 text-[11.5px] font-semibold text-ink hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed';
+  const unmarkLine = () => {
+    const { $from } = editor.state.selection;
+    const line = $from.parent.textContent;
+    const stripped = stripLevelPrefix(line);
+    if (stripped === line) return;
+    editor.chain().focus().insertContentAt({ from: $from.start(), to: $from.end() }, stripped).run();
+  };
+
+  /** Put the cursor at the start of line `index` and scroll it into view. */
+  const jumpToLine = (index: number) => {
+    let target = -1;
+    editor.state.doc.forEach((_node, offset, i) => { if (i === index) target = offset + 1; });
+    if (target >= 0) editor.chain().focus().setTextSelection(target).scrollIntoView().run();
+  };
+
+  const group = 'flex items-center gap-0.5 p-0.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30';
+  const tool = 'h-7 min-w-7 px-1.5 rounded-md flex items-center justify-center gap-1 text-[11.5px] font-semibold text-ink hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed transition-colors';
+  const active = 'bg-secondary/10 text-secondary';
 
   return (
     <div className="h-full flex flex-col min-h-0">
       {editable && (
-        <div className="flex flex-wrap items-center gap-0.5 px-2 py-1 border-b border-outline-variant/25 bg-surface-container-low" role="toolbar" aria-label="Công cụ soạn thảo">
-          <button type="button" className={tool} title="Hoàn tác (Ctrl+Z)" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
-            <span className="material-symbols-outlined text-[16px]">undo</span>
-          </button>
-          <button type="button" className={tool} title="Làm lại (Ctrl+Y)" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
-            <span className="material-symbols-outlined text-[16px]">redo</span>
-          </button>
-          <span className="w-px h-5 bg-outline-variant/40 mx-1" />
-          <span className="text-[11.5px] text-ink-3 mr-0.5">Đánh dấu dòng:</span>
-          {(['chapter', 'section', 'article', 'clause', 'point'] as const).map((level) => (
-            <button key={level} type="button" className={tool} onClick={() => markLine(level)}
-              title={`Thêm "${LEVEL_PREFIX[level].trim()}" vào đầu dòng để hệ thống tách thành ${LEVEL_LABEL[level]}`}>
-              {LEVEL_LABEL[level]}
+        <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border-b border-outline-variant/25 bg-surface-container-low" role="toolbar" aria-label="Công cụ soạn thảo">
+          <div className={group}>
+            <button type="button" className={tool} title="Hoàn tác (Ctrl+Z)" aria-label="Hoàn tác" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
+              <Undo2 size={15} />
             </button>
-          ))}
-          <span className="w-px h-5 bg-outline-variant/40 mx-1" />
-          <button type="button" className={tool} title="Nối dòng hiện tại với dòng dưới (sửa câu bị ngắt dòng)" onClick={joinNextLine}>
-            <span className="material-symbols-outlined text-[16px]">vertical_align_center</span>
-            <span>Nối dòng</span>
-          </button>
-          <button type="button" className={`${tool} ${showFind ? 'bg-secondary/10 text-secondary' : ''}`} title="Tìm & thay thế (Ctrl+F)" onClick={() => setShowFind((v) => !v)}>
-            <span className="material-symbols-outlined text-[16px]">find_replace</span>
-            <span>Tìm & thay</span>
-          </button>
+            <button type="button" className={tool} title="Làm lại (Ctrl+Y)" aria-label="Làm lại" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
+              <Redo2 size={15} />
+            </button>
+          </div>
+
+          <div className={group} role="group" aria-label="Cấu trúc dòng">
+            {(['chapter', 'section', 'article', 'clause', 'point'] as const).map((level) => (
+              <button key={level} type="button" className={`${tool} ${cursorLevel === level ? active : ''}`} onClick={() => markLine(level)}
+                aria-pressed={cursorLevel === level}
+                title={cursorLevel === level ? `Dòng này đang được đọc là ${LEVEL_LABEL[level]}`
+                  : `Thêm "${LEVEL_PREFIX[level].trim()}" vào đầu dòng để hệ thống tách thành ${LEVEL_LABEL[level]}`}>
+                {LEVEL_LABEL[level]}
+              </button>
+            ))}
+            <button type="button" className={tool} onClick={unmarkLine} disabled={cursorLevel === 'text'}
+              title="Bỏ ký hiệu cấu trúc ở đầu dòng, để dòng được đọc là văn bản thường" aria-label="Bỏ đánh dấu dòng">
+              <RemoveFormatting size={15} />
+            </button>
+          </div>
+
+          <div className={group}>
+            <button type="button" className={tool} title="Nối dòng hiện tại với dòng dưới (sửa câu bị ngắt dòng)" onClick={joinNextLine}>
+              <Merge size={15} />
+              <span>Nối dòng</span>
+            </button>
+            <button type="button" className={`${tool} ${showFind ? active : ''}`} title="Tìm & thay thế (Ctrl+F)" aria-pressed={showFind} onClick={() => setShowFind((v) => !v)}>
+              <Replace size={15} />
+              <span>Tìm & thay</span>
+            </button>
+          </div>
         </div>
       )}
 
       {editable && showFind && (
         <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border-b border-outline-variant/25 bg-surface-container-lowest text-[11.5px]">
-          <input value={term} onChange={(e) => { setTerm(e.target.value); setNotice(''); }} placeholder="Tìm…" aria-label="Từ cần tìm"
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); findNext(); } }}
-            className="w-32 px-1.5 py-0.5 rounded border border-outline-variant/40 bg-white focus:outline-none focus:border-secondary" />
+          <div className="flex items-center gap-1 px-1.5 rounded-md border border-outline-variant/40 bg-white focus-within:border-secondary">
+            <TextSearch size={14} className="text-ink-3" />
+            <input value={term} onChange={(e) => { setTerm(e.target.value); setNotice(''); }} placeholder="Tìm…" aria-label="Từ cần tìm" autoFocus
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); findNext(); } if (e.key === 'Escape') setShowFind(false); }}
+              className="w-28 py-1 bg-transparent focus:outline-none" />
+          </div>
           <input value={replacement} onChange={(e) => setReplacement(e.target.value)} placeholder="Thay bằng…" aria-label="Thay bằng"
-            className="w-32 px-1.5 py-0.5 rounded border border-outline-variant/40 bg-white focus:outline-none focus:border-secondary" />
-          <button type="button" className={tool} onClick={findNext} disabled={!term}>Tìm tiếp</button>
-          <button type="button" className={tool} onClick={replaceCurrent} disabled={!term}>Thay</button>
-          <button type="button" className={tool} onClick={replaceAll} disabled={!term}>Thay tất cả</button>
+            className="w-32 px-1.5 py-1 rounded-md border border-outline-variant/40 bg-white focus:outline-none focus:border-secondary" />
+          <div className={group}>
+            <button type="button" className={tool} onClick={findNext} disabled={!term}>Tìm tiếp</button>
+            <button type="button" className={tool} onClick={replaceCurrent} disabled={!term}>Thay</button>
+            <button type="button" className={tool} onClick={replaceAll} disabled={!term}>Thay tất cả</button>
+          </div>
           {notice && <span className="text-ink-3">{notice}</span>}
+          <button type="button" className={`${tool} ml-auto`} onClick={() => setShowFind(false)} aria-label="Đóng tìm kiếm"><X size={14} /></button>
         </div>
       )}
 
@@ -231,9 +280,26 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2 px-2 py-1 border-t border-outline-variant/25 bg-surface-container-low text-[11.5px] text-ink-3">
-        <span>{counts.article} Điều · {counts.clause} Khoản · {counts.point} Điểm nhận diện trên trang</span>
-        {editable && <span>Ctrl+S lưu · Ctrl+F tìm</span>}
+      <div className="border-t border-outline-variant/25 bg-surface-container-low text-[11.5px] text-ink-3">
+        {showOutline && outline.length > 0 && (
+          <ul className="max-h-28 overflow-y-auto legal-scroll px-2 py-1 border-b border-outline-variant/20" aria-label="Các Điều trên trang">
+            {outline.map(({ index, text }) => (
+              <li key={index}>
+                <button type="button" onClick={() => jumpToLine(index)}
+                  className="w-full text-left truncate px-1.5 py-0.5 rounded hover:bg-surface-container text-ink">{text}</button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex items-center justify-between gap-2 px-2 py-1">
+          <button type="button" onClick={() => setShowOutline((v) => !v)} disabled={!outline.length}
+            className="flex items-center gap-1 hover:text-ink disabled:hover:text-ink-3 disabled:cursor-default" aria-expanded={showOutline}>
+            <ListTree size={14} />
+            <span>{counts.article} Điều · {counts.clause} Khoản · {counts.point} Điểm nhận diện trên trang</span>
+            {outline.length > 0 && (showOutline ? <ChevronDown size={14} /> : <ChevronUp size={14} />)}
+          </button>
+          {editable && <span>Ctrl+S lưu · Ctrl+F tìm</span>}
+        </div>
       </div>
     </div>
   );

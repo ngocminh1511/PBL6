@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { StatsCards } from '../../components/documents/StatsCards';
 import { DocumentTable } from '../../components/documents/DocumentTable';
 import { IngestionProgress } from '../../components/documents/IngestionProgress';
-import { UploadPanel } from '../../components/documents/UploadPanel';
+import { UploadModal } from '../../components/documents/UploadModal';
+import { IngestionStepper } from '../../components/documents/IngestionStepper';
+import { ingestionSteps } from '../../lib/ingestionSteps';
 import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
 import { LegalTree } from '../../components/inspector/LegalTree';
 import { useDocumentStore } from '../../stores/documentStore';
@@ -19,6 +21,7 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]['key'];
 const RUNNING = ['pending', 'parsing', 'chunking', 'embedding', 'indexing'];
+const PDF_STEPS = ingestionSteps('pdf');
 
 export default function DocumentsPage() {
   return <Suspense fallback={<p className="p-6">Đang mở kho văn bản…</p>}><DocumentsWorkspace /></Suspense>;
@@ -34,6 +37,7 @@ function DocumentsWorkspace() {
   const [updatingDomain, setUpdatingDomain] = useState(false);
   const [showJson, setShowJson] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<{ id: string; title: string } | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
   const [removedCount, setRemovedCount] = useState(0);
 
   useEffect(() => {
@@ -81,7 +85,6 @@ function DocumentsWorkspace() {
 
   const taskBadge = activeTask?.status === 'awaiting_review' ? 'Chờ rà soát'
     : activeTask && RUNNING.includes(activeTask.status) ? 'Đang xử lý' : '';
-  const taskFinished = !activeTask || ['completed', 'failed', 'cancelled'].includes(activeTask.status);
 
   return (
     <div className="flex flex-col w-full bg-surface">
@@ -113,23 +116,37 @@ function DocumentsWorkspace() {
 
         {tab === 'nap-pdf' && (
           <div className="flex flex-col gap-space-md">
-            {activeTask && <IngestionProgress task={activeTask} onOpenDocument={() => selectTab('van-ban')} />}
-            {taskFinished && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
-                <div className="lg:col-span-7"><UploadPanel /></div>
-                <div className="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex flex-col gap-2 text-[12.5px] text-ink-3">
-                  <span className="text-[13px] font-semibold text-ink">Quy trình nạp PDF</span>
-                  <ol className="list-decimal pl-5 space-y-1.5">
-                    <li><strong className="text-ink">Tải lên</strong>: chọn lĩnh vực và file PDF.</li>
-                    <li><strong className="text-ink">Rà soát OCR</strong>: đối chiếu từng trang PDF và sửa nội dung trong trình soạn thảo.</li>
-                    <li><strong className="text-ink">So sánh thay đổi</strong>: xem Điều nào mới, thay thế, không đổi, và các Điều của văn bản khác bị sửa đổi.</li>
-                    <li><strong className="text-ink">Xác nhận</strong>: lập chỉ mục vào kho tra cứu.</li>
-                  </ol>
+            <div className="flex flex-col">
+              <h1 className="text-[18px] font-semibold text-ink">Nạp văn bản</h1>
+              <p className="text-[12.5px] text-ink-3">Tải PDF hoặc HTML Pháp điển, rà soát nội dung rồi lập chỉ mục vào kho tra cứu.</p>
+            </div>
+
+            {activeTask ? (
+              <IngestionProgress task={activeTask} onOpenDocument={() => selectTab('van-ban')}
+                onUploadAnother={() => setUploadOpen(true)} />
+            ) : (
+              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm px-space-md py-12 flex flex-col items-center gap-5 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary">
+                  <span className="material-symbols-outlined text-[30px]">upload_file</span>
+                </div>
+                <div className="flex flex-col gap-1 max-w-md">
+                  <span className="text-[15px] font-semibold text-ink">Chưa có văn bản nào đang được nạp</span>
+                  <span className="text-[12.5px] text-ink-3">Tiến trình đọc, rà soát và lập chỉ mục sẽ hiển thị ở đây sau khi bạn tải tài liệu lên.</span>
+                </div>
+                <button type="button" onClick={() => setUploadOpen(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-secondary/40 text-secondary text-[13px] font-medium hover:bg-secondary/10">
+                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  Nạp văn bản
+                </button>
+                <div className="w-full max-w-3xl pt-4 border-t border-outline-variant/20">
+                  <IngestionStepper steps={PDF_STEPS} states={PDF_STEPS.map(() => 'pending')} muted />
                 </div>
               </div>
             )}
           </div>
         )}
+        {uploadOpen && <UploadModal onClose={() => setUploadOpen(false)} />}
+
 
         {removeTarget && (
           <RemoveDocumentModal

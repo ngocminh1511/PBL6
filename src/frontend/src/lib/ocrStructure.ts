@@ -24,6 +24,15 @@ export const LEVEL_PREFIX: Record<'chapter' | 'section' | 'article' | 'clause' |
   chapter: 'Chương ', section: 'Mục ', article: 'Điều ', clause: '1. ', point: 'a) ',
 };
 
+/** The line without its structure marker, so the parser reads it as plain text. */
+export function stripLevelPrefix(line: string): string {
+  for (const [, pattern] of PATTERNS) {
+    const found = line.match(pattern);
+    if (found) return line.slice(found[0].length).replace(/^[\s.,:)\-]+/, '');
+  }
+  return line;
+}
+
 type ParagraphJSON = { type: 'paragraph'; content?: { type: 'text'; text: string }[] };
 
 /** Plain page text -> editor document: one paragraph per line, empty lines kept. */
