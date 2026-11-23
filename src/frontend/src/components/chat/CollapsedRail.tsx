@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Check,
@@ -15,6 +14,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { NAV_ITEMS, isNavActive } from '../layout/navItems';
+import { NavEntry } from '../layout/NavEntry';
 
 export type InspectorTab = 'tab-hierarchy' | 'tab-graph' | 'tab-rerank';
 
@@ -116,13 +116,15 @@ export const CollapsedRail: React.FC<CollapsedRailProps> = ({
             {menuOpen && (
               <div className="absolute bottom-10 left-0 z-30 w-60 rounded-2xl bg-white border border-ink/12 shadow-lg p-1.5 space-y-0.5">
                 <div className="px-2.5 py-1.5 text-[11.5px] font-medium text-muted">Quản trị & Cài đặt</div>
-                {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+                {NAV_ITEMS.map((item) => {
+                  const { href, label, icon: Icon } = item;
                   const active = isNavActive(pathname, href);
                   return (
-                    <Link
+                    <NavEntry
                       key={href}
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
+                      item={item}
+                      ariaCurrent={active}
+                      onNavigate={() => setMenuOpen(false)}
                       className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-[13px] transition-colors ${
                         active ? 'bg-stone text-navy font-medium' : 'text-[#2E2C27] hover:bg-paper'
                       }`}
@@ -132,7 +134,7 @@ export const CollapsedRail: React.FC<CollapsedRailProps> = ({
                         <span>{label}</span>
                       </span>
                       {active && <Check className="w-3.5 h-3.5" />}
-                    </Link>
+                    </NavEntry>
                   );
                 })}
               </div>

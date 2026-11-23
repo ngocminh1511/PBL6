@@ -3,15 +3,21 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { NavRail } from './NavRail';
+import { SettingsModal } from '../settings/SettingsModal';
 
 /** Chat owns a full-screen workspace; every other page gets the navigation rail. */
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
-  if (pathname === '/' || pathname.startsWith('/chat')) return <>{children}</>;
+  const isChat = pathname === '/' || pathname.startsWith('/chat');
   return (
     <>
-      <NavRail />
-      <div className="pl-[72px] min-h-screen">{children}</div>
+      {isChat ? children : (
+        <>
+          <NavRail />
+          <div className="pl-[72px] min-h-screen">{children}</div>
+        </>
+      )}
+      <SettingsModal />
     </>
   );
 };

@@ -22,6 +22,7 @@ import { api } from '../../lib/api';
 import { useChatStore } from '../../stores/chatStore';
 import type { ChatSession } from '../../lib/types';
 import { NAV_ITEMS, isNavActive } from '../layout/navItems';
+import { NavEntry } from '../layout/NavEntry';
 
 interface SessionListProps {
   onToggleCollapse?: () => void;
@@ -399,13 +400,15 @@ export const SessionList: React.FC<SessionListProps> = ({
         {navMenuOpen && (
           <div className="absolute bottom-14 left-2.5 right-2.5 z-30 rounded-2xl bg-white border border-ink/12 shadow-lg p-1.5 space-y-0.5">
             <div className="px-2.5 py-1.5 text-[11.5px] font-medium text-muted">Quản trị & Cài đặt</div>
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            {NAV_ITEMS.map((item) => {
+              const { href, label, icon: Icon } = item;
               const active = isNavActive(pathname, href);
               return (
-                <Link
+                <NavEntry
                   key={href}
-                  href={href}
-                  onClick={() => setNavMenuOpen(false)}
+                  item={item}
+                  ariaCurrent={active}
+                  onNavigate={() => setNavMenuOpen(false)}
                   className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-[13px] transition-colors ${
                     active ? 'bg-stone text-navy font-medium' : 'text-[#2E2C27] hover:bg-paper'
                   }`}
@@ -419,7 +422,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                   ) : active ? (
                     <Check className="w-3.5 h-3.5" />
                   ) : null}
-                </Link>
+                </NavEntry>
               );
             })}
           </div>

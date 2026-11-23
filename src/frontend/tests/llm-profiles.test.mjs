@@ -35,12 +35,15 @@ const { PostgresSettings } = compile('../src/components/admin/PostgresSettings.t
   '../../lib/api': { api, errorMessage: error => error.message }, './ui': ui,
 });
 const adminLogic = compile('../src/lib/admin-config.ts');
-const { default: AdminPage } = compile('../src/app/admin/page.tsx', {
+const { SettingsPanel } = compile('../src/components/settings/SettingsPanel.tsx', {
   '../../lib/api': { api, errorMessage: error => error.message },
   '../../lib/admin-config': adminLogic,
-  '../../components/admin/LLMProfilesManager': { LLMProfilesManager },
-  '../../components/admin/PostgresSettings': { PostgresSettings },
-  '../../components/admin/ui': ui, './admin.module.css': { page: 'admin-page' },
+  '../admin/LLMProfilesManager': { LLMProfilesManager },
+  '../admin/PostgresSettings': { PostgresSettings },
+  '../admin/ui': ui, './settings.module.css': { page: 'admin-page' },
+});
+const { default: AdminPage } = compile('../src/app/admin/page.tsx', {
+  '../../components/settings/SettingsPanel': { SettingsPanel },
 });
 const environment = { id: 'environment', name: 'Từ môi trường', mode: 'cloud', provider: 'gemini', model: 'existing-model',
   base_url: '', local_runtime: 'compatible', api_key_source: 'environment', key_configured: true, read_only: true, verification: null };

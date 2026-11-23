@@ -7,6 +7,7 @@ import { Scale } from 'lucide-react';
 import { api } from '../../lib/api';
 import type { HealthResponse } from '../../lib/types';
 import { NAV_ITEMS, isNavActive } from './navItems';
+import { NavEntry } from './NavEntry';
 
 /** Vertical navigation rail for pages outside the chat workspace. */
 export const NavRail: React.FC = () => {
@@ -33,20 +34,21 @@ export const NavRail: React.FC = () => {
 
       <div className="w-5 h-px bg-ink/8 my-0.5" />
 
-      {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-        const active = isNavActive(pathname, href);
+      {NAV_ITEMS.map((item) => {
+        const active = isNavActive(pathname, item.href);
+        const Icon = item.icon;
         return (
-          <Link
-            key={href}
-            href={href}
-            title={label}
-            aria-current={active ? 'page' : undefined}
+          <NavEntry
+            key={item.href}
+            item={item}
+            title={item.label}
+            ariaCurrent={active}
             className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
               active ? 'bg-stone text-navy' : 'text-ink-3 hover:text-ink hover:bg-stone'
             }`}
           >
             <Icon className="w-4 h-4" />
-          </Link>
+          </NavEntry>
         );
       })}
 
