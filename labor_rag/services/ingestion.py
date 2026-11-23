@@ -284,7 +284,8 @@ class IngestionPipeline:
             artifacts.append(store_artifact(work / "document.json", self.store, "hierarchy"))
         check_cancelled()
         progress(45, "embedding", "Đang xử lý ngữ nghĩa văn bản phục vụ tìm kiếm...", total_chunks=len(chunks))
-        indexed = self.index(chunks, projection, progress, cancel_check=cancel_check)
+        # check_cancelled raises when cancelled, so the index loop stops there.
+        indexed = self.index(chunks, projection, progress, cancel_check=lambda: bool(check_cancelled()))
         warnings.extend(indexed["warnings"])
         documents = []
         for document_id in ids:

@@ -68,7 +68,7 @@ def test_pdf_upload_uses_real_abox_ids_and_is_idempotent(tmp_path, monkeypatch, 
             ngay_hieu_luc="2021-01-01", version_date="2025-01-01"),
         articles=[Article(article_id="dieu_35", article_number="Điều 35",
             article_title="Hợp đồng lao động", full_text="Nội dung thử nghiệm đủ điều kiện.")])
-    monkeypatch.setattr(ocr, "process_document", lambda path: SimpleNamespace(document=document))
+    monkeypatch.setattr(ocr, "process_document", lambda path, **kwargs: SimpleNamespace(document=document))
     source = tmp_path / "source.pdf"
     source.write_bytes(b"%PDF-1.4 test input")
     first = pipeline.run(source, "task-one", "pdf")
