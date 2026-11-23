@@ -30,10 +30,10 @@ export const StatsCards: React.FC<{ refreshKey?: unknown }> = ({ refreshKey }) =
           <span className="material-symbols-outlined text-[20px] text-secondary shrink-0">{item.icon}</span>
           <div className="flex flex-col min-w-0">
             <span className="flex items-baseline gap-1.5">
-              <span className="font-metric-num text-headline-md text-on-surface font-bold">{item.value}</span>
-              <span className="font-label-statute text-label-statute text-on-surface-variant truncate">{item.label}</span>
+              <span className="text-[18px] text-ink font-semibold">{item.value}</span>
+              <span className="text-[12px] font-medium text-ink-3 truncate">{item.label}</span>
             </span>
-            {item.hint && <span className="font-label-code text-[11px] text-on-surface-variant truncate">{item.hint}</span>}
+            {item.hint && <span className="text-[11.5px] text-ink-3 truncate">{item.hint}</span>}
           </div>
         </div>
       ))}

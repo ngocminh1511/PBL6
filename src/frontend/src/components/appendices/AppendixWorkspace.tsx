@@ -65,9 +65,9 @@ export function AppendixWorkspace({ basePath = '/appendices', embedded = false }
   }
   return <div className={embedded ? 'space-y-5' : 'max-w-[1500px] mx-auto p-4 md:p-6 space-y-5'}>
     <div className="flex flex-wrap justify-between items-center gap-3">
-      <div><p className="text-xs font-semibold text-secondary uppercase tracking-wider">Kho dữ liệu Lao động</p>
-        <h1 className={embedded ? 'text-xl font-bold mt-1' : 'text-2xl font-bold mt-1'}>Danh mục, phụ lục & biểu mẫu</h1>
-        <p className="text-sm text-slate-500 mt-1">Tra cứu danh mục, quy trình và biểu mẫu; mở đúng nội dung và file nguồn.</p></div>
+      <div><p className="text-xs font-semibold text-secondary">Kho dữ liệu Lao động</p>
+        <h1 className={embedded ? 'text-xl font-semibold mt-1' : 'text-2xl font-semibold mt-1'}>Danh mục, phụ lục & biểu mẫu</h1>
+        <p className="text-sm text-ink-3 mt-1">Tra cứu danh mục, quy trình và biểu mẫu; mở đúng nội dung và file nguồn.</p></div>
       {!embedded && <button disabled={probing} onClick={probe} className="border rounded-xl px-4 py-2 bg-white disabled:opacity-50">
         {probing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}</button>}
     </div>
@@ -81,7 +81,7 @@ export function AppendixWorkspace({ basePath = '/appendices', embedded = false }
     {error && <p role="alert" className="bg-red-50 text-red-800 border border-red-200 rounded-xl p-3">{error}</p>}
     <div className="grid lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.4fr)] gap-5">
       <section className="rounded-2xl bg-white border p-4 space-y-3">
-        <h2 className="font-bold">Danh sách phụ lục {list && <span className="text-slate-500 font-normal">({list.total})</span>}</h2>
+        <h2 className="font-semibold">Danh sách phụ lục {list && <span className="text-ink-3 font-normal">({list.total})</span>}</h2>
         <label className="block text-sm">Tìm kiếm<input value={query} onChange={e => { setQuery(e.target.value); setOffset(0); }}
           type="search" placeholder="Tên phụ lục, số mẫu, số hiệu…" className="border rounded-lg p-2 block w-full mt-1" /></label>
         <label className="block text-sm">Văn bản<select value={document} onChange={e => { setDocument(e.target.value); setOffset(0); }}
@@ -93,39 +93,39 @@ export function AppendixWorkspace({ basePath = '/appendices', embedded = false }
           <label className="text-sm">Rà soát<select value={status} onChange={e => { setStatus(e.target.value); setOffset(0); }} className="border rounded-lg p-2 block w-full mt-1">
             <option value="">Tất cả trạng thái</option>{['needs_review', 'auto_accepted', 'reviewed'].map(key => <option key={key} value={key}>{labels[key]}</option>)}</select></label>
         </div>
-        {loading && <p className="text-sm text-slate-500" role="status">Đang tải danh sách…</p>}
+        {loading && <p className="text-sm text-ink-3" role="status">Đang tải danh sách…</p>}
         <div className="max-h-[520px] overflow-y-auto divide-y">
           {list?.items.map(item => <button key={item.appendix_id} onClick={() => open(item.appendix_id)}
             className={'block text-left w-full p-3 rounded-lg transition-colors ' + (selectedId === item.appendix_id ? 'bg-indigo-50' : 'hover:bg-slate-50')}>
             <span className="text-sm font-semibold">Phụ lục {item.number} · {item.title}</span>
-            <span className="block text-xs text-slate-500 mt-1">{item.document_number} · {labels[item.kind] || item.kind}</span>
+            <span className="block text-xs text-ink-3 mt-1">{item.document_number} · {labels[item.kind] || item.kind}</span>
             {item.review_status === 'needs_review' && <span className="text-xs text-amber-700">Cần rà soát</span>}
           </button>)}
-          {list?.total === 0 && <p className="py-6 text-sm text-slate-500">Không có phụ lục phù hợp.</p>}
+          {list?.total === 0 && <p className="py-6 text-sm text-ink-3">Không có phụ lục phù hợp.</p>}
         </div>
         <div className="flex justify-between items-center text-sm">
           <button disabled={!offset} onClick={() => setOffset(Math.max(0, offset - 50))} className="disabled:opacity-40">← Trước</button>
           <span>{list && list.total > 0 ? (offset + 1) + '–' + Math.min(offset + 50, list.total) + ' / ' + list.total : '0 kết quả'}</span>
           <button disabled={!list || offset + 50 >= list.total} onClick={() => setOffset(offset + 50)} className="disabled:opacity-40">Tiếp →</button>
         </div>
-        {list && <details className="text-xs text-slate-500 pt-3 border-t"><summary className="cursor-pointer">Độ phủ thu thập: {list.documents.length} nguồn văn bản</summary>
+        {list && <details className="text-xs text-ink-3 pt-3 border-t"><summary className="cursor-pointer">Độ phủ thu thập: {list.documents.length} nguồn văn bản</summary>
           <ul className="mt-2 space-y-2">{list.documents.map(item => <li key={item.document_id}>{item.document}: {item.appendices} phần · {item.download_status} · {item.extraction_status}</li>)}</ul>
         </details>}
       </section>
       <section id="appendix-viewer" className="rounded-2xl bg-white border p-4 min-w-0">
-        <h2 className="font-bold mb-3">Nội dung & nguồn</h2>
-        {!selected ? <p className="text-slate-500 text-sm p-8">{selectedId ? 'Đang tải phụ lục…' : 'Chọn một phụ lục để xem nội dung và tải file nguồn.'}</p>
+        <h2 className="font-semibold mb-3">Nội dung & nguồn</h2>
+        {!selected ? <p className="text-ink-3 text-sm p-8">{selectedId ? 'Đang tải phụ lục…' : 'Chọn một phụ lục để xem nội dung và tải file nguồn.'}</p>
           : <div className="space-y-3">
             <p className="text-xs text-secondary">{selected.document_number} · Phụ lục {selected.number}</p>
             <h3 className="font-semibold">{selected.title}</h3>
-            <p className="text-xs text-slate-500">{labels[selected.review_status] || selected.review_status} · {selected.effect_status}</p>
+            <p className="text-xs text-ink-3">{labels[selected.review_status] || selected.review_status} · {selected.effect_status}</p>
             <div className="flex gap-3 flex-wrap text-sm text-secondary">
               <a href={selected.view_url + '?download=true'}>Tải phụ lục HTML</a>
               {selected.source_url && <a target="_blank" rel="noopener noreferrer" href={selected.source_url}>Mở nguồn ↗</a>}
               {selected.files?.map(file => <a key={file.artifact_id} href={file.download_url} target="_blank" rel="noopener noreferrer">
                 Tải {file.format.toUpperCase()} nguồn{file.available === false ? ' · thiếu file' : ''}</a>)}
             </div>
-            <p className="text-xs text-slate-500">File nguồn có thể chứa toàn văn và nhiều phụ lục; HTML là phần nội dung đã tách.</p>
+            <p className="text-xs text-ink-3">File nguồn có thể chứa toàn văn và nhiều phụ lục; HTML là phần nội dung đã tách.</p>
             <iframe title="Nội dung phụ lục" sandbox="allow-scripts"
               src={selected.view_url + (chunkId ? '?chunk_id=' + encodeURIComponent(chunkId) : '')}
               className="w-full min-h-[550px] border rounded-xl" />

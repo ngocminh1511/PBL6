@@ -241,10 +241,10 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="font-headline-sm text-headline-sm text-on-surface">
+            <span className="text-[14px] font-semibold text-ink">
               Tiến trình Nạp tài liệu: {task.file_name}
             </span>
-            <span className="font-label-code text-[11px] text-on-surface-variant">
+            <span className="text-[11.5px] text-ink-3">
               Định dạng: {task.document_type === 'pdf' ? 'Văn bản PDF (OCR)' : 'Pháp điển HTML'}
             </span>
           </div>
@@ -252,7 +252,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
 
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`font-label-statute text-label-statute px-2.5 py-1 rounded font-bold ${
+            className={`text-[12px] px-2.5 py-1 rounded font-semibold ${
               isCompleted
                 ? 'bg-tertiary-fixed text-on-tertiary-fixed'
                 : isFailed
@@ -272,7 +272,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
               onClick={handleConfirm}
               disabled={confirming || isEditing}
               title={isEditing ? 'Hãy lưu hoặc hủy chỉnh sửa trước khi xác nhận lập chỉ mục' : undefined}
-              className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[12px] font-label-statute font-semibold flex items-center gap-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+              className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[12px] font-semibold flex items-center gap-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-sm"
             >
               <span className="material-symbols-outlined text-[15px]">check_circle</span>
               <span>{confirming ? 'Đang bắt đầu...' : 'Xác nhận & Lập chỉ mục'}</span>
@@ -282,7 +282,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
             <button
               type="button"
               onClick={onOpenDocument}
-              className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[12px] font-label-statute font-semibold flex items-center gap-1 shadow-sm"
+              className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[12px] font-semibold flex items-center gap-1 shadow-sm"
             >
               <span className="material-symbols-outlined text-[15px]">folder_open</span>
               <span>Xem văn bản trong kho</span>
@@ -293,7 +293,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
               type="button"
               onClick={handleCancel}
               disabled={cancelling || confirming}
-              className="px-2.5 py-1 rounded border border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-[12px] font-label-statute font-semibold flex items-center gap-1 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="px-2.5 py-1 rounded border border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-[12px] font-semibold flex items-center gap-1 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               <span className="material-symbols-outlined text-[15px]">stop_circle</span>
               <span>{cancelling ? 'Đang hủy...' : 'Hủy xử lý'}</span>
@@ -310,12 +310,12 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
           return (
             <div
               key={stage.key}
-              className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-label-statute flex items-center gap-1.5 transition-all ${
+              className={`px-2.5 py-1.5 rounded-lg border text-[11.5px] flex items-center gap-1.5 transition-all ${
                 isDone
                   ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                   : isActive
-                  ? 'bg-secondary-fixed/50 border-secondary/50 text-secondary font-bold'
-                  : 'bg-surface-container-low border-outline-variant/20 text-on-surface-variant'
+                  ? 'bg-secondary-fixed/50 border-secondary/50 text-secondary font-semibold'
+                  : 'bg-surface-container-low border-outline-variant/20 text-ink-3'
               }`}
             >
               <span className="material-symbols-outlined text-[15px]">
@@ -346,7 +346,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
       </div>
 
       {/* Current Step Highlight */}
-      <div className="bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-2 font-body-sm text-[12px] border border-outline-variant/20">
+      <div className="bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-2 text-[12px] border border-outline-variant/20">
         <span
           className={`material-symbols-outlined text-[16px] shrink-0 ${
             isFailed
@@ -362,20 +362,20 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
         >
           {isFailed ? 'error' : isCompleted ? 'task_alt' : isCancelled ? 'cancel' : isAwaitingReview ? 'edit_document' : 'autorenew'}
         </span>
-        <span className="font-semibold text-on-surface-variant shrink-0">Công việc hiện tại:</span>
-        <span className="font-medium text-on-surface">{task.current_step}</span>
+        <span className="font-semibold text-ink-3 shrink-0">Công việc hiện tại:</span>
+        <span className="font-medium text-ink">{task.current_step}</span>
       </div>
 
       {/* Realtime Split PDF vs Extracted OCR View */}
       {task.document_type === 'pdf' && ocrPreview && (
         <div className="flex flex-col gap-2.5 border-t border-outline-variant/20 pt-2.5">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] font-label-statute">
-            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-on-surface">
+          <div className="flex flex-wrap items-center gap-2 text-[11.5px]">
+            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-ink">
               Trang đã xử lý: <strong>{ocrPreview.processed_pages}/{ocrPreview.total_pages || '?'}</strong>
             </span>
-            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-on-surface-variant">
-              Text: <strong className="text-on-surface">{ocrPreview.text_pages}</strong> · OCR scan:{' '}
-              <strong className="text-on-surface">{ocrPreview.ocr_pages}</strong>
+            <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-ink-3">
+              Text: <strong className="text-ink">{ocrPreview.text_pages}</strong> · OCR scan:{' '}
+              <strong className="text-ink">{ocrPreview.ocr_pages}</strong>
               {ocrPreview.empty_pages > 0 && (
                 <>
                   {' '}
@@ -397,7 +397,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
 
           <div className="rounded-lg border border-outline-variant/25 bg-surface-container-low/70 overflow-hidden">
             <div className="px-3 py-2 flex items-center justify-between gap-2 flex-wrap bg-surface-container-low border-b border-outline-variant/20">
-              <div className="flex items-center gap-2 text-[12px] font-semibold text-on-surface">
+              <div className="flex items-center gap-2 text-[12px] font-semibold text-ink">
                 <span className="material-symbols-outlined text-[16px] text-secondary">chrome_reader_mode</span>
                 <span>Đối chiếu trang PDF & nội dung trích xuất</span>
               </div>
@@ -408,12 +408,12 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                     type="button"
                     onClick={() => goToPage(viewPage - 1)}
                     disabled={viewPage <= 1 || isEditing}
-                    className="w-6 h-6 rounded border border-outline-variant/35 bg-surface-container-lowest hover:bg-surface-container text-on-surface flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                    className="w-6 h-6 rounded border border-outline-variant/35 bg-surface-container-lowest hover:bg-surface-container text-ink flex items-center justify-center disabled:opacity-40 cursor-pointer"
                     title="Trang trước"
                   >
                     <span className="material-symbols-outlined text-[15px]">chevron_left</span>
                   </button>
-                  <span className="text-[11px] text-on-surface-variant ml-0.5">Trang</span>
+                  <span className="text-[11.5px] text-ink-3 ml-0.5">Trang</span>
                   <input
                     type="number"
                     min={1}
@@ -422,13 +422,13 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                     onChange={(e) => setPageInput(e.target.value)}
                     disabled={isEditing}
                     aria-label="Số thứ tự trang"
-                    className="w-14 px-1.5 py-0.5 text-center rounded border border-outline-variant/40 bg-surface-container-lowest text-[12px] font-label-code text-on-surface focus:outline-none focus:border-secondary disabled:opacity-60"
+                    className="w-14 px-1.5 py-0.5 text-center rounded border border-outline-variant/40 bg-surface-container-lowest text-[12px] text-ink focus:outline-none focus:border-secondary disabled:opacity-60"
                   />
-                  <span className="text-[11px] text-on-surface-variant">/ {totalPages || '?'}</span>
+                  <span className="text-[11.5px] text-ink-3">/ {totalPages || '?'}</span>
                   <button
                     type="submit"
                     disabled={isEditing}
-                    className="px-2 py-0.5 rounded bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/30 text-[11px] font-semibold disabled:opacity-50 cursor-pointer"
+                    className="px-2 py-0.5 rounded bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/30 text-[11.5px] font-semibold disabled:opacity-50 cursor-pointer"
                   >
                     Đi tới
                   </button>
@@ -436,7 +436,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                     type="button"
                     onClick={() => goToPage(viewPage + 1)}
                     disabled={(totalPages > 0 && viewPage >= totalPages) || isEditing}
-                    className="w-6 h-6 rounded border border-outline-variant/35 bg-surface-container-lowest hover:bg-surface-container text-on-surface flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                    className="w-6 h-6 rounded border border-outline-variant/35 bg-surface-container-lowest hover:bg-surface-container text-ink flex items-center justify-center disabled:opacity-40 cursor-pointer"
                     title="Trang sau"
                   >
                     <span className="material-symbols-outlined text-[15px]">chevron_right</span>
@@ -446,7 +446,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                 <button
                   type="button"
                   onClick={() => setPreviewExpanded((prev) => !prev)}
-                  className="text-[11px] text-on-surface-variant hover:text-on-surface font-medium flex items-center gap-0.5 cursor-pointer ml-1"
+                  className="text-[11.5px] text-ink-3 hover:text-ink font-medium flex items-center gap-0.5 cursor-pointer ml-1"
                 >
                   <span>{previewExpanded ? 'Thu gọn' : 'Mở rộng'}</span>
                   <span className="material-symbols-outlined text-[15px]">
@@ -461,13 +461,13 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                   {/* Left Half: PDF Page Preview */}
                   <div className="flex flex-col rounded-lg border border-outline-variant/25 bg-surface-container-lowest overflow-hidden">
-                    <div className="px-3 py-1.5 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between text-[11px] font-semibold text-on-surface-variant">
+                    <div className="px-3 py-1.5 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between text-[11.5px] font-semibold text-ink-3">
                       <span>Trang PDF gốc · Trang {viewPage}</span>
                       <span className="font-normal">Tài liệu nguồn</span>
                     </div>
                     <div className="h-[600px] overflow-auto bg-slate-100 p-2 flex justify-center items-start">
                       {pdfImgError ? (
-                        <div className="h-full flex items-center justify-center text-xs text-on-surface-variant text-center px-4">
+                        <div className="h-full flex items-center justify-center text-xs text-ink-3 text-center px-4">
                           Không tải được ảnh trang PDF số {viewPage}.
                         </div>
                       ) : (
@@ -485,31 +485,31 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                   {/* Right Half: Extracted Text + Manual Edit */}
                   <div className="flex flex-col rounded-lg border border-outline-variant/25 bg-surface-container-lowest overflow-hidden">
                     <div className="px-3 py-1.5 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between gap-2 flex-wrap">
-                      <div className="flex items-center gap-2 text-[11px] font-semibold text-on-surface-variant">
+                      <div className="flex items-center gap-2 text-[11.5px] font-semibold text-ink-3">
                         <span>Nội dung trích xuất · Trang {viewPage}</span>
                         {methodLabel && (
-                          <span className="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-label-code text-[10px]">
+                          <span className="px-1.5 py-0.5 rounded bg-surface-container text-ink text-[11.5px]">
                             {methodLabel}
                           </span>
                         )}
                         {editedPages[viewPage] && (
-                          <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-semibold">
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11.5px] font-semibold">
                             Đã chỉnh sửa
                           </span>
                         )}
                       </div>
 
                       {isEditing && (
-                        <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-semibold">Chưa lưu</span>
+                        <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[11.5px] font-semibold">Chưa lưu</span>
                       )}
                     </div>
 
                     {!isPageExtracted ? (
-                      <div className="h-[600px] flex items-center justify-center text-xs text-on-surface-variant text-center px-6">
+                      <div className="h-[600px] flex items-center justify-center text-xs text-ink-3 text-center px-6">
                         Trang {viewPage} đang chờ OCR xử lý (hiện đã xong {ocrPreview.processed_pages}/{totalPages} trang).
                       </div>
                     ) : loadingPage === viewPage ? (
-                      <div className="h-[600px] flex items-center justify-center text-xs text-on-surface-variant">
+                      <div className="h-[600px] flex items-center justify-center text-xs text-ink-3">
                         Đang tải nội dung trang {viewPage}...
                       </div>
                     ) : canEditPage ? (
@@ -528,7 +528,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                             type="button"
                             onClick={revertDraft}
                             disabled={savingEdit || !isEditing}
-                            className="px-2.5 py-1 rounded border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container text-[11px] font-medium cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-2.5 py-1 rounded border border-outline-variant/40 text-ink-3 hover:bg-surface-container text-[11.5px] font-medium cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             Bỏ thay đổi
                           </button>
@@ -536,7 +536,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                             type="button"
                             onClick={() => void handleSaveEdit()}
                             disabled={savingEdit || !isEditing}
-                            className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[11px] font-semibold flex items-center gap-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                            className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[11.5px] font-semibold flex items-center gap-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                           >
                             <span className="material-symbols-outlined text-[14px]">save</span>
                             <span>{savingEdit ? 'Đang lưu...' : 'Lưu trang'}</span>
@@ -544,15 +544,15 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                         </div>
                       </div>
                     ) : (
-                      <pre className="whitespace-pre-wrap break-words font-body-sm text-[12px] leading-relaxed text-on-surface bg-surface-container-lowest p-3 h-[600px] overflow-y-auto">
+                      <pre className="whitespace-pre-wrap break-words text-[12px] leading-relaxed text-ink bg-surface-container-lowest p-3 h-[600px] overflow-y-auto">
                         {currentPageText || '(Trang trống hoặc không trích xuất được văn bản)'}
                       </pre>
                     )}
                   </div>
                 </div>
 
-                {saveNotice && <p className="text-[11px] text-emerald-700 font-medium">{saveNotice}</p>}
-                {pageLoadError && <p className="text-[11px] text-red-600">{pageLoadError}</p>}
+                {saveNotice && <p className="text-[11.5px] text-emerald-700 font-medium">{saveNotice}</p>}
+                {pageLoadError && <p className="text-[11.5px] text-red-600">{pageLoadError}</p>}
               </div>
             )}
           </div>

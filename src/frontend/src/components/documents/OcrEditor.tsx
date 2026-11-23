@@ -128,7 +128,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
     return result;
   }, [value]);
 
-  if (!editor) return <div className="h-full flex items-center justify-center text-xs text-on-surface-variant">Đang mở trình soạn thảo…</div>;
+  if (!editor) return <div className="h-full flex items-center justify-center text-xs text-ink-3">Đang mở trình soạn thảo…</div>;
 
   const markLine = (level: keyof typeof LEVEL_PREFIX) => {
     const { $from } = editor.state.selection;
@@ -179,7 +179,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
     setNotice(`Đã thay ${found.length} chỗ.`);
   };
 
-  const tool = 'h-7 min-w-7 px-1.5 rounded flex items-center justify-center gap-1 text-[11px] font-semibold text-on-surface hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed';
+  const tool = 'h-7 min-w-7 px-1.5 rounded flex items-center justify-center gap-1 text-[11.5px] font-semibold text-ink hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed';
 
   return (
     <div className="h-full flex flex-col min-h-0">
@@ -192,7 +192,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
             <span className="material-symbols-outlined text-[16px]">redo</span>
           </button>
           <span className="w-px h-5 bg-outline-variant/40 mx-1" />
-          <span className="text-[10px] text-on-surface-variant mr-0.5">Đánh dấu dòng:</span>
+          <span className="text-[11.5px] text-ink-3 mr-0.5">Đánh dấu dòng:</span>
           {(['chapter', 'section', 'article', 'clause', 'point'] as const).map((level) => (
             <button key={level} type="button" className={tool} onClick={() => markLine(level)}
               title={`Thêm "${LEVEL_PREFIX[level].trim()}" vào đầu dòng để hệ thống tách thành ${LEVEL_LABEL[level]}`}>
@@ -212,7 +212,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
       )}
 
       {editable && showFind && (
-        <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border-b border-outline-variant/25 bg-surface-container-lowest text-[11px]">
+        <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border-b border-outline-variant/25 bg-surface-container-lowest text-[11.5px]">
           <input value={term} onChange={(e) => { setTerm(e.target.value); setNotice(''); }} placeholder="Tìm…" aria-label="Từ cần tìm"
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); findNext(); } }}
             className="w-32 px-1.5 py-0.5 rounded border border-outline-variant/40 bg-white focus:outline-none focus:border-secondary" />
@@ -221,7 +221,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
           <button type="button" className={tool} onClick={findNext} disabled={!term}>Tìm tiếp</button>
           <button type="button" className={tool} onClick={replaceCurrent} disabled={!term}>Thay</button>
           <button type="button" className={tool} onClick={replaceAll} disabled={!term}>Thay tất cả</button>
-          {notice && <span className="text-on-surface-variant">{notice}</span>}
+          {notice && <span className="text-ink-3">{notice}</span>}
         </div>
       )}
 
@@ -231,7 +231,7 @@ export const OcrEditor: React.FC<OcrEditorProps> = ({ value, editable, onChange,
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2 px-2 py-1 border-t border-outline-variant/25 bg-surface-container-low text-[10px] text-on-surface-variant">
+      <div className="flex items-center justify-between gap-2 px-2 py-1 border-t border-outline-variant/25 bg-surface-container-low text-[11.5px] text-ink-3">
         <span>{counts.article} Điều · {counts.clause} Khoản · {counts.point} Điểm nhận diện trên trang</span>
         {editable && <span>Ctrl+S lưu · Ctrl+F tìm</span>}
       </div>

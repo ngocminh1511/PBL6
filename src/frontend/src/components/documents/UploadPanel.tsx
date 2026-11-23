@@ -68,7 +68,7 @@ export const UploadPanel: React.FC = () => {
         <div className="px-6 py-4 bg-[#0F172A] text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[20px] text-secondary">post_add</span>
-            <h3 className="font-headline-md text-headline-sm text-white">Nạp Văn bản Quy phạm Pháp luật</h3>
+            <h3 className="text-[14px] font-semibold text-white">Nạp Văn bản Quy phạm Pháp luật</h3>
           </div>
         </div>
 
@@ -76,7 +76,7 @@ export const UploadPanel: React.FC = () => {
         <form onSubmit={handleSubmit} className="p-space-md flex flex-col gap-4">
           {/* Domain Selector */}
           <div className="flex flex-col gap-1.5">
-            <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
+            <label className="text-[12px] text-ink-3 font-semibold">
               Lĩnh vực Quản lý
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -96,8 +96,8 @@ export const UploadPanel: React.FC = () => {
                   className="accent-secondary"
                 />
                 <div className="flex flex-col text-left">
-                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Pháp luật Lao động</span>
-                  <span className="text-[11px] text-on-surface-variant font-normal">HĐLĐ, lương, BHXH...</span>
+                  <span className="text-xs font-semibold text-ink">Pháp luật Lao động</span>
+                  <span className="text-[11.5px] text-ink-3 font-normal">HĐLĐ, lương, BHXH...</span>
                 </div>
               </label>
 
@@ -123,8 +123,8 @@ export const UploadPanel: React.FC = () => {
                   className="accent-secondary"
                 />
                 <div className="flex flex-col text-left">
-                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Lĩnh vực khác</span>
-                  <span className="text-[11px] text-on-surface-variant font-normal">Giáo dục, Dân sự, Luật khác</span>
+                  <span className="text-xs font-semibold text-ink">Lĩnh vực khác</span>
+                  <span className="text-[11.5px] text-ink-3 font-normal">Giáo dục, Dân sự, Luật khác</span>
                 </div>
               </label>
             </div>
@@ -135,7 +135,7 @@ export const UploadPanel: React.FC = () => {
               className="block w-full border rounded-lg p-2 mt-1" /></label>}
           {/* File Type Selector */}
           <div className="flex flex-col gap-1.5">
-            <label className="font-label-statute text-label-statute uppercase text-on-surface-variant font-bold">
+            <label className="text-[12px] text-ink-3 font-semibold">
               Định dạng Tài liệu
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -155,8 +155,8 @@ export const UploadPanel: React.FC = () => {
                   className="accent-secondary"
                 />
                 <div className="flex flex-col text-left">
-                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Văn bản PDF / OCR</span>
-                  <span className="text-[11px] text-on-surface-variant font-normal">Luật, Nghị định, Thông tư</span>
+                  <span className="text-xs font-semibold text-ink">Văn bản PDF / OCR</span>
+                  <span className="text-[11.5px] text-ink-3 font-normal">Luật, Nghị định, Thông tư</span>
                 </div>
               </label>
 
@@ -182,8 +182,8 @@ export const UploadPanel: React.FC = () => {
                   className="accent-secondary"
                 />
                 <div className="flex flex-col text-left">
-                  <span className="font-headline-sm text-xs font-semibold text-on-surface">Pháp điển (HTML)</span>
-                  <span className="text-[11px] text-on-surface-variant font-normal">
+                  <span className="text-xs font-semibold text-ink">Pháp điển (HTML)</span>
+                  <span className="text-[11.5px] text-ink-3 font-normal">
                     {domain === 'khac' ? 'Chỉ hỗ trợ Lao động' : 'Đề mục Bộ Pháp điển'}
                   </span>
                 </div>
@@ -207,10 +207,10 @@ export const UploadPanel: React.FC = () => {
               <span className="material-symbols-outlined text-[28px]">upload_file</span>
             </div>
             <div className="text-center">
-              <p className="font-headline-sm text-headline-sm text-on-surface">
+              <p className="text-[14px] font-semibold text-ink">
                 {file ? file.name : 'Kéo thả tài liệu vào đây hoặc nhấp để duyệt'}
               </p>
-              <p className="text-xs text-on-surface-variant font-body-sm mt-0.5">
+              <p className="text-xs text-ink-3 mt-0.5">
                 Hỗ trợ định dạng PDF, HTML Bộ Pháp điển, hoặc tài liệu số hóa (Tối đa 50MB)
               </p>
             </div>
@@ -225,10 +225,10 @@ export const UploadPanel: React.FC = () => {
                 className="mt-0.5 accent-secondary"
               />
               <div className="flex flex-col text-left">
-                <span className="font-headline-sm text-xs font-semibold text-on-surface">
+                <span className="text-xs font-semibold text-ink">
                   Tạm dừng để đối chiếu PDF & chỉnh sửa nội dung OCR
                 </span>
-                <span className="text-[11px] text-on-surface-variant font-normal">
+                <span className="text-[11.5px] text-ink-3 font-normal">
                   Kiểm tra từng trang PDF song song với chữ OCR và sửa chính tả trước khi lập chỉ mục
                 </span>
               </div>
@@ -242,7 +242,7 @@ export const UploadPanel: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting || !file}
-              className="px-5 py-2 rounded-xl bg-secondary text-white font-headline-sm text-body-sm shadow-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+              className="px-5 py-2 rounded-xl bg-secondary text-white text-[13px] font-medium shadow-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>
