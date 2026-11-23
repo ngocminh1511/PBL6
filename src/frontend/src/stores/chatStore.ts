@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { ChatSession, ChatMessage, EvidenceItem, RetrievalMode, TokenUsage } from '../lib/types';
 import { api, errorMessage, errorTokenUsage } from '../lib/api';
 
+export type InspectorTab = 'tab-hierarchy' | 'tab-graph' | 'tab-rerank' | 'tab-appendix';
+
 interface ChatState {
   sessions: ChatSession[];
   error: string | null;
@@ -19,11 +21,13 @@ interface ChatState {
   selectedRetrievalMode: RetrievalMode;
 
   // Inspector Column State
-  inspectorTab: 'tab-hierarchy' | 'tab-graph' | 'tab-rerank';
+  inspectorTab: InspectorTab;
   selectedCitation: string | null;
   /** Bumped on every citation click, so choosing the same citation again re-focuses the tree. */
   focusTick: number;
   selectedEvidences: EvidenceItem[];
+  /** Appendix shown in the inspector preview; the chunk is highlighted when given. */
+  selectedAppendix: { id: string; chunkId?: string } | null;
   pinnedSessionIds: string[];
 
   // Actions
@@ -36,7 +40,8 @@ interface ChatState {
   sendMessage: (question: string) => Promise<void>;
   setSelectedDomain: (domain: string) => void;
   setSelectedRetrievalMode: (mode: RetrievalMode) => void;
-  setInspectorTab: (tab: 'tab-hierarchy' | 'tab-graph' | 'tab-rerank') => void;
+  setInspectorTab: (tab: InspectorTab) => void;
+  openAppendix: (id: string, chunkId?: string) => void;
   setSelectedCitation: (citation: string | null) => void;
 }
 
@@ -70,6 +75,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   selectedCitation: 'Điều 35, Khoản 1, Điểm a',
   focusTick: 0,
   selectedEvidences: [],
+  selectedAppendix: null,
 
   fetchSessions: async (cursor) => {
     set({ isLoading: true, error: null, errorTokenUsage: null });
@@ -98,6 +104,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       activeSessionId: null,
       messages: [],
       selectedEvidences: [],
+      selectedAppendix: null,
       selectedCitation: null,
       error: null,
       errorTokenUsage: null,
@@ -106,7 +113,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   selectSession: async (sessionId: string) => {
-    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedCitation: null, error: null, errorTokenUsage: null });
+    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedAppendix: null, selectedCitation: null, error: null, errorTokenUsage: null });
     try {
       const data = await api.getSession(sessionId);
       set({
@@ -175,6 +182,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setSelectedDomain: (domain) => set({ selectedDomain: domain }),
   setSelectedRetrievalMode: (mode) => set({ selectedRetrievalMode: mode }),
   setInspectorTab: (tab) => set({ inspectorTab: tab }),
+  openAppendix: (id, chunkId) => set({ selectedAppendix: { id, chunkId }, inspectorTab: 'tab-appendix' }),
   setSelectedCitation: (citation) => set(state => ({ selectedCitation: citation, focusTick: state.focusTick + 1 })),
 
   renameSession: async (sessionId: string, newTitle: string) => {

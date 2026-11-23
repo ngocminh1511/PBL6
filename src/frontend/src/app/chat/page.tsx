@@ -12,6 +12,7 @@ import { CollapsedRail } from '../../components/chat/CollapsedRail';
 import { HierarchyTree } from '../../components/inspector/HierarchyTree';
 import { GraphView } from '../../components/inspector/GraphView';
 import { EvidencePanel } from '../../components/inspector/EvidencePanel';
+import { AppendixPanel, answerAppendices } from '../../components/inspector/AppendixPanel';
 import { useChatStore } from '../../stores/chatStore';
 import { exportSessionToPDF } from '../../lib/exportPdf';
 
@@ -88,11 +89,19 @@ export default function ChatPage() {
   const error = useChatStore(state => state.error);
   const errorUsage = useChatStore(state => state.errorTokenUsage);
   const evidenceCount = useChatStore(state => state.selectedEvidences.length);
+  const selectedAppendix = useChatStore(state => state.selectedAppendix);
+  const appendixCount = answerAppendices(messages).length;
+
+  // Opening an appendix from the conversation reveals the inspector if it was collapsed.
+  useEffect(() => {
+    if (selectedAppendix) setRightOpen(true);
+  }, [selectedAppendix]);
 
   const inspectorTabs: Array<{ tab: typeof inspectorTab; label: string }> = [
     { tab: 'tab-hierarchy', label: 'Cây phân cấp' },
     { tab: 'tab-graph', label: 'Đồ thị tri thức' },
     { tab: 'tab-rerank', label: `Bằng chứng (${evidenceCount})` },
+    { tab: 'tab-appendix', label: `Phụ lục (${appendixCount})` },
   ];
 
   const headerIconBtn = 'p-1.5 rounded-lg text-[#6E6B64] hover:text-ink hover:bg-stone transition-colors';
@@ -282,6 +291,7 @@ export default function ChatPage() {
             {inspectorTab === 'tab-hierarchy' && <HierarchyTree />}
             {inspectorTab === 'tab-graph' && <GraphView />}
             {inspectorTab === 'tab-rerank' && <EvidencePanel />}
+            {inspectorTab === 'tab-appendix' && <AppendixPanel />}
           </aside>
         </>
       ) : (
@@ -295,6 +305,7 @@ export default function ChatPage() {
           onSelectTab={setInspectorTab}
           activeTab={inspectorTab}
           evidenceCount={evidenceCount}
+          appendixCount={appendixCount}
         />
       )}
 

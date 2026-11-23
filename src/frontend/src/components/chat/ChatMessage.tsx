@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Check, CheckCircle2, Copy, FileText, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { BookOpen, Check, CheckCircle2, Copy, Download, FileText, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { ChatMessage as ChatMessageType, MessageFeedback as Feedback } from '../../lib/types';
-import { api } from '../../lib/api';
+import { api, appendixDocxUrl } from '../../lib/api';
 import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
 import { TokenUsage } from './TokenUsage';
@@ -108,7 +108,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
               key={ev.chunk_id || i}
               index={i + 1}
               citation={ev.citation}
-              href={ev.appendix_id ? '/appendices?' + new URLSearchParams({ appendix_id: ev.appendix_id, chunk_id: ev.chunk_id }).toString() : undefined}
+              appendix={ev.appendix_id ? { id: ev.appendix_id, chunkId: ev.chunk_id } : undefined}
               isGraphRef={ev.source.includes('graph') || ev.source.includes('REFERS_TO')}
             />
           ))}
@@ -118,19 +118,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
       {/* Appendix attachments */}
       {message.attachments?.map(item => (
         <div key={item.appendix_id} className="rounded-xl border border-ink/10 bg-paper px-3.5 py-3 space-y-2">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-navy shrink-0" />
-            <CitationChip citation={item.title} href={'/appendices?appendix_id=' + encodeURIComponent(item.appendix_id)} />
+          <div className="flex items-start gap-2">
+            <FileText className="w-4 h-4 text-navy shrink-0 mt-1.5" />
+            <CitationChip citation={item.title} appendix={{ id: item.appendix_id }} />
           </div>
-          {item.files && item.files.length > 0 && (
-            <div className="flex flex-wrap gap-3 text-[12px]">
-              {item.files.map(file => (
-                <a key={file.artifact_id} className="font-medium text-navy hover:underline" href={file.download_url}>
-                  Tải {file.format.toUpperCase()} nguồn
-                </a>
-              ))}
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-3 text-[12px] pl-6">
+            <span className="text-muted">Phụ lục {item.number} · {item.document_number}{item.forms?.length ? ` · ${item.forms.length} mẫu` : ''}</span>
+            <a className="inline-flex items-center gap-1 font-medium text-navy hover:underline" href={appendixDocxUrl(item.appendix_id)} download>
+              <Download className="w-3.5 h-3.5" />Tải phụ lục (.docx)
+            </a>
+          </div>
         </div>
       ))}
 

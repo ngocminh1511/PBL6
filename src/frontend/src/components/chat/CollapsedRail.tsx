@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   Check,
   FileCheck2,
+  Paperclip,
   FolderTree,
   History,
   PanelLeftOpen,
@@ -16,7 +17,7 @@ import {
 import { NAV_ITEMS, isNavActive } from '../layout/navItems';
 import { NavEntry } from '../layout/NavEntry';
 
-export type InspectorTab = 'tab-hierarchy' | 'tab-graph' | 'tab-rerank';
+import type { InspectorTab } from '../../stores/chatStore';
 
 interface CollapsedRailProps {
   side: 'left' | 'right';
@@ -26,6 +27,7 @@ interface CollapsedRailProps {
   onSelectTab?: (tab: InspectorTab) => void;
   activeTab?: InspectorTab;
   evidenceCount?: number;
+  appendixCount?: number;
 }
 
 const iconBtn = 'w-8 h-8 rounded-xl flex items-center justify-center transition-colors';
@@ -38,6 +40,7 @@ export const CollapsedRail: React.FC<CollapsedRailProps> = ({
   onSelectTab,
   activeTab,
   evidenceCount = 0,
+  appendixCount = 0,
 }) => {
   const pathname = usePathname();
   const dragStartX = useRef<number | null>(null);
@@ -158,6 +161,7 @@ export const CollapsedRail: React.FC<CollapsedRailProps> = ({
     { tab: 'tab-hierarchy', title: 'Cây Phân cấp văn bản', icon: <FolderTree className="w-4 h-4" /> },
     { tab: 'tab-graph', title: 'Đồ thị Tri thức', icon: <Share2 className="w-4 h-4" /> },
     { tab: 'tab-rerank', title: `Bằng chứng (${evidenceCount})`, icon: <FileCheck2 className="w-4 h-4" /> },
+    { tab: 'tab-appendix', title: `Phụ lục (${appendixCount})`, icon: <Paperclip className="w-4 h-4" /> },
   ];
 
   return (
@@ -183,11 +187,14 @@ export const CollapsedRail: React.FC<CollapsedRailProps> = ({
             className={`relative ${iconBtn} ${activeTab === tab ? 'text-navy bg-stone' : 'text-[#6E6B64] hover:text-navy hover:bg-stone'}`}
           >
             {icon}
-            {tab === 'tab-rerank' && evidenceCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-navy text-white font-mono text-[9.5px] leading-[15px] text-center tabular-nums">
-                {evidenceCount}
-              </span>
-            )}
+            {(() => {
+              const count = tab === 'tab-rerank' ? evidenceCount : tab === 'tab-appendix' ? appendixCount : 0;
+              return count > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-navy text-white font-mono text-[9.5px] leading-[15px] text-center tabular-nums">
+                  {count}
+                </span>
+              );
+            })()}
           </button>
         ))}
       </aside>
