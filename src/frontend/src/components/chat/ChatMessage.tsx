@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Check, CheckCircle2, Copy, Download, FileText, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { ChatMessage as ChatMessageType, MessageFeedback as Feedback } from '../../lib/types';
-import { api, appendixDocxUrl } from '../../lib/api';
+import { api, appendixDocxUrl, chunkFromViewUrl } from '../../lib/api';
 import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
 import { TokenUsage } from './TokenUsage';
@@ -108,7 +108,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
               key={ev.chunk_id || i}
               index={i + 1}
               citation={ev.citation}
-              appendix={ev.appendix_id ? { id: ev.appendix_id, chunkId: ev.chunk_id } : undefined}
+              appendix={ev.appendix_id ? { id: ev.appendix_id, chunkId: chunkFromViewUrl(ev.view_url) } : undefined}
               isGraphRef={ev.source.includes('graph') || ev.source.includes('REFERS_TO')}
             />
           ))}

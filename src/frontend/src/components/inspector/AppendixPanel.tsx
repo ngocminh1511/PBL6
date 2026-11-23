@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Download, FileText, FileType, Maximize2, X } from 'lucide-react';
-import { api, appendixDocxUrl, appendixViewUrl, errorMessage } from '../../lib/api';
+import { api, appendixDocxUrl, appendixViewUrl, chunkFromViewUrl, errorMessage } from '../../lib/api';
 import type { AppendixItem, ChatMessage } from '../../lib/types';
 import { useChatStore } from '../../stores/chatStore';
 
@@ -10,15 +10,6 @@ interface AppendixRef {
   id: string;
   label: string;
   chunkId?: string;
-}
-
-/**
- * The chunk to highlight in the preview, only when it is a piece of that appendix
- * ("<appendix_id>" or "<appendix_id>:p3"). An article that merely links to an appendix
- * keeps its own chunk id, which the preview endpoint rejects with 404.
- */
-export function appendixChunk(appendixId: string, chunkId?: string): string | undefined {
-  return chunkId && (chunkId === appendixId || chunkId.startsWith(appendixId + ':')) ? chunkId : undefined;
 }
 
 /** Appendices attached to or cited by the latest answer, without duplicates. */
@@ -35,7 +26,7 @@ export function answerAppendices(messages: ChatMessage[]): AppendixRef[] {
     refs.set(evidence.appendix_id, {
       id: evidence.appendix_id,
       label: known?.label ?? evidence.citation,
-      chunkId: known?.chunkId ?? appendixChunk(evidence.appendix_id, evidence.chunk_id),
+      chunkId: known?.chunkId ?? chunkFromViewUrl(evidence.view_url),
     });
   }
   return Array.from(refs.values());
@@ -144,7 +135,7 @@ export function AppendixPreview({ id, chunkId, onExpand, onClose }: {
           <iframe
             key={id + (form ?? '')}
             title="Xem trước phụ lục"
-            src={appendixViewUrl(id, { form, chunkId: appendixChunk(id, chunkId) })}
+            src={appendixViewUrl(id, { form, chunkId })}
             sandbox="allow-scripts"
             className="w-full h-full border-0 bg-white"
           />

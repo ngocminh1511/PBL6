@@ -54,6 +54,15 @@ const query = (values: Record<string, string | undefined>) => {
 export const appendixViewUrl = (id: string, options: { form?: string; chunkId?: string } = {}) =>
   `/api/appendices/${encodeURIComponent(id)}/view` + query({ form: options.form, chunk_id: options.chunkId });
 
+/**
+ * The appendix chunk to highlight, taken from the evidence's view_url: the backend adds
+ * chunk_id only for real appendix chunks, never for form metadata or linked articles.
+ */
+export const chunkFromViewUrl = (viewUrl?: string) => {
+  const search = viewUrl?.split('?')[1];
+  return (search && new URLSearchParams(search).get('chunk_id')) || undefined;
+};
+
 /** Editable Word file of one form, or of the whole appendix without a form. */
 export const appendixDocxUrl = (id: string, form?: string) =>
   `/api/appendices/${encodeURIComponent(id)}/docx` + query({ form });
