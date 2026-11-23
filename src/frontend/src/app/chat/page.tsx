@@ -101,9 +101,9 @@ export default function ChatPage() {
 
   const inspectorTabs: Array<{ tab: typeof inspectorTab; label: string }> = [
     { tab: 'tab-hierarchy', label: 'Cây phân cấp' },
-    { tab: 'tab-graph', label: 'Đồ thị tri thức' },
-    { tab: 'tab-rerank', label: `Bằng chứng (${evidenceCount})` },
     { tab: 'tab-appendix', label: `Phụ lục (${appendixCount})` },
+    { tab: 'tab-rerank', label: `Bằng chứng (${evidenceCount})` },
+    { tab: 'tab-graph', label: 'Đồ thị tri thức' },
   ];
 
   const headerIconBtn = 'p-1.5 rounded-lg text-[#6E6B64] hover:text-ink hover:bg-stone transition-colors';
