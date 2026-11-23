@@ -5,6 +5,8 @@ Neo4j (đồ thị) + Qdrant (vector) → truy hồi lai → LLM trả lời kè
 
 ## Chạy ứng dụng sau khi hợp nhất
 
+Hướng dẫn PowerShell để chạy hằng ngày và dùng venv hiện có: [docs/RUN.md](docs/RUN.md).
+
 Ứng dụng dùng **Next.js → một backend FastAPI → thư viện `labor_rag`**.
 Nút **Phụ lục & kiểm tra truy hồi** mở `/appendices`, không yêu cầu đăng nhập.
 Trang chat dùng pipeline đầy đủ có LLM và phụ lục; công cụ retrieval chỉ chạy embedding, Qdrant và Neo4j.
