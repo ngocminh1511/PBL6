@@ -560,5 +560,7 @@ export interface ASTNode {
   article_number?: string | null;
   clause_number?: string | null;
   point_number?: string | null;
+  /** Source document number of a Phap dien article ("45/2019/QH14"). */
+  document_number?: string | null;
   children?: ASTNode[];
 }

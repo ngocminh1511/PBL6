@@ -273,6 +273,8 @@ class Corpus:
                     "article_number": node.get("article_number"),
                     "clause_number": node.get("clause_number"),
                     "point_number": node.get("point_number"),
+                    "document_number": self._vanban_numbers.get(node.get("document_id"))
+                    if node.get("label") == "Dieu" else None,
                     "children": children,
                 }
 
