@@ -8,7 +8,7 @@ import { DocumentTable } from '../../components/documents/DocumentTable';
 import { IngestionProgress } from '../../components/documents/IngestionProgress';
 import { UploadPanel } from '../../components/documents/UploadPanel';
 import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
-import { ASTTree } from '../../components/documents/ASTTree';
+import { LegalTree } from '../../components/inspector/LegalTree';
 import { api, errorMessage } from '../../lib/api';
 import type { HealthResponse } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
@@ -44,6 +44,7 @@ function DocumentsWorkspace() {
   const [probeError, setProbeError] = useState('');
   const [probing, setProbing] = useState(false);
   const [updatingDomain, setUpdatingDomain] = useState(false);
+  const [showJson, setShowJson] = useState(false);
 
   async function probe() {
     setProbing(true); setProbeError('');
@@ -172,7 +173,7 @@ function DocumentsWorkspace() {
         {tab === 'van-ban' && <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg w-full items-start">
           {/* LEFT COLUMN: Document Corpus Management (7 cols) */}
           <div className="lg:col-span-7 flex flex-col gap-space-md">
-            <DocumentTable onUpload={() => selectTab('nap-pdf')} />
+            <DocumentTable />
           </div>
 
           {/* RIGHT COLUMN: Document Detail & Structure Inspection (5 cols) */}
@@ -255,23 +256,22 @@ function DocumentsWorkspace() {
                 </div>
               </div>
 
-              {/* Tree Header */}
+              {/* Tree: same hierarchy view as the chat inspector */}
               <div className="flex items-center justify-between pt-space-xs border-t border-outline-variant/20">
-                <div className="flex items-center gap-1.5 font-headline-sm text-body-sm text-on-surface">
-                  <span className="material-symbols-outlined text-[18px] text-secondary">format_list_bulleted</span>
-                  <span>Mục lục & Toàn văn Điều khoản</span>
+                <div className="flex items-center gap-1 bg-stone p-1 rounded-xl">
+                  <button type="button" onClick={() => setShowJson(false)} className={'px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors ' + (!showJson ? 'bg-white text-ink shadow-[0_1px_2px_rgba(28,27,24,0.06)]' : 'text-ink-3 hover:text-ink')}>Cây phân cấp trực quan</button>
+                  <button type="button" onClick={() => setShowJson(true)} className={'px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors ' + (showJson ? 'bg-white text-ink shadow-[0_1px_2px_rgba(28,27,24,0.06)]' : 'text-ink-3 hover:text-ink')}>Mã AST / JSON</button>
                 </div>
-                <span className="font-label-statute text-label-statute text-on-surface-variant text-[11px]">
-                  {selectedDocAST ? 'Bấm từng điều để mở rộng' : ''}
-                </span>
+                {selectedDocAST && !showJson && <span className="text-[11px] text-muted">Bấm để mở rộng</span>}
               </div>
 
-              {/* AST Tree View */}
-              <div className="bg-surface-container-low p-space-md rounded-xl border border-outline-variant/30 max-h-[600px] overflow-auto">
+              <div className="p-2.5 rounded-2xl bg-white border border-ink/10 max-h-[600px] overflow-auto legal-scroll">
                 {selectedDocAST ? (
-                  <ASTTree node={selectedDocAST} />
+                  showJson
+                    ? <pre className="font-mono text-[11px] text-ink-2 overflow-auto">{JSON.stringify(selectedDocAST, null, 2)}</pre>
+                    : <LegalTree node={selectedDocAST} />
                 ) : (
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">Chọn một văn bản trong danh mục để xem cấu trúc.</p>
+                  <p className="py-10 text-center text-[12.5px] text-muted">{selectedDoc ? (error ? 'Không tải được cấu trúc văn bản.' : 'Đang tải cấu trúc…') : 'Chọn một văn bản trong danh mục để xem cấu trúc.'}</p>
                 )}
               </div>
 

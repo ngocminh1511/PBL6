@@ -3,7 +3,7 @@
 import React from 'react';
 import { useDocumentStore } from '../../stores/documentStore';
 
-export const DocumentTable: React.FC<{ onUpload: () => void }> = ({ onUpload }) => {
+export const DocumentTable: React.FC = () => {
   const {
     documents,
     selectedDocId,
@@ -20,7 +20,7 @@ export const DocumentTable: React.FC<{ onUpload: () => void }> = ({ onUpload }) 
 
   return (
     <div className="flex flex-col gap-space-md">
-      {/* Control Strip: Search, Scope Chips, Filter & Ingestion Trigger */}
+      {/* Control Strip: Search, Scope Chips, Filter */}
       <div className="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md border border-outline-variant/30">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md">
           {/* Search Field */}
@@ -36,16 +36,6 @@ export const DocumentTable: React.FC<{ onUpload: () => void }> = ({ onUpload }) 
               className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container transition-colors border border-outline-variant/30"
             />
           </div>
-
-          {/* Ingest Button */}
-          <button
-            onClick={onUpload}
-            type="button"
-            className="shrink-0 flex items-center justify-center gap-space-xs px-space-md py-2 rounded-lg bg-[#0F172A] text-white hover:bg-opacity-90 shadow-sm transition-all font-headline-sm text-body-sm"
-          >
-            <span className="material-symbols-outlined text-[18px]">post_add</span>
-            <span>+ Nạp văn bản mới</span>
-          </button>
         </div>
 
         {/* Filter Pills */}
