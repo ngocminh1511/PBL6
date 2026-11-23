@@ -18,6 +18,31 @@ class ChatRequestError(HTTPException):
         self.token_usage = token_usage
 
 
+VIETNAMESE_LETTERS = set("ăâđêôơưàảãáạằẳẵắặầẩẫấậèẻẽéẹềểễếệìỉĩíịòỏõóọồổỗốộờởỡớợùủũúụừửữứựỳỷỹýỵ")
+TITLE_LIMIT = 60
+
+
+def is_vietnamese(text: str) -> bool:
+    return any(char in VIETNAMESE_LETTERS for char in text.lower())
+
+
+def question_title(question: str, limit: int = TITLE_LIMIT) -> str:
+    """The question itself, cut at a word boundary: the fallback session title."""
+    text = " ".join(question.split())
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0] or text[:limit]
+    return cut.rstrip(" ,.;:?!") + "…"
+
+
+def usable_title(title: str, question: str) -> bool:
+    """Reject titles in another language than a Vietnamese question, or of no use as a name."""
+    words = title.split()
+    if not 1 <= len(words) <= 12 or len(title) > TITLE_LIMIT:
+        return False
+    return is_vietnamese(title) or not is_vietnamese(question)
+
+
 def generate_session_title(runtime, question: str) -> str:
     """Generate a concise 3-6 word session title based on the first user question."""
     prompt = (
@@ -31,12 +56,12 @@ def generate_session_title(runtime, question: str) -> str:
         with usage_stage("session_title"):
             pipeline = runtime.chat()
             title = pipeline.llm.complete("Bạn là trợ lý pháp luật chuyên đặt tên phiên tra cứu ngắn gọn.", prompt, max_tokens=30, reasoning="off").strip()
-        title = title.strip('"\':\n\r').split('\n')[0].strip()
-        if title:
-            return title[:60]
+        title = title.strip('"\':\n\r').split('\n')[0].strip().strip('"\'.')
+        if usable_title(title, question):
+            return title
     except Exception:
         pass
-    return question[:50].strip()
+    return question_title(question)
 
 
 def answer_question(req, user, db, runtime):

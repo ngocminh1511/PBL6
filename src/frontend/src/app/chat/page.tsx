@@ -68,6 +68,8 @@ export default function ChatPage() {
   }, [messages.length, isSending]);
 
   const activeSession = sessions.find((s) => s.id === activeSessionId);
+  // Until the backend names a new session, show its first question, as chat apps do.
+  const pendingTitle = messages.find((m) => m.role === 'user')?.content.trim();
   const scopeLabel = selectedDomain === 'lao_dong' ? 'Pháp luật Lao động' : 'Toàn bộ kho số hóa';
 
   const handleExportPDF = () => {
@@ -164,7 +166,7 @@ export default function ChatPage() {
               <span className="text-muted hidden sm:inline whitespace-nowrap">{scopeLabel}</span>
               <span className="text-[#C9C5BC] hidden sm:inline">/</span>
               <h1 className="font-semibold text-ink truncate">
-                {activeSession ? activeSession.title : 'Phiên hỏi đáp mới'}
+                {activeSession ? activeSession.title : pendingTitle || 'Phiên hỏi đáp mới'}
               </h1>
             </div>
           </div>
