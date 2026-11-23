@@ -384,7 +384,9 @@ python -m labor_rag.ingest.embed_and_index [--backend modal] [--upsert | --recre
        `Evidence.amendments`, prompt yêu cầu áp dụng quy định sửa đổi.
    - Phụ lục: tìm trực tiếp bằng vector và đi từ Điều liên kết tới phụ lục (tối đa 2 cạnh).
 3. **Rerank** (`retrieval/rerank.py`): LLM chọn top-N Điều/phụ lục liên quan nhất; sau rerank bổ sung tối đa 6 bằng chứng
-   phụ lục từ quan hệ Điều–phụ lục.
+   phụ lục từ quan hệ Điều–phụ lục (`AppendixCatalog.augment`). Chỉ phụ lục gắn với chính Điều đã chọn được bổ sung;
+   phụ lục của Điều cách một cạnh đồ thị chỉ được bổ sung khi câu hỏi xin biểu mẫu ("mẫu", "tờ khai", "tải về",
+   "đơn đề nghị"), vì các Điều quy định riêng (vd Điều 89 NĐ 145 về người giúp việc gia đình) dẫn chiếu tới hàng chục Điều chung.
 4. **Sinh câu trả lời** (`generation/answer.py`): prompt theo mục 4.8; phụ lục thiếu nguồn thì nói rõ và dẫn nguồn,
    không bịa danh mục.
 5. **Kiểm tra trích dẫn** (`generation/citation_verify.py`): đối chiếu Điều và Phụ lục được trích (cả số và văn bản)

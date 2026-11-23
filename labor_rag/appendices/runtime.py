@@ -91,16 +91,21 @@ class AppendixCatalog:
     def augment(self, query: str, evidences: list, *, limit: int = 6) -> list:
         from labor_rag.retrieval.hybrid_retrieve import Evidence
         seeds={(e.document_id,str(e.meta_dieu)) for e in evidences if e.meta_dieu}
-        seeds |= {neighbor for seed in list(seeds) for neighbor in self.article_neighbors.get(seed,set())}
+        # Articles one graph hop away are often generic special-case provisions that cite
+        # dozens of articles (e.g. Điều 89 NĐ 145 on domestic workers cites Điều 35, 118, 124 …),
+        # so their appendices are attached only when the question asks for a form.
+        neighbors={neighbor for seed in seeds for neighbor in self.article_neighbors.get(seed,set())}-seeds
+        is_form_query=any(word in ascii_fold(query).lower() for word in ["mau","to khai","tai ve","don de nghi"])
+        reach=seeds|neighbors if is_form_query else seeds
         direct={e.appendix_id for e in evidences if e.appendix_id}
         linked={a["appendix_id"] for a in self.items.values()
-                if any((ref["document_id"],str(ref["article_number"])) in seeds for ref in a["article_ids"])}
+                if any((ref["document_id"],str(ref["article_number"])) in reach for ref in a["article_ids"])}
         candidates=direct|linked
         warnings=[]
         from labor_rag.ingest.chunk_schema import make_document_id
         for ref in self.references:
             seed=(make_document_id(ref["owner_document"]),ref["article"].rsplit(".",1)[-1])
-            if seed not in seeds:
+            if seed not in reach:
                 continue
             target=make_document_id(ref["target_document"])
             label=ref.get("canonical_label")
@@ -108,7 +113,6 @@ class AppendixCatalog:
             if not any(usable(a) for a in matches):
                 warnings.append(f"Dẫn chiếu phụ lục {ref.get('label') or '(không ghi số)'} của {ref['target_document']}: chưa có nội dung đã xác minh và còn hiệu lực trong kho. Cần đối chiếu nguồn; không suy ra danh mục từ tên phụ lục.")
         # Metadata search also handles requests for unembedded forms.
-        is_form_query=any(word in ascii_fold(query).lower() for word in ["mau","to khai","tai ve","don de nghi"])
         if is_form_query:
             candidates.update(a["appendix_id"] for a in self.find(query)[:3] if a["kind"]=="form")
         needles=terms(query)

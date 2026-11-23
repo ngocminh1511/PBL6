@@ -222,3 +222,21 @@ def test_form_preview_and_word_download(forms_catalog):
         assert client.get("/api/appendices/doc:pl5/docx").status_code==200
         assert client.get("/api/appendices/doc:pl5/docx",params={"form":"99/PLV"}).status_code==404
         assert client.get("/api/appendices/doc:pl5/view",params={"form":"99/PLV"}).status_code==404
+
+
+def test_forms_one_graph_hop_away_are_attached_only_when_a_form_is_asked(forms_catalog):
+    catalog=forms_catalog
+    item=catalog.items["doc:pl5"]
+    item.update(still_valid=True,source_url="https://example.test",
+                article_ids=[{"document_id":"doc","article_number":"89"}])
+    # Điều 35 of the code is cited by the special domestic-worker article 89 that lists the forms.
+    catalog.article_neighbors={("law","35"):{("doc","89")}}
+    catalog.references=[]
+    seed=lambda d: Evidence("law:d"+d,None,"Điều "+d,"Nội dung","vector",0.8,document_id="law",meta_dieu=d)
+    assert [e.chunk_id for e in catalog.augment("Thời hạn báo trước khi nghỉ việc?",[seed("35")])]==["law:d35"]
+    assert catalog.last_attachments==[]
+    asked=catalog.augment("Cho tôi mẫu hợp đồng giúp việc gia đình",[seed("35")])
+    assert [a["appendix_id"] for a in catalog.last_attachments]==["doc:pl5"] and asked[-1].chunk_id=="doc:pl5"
+    cited=Evidence("doc:d89",None,"Điều 89","Nội dung","vector",0.8,document_id="doc",meta_dieu="89")
+    catalog.augment("Quy định riêng với người giúp việc gia đình?",[cited])
+    assert [a["appendix_id"] for a in catalog.last_attachments]==["doc:pl5"]  # linked to the cited article itself
