@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test:config": "node --test tests/admin-config.test.mjs tests/next-config.test.mjs tests/llm-profiles.test.mjs",
     "test:chat": "node --test tests/token-usage.test.mjs tests/appendix-panel.test.mjs tests/legal-tree.test.mjs",
-    "test:documents": "node --test tests/ocr-structure.test.mjs"
+    "test:documents": "node --test tests/ocr-structure.test.mjs tests/text-diff.test.mjs"
   },
   "dependencies": {
     "@tiptap/pm": "^2.27.3",

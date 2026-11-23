@@ -5,6 +5,7 @@ import { api, errorMessage } from '../../lib/api';
 import { IngestionTask } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 import { OcrEditor } from './OcrEditor';
+import { ChangeReview } from './ChangeReview';
 
 interface IngestionProgressProps {
   task: IngestionTask;
@@ -560,6 +561,10 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
             <p key={`ocr-warn-${idx}`} className="text-xs text-amber-800">{warning}</p>
           ))}
         </div>
+      )}
+
+      {isAwaitingReview && task.document_type === 'pdf' && (
+        <ChangeReview key={task.id} taskId={task.id} hasUnsavedEdits={isEditing} />
       )}
 
       {task.result?.warnings?.map((warning, index) => <p key={index} className="text-xs text-amber-800">{warning}</p>)}

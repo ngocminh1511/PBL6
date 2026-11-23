@@ -249,6 +249,47 @@ class OCRPageDetail(OCRPagePreview):
 class OCRPageUpdateRequest(BaseModel):
     text: str
 
+class ArticleChange(BaseModel):
+    article_id: str
+    label: str
+    title: str = ""
+    # new | replaced | metadata | unchanged | kept | missing; None when the store could not be read.
+    status: Literal["new", "replaced", "metadata", "unchanged", "kept", "missing"] | None = None
+    new_text: str | None = None
+    old_text: str | None = None
+    old_source: str | None = None
+    old_version_date: str | None = None
+
+class AmendmentChange(BaseModel):
+    source_article: str
+    source_clause: str | None = None
+    actions: list[str] = []
+    target_document: str
+    target_document_id: str
+    target_article_id: str
+    target_article: str
+    scope: str | None = None
+    instruction: str = ""
+    target_indexed: bool | None = None
+    current_text: str | None = None
+
+class ReplacedDocument(BaseModel):
+    document: str
+    document_id: str
+    indexed: bool | None = None
+
+class TaskChangesResponse(BaseModel):
+    document_id: str
+    document_number: str | None = None
+    title: str | None = None
+    version_date: str | None = None
+    store: Literal["connected", "unavailable"]
+    store_error: str | None = None
+    articles: list[ArticleChange] = []
+    amendments: list[AmendmentChange] = []
+    replaced_documents: list[ReplacedDocument] = []
+    warnings: list[str] = []
+
 class OCRPreviewSummary(BaseModel):
     total_pages: int = 0
     processed_pages: int = 0

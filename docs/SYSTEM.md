@@ -238,6 +238,12 @@ python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc
   sửa đổi khi chưa có VBHN.
 - **Văn bản thay thế**: câu "thay thế / hết hiệu lực" trong Điều hiệu lực/chuyển tiếp → `vlr:replaces` và `vlt:validTo`
   trên văn bản cũ → `effective_to_date`.
+- **Rà soát trên web** (`/documents?tab=nap-pdf`): OCR dừng ở `awaiting_review`; người dùng sửa từng trang (giữ văn bản
+  thuần, mỗi dòng một đoạn) rồi gọi `GET /api/documents/tasks/{id}/changes`
+  (`labor_rag/services/changes.py::preview_changes`). Hàm dựng chunk từ trang đã sửa giống lúc lập chỉ mục, đọc chunk đang có
+  của cùng `document_id` và chạy `plan_upsert` (mục 4.7) **chỉ đọc**: mỗi Điều là `new`, `replaced`, `metadata`,
+  `unchanged`, `kept` hoặc `missing`; kèm các Điều đích của văn bản sửa đổi với nội dung hiện hành trong kho. Không đọc được
+  Qdrant thì `store = "unavailable"` và trạng thái từng Điều là `null`.
 
 Trạng thái: `docs/Luat_lao_dong.pdf` đã OCR thành `45-2019-qh14` (216/220 Điều, 594 khoản, `version_date = 2026-07-01`),
 ABox ở `ontology/abox/pdf/45-2019-qh14.ttl`. **Chưa ghép** vào `lao_dong_v5` / Neo4j / Qdrant. Thiếu Điều 76–79 do bản

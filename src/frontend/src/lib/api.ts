@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TokenUsage, MessageFeedbackRequest } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TaskChanges, TokenUsage, MessageFeedbackRequest } from './types';
 
 export function errorTokenUsage(error: unknown): TokenUsage | null {
   if (!axios.isAxiosError(error)) return null;
@@ -169,6 +169,11 @@ export const api = {
 
   async updateTaskOCRPage(taskId: string, pageNumber: number, text: string): Promise<OCRPageDetail> {
     const res = await apiClient.put(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`, { text });
+    return res.data;
+  },
+
+  async getTaskChanges(taskId: string): Promise<TaskChanges> {
+    const res = await apiClient.get(`/documents/tasks/${taskId}/changes`);
     return res.data;
   },
 

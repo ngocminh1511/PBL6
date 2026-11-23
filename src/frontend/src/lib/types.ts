@@ -180,6 +180,48 @@ export interface OCRPagePreview {
   preview_text: string;
 }
 
+/** Merge decision for one Điều of a reviewed PDF (backend TaskChangesResponse). */
+export type ArticleChangeStatus = 'new' | 'replaced' | 'metadata' | 'unchanged' | 'kept' | 'missing';
+
+export interface ArticleChange {
+  article_id: string;
+  label: string;
+  title: string;
+  /** null when the vector store could not be read. */
+  status: ArticleChangeStatus | null;
+  new_text: string | null;
+  old_text: string | null;
+  old_source: string | null;
+  old_version_date: string | null;
+}
+
+export interface AmendmentChange {
+  source_article: string;
+  source_clause: string | null;
+  actions: string[];
+  target_document: string;
+  target_document_id: string;
+  target_article_id: string;
+  target_article: string;
+  scope: string | null;
+  instruction: string;
+  target_indexed: boolean | null;
+  current_text: string | null;
+}
+
+export interface TaskChanges {
+  document_id: string;
+  document_number: string | null;
+  title: string | null;
+  version_date: string | null;
+  store: 'connected' | 'unavailable';
+  store_error: string | null;
+  articles: ArticleChange[];
+  amendments: AmendmentChange[];
+  replaced_documents: { document: string; document_id: string; indexed: boolean | null }[];
+  warnings: string[];
+}
+
 export interface OCRPageDetail extends OCRPagePreview {
   text: string;
 }

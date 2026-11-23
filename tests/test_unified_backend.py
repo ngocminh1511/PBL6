@@ -610,6 +610,28 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         assert put_res.json()["text"] == edited_text
         assert client.get(f"/api/documents/tasks/{task_id}/ocr-page/1").json()["text"] == edited_text
 
+        # Change preview reads the edited pages; an unreachable store is reported, not guessed.
+        import qdrant_client
+
+        class DownStore:
+            def __init__(self, **kwargs):
+                pass
+
+            def scroll(self, *args, **kwargs):
+                raise ConnectionError("store down")
+
+            def close(self):
+                pass
+
+        monkeypatch.setattr(qdrant_client, "QdrantClient", DownStore)
+        changes = client.get(f"/api/documents/tasks/{task_id}/changes")
+        assert changes.status_code == 200, changes.text
+        body = changes.json()
+        assert body["document_id"] == "88-2026-qh15" and body["store"] == "unavailable"
+        first = next(a for a in body["articles"] if a["label"] == "Điều 1")
+        assert first["status"] is None and "Nội dung đã sửa chính tả chuẩn." in first["new_text"]
+        assert indexed_chunks == []
+
         # Confirm -> triggers Phase 2 with the edited text
         conf_res = client.post(f"/api/documents/tasks/{task_id}/confirm")
         assert conf_res.status_code == 200
@@ -624,6 +646,7 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         assert done["document_id"] == "88-2026-qh15"
         assert any("Nội dung đã sửa chính tả chuẩn." in c["text"] for c in indexed_chunks)
 
+        assert client.get(f"/api/documents/tasks/{task_id}/changes").status_code == 409
         ast = client.get("/api/documents/88-2026-qh15/ast").json()
         assert "Nội dung đã sửa chính tả chuẩn." in str(ast["ast_tree"])
 

@@ -67,6 +67,29 @@ def store_artifact(path, store, role):
             "storage_backend": "r2", "r2": remote}
 
 
+def reviewed_extraction(work: Path, path):
+    """The PDF pages as reviewed: ocr_pages.jsonl, including the user's edits."""
+    from labor_rag.ocr.extract import ExtractionResult, PageText
+
+    pages_file = work / "ocr_pages.jsonl"
+    if not pages_file.exists():
+        raise IngestionInputError("Không tìm thấy dữ liệu trang OCR đã tách; vui lòng nạp lại file PDF.")
+    entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+    entries.sort(key=lambda item: int(item.get("page_number") or 0))
+    pages = [
+        PageText(
+            page_number=max(0, int(item["page_number"]) - 1),
+            text=str(item.get("text") or ""),
+            method=str(item.get("method") or "text"),
+            confidence=item.get("confidence"),
+        )
+        for item in entries
+    ]
+    if not pages:
+        raise IngestionInputError("Dữ liệu trang OCR trống; vui lòng nạp lại file PDF.")
+    return ExtractionResult(source_name=Path(path).name, pages=pages)
+
+
 class IngestionPipeline:
     def __init__(self, settings, store, *, embedder=None):
         from labor_rag.services.embedding import EmbeddingProvider
@@ -148,7 +171,6 @@ class IngestionPipeline:
     def finalize_extracted(self, path, task_id, document_type="pdf", *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_ocr_summary=None):
         """Phase 2: rebuild ExtractionResult from (optionally edited) ocr_pages.jsonl and index the document."""
         from labor_rag.ingest.pdf_to_chunks import KgIndex
-        from labor_rag.ocr.extract import ExtractionResult, PageText
         from labor_rag.ocr.pipeline import build_processed_document
 
         if document_type != "pdf":
@@ -162,23 +184,7 @@ class IngestionPipeline:
         check_cancelled()
         config = self.settings
         work = config.INTERIM_DIR / "ingestion" / task_id
-        pages_file = work / "ocr_pages.jsonl"
-        if not pages_file.exists():
-            raise IngestionInputError("Không tìm thấy dữ liệu trang OCR đã tách; vui lòng nạp lại file PDF.")
-        entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
-        entries.sort(key=lambda item: int(item.get("page_number") or 0))
-        pages = [
-            PageText(
-                page_number=max(0, int(item["page_number"]) - 1),
-                text=str(item.get("text") or ""),
-                method=str(item.get("method") or "text"),
-                confidence=item.get("confidence"),
-            )
-            for item in entries
-        ]
-        if not pages:
-            raise IngestionInputError("Dữ liệu trang OCR trống; vui lòng nạp lại file PDF.")
-        extraction = ExtractionResult(source_name=Path(path).name, pages=pages)
+        extraction = reviewed_extraction(work, path)
         progress(30, "chunking", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm từ nội dung đã kiểm tra...")
         processed = build_processed_document(extraction)
         check_cancelled()

@@ -18,6 +18,7 @@ from src.backend.app.models.schemas import (
     OCRPageDetail,
     OCRPageUpdateRequest,
     OCRPreviewSummary,
+    TaskChangesResponse,
     UploadResponse,
     CursorPage,
     GraphResponse,
@@ -286,6 +287,22 @@ def task_pdf_page_image(task_id: str, page_number: int, request: Request, db: Se
     if png_bytes is None:
         raise HTTPException(404, "Không tìm thấy trang PDF yêu cầu.")
     return Response(content=png_bytes, media_type="image/png", headers={"Cache-Control": "private, max-age=300"})
+
+@router.get("/tasks/{task_id}/changes", response_model=TaskChangesResponse)
+async def task_changes(task_id: str, request: Request):
+    """Per-Dieu comparison of the reviewed PDF with the indexed corpus, before confirming."""
+    from labor_rag.services.ingestion import IngestionInputError
+    try:
+        changes, state = await run_in_threadpool(request.app.state.ingestion.preview_changes, task_id)
+    except IngestionInputError as exc:
+        raise HTTPException(422, str(exc))
+    if state == "not_found":
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    if state == "invalid_state":
+        raise HTTPException(409, "Chỉ so sánh được khi tác vụ đang chờ kiểm tra OCR.")
+    if state == "missing_file":
+        raise HTTPException(404, "Không tìm thấy file PDF gốc của tác vụ.")
+    return changes
 
 @router.post("/tasks/{task_id}/confirm", response_model=IngestionTaskResponse)
 def confirm_task_review(task_id: str, request: Request, current_user: User = Depends(get_current_user)):

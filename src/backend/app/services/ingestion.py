@@ -313,6 +313,23 @@ class IngestionService:
                         break
         return updated_entry
 
+    def preview_changes(self, task_id: str):
+        """(changes, state): what confirming this task would write; nothing is written."""
+        from labor_rag.services.changes import preview_changes
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None, "not_found"
+            if task.status != "awaiting_review":
+                return None, "invalid_state"
+            meta = task.result if isinstance(task.result, dict) else {}
+            pdf_path = self._resolve_task_pdf_path(task_id, task)
+            domain = str(meta.get("domain") or "lao_dong")
+        if pdf_path is None:
+            return None, "missing_file"
+        with self.runtime.operation(serialized=False):
+            return preview_changes(self.runtime.settings, task_id, pdf_path, domain), "ok"
+
     def confirm_review(self, task_id: str):
         with self.database.session() as db:
             task = db.get(IngestionTask, task_id)
