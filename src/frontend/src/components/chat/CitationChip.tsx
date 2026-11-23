@@ -27,7 +27,9 @@ export const CitationChip: React.FC<CitationChipProps> = ({ citation, isGraphRef
       return;
     }
     setSelectedCitation(citation);
-    setInspectorTab(isGraphRef ? 'tab-graph' : 'tab-hierarchy');
+    // Graph-reached evidence still carries its document, Dieu and khoan, so the
+    // tree can open and highlight it; the graph tab stays one click away.
+    setInspectorTab('tab-hierarchy');
   };
 
   return (
