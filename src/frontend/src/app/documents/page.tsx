@@ -9,8 +9,6 @@ import { IngestionProgress } from '../../components/documents/IngestionProgress'
 import { UploadPanel } from '../../components/documents/UploadPanel';
 import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
 import { LegalTree } from '../../components/inspector/LegalTree';
-import { api, errorMessage } from '../../lib/api';
-import type { HealthResponse } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
 
 const TABS = [
@@ -20,14 +18,6 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]['key'];
 const RUNNING = ['pending', 'parsing', 'chunking', 'embedding', 'indexing'];
-
-function healthLabel(health: HealthResponse | null): { text: string; tone: 'ok' | 'warn' | 'idle' } {
-  if (!health) return { text: 'Chưa kiểm tra', tone: 'idle' };
-  const states = [health.qdrant?.connection, health.neo4j?.connection];
-  if (states.every((s) => s === 'connected')) return { text: 'Sẵn sàng', tone: 'ok' };
-  if (states.some((s) => s === 'unavailable')) return { text: 'Thiếu kết nối', tone: 'warn' };
-  return { text: 'Chưa kiểm tra', tone: 'idle' };
-}
 
 export default function DocumentsPage() {
   return <Suspense fallback={<p className="p-6">Đang mở kho văn bản…</p>}><DocumentsWorkspace /></Suspense>;
@@ -40,23 +30,13 @@ function DocumentsWorkspace() {
   const tab: TabKey = TABS.some((t) => t.key === requested) ? (requested as TabKey) : 'van-ban';
   const selectTab = (key: TabKey) => router.replace('/documents?tab=' + key, { scroll: false });
   const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, updateDocumentDomain, error } = useDocumentStore();
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [probeError, setProbeError] = useState('');
-  const [probing, setProbing] = useState(false);
   const [updatingDomain, setUpdatingDomain] = useState(false);
   const [showJson, setShowJson] = useState(false);
-
-  async function probe() {
-    setProbing(true); setProbeError('');
-    try { setHealth(await api.health(true)); } catch (e) { setProbeError(errorMessage(e)); }
-    finally { setProbing(false); }
-  }
 
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
 
-  useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, []);
   useEffect(() => { if (!selectedDocId && documents.length) selectDocument(documents[0].id); }, [documents, selectedDocId, selectDocument]);
 
   const selectedDoc = documents.find((d) => d.id === selectedDocId) || documents[0];
@@ -96,14 +76,13 @@ function DocumentsWorkspace() {
     };
   }, [selectedDocAST, selectedDoc]);
 
-  const status = healthLabel(health);
   const taskBadge = activeTask?.status === 'awaiting_review' ? 'Chờ rà soát'
     : activeTask && RUNNING.includes(activeTask.status) ? 'Đang xử lý' : '';
   const taskFinished = !activeTask || ['completed', 'failed', 'cancelled'].includes(activeTask.status);
 
   return (
     <div className="flex flex-col w-full bg-surface">
-      {/* Sub-Header: workspace tabs + data-store status */}
+      {/* Sub-Header: workspace tabs */}
       <div className="w-full bg-surface-container-low px-gutter py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-sm border-b border-outline-variant/30">
         <div role="tablist" aria-label="Khu vực quản lý" className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-surface-container">
           {TABS.map((t) => (
@@ -122,28 +101,10 @@ function DocumentsWorkspace() {
             </button>
           ))}
         </div>
-
-        <div className="flex items-center gap-space-sm">
-          <div className="flex items-center gap-space-xs px-2.5 py-1 rounded-lg bg-surface-container-lowest shadow-sm border border-outline-variant/30">
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${status.tone === 'ok' ? 'bg-emerald-600' : status.tone === 'warn' ? 'bg-amber-500' : 'bg-slate-400'}`}></span>
-            <span className="font-label-code text-label-code text-on-surface-variant">
-              Kho dữ liệu & Đồ thị:{' '}
-              <strong className={`font-semibold ${status.tone === 'ok' ? 'text-emerald-700' : status.tone === 'warn' ? 'text-amber-700' : 'text-on-surface'}`}>{status.text}</strong>
-            </span>
-          </div>
-
-          <button
-            onClick={probe} disabled={probing}
-            className="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all font-headline-sm text-body-sm disabled:opacity-60"
-          >
-            <span className="material-symbols-outlined text-[17px]">verified_user</span>
-            <span>{probing ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}</span>
-          </button>
-        </div>
       </div>
 
       <div className="p-gutter flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto">
-        {(error || probeError) && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error || probeError}</p>}
+        {error && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error}</p>}
 
         {tab === 'van-ban' && <StatsCards refreshKey={activeTask?.status === 'completed' ? activeTask.id : undefined} />}
 
