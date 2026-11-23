@@ -71,3 +71,16 @@
   white-space: nowrap;
   direction: ltr;
 }
+
+/* OCR page editor (components/documents/OcrEditor.tsx) */
+.ocr-editor .ocr-editor-content { outline: none; font-family: 'Times New Roman', Times, serif; font-size: 15px; line-height: 1.65; color: #0f172a; min-height: 320px; }
+.ocr-editor .ocr-editor-content p { margin: 0 0 2px; position: relative; white-space: pre-wrap; }
+.ocr-editor .ocr-editor-content p:empty::after,
+.ocr-editor .ocr-editor-content p > br.ProseMirror-trailingBreak:only-child { content: ''; }
+.ocr-editor .ocr-line::before { content: attr(data-level); position: absolute; left: -2.9rem; top: 0.3em; width: 2.6rem; text-align: right; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.02em; color: #64748b; }
+.ocr-editor .ocr-part, .ocr-editor .ocr-chapter { font-weight: 700; text-align: center; margin-top: 10px; }
+.ocr-editor .ocr-section { font-weight: 700; margin-top: 6px; }
+.ocr-editor .ocr-article { font-weight: 700; color: #1e3a8a; margin-top: 8px; background: #eef2ff; border-radius: 3px; }
+.ocr-editor .ocr-clause { padding-left: 1rem; }
+.ocr-editor .ocr-point { padding-left: 2rem; }
+.ocr-editor .ocr-match { background: #fde68a; border-radius: 2px; }

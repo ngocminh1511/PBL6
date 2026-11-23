@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api, errorMessage } from '../../lib/api';
 import { IngestionTask } from '../../lib/types';
 import { useDocumentStore } from '../../stores/documentStore';
+import { OcrEditor } from './OcrEditor';
 
 interface IngestionProgressProps {
   task: IngestionTask;
@@ -49,8 +50,9 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
   const [pageLoadError, setPageLoadError] = useState<string | null>(null);
   const [pdfImgError, setPdfImgError] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState('');
+  const [draftPage, setDraftPage] = useState<number | null>(null);
+  const [editorKey, setEditorKey] = useState(0);
   const [savingEdit, setSavingEdit] = useState(false);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
 
@@ -76,7 +78,6 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     }
     if (!isAwaitingReview) {
       setConfirming(false);
-      setIsEditing(false);
     }
   }, [canCancel, isAwaitingReview]);
 
@@ -89,8 +90,8 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     setLoadingPage(null);
     setPageLoadError(null);
     setPdfImgError(false);
-    setIsEditing(false);
     setDraftText('');
+    setDraftPage(null);
     setSaveNotice(null);
     setPreviewExpanded(true);
   }, [task.id]);
@@ -133,6 +134,24 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
   const currentPageText =
     fullPageTexts[viewPage] ?? recentMatch?.preview_text ?? '';
   const currentPageMethod = pageMethods[viewPage] ?? recentMatch?.method ?? '';
+  const pageLoaded = fullPageTexts[viewPage] !== undefined;
+  const canEditPage = isAwaitingReview && isPageExtracted && pageLoaded && draftPage === viewPage;
+  // Unsaved edits on the open page; they block page changes and confirmation.
+  const isEditing = canEditPage && draftText !== currentPageText;
+
+  // Open the editor on the full text of each page once it is loaded.
+  useEffect(() => {
+    if (!isAwaitingReview || !pageLoaded || draftPage === viewPage) return;
+    setDraftText(fullPageTexts[viewPage] ?? '');
+    setDraftPage(viewPage);
+    setEditorKey((k) => k + 1);
+  }, [isAwaitingReview, pageLoaded, draftPage, viewPage, fullPageTexts]);
+
+  const revertDraft = () => {
+    setDraftText(currentPageText);
+    setEditorKey((k) => k + 1);
+    setSaveNotice(null);
+  };
   const methodLabel =
     currentPageMethod === 'ocr'
       ? 'OCR'
@@ -144,7 +163,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
 
   const goToPage = (nextPage: number) => {
     if (isEditing) {
-      setPageLoadError('Vui lòng lưu hoặc hủy chỉnh sửa trang hiện tại trước khi chuyển trang.');
+      setPageLoadError('Trang hiện tại có thay đổi chưa lưu: hãy Lưu trang hoặc Bỏ thay đổi trước khi chuyển trang.');
       return;
     }
     const clamped = Math.max(1, Math.min(nextPage, Math.max(totalPages, 1)));
@@ -163,16 +182,8 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     goToPage(parsed);
   };
 
-  const handleStartEdit = () => {
-    if (!isAwaitingReview || !isPageExtracted) return;
-    setDraftText(currentPageText);
-    setPageLoadError(null);
-    setSaveNotice(null);
-    setIsEditing(true);
-  };
-
   const handleSaveEdit = async () => {
-    if (savingEdit) return;
+    if (savingEdit || !isEditing) return;
     setSavingEdit(true);
     setPageLoadError(null);
     setSaveNotice(null);
@@ -180,7 +191,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
       const updated = await api.updateTaskOCRPage(task.id, viewPage, draftText);
       setFullPageTexts((prev) => ({ ...prev, [viewPage]: updated.text }));
       setEditedPages((prev) => ({ ...prev, [viewPage]: true }));
-      setIsEditing(false);
+      setDraftText(updated.text);
       setSaveNotice(`Đã lưu chỉnh sửa trang ${viewPage}.`);
     } catch (e) {
       setPageLoadError(errorMessage(e));
@@ -453,7 +464,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                       <span>Trang PDF gốc · Trang {viewPage}</span>
                       <span className="font-normal">Tài liệu nguồn</span>
                     </div>
-                    <div className="h-[440px] overflow-auto bg-slate-100 p-2 flex justify-center items-start">
+                    <div className="h-[600px] overflow-auto bg-slate-100 p-2 flex justify-center items-start">
                       {pdfImgError ? (
                         <div className="h-full flex items-center justify-center text-xs text-on-surface-variant text-center px-4">
                           Không tải được ảnh trang PDF số {viewPage}.
@@ -487,56 +498,52 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
                         )}
                       </div>
 
-                      {isAwaitingReview && isPageExtracted && !isEditing && (
-                        <button
-                          type="button"
-                          onClick={handleStartEdit}
-                          disabled={loadingPage === viewPage}
-                          className="px-2 py-0.5 rounded border border-secondary/40 bg-secondary/10 hover:bg-secondary/20 text-secondary text-[11px] font-semibold flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                        >
-                          <span className="material-symbols-outlined text-[14px]">edit</span>
-                          <span>Chỉnh sửa</span>
-                        </button>
+                      {isEditing && (
+                        <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-semibold">Chưa lưu</span>
                       )}
                     </div>
 
                     {!isPageExtracted ? (
-                      <div className="h-[440px] flex items-center justify-center text-xs text-on-surface-variant text-center px-6">
+                      <div className="h-[600px] flex items-center justify-center text-xs text-on-surface-variant text-center px-6">
                         Trang {viewPage} đang chờ OCR xử lý (hiện đã xong {ocrPreview.processed_pages}/{totalPages} trang).
                       </div>
                     ) : loadingPage === viewPage ? (
-                      <div className="h-[440px] flex items-center justify-center text-xs text-on-surface-variant">
+                      <div className="h-[600px] flex items-center justify-center text-xs text-on-surface-variant">
                         Đang tải nội dung trang {viewPage}...
                       </div>
-                    ) : isEditing ? (
-                      <div className="h-[440px] flex flex-col p-2.5 gap-2 bg-surface-container-lowest">
-                        <textarea
-                          value={draftText}
-                          onChange={(e) => setDraftText(e.target.value)}
-                          className="flex-1 w-full rounded-md border border-secondary/40 p-2.5 font-body-sm text-[12px] leading-relaxed text-on-surface bg-white focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none"
-                        />
-                        <div className="flex items-center justify-end gap-2">
+                    ) : canEditPage ? (
+                      <div className="h-[600px] flex flex-col bg-surface-container-lowest">
+                        <div className="flex-1 min-h-0">
+                          <OcrEditor
+                            key={`${task.id}-${viewPage}-${editorKey}`}
+                            value={draftText}
+                            editable={!savingEdit}
+                            onChange={setDraftText}
+                            onSave={() => void handleSaveEdit()}
+                          />
+                        </div>
+                        <div className="flex items-center justify-end gap-2 px-2.5 py-2 border-t border-outline-variant/20">
                           <button
                             type="button"
-                            onClick={() => setIsEditing(false)}
-                            disabled={savingEdit}
-                            className="px-2.5 py-1 rounded border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container text-[11px] font-medium cursor-pointer"
+                            onClick={revertDraft}
+                            disabled={savingEdit || !isEditing}
+                            className="px-2.5 py-1 rounded border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container text-[11px] font-medium cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                           >
-                            Hủy sửa
+                            Bỏ thay đổi
                           </button>
                           <button
                             type="button"
                             onClick={() => void handleSaveEdit()}
-                            disabled={savingEdit}
-                            className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[11px] font-semibold flex items-center gap-1 disabled:opacity-60 cursor-pointer"
+                            disabled={savingEdit || !isEditing}
+                            className="px-3 py-1 rounded bg-secondary hover:opacity-90 text-white text-[11px] font-semibold flex items-center gap-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                           >
                             <span className="material-symbols-outlined text-[14px]">save</span>
-                            <span>{savingEdit ? 'Đang lưu...' : 'Lưu chỉnh sửa'}</span>
+                            <span>{savingEdit ? 'Đang lưu...' : 'Lưu trang'}</span>
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <pre className="whitespace-pre-wrap break-words font-body-sm text-[12px] leading-relaxed text-on-surface bg-surface-container-lowest p-3 h-[440px] overflow-y-auto">
+                      <pre className="whitespace-pre-wrap break-words font-body-sm text-[12px] leading-relaxed text-on-surface bg-surface-container-lowest p-3 h-[600px] overflow-y-auto">
                         {currentPageText || '(Trang trống hoặc không trích xuất được văn bản)'}
                       </pre>
                     )}
