@@ -1,17 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUp, ChevronDown, Database, FileText, Mic, MicOff, Paperclip, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, Database, Mic, MicOff } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useChatStore } from '../../stores/chatStore';
 
+// File attachments are hidden until the backend reads them (PDF/DOCX/OCR) as case context;
+// sending only a file name made answers look as if the document had been read.
 export const ChatInput: React.FC = () => {
   const [question, setQuestion] = useState('');
-  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
   const { sendMessage, isSending } = useChatStore();
@@ -34,24 +34,6 @@ export const ChatInput: React.FC = () => {
     window.addEventListener('mousedown', handleOutside);
     return () => window.removeEventListener('mousedown', handleOutside);
   }, [scopeMenuOpen]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      // Chỉ nhận đúng 1 file đơn lẻ
-      const file = e.target.files[0];
-      if (file.size > 25 * 1024 * 1024) {
-        alert('Dung lượng file vượt quá giới hạn cho phép (tối đa 25MB).');
-        return;
-      }
-      setAttachedFile(file);
-      // Reset input value để có thể chọn lại nếu muốn
-      e.target.value = '';
-    }
-  };
-
-  const removeAttachedFile = () => {
-    setAttachedFile(null);
-  };
 
   const toggleSpeechRecognition = () => {
     if (typeof window === 'undefined') return;
@@ -116,37 +98,12 @@ export const ChatInput: React.FC = () => {
     }
   };
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (isSending) return;
     const trimmedQuestion = question.trim();
-    if (!trimmedQuestion && !attachedFile) return;
-
-    let finalPrompt = trimmedQuestion;
-
-    if (attachedFile) {
-      const isTextFile = /\.(txt|md|json|csv|html|xml|log)$/i.test(attachedFile.name);
-      if (isTextFile) {
-        try {
-          const textContent = await attachedFile.text();
-          const truncatedText = textContent.slice(0, 10000);
-          finalPrompt = `[Tài liệu đính kèm: ${attachedFile.name}]\n--- NỘI DUNG TÀI LIỆU ---\n${truncatedText}\n-------------------------\n\n${trimmedQuestion || 'Hãy đọc và phân tích nội dung tài liệu đính kèm trên theo quy định pháp luật.'}`;
-        } catch {
-          finalPrompt = `[Tài liệu đính kèm: ${attachedFile.name} (${formatFileSize(attachedFile.size)})]\n\n${trimmedQuestion || 'Hãy phân tích tài liệu này theo quy định pháp luật.'}`;
-        }
-      } else {
-        finalPrompt = `[Tài liệu đính kèm: ${attachedFile.name} (${formatFileSize(attachedFile.size)})]\n\n${trimmedQuestion || 'Hãy phân tích nội dung hồ sơ đính kèm này.'}`;
-      }
-    }
-
-    sendMessage(finalPrompt);
+    if (!trimmedQuestion) return;
+    sendMessage(trimmedQuestion);
     setQuestion('');
-    setAttachedFile(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -161,40 +118,12 @@ export const ChatInput: React.FC = () => {
     { id: 'lao_dong', label: 'Pháp luật Lao động' },
   ];
   const activeScopeLabel = scopeOptions.find((o) => o.id === selectedDomain)?.label ?? scopeOptions[0].label;
-  const canSend = !isSending && (!!question.trim() || !!attachedFile);
+  const canSend = !isSending && !!question.trim();
 
   return (
     <div className="px-5 sm:px-8 pb-4 pt-2 shrink-0 bg-white">
-      {/* Hidden File Input (Single file only) */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept=".pdf,.doc,.docx,.txt,.md,.json,.csv,.rtf,image/*"
-      />
-
       <div className="max-w-[760px] mx-auto relative">
         <div className="rounded-2xl border border-ink/14 bg-paper focus-within:bg-white focus-within:border-navy/45 shadow-[0_2px_12px_rgba(28,27,24,0.04)] transition-colors px-4 pt-3 pb-2.5">
-          {/* Single File Attachment Preview Chip */}
-          {attachedFile && (
-            <div className="mb-2 inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white border border-navy/25 max-w-full">
-              <FileText className="w-4 h-4 text-navy shrink-0" />
-              <div className="flex flex-col min-w-0 pr-1">
-                <span className="text-[12px] font-medium text-ink truncate max-w-[260px]">{attachedFile.name}</span>
-                <span className="font-mono text-[10px] text-muted">{formatFileSize(attachedFile.size)} • 1 file đơn lẻ</span>
-              </div>
-              <button
-                onClick={removeAttachedFile}
-                className="w-6 h-6 rounded-full hover:bg-stone text-muted hover:text-[#B91C1C] flex items-center justify-center transition-colors"
-                title="Gỡ bỏ tài liệu này"
-                type="button"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
@@ -212,17 +141,6 @@ export const ChatInput: React.FC = () => {
 
           <div className="mt-2 flex items-center justify-between gap-2">
             <div ref={scopeRef} className="relative flex items-center gap-1.5">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className={`p-1.5 rounded-lg transition-colors ${
-                  attachedFile ? 'bg-navy/10 text-navy' : 'text-ink-3 hover:bg-stone hover:text-ink'
-                }`}
-                title={attachedFile ? 'Đã đính kèm 1 file (bấm để đổi file khác)' : 'Đính kèm tài liệu hồ sơ (1 file đơn lẻ)'}
-                type="button"
-              >
-                <Paperclip className="w-4 h-4" />
-              </button>
-
               <button
                 onClick={toggleSpeechRecognition}
                 className={`p-1.5 rounded-lg transition-colors ${
