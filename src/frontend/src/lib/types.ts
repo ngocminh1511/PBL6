@@ -222,6 +222,16 @@ export interface TaskChanges {
   warnings: string[];
 }
 
+/** DELETE /api/documents/{id}: what removing a loaded PDF changed in each store. */
+export interface DocumentRemoval {
+  document_id: string;
+  graph: { deleted_nodes: number; deleted_edges: number; reset_nodes: number };
+  deleted_chunks: number;
+  restored_chunks: number;
+  removed_files: string[];
+  warnings: string[];
+}
+
 export interface OCRPageDetail extends OCRPagePreview {
   text: string;
 }

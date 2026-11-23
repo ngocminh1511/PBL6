@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DocumentRecord, IngestionTask } from '../lib/types';
+import { DocumentRecord, DocumentRemoval, IngestionTask } from '../lib/types';
 import { api, errorMessage } from '../lib/api';
 
 interface DocumentState {
@@ -23,6 +23,7 @@ interface DocumentState {
   setSelectedDocType: (docType: string) => void;
   selectDocument: (docId: string) => Promise<void>;
   updateDocumentDomain: (docId: string, domain: 'lao_dong' | 'khac') => Promise<void>;
+  removeDocument: (docId: string) => Promise<DocumentRemoval>;
   uploadDocument: (file: File, docType: string, domain: string, pauseForReview?: boolean) => Promise<string>;
   pollTaskProgress: (taskId: string) => void;
   confirmTaskReview: (taskId: string) => Promise<void>;
@@ -86,9 +87,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     set({ selectedDocId: docId, selectedDocAST: null, error: null });
     try {
       const ast = await api.getDocumentAST(docId);
-      set({ selectedDocAST: ast.ast_tree });
+      if (get().selectedDocId === docId) set({ selectedDocAST: ast.ast_tree });
     } catch (e) {
-      set({ error: errorMessage(e) });
+      // A late answer for an entry no longer selected is not an error of the current one.
+      if (get().selectedDocId === docId) set({ error: errorMessage(e) });
     }
   },
 
@@ -103,6 +105,15 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     } catch (e) {
       set({ error: errorMessage(e) });
     }
+  },
+
+  removeDocument: async (docId: string) => {
+    set({ error: null });
+    const result = await api.removeDocument(docId);
+    // Refresh the list before clearing the selection, so the page never re-selects the removed entry.
+    await get().fetchDocuments();
+    set({ selectedDocId: '', selectedDocAST: null });
+    return result;
   },
 
   uploadDocument: async (file, docType, domain, pauseForReview = true) => {

@@ -244,6 +244,13 @@ python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc
   của cùng `document_id` và chạy `plan_upsert` (mục 4.7) **chỉ đọc**: mỗi Điều là `new`, `replaced`, `metadata`,
   `unchanged`, `kept` hoặc `missing`; kèm các Điều đích của văn bản sửa đổi với nội dung hiện hành trong kho. Không đọc được
   Qdrant thì `store = "unavailable"` và trạng thái từng Điều là `null`.
+- **Gỡ văn bản PDF** (`DELETE /api/documents/{id}`, `labor_rag/services/removal.py`; chỉ văn bản `pdf`, không gỡ đề mục
+  Pháp điển). So với projection Pháp điển (`lao_dong_v5`, upload không sửa) theo thứ tự, dừng ở bước lỗi đầu tiên nên gỡ
+  lại được: (1) Neo4j: xóa nút của văn bản và nút kề không có trong Pháp điển (sự kiện sửa đổi; nút văn bản khác chỉ xóa
+  khi mồ côi), xóa cạnh không có trong Pháp điển, trả thuộc tính Pháp điển cho nút dùng chung; (2) Qdrant: embedding
+  trước các chunk Pháp điển cùng `document_id` mà PDF đã ghi đè, rồi xóa chunk `source = "pdf"` và ghi lại chúng;
+  `effective_to_date` theo `VanBan.valid_to` đã khôi phục; (3) xóa `pdf_chunks/{id}_*.jsonl` và bản ghi PostgreSQL.
+  Thư mục tác vụ và artifact R2 (định danh theo nội dung) được giữ.
 
 Trạng thái: `docs/Luat_lao_dong.pdf` đã OCR thành `45-2019-qh14` (216/220 Điều, 594 khoản, `version_date = 2026-07-01`),
 ABox ở `ontology/abox/pdf/45-2019-qh14.ttl`. **Chưa ghép** vào `lao_dong_v5` / Neo4j / Qdrant. Thiếu Điều 76–79 do bản

@@ -371,6 +371,25 @@ def test_upload_pdf_other_domain_ocr_storage_and_listing(tmp_path, monkeypatch):
         assert tree["children"][0]["type"] == "chapter"
         assert tree["children"][0]["children"][0]["article_number"] == "1"
 
+        # Removal: stores are faked; a failure keeps the record, success drops it from the listing.
+        import labor_rag.services.removal as removal
+        calls = []
+
+        def failing(settings, document_id):
+            raise removal.DocumentRemovalError("Chưa gỡ được khỏi đồ thị Neo4j (ConnectionError).")
+        monkeypatch.setattr(removal, "remove_pdf_document", failing)
+        assert client.delete("/api/documents/91-2015-qh13").status_code == 503
+        assert any(i["id"] == "91-2015-qh13" for i in client.get("/api/documents/list?domain=khac").json()["items"])
+
+        monkeypatch.setattr(removal, "remove_pdf_document", lambda settings, document_id: calls.append(document_id) or {
+            "document_id": document_id, "graph": {"deleted_nodes": 3, "deleted_edges": 2, "reset_nodes": 0},
+            "deleted_chunks": 1, "restored_chunks": 0, "removed_files": [], "warnings": []})
+        assert client.delete("/api/documents/20.2").status_code == 422
+        assert client.delete("/api/documents/khong-ton-tai").status_code == 404
+        removed = client.delete("/api/documents/91-2015-qh13")
+        assert removed.status_code == 200 and removed.json()["deleted_chunks"] == 1 and calls == ["91-2015-qh13"]
+        assert not any(i["id"] == "91-2015-qh13" for i in client.get("/api/documents/list?domain=khac").json()["items"])
+
 
 def test_demo_is_explicit_and_registration_cannot_grant_admin(tmp_path):
     app = create_app(settings=config(tmp_path).model_copy(update={"DEMO_MODE": False, "JWT_SECRET": "test-only-key"}))

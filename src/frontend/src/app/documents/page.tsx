@@ -10,6 +10,7 @@ import { UploadPanel } from '../../components/documents/UploadPanel';
 import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
 import { LegalTree } from '../../components/inspector/LegalTree';
 import { useDocumentStore } from '../../stores/documentStore';
+import { RemoveDocumentModal } from '../../components/documents/RemoveDocumentModal';
 
 const TABS = [
   { key: 'van-ban', icon: 'folder_special', label: 'Văn bản & Pháp điển' },
@@ -29,9 +30,11 @@ function DocumentsWorkspace() {
   const requested = params.get('tab');
   const tab: TabKey = TABS.some((t) => t.key === requested) ? (requested as TabKey) : 'van-ban';
   const selectTab = (key: TabKey) => router.replace('/documents?tab=' + key, { scroll: false });
-  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, updateDocumentDomain, error } = useDocumentStore();
+  const { fetchDocuments, activeTask, selectedDocId, selectedDocAST, documents, selectDocument, updateDocumentDomain, removeDocument, error } = useDocumentStore();
   const [updatingDomain, setUpdatingDomain] = useState(false);
   const [showJson, setShowJson] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; title: string } | null>(null);
+  const [removedCount, setRemovedCount] = useState(0);
 
   useEffect(() => {
     fetchDocuments();
@@ -89,14 +92,14 @@ function DocumentsWorkspace() {
             <button
               key={t.key} role="tab" type="button" aria-selected={tab === t.key}
               onClick={() => selectTab(t.key)}
-              className={`flex items-center gap-space-xs px-space-md py-1.5 rounded-lg font-headline-sm text-body-sm transition-all ${
-                tab === t.key ? 'bg-surface-container-lowest text-secondary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+              className={`flex items-center gap-space-xs px-space-md py-1.5 rounded-lg text-[13px] font-medium transition-all ${
+                tab === t.key ? 'bg-surface-container-lowest text-secondary shadow-sm' : 'text-ink-3 hover:text-ink'
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">{t.icon}</span>
               <span>{t.label}</span>
               {t.key === 'nap-pdf' && taskBadge && (
-                <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 text-[10px] font-semibold">{taskBadge}</span>
+                <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 text-[11.5px] font-semibold">{taskBadge}</span>
               )}
             </button>
           ))}
@@ -104,9 +107,9 @@ function DocumentsWorkspace() {
       </div>
 
       <div className="p-gutter flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto">
-        {error && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error}</p>}
+        {error && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container text-[12.5px]">{error}</p>}
 
-        {tab === 'van-ban' && <StatsCards refreshKey={activeTask?.status === 'completed' ? activeTask.id : undefined} />}
+        {tab === 'van-ban' && <StatsCards refreshKey={`${activeTask?.status === 'completed' ? activeTask.id : ''}:${removedCount}`} />}
 
         {tab === 'nap-pdf' && (
           <div className="flex flex-col gap-space-md">
@@ -114,18 +117,26 @@ function DocumentsWorkspace() {
             {taskFinished && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
                 <div className="lg:col-span-7"><UploadPanel /></div>
-                <div className="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex flex-col gap-2 font-body-sm text-body-sm text-on-surface-variant">
-                  <span className="font-label-statute text-label-statute uppercase tracking-wider text-on-surface font-bold">Quy trình nạp PDF</span>
+                <div className="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex flex-col gap-2 text-[12.5px] text-ink-3">
+                  <span className="text-[13px] font-semibold text-ink">Quy trình nạp PDF</span>
                   <ol className="list-decimal pl-5 space-y-1.5">
-                    <li><strong className="text-on-surface">Tải lên</strong>: chọn lĩnh vực và file PDF.</li>
-                    <li><strong className="text-on-surface">Rà soát OCR</strong>: đối chiếu từng trang PDF và sửa nội dung trong trình soạn thảo.</li>
-                    <li><strong className="text-on-surface">So sánh thay đổi</strong>: xem Điều nào mới, thay thế, không đổi, và các Điều của văn bản khác bị sửa đổi.</li>
-                    <li><strong className="text-on-surface">Xác nhận</strong>: lập chỉ mục vào kho tra cứu.</li>
+                    <li><strong className="text-ink">Tải lên</strong>: chọn lĩnh vực và file PDF.</li>
+                    <li><strong className="text-ink">Rà soát OCR</strong>: đối chiếu từng trang PDF và sửa nội dung trong trình soạn thảo.</li>
+                    <li><strong className="text-ink">So sánh thay đổi</strong>: xem Điều nào mới, thay thế, không đổi, và các Điều của văn bản khác bị sửa đổi.</li>
+                    <li><strong className="text-ink">Xác nhận</strong>: lập chỉ mục vào kho tra cứu.</li>
                   </ol>
                 </div>
               </div>
             )}
           </div>
+        )}
+
+        {removeTarget && (
+          <RemoveDocumentModal
+            target={removeTarget}
+            onRemove={async (id) => { const result = await removeDocument(id); setRemovedCount((n) => n + 1); return result; }}
+            onClose={() => setRemoveTarget(null)}
+          />
         )}
 
         {tab === 'danh-muc' && <AppendixWorkspace basePath="/documents?tab=danh-muc" embedded />}
@@ -143,23 +154,23 @@ function DocumentsWorkspace() {
               {/* Header */}
               <div className="flex flex-col gap-space-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-label-statute text-label-statute uppercase tracking-wider text-secondary font-bold">
+                  <span className="text-[13px] font-semibold text-secondary">
                     {selectedDoc?.document_type === 'phap_dien_html'
-                      ? 'Cấu trúc Chi tiết Đề mục'
-                      : 'Cấu trúc Chi tiết Văn bản'}
+                      ? 'Cấu trúc chi tiết đề mục'
+                      : 'Cấu trúc chi tiết văn bản'}
                   </span>
                   {selectedDoc?.document_number && (
-                    <span className="font-label-code text-label-statute px-2 py-0.5 rounded bg-surface-container text-secondary font-semibold">
+                    <span className="text-[12px] px-2 py-0.5 rounded bg-surface-container text-secondary font-semibold">
                       {selectedDoc.document_type === 'phap_dien_html'
                         ? selectedDoc.document_number
                         : `Số hiệu: ${selectedDoc.document_number}`}
                     </span>
                   )}
                 </div>
-                <h2 className="font-headline-md text-headline-md text-on-surface leading-snug">
+                <h2 className="text-[18px] font-semibold text-ink leading-snug">
                   {selectedDoc?.title || 'Chưa chọn mục'}
                 </h2>
-                <div className="font-label-code text-label-code text-on-surface-variant text-[11px] flex flex-wrap items-center gap-1.5">
+                <div className="text-ink-3 text-[11.5px] flex flex-wrap items-center gap-1.5">
                   <span>
                     {selectedDoc?.document_type === 'phap_dien_html'
                       ? 'Nguồn: Bộ Pháp điển • Hiệu lực: Hiện hành'
@@ -176,7 +187,7 @@ function DocumentsWorkspace() {
                         await updateDocumentDomain(selectedDoc.id, e.target.value as 'lao_dong' | 'khac');
                         setUpdatingDomain(false);
                       }}
-                      className="bg-surface-container text-on-surface px-1.5 py-0.5 rounded font-label-code text-[11px] border border-outline-variant/40 cursor-pointer disabled:opacity-50"
+                      className="bg-surface-container text-ink px-1.5 py-0.5 rounded text-[11.5px] border border-outline-variant/40 cursor-pointer disabled:opacity-50"
                     >
                       <option value="lao_dong">Lao động</option>
                       <option value="khac">Lĩnh vực khác</option>
@@ -191,26 +202,33 @@ function DocumentsWorkspace() {
                     </span>
                   )}
                 </div>
+                {selectedDoc?.document_type === 'pdf' && (
+                  <button type="button" onClick={() => setRemoveTarget({ id: selectedDoc.id, title: selectedDoc.title })}
+                    className="self-start mt-1 flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] text-error border border-error/30 hover:bg-error-container/40 transition-colors">
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                    Gỡ văn bản PDF này
+                  </button>
+                )}
               </div>
 
               {/* Breakdown Stats */}
               <div className="grid grid-cols-3 gap-2 bg-surface-container-low p-space-sm rounded-lg text-center">
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Chương / Mục</div>
-                  <div className="font-metric-num text-metric-num text-on-surface">
+                  <div className="text-[12px] font-medium text-ink-3">Chương / Mục</div>
+                  <div className="text-[14px] font-semibold tabular-nums text-ink">
                     {docStats.chuong > 0 ? `${docStats.chuong} Ch.` : 'Toàn văn'}
                     {docStats.muc > 0 ? ` • ${docStats.muc} Mục` : ''}
                   </div>
                 </div>
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Điều luật</div>
-                  <div className="font-metric-num text-metric-num text-secondary">
+                  <div className="text-[12px] font-medium text-ink-3">Điều luật</div>
+                  <div className="text-[14px] font-semibold tabular-nums text-secondary">
                     {docStats.dieu > 0 ? `${docStats.dieu} Điều` : 'Toàn văn'}
                   </div>
                 </div>
                 <div className="p-1">
-                  <div className="font-label-statute text-label-statute text-on-surface-variant">Khoản & Điểm</div>
-                  <div className="font-metric-num text-metric-num text-on-surface">
+                  <div className="text-[12px] font-medium text-ink-3">Khoản & Điểm</div>
+                  <div className="text-[14px] font-semibold tabular-nums text-ink">
                     {docStats.khoan > 0 ? `${docStats.khoan} K` : '0 K'}
                     {docStats.diem > 0 ? ` • ${docStats.diem} Đm` : ''}
                   </div>
@@ -223,13 +241,13 @@ function DocumentsWorkspace() {
                   <button type="button" onClick={() => setShowJson(false)} className={'px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors ' + (!showJson ? 'bg-white text-ink shadow-[0_1px_2px_rgba(28,27,24,0.06)]' : 'text-ink-3 hover:text-ink')}>Cây phân cấp trực quan</button>
                   <button type="button" onClick={() => setShowJson(true)} className={'px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors ' + (showJson ? 'bg-white text-ink shadow-[0_1px_2px_rgba(28,27,24,0.06)]' : 'text-ink-3 hover:text-ink')}>Mã AST / JSON</button>
                 </div>
-                {selectedDocAST && !showJson && <span className="text-[11px] text-muted">Bấm để mở rộng</span>}
+                {selectedDocAST && !showJson && <span className="text-[11.5px] text-muted">Bấm để mở rộng</span>}
               </div>
 
               <div className="p-2.5 rounded-2xl bg-white border border-ink/10 max-h-[600px] overflow-auto legal-scroll">
                 {selectedDocAST ? (
                   showJson
-                    ? <pre className="font-mono text-[11px] text-ink-2 overflow-auto">{JSON.stringify(selectedDocAST, null, 2)}</pre>
+                    ? <pre className="font-mono text-[11.5px] text-ink-2 overflow-auto">{JSON.stringify(selectedDocAST, null, 2)}</pre>
                     : <LegalTree node={selectedDocAST} />
                 ) : (
                   <p className="py-10 text-center text-[12.5px] text-muted">{selectedDoc ? (error ? 'Không tải được cấu trúc văn bản.' : 'Đang tải cấu trúc…') : 'Chọn một văn bản trong danh mục để xem cấu trúc.'}</p>
@@ -241,7 +259,7 @@ function DocumentsWorkspace() {
                 <div className="pt-1">
                   <Link
                     href={`/chat?doc=${encodeURIComponent(selectedDoc.id)}`}
-                    className="w-full flex items-center justify-center gap-2 px-space-md py-2.5 rounded-xl bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all font-headline-sm text-body-sm"
+                    className="w-full flex items-center justify-center gap-2 px-space-md py-2.5 rounded-xl bg-secondary text-white hover:bg-opacity-95 shadow-sm transition-all text-[13px] font-medium"
                   >
                     <span className="material-symbols-outlined text-[18px]">chat</span>
                     <span>Đặt câu hỏi về văn bản này tại Trợ lý Hỏi đáp</span>

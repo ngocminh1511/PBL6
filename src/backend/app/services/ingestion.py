@@ -330,6 +330,33 @@ class IngestionService:
         with self.runtime.operation(serialized=False):
             return preview_changes(self.runtime.settings, task_id, pdf_path, domain), "ok"
 
+    def remove_document(self, document_id: str):
+        """(result, state): remove an indexed PDF document; Phap dien entries cannot be removed."""
+        from labor_rag.services.removal import remove_pdf_document
+        from src.backend.app.services.corpus import Corpus
+        record_type = None
+        if self.database.available:
+            with self.database.session() as db:
+                record = db.get(DocumentRecord, document_id)
+                record_type = record.document_type if record else None
+        if record_type is None:
+            record_type = (Corpus().documents.get(document_id) or {}).get("document_type")
+        if record_type is None:
+            return None, "not_found"
+        if record_type != "pdf":
+            return None, "not_pdf"
+        # Serialized: an upload being indexed finishes first and cannot interleave.
+        with self.runtime.operation():
+            result = remove_pdf_document(self.runtime.settings, document_id)
+        if self.database.available:
+            with self.database.session() as db:
+                record = db.get(DocumentRecord, document_id)
+                if record is not None:
+                    db.delete(record)
+                    db.commit()
+        Corpus.cache_clear()
+        return result, "ok"
+
     def confirm_review(self, task_id: str):
         with self.database.session() as db:
             task = db.get(IngestionTask, task_id)

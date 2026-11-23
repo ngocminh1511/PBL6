@@ -290,6 +290,19 @@ class TaskChangesResponse(BaseModel):
     replaced_documents: list[ReplacedDocument] = []
     warnings: list[str] = []
 
+class GraphRemoval(BaseModel):
+    deleted_nodes: int = 0
+    deleted_edges: int = 0
+    reset_nodes: int = 0
+
+class DocumentRemovalResponse(BaseModel):
+    document_id: str
+    graph: GraphRemoval
+    deleted_chunks: int = 0
+    restored_chunks: int = 0
+    removed_files: list[str] = []
+    warnings: list[str] = []
+
 class OCRPreviewSummary(BaseModel):
     total_pages: int = 0
     processed_pages: int = 0

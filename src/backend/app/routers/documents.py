@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from src.backend.app.dependencies import get_current_user, get_db
 from src.backend.app.models.database import IngestionTask, DocumentRecord, User
 from src.backend.app.models.schemas import (
+    DocumentRemovalResponse,
     DocumentResponse,
     DocumentASTResponse,
     IngestionTaskResponse,
@@ -132,6 +133,21 @@ def update_document_domain_route(document_id: str, body: DocumentDomainUpdate, r
 
     Corpus.cache_clear()
     return DocumentResponse(**item)
+
+
+@router.delete("/{document_id}", response_model=DocumentRemovalResponse)
+async def remove_document_route(document_id: str, request: Request, current_user: User = Depends(get_current_user)):
+    """Remove a loaded PDF; the Phap dien version of the same Dieu takes its place again."""
+    from labor_rag.services.removal import DocumentRemovalError
+    try:
+        result, state = await run_in_threadpool(request.app.state.ingestion.remove_document, document_id)
+    except DocumentRemovalError as exc:
+        raise HTTPException(503, str(exc)) from None
+    if state == "not_found":
+        raise HTTPException(404, "Không tìm thấy văn bản.")
+    if state == "not_pdf":
+        raise HTTPException(422, "Chỉ gỡ được văn bản nạp từ PDF; đề mục Pháp điển là dữ liệu gốc.")
+    return result
 
 
 @router.get("/{document_id}/ast", response_model=DocumentASTResponse)

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TaskChanges, TokenUsage, MessageFeedbackRequest } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TaskChanges, DocumentRemoval, TokenUsage, MessageFeedbackRequest } from './types';
 
 export function errorTokenUsage(error: unknown): TokenUsage | null {
   if (!axios.isAxiosError(error)) return null;
@@ -140,6 +140,11 @@ export const api = {
 
   async updateDocumentDomain(documentId: string, domain: 'lao_dong' | 'khac'): Promise<DocumentRecord> {
     const res = await apiClient.patch(`/documents/${encodeURIComponent(documentId)}`, { domain });
+    return res.data;
+  },
+
+  async removeDocument(documentId: string): Promise<DocumentRemoval> {
+    const res = await apiClient.delete(`/documents/${encodeURIComponent(documentId)}`);
     return res.data;
   },
 
