@@ -64,6 +64,53 @@ def _document_id(so_hieu: str, text: str) -> str:
     return f"doc-{hashlib.sha1(text.encode('utf-8')).hexdigest()[:12]}"
 
 
+def build_processed_document(
+    extraction: ExtractionResult,
+    *,
+    output_dir: Path | None = None,
+    formats: tuple[str, ...] = (),
+) -> ProcessedDocument:
+    """Clean, structure, extract metadata and flatten an already-extracted document."""
+    text, footnotes = extraction.clean_text_and_footnotes()
+    if not text:
+        raise ValueError(f"{extraction.source_name}: no text could be extracted")
+
+    document = parse_structure(text)
+    metadata = extract_metadata(text, document.title, extraction.source_name, extraction.total_pages)
+    metadata.extraction_method = extraction.method
+    metadata.scanned_pages = extraction.scanned_pages
+    document.metadata = metadata
+    document.document_id = _document_id(metadata.so_hieu, text)
+    document.footnotes = footnotes
+
+    records = chunk_long_records(flatten_document(document))
+    result = ProcessedDocument(extraction, document, records, ocr_quality=extraction.ocr_quality())
+    if output_dir and formats:
+        result.outputs = export_document(document, records, output_dir, formats)
+    return result
+
+
+def extract_document_pages(
+    source: str | Path | bytes,
+    *,
+    filename: str | None = None,
+    use_ocr: bool = True,
+    progress: ProgressFn | None = None,
+    page_callback: PageCallback | None = None,
+    settings=None,
+) -> ExtractionResult:
+    """Run Phase 1 extraction only (text layer + VietOCR per page)."""
+    from labor_rag.ocr.settings import use_settings
+    with use_settings(settings):
+        return extract_text(
+            source,
+            filename=filename,
+            use_ocr=use_ocr,
+            progress=progress,
+            page_callback=page_callback,
+        )
+
+
 def _process_document(
     source: str | Path | bytes,
     *,
@@ -86,23 +133,7 @@ def _process_document(
         progress=progress,
         page_callback=page_callback,
     )
-    text, footnotes = extraction.clean_text_and_footnotes()
-    if not text:
-        raise ValueError(f"{extraction.source_name}: no text could be extracted")
-
-    document = parse_structure(text)
-    metadata = extract_metadata(text, document.title, extraction.source_name, extraction.total_pages)
-    metadata.extraction_method = extraction.method
-    metadata.scanned_pages = extraction.scanned_pages
-    document.metadata = metadata
-    document.document_id = _document_id(metadata.so_hieu, text)
-    document.footnotes = footnotes
-
-    records = chunk_long_records(flatten_document(document))
-    result = ProcessedDocument(extraction, document, records, ocr_quality=extraction.ocr_quality())
-    if output_dir and formats:
-        result.outputs = export_document(document, records, output_dir, formats)
-    return result
+    return build_processed_document(extraction, output_dir=output_dir, formats=formats)
 
 
 def process_document(source, *, filename=None, output_dir=None, formats=(), use_ocr=True,

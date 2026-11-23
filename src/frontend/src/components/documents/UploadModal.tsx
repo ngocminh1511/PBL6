@@ -10,6 +10,7 @@ export const UploadModal: React.FC = () => {
   const [docType, setDocType] = useState('pdf');
   const [deMucId, setDeMucId] = useState('');
   const [domain, setDomain] = useState('lao_dong');
+  const [pauseForReview, setPauseForReview] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,10 +51,10 @@ export const UploadModal: React.FC = () => {
     setError(null);
     try {
       if (docType === 'phap_dien_html') {
-        const response = await api.uploadDocument(file, docType, domain, deMucId || undefined);
+        const response = await api.uploadDocument(file, docType, domain, deMucId || undefined, false);
         useDocumentStore.getState().pollTaskProgress(response.task_id);
       } else {
-        await uploadDocument(file, docType, domain);
+        await uploadDocument(file, docType, domain, pauseForReview);
       }
       setFile(null);
       setDeMucId('');
@@ -226,6 +227,25 @@ export const UploadModal: React.FC = () => {
               </p>
             </div>
           </div>
+
+          {docType === 'pdf' && (
+            <label className="flex items-start gap-2.5 p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/60 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={pauseForReview}
+                onChange={(e) => setPauseForReview(e.target.checked)}
+                className="mt-0.5 accent-secondary"
+              />
+              <div className="flex flex-col text-left">
+                <span className="font-headline-sm text-xs font-semibold text-on-surface">
+                  Tạm dừng để đối chiếu PDF & chỉnh sửa nội dung OCR
+                </span>
+                <span className="text-[11px] text-on-surface-variant font-normal">
+                  Kiểm tra từng trang PDF song song với chữ OCR và sửa chính tả trước khi lập chỉ mục
+                </span>
+              </div>
+            </label>
+          )}
 
           {error && <div className="p-2.5 rounded-lg bg-red-50 text-red-700 text-xs font-mono">{error}</div>}
 

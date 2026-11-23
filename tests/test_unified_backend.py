@@ -284,7 +284,7 @@ def test_upload_pdf_other_domain_ocr_storage_and_listing(tmp_path, monkeypatch):
                           files={"file": ("item.html", b"<html></html>", "text/html")})
         assert bad.status_code == 422
 
-        response = client.post("/api/documents/upload", data={"document_type": "pdf", "domain": "khac"},
+        response = client.post("/api/documents/upload", data={"document_type": "pdf", "domain": "khac", "pause_for_review": "false"},
                                files={"file": ("blds.pdf", b"%PDF-1.4 test", "application/pdf")})
         assert response.status_code == 202
         app.state.ingestion.executor.shutdown(wait=True)
@@ -442,7 +442,7 @@ def test_realtime_ocr_page_callback_and_preview_endpoints(tmp_path, monkeypatch)
     with TestClient(app) as client:
         res = client.post(
             "/api/documents/upload",
-            data={"document_type": "pdf", "domain": "khac"},
+            data={"document_type": "pdf", "domain": "khac", "pause_for_review": "false"},
             files={"file": ("ocr.pdf", b"%PDF-1.4 demo", "application/pdf")},
         )
         assert res.status_code == 202
@@ -471,4 +471,113 @@ def test_realtime_ocr_page_callback_and_preview_endpoints(tmp_path, monkeypatch)
         assert done_progress["ocr_preview"]["heuristic_score"] == pytest.approx(88.5, abs=1e-2)
         assert done_progress["ocr_preview"]["articles_count"] == 1
         assert client.get(f"/api/documents/tasks/{task_id}/ocr-page/2").json()["text"] == "Điều 1. Phạm vi áp dụng OCR."
+
+
+def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
+    import time
+    import pymupdf
+    import labor_rag.ingest.chunk_schema as chunk_schema
+    import labor_rag.ingest.ontology_to_jsonl as projection
+    import labor_rag.ocr.extract as ocr_extract
+    import labor_rag.services.ingestion as ingestion
+    from labor_rag.ocr.extract import ExtractionResult, PageText
+
+    # Build a tiny real 2-page PDF so PyMuPDF image rendering is tested end-to-end.
+    pdf_doc = pymupdf.open()
+    for page_idx in range(2):
+        page = pdf_doc.new_page()
+        page.insert_text((72, 72), f"Page {page_idx + 1}")
+    pdf_bytes = pdf_doc.tobytes()
+    pdf_doc.close()
+
+    def fake_extract_text(source, filename=None, use_ocr=True, progress=None, page_callback=None):
+        p1 = PageText(0, "LUẬT THỬ NGHIỆM\nSố: 88/2026/QH15\nĐiều 1. Phạm vi\nNội dung sai chinh ta.", "ocr", 0.72)
+        p2 = PageText(1, "Điều 2. Hiệu lực thi hành\nCó hiệu lực từ 01/01/2027.", "text")
+        if page_callback:
+            page_callback(p1, 2)
+            page_callback(p2, 2)
+        if progress:
+            progress("OCR xong", 100.0)
+        return ExtractionResult(source_name=filename or "review.pdf", pages=[p1, p2], warnings=[])
+
+    monkeypatch.setattr("labor_rag.ocr.pipeline.extract_text", fake_extract_text)
+    monkeypatch.setattr(chunk_schema, "TokenCounter", lambda *args, **kwargs: (lambda text: len(text.split())))
+    monkeypatch.setattr(projection, "TokenCounter", lambda *args, **kwargs: (lambda text: len(text.split())))
+    monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
+        "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
+    })
+    indexed_chunks = []
+    def fake_index(self, chunks, proj_dir, progress, cancel_check=None):
+        indexed_chunks.extend(chunks)
+        return {"warnings": [], "embedded_chunks": len(chunks)}
+    monkeypatch.setattr(ingestion.IngestionPipeline, "index", fake_index)
+
+    app = create_app(settings=config(tmp_path), storage_factory=lambda: SimpleNamespace(close=lambda: None))
+    with TestClient(app) as client:
+        # Task 1: default pause_for_review=True -> stops at awaiting_review -> edit -> confirm
+        up = client.post(
+            "/api/documents/upload",
+            data={"document_type": "pdf", "domain": "khac"},
+            files={"file": ("review.pdf", pdf_bytes, "application/pdf")},
+        )
+        assert up.status_code == 202
+        task_id = up.json()["task_id"]
+
+        for _ in range(50):
+            prog = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+            if prog["status"] == "awaiting_review":
+                break
+            time.sleep(0.05)
+        assert prog["status"] == "awaiting_review"
+        assert indexed_chunks == []  # Phase 2 has NOT run yet
+
+        # Confirm while in awaiting_review cannot edit when wrong page or non-review, and PDF image renders
+        img1 = client.get(f"/api/documents/tasks/{task_id}/pdf-page/1")
+        assert img1.status_code == 200
+        assert img1.headers["content-type"] == "image/png"
+        assert img1.content.startswith(b"\x89PNG")
+        assert client.get(f"/api/documents/tasks/{task_id}/pdf-page/3").status_code == 404
+
+        # Manual edit page 1
+        edited_text = "LUẬT THỬ NGHIỆM\nSố: 88/2026/QH15\nĐiều 1. Phạm vi\nNội dung đã sửa chính tả chuẩn."
+        put_res = client.put(
+            f"/api/documents/tasks/{task_id}/ocr-page/1",
+            json={"text": edited_text},
+        )
+        assert put_res.status_code == 200
+        assert put_res.json()["text"] == edited_text
+        assert client.get(f"/api/documents/tasks/{task_id}/ocr-page/1").json()["text"] == edited_text
+
+        # Confirm -> triggers Phase 2 with the edited text
+        conf_res = client.post(f"/api/documents/tasks/{task_id}/confirm")
+        assert conf_res.status_code == 200
+        assert conf_res.json()["status"] == "chunking"
+
+        for _ in range(80):
+            done = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+            if done["status"] in {"completed", "failed"}:
+                break
+            time.sleep(0.05)
+        assert done["status"] == "completed", done
+        assert done["document_id"] == "88-2026-qh15"
+        assert any("Nội dung đã sửa chính tả chuẩn." in c["text"] for c in indexed_chunks)
+
+        ast = client.get("/api/documents/88-2026-qh15/ast").json()
+        assert "Nội dung đã sửa chính tả chuẩn." in str(ast["ast_tree"])
+
+        # Task 2: cancel cleanly while awaiting_review
+        up2 = client.post(
+            "/api/documents/upload",
+            data={"document_type": "pdf", "domain": "khac"},
+            files={"file": ("cancel_me.pdf", pdf_bytes, "application/pdf")},
+        )
+        task2_id = up2.json()["task_id"]
+        for _ in range(50):
+            if client.get(f"/api/documents/tasks/{task2_id}/progress").json()["status"] == "awaiting_review":
+                break
+            time.sleep(0.05)
+        cancel_res = client.post(f"/api/documents/tasks/{task2_id}/cancel")
+        assert cancel_res.status_code == 200
+        assert cancel_res.json()["status"] == "cancelled"
+
 

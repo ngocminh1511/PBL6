@@ -108,11 +108,12 @@ export const api = {
     return res.data;
   },
 
-  async uploadDocument(file: File, documentType: string = 'pdf', domain: string = 'lao_dong', deMucId?: string): Promise<{ task_id: string; message: string; document_id?: string }> {
+  async uploadDocument(file: File, documentType: string = 'pdf', domain: string = 'lao_dong', deMucId?: string, pauseForReview: boolean = true): Promise<{ task_id: string; message: string; document_id?: string }> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('document_type', documentType);
     formData.append('domain', domain);
+    formData.append('pause_for_review', String(pauseForReview));
     if (deMucId) formData.append('de_muc_id', deMucId);
 
     const res = await apiClient.post('/documents/upload', formData, {
@@ -128,6 +129,20 @@ export const api = {
 
   async getTaskOCRPage(taskId: string, pageNumber: number): Promise<OCRPageDetail> {
     const res = await apiClient.get(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`);
+    return res.data;
+  },
+
+  async updateTaskOCRPage(taskId: string, pageNumber: number, text: string): Promise<OCRPageDetail> {
+    const res = await apiClient.put(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`, { text });
+    return res.data;
+  },
+
+  getTaskPdfPageUrl(taskId: string, pageNumber: number): string {
+    return `/api/documents/tasks/${encodeURIComponent(taskId)}/pdf-page/${pageNumber}`;
+  },
+
+  async confirmTaskReview(taskId: string): Promise<IngestionTask> {
+    const res = await apiClient.post(`/documents/tasks/${taskId}/confirm`);
     return res.data;
   },
 

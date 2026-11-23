@@ -162,9 +162,9 @@ export interface OCRPreviewSummary {
 
 export interface IngestionTask {
   result?: {
-    document_ids: string[];
-    artifact_ids: string[];
-    warnings: string[];
+    document_ids?: string[];
+    artifact_ids?: string[];
+    warnings?: string[];
     reused_chunks?: number;
     ocr_summary?: Partial<OCRPreviewSummary>;
   };
@@ -172,7 +172,7 @@ export interface IngestionTask {
   document_id?: string;
   file_name: string;
   document_type: string;
-  status: 'pending' | 'parsing' | 'chunking' | 'embedding' | 'indexing' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'parsing' | 'awaiting_review' | 'chunking' | 'embedding' | 'indexing' | 'completed' | 'failed' | 'cancelled';
   progress: number;
   current_step: string;
   total_chunks: number;

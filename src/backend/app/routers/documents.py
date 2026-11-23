@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
@@ -16,6 +16,7 @@ from src.backend.app.models.schemas import (
     DocumentASTResponse,
     IngestionTaskResponse,
     OCRPageDetail,
+    OCRPageUpdateRequest,
     OCRPreviewSummary,
     UploadResponse,
     CursorPage,
@@ -182,6 +183,7 @@ def get_graph(document_id: str, article_number: str | None = Query(None, max_len
 async def upload_document(request: Request, file: UploadFile = File(...),
     document_type: Literal["pdf", "phap_dien_html"] = Form("pdf"),
     domain: Literal["lao_dong", "khac"] = Form("lao_dong"), de_muc_id: str | None = Form(None),
+    pause_for_review: bool = Form(True),
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     config = request.app.state.runtime.settings
     filename = Path((file.filename or "").replace(chr(92), "/")).name
@@ -211,7 +213,7 @@ async def upload_document(request: Request, file: UploadFile = File(...),
         db.add(task)
         db.commit()
         await run_in_threadpool(request.app.state.ingestion.submit,
-                                identity, destination, document_type, de_muc_id, domain)
+                                identity, destination, document_type, de_muc_id, domain, pause_for_review)
     except Exception:
         destination.unlink(missing_ok=True)
         raise
@@ -263,6 +265,39 @@ def task_ocr_page(task_id: str, page_number: int, request: Request, db: Session 
         raise HTTPException(404, "Chưa có nội dung OCR cho trang này.")
     return OCRPageDetail.model_validate(page)
 
+@router.put("/tasks/{task_id}/ocr-page/{page_number}", response_model=OCRPageDetail)
+def update_task_ocr_page(task_id: str, page_number: int, body: OCRPageUpdateRequest, request: Request,
+                         current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    task = db.get(IngestionTask, task_id)
+    if task is None:
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    if task.status != "awaiting_review":
+        raise HTTPException(409, "Chỉ có thể chỉnh sửa nội dung sau khi OCR hoàn tất và đang chờ kiểm tra.")
+    updated = request.app.state.ingestion.update_ocr_page_text(task_id, page_number, body.text)
+    if updated is None:
+        raise HTTPException(404, "Không tìm thấy trang OCR để cập nhật.")
+    return OCRPageDetail.model_validate(updated)
+
+@router.get("/tasks/{task_id}/pdf-page/{page_number}")
+def task_pdf_page_image(task_id: str, page_number: int, request: Request, db: Session = Depends(get_db)):
+    if db.get(IngestionTask, task_id) is None:
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    png_bytes = request.app.state.ingestion.get_pdf_page_image(task_id, page_number)
+    if png_bytes is None:
+        raise HTTPException(404, "Không tìm thấy trang PDF yêu cầu.")
+    return Response(content=png_bytes, media_type="image/png", headers={"Cache-Control": "private, max-age=300"})
+
+@router.post("/tasks/{task_id}/confirm", response_model=IngestionTaskResponse)
+def confirm_task_review(task_id: str, request: Request, current_user: User = Depends(get_current_user)):
+    task, state = request.app.state.ingestion.confirm_review(task_id)
+    if state == "not_found":
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    if state == "invalid_state":
+        raise HTTPException(409, "Tác vụ không ở trạng thái chờ kiểm tra OCR.")
+    if state == "missing_file":
+        raise HTTPException(404, "Không tìm thấy file PDF gốc để tiếp tục lập chỉ mục.")
+    return _task_response(request.app.state.ingestion, task)
+
 @router.post("/tasks/{task_id}/cancel", response_model=IngestionTaskResponse)
 def cancel_task(task_id: str, request: Request, current_user: User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
@@ -281,7 +316,7 @@ async def task_stream(task_id: str, request: Request, db: Session = Depends(get_
                 task = session.get(IngestionTask, task_id)
                 payload = _task_response(request.app.state.ingestion, task)
                 yield "data: " + payload.model_dump_json() + "\n\n"
-                if task.status in {"completed", "failed", "cancelled"}:
+                if task.status in {"completed", "failed", "cancelled", "awaiting_review"}:
                     break
             await asyncio.sleep(1)
     return StreamingResponse(events(), media_type="text/event-stream")

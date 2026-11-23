@@ -210,6 +210,9 @@ class OCRPagePreview(BaseModel):
 class OCRPageDetail(OCRPagePreview):
     text: str = ""
 
+class OCRPageUpdateRequest(BaseModel):
+    text: str
+
 class OCRPreviewSummary(BaseModel):
     total_pages: int = 0
     processed_pages: int = 0

@@ -24,8 +24,9 @@ interface DocumentState {
   setSelectedDocType: (docType: string) => void;
   selectDocument: (docId: string) => Promise<void>;
   updateDocumentDomain: (docId: string, domain: 'lao_dong' | 'khac') => Promise<void>;
-  uploadDocument: (file: File, docType: string, domain: string) => Promise<string>;
+  uploadDocument: (file: File, docType: string, domain: string, pauseForReview?: boolean) => Promise<string>;
   pollTaskProgress: (taskId: string) => void;
+  confirmTaskReview: (taskId: string) => Promise<void>;
   cancelTask: (taskId: string) => Promise<void>;
   setUploadModalOpen: (open: boolean) => void;
 }
@@ -107,9 +108,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     }
   },
 
-  uploadDocument: async (file, docType, domain) => {
+  uploadDocument: async (file, docType, domain, pauseForReview = true) => {
     try {
-      const res = await api.uploadDocument(file, docType, domain);
+      const res = await api.uploadDocument(file, docType, domain, undefined, pauseForReview);
       get().pollTaskProgress(res.task_id);
       return res.task_id;
     } catch (e) {
@@ -124,7 +125,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         const task = await api.getTaskProgress(taskId);
         set({ activeTask: task });
 
-        if (task.status === 'completed' || task.status === 'failed' || task.status === 'cancelled') {
+        if (
+          task.status === 'completed' ||
+          task.status === 'failed' ||
+          task.status === 'cancelled' ||
+          task.status === 'awaiting_review'
+        ) {
           if (interval) clearInterval(interval);
           if (task.status === 'completed') {
             await get().fetchDocuments();
@@ -152,6 +158,18 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         void check(interval);
       }, 1000);
     });
+  },
+
+  confirmTaskReview: async (taskId: string) => {
+    set({ error: null });
+    try {
+      const updated = await api.confirmTaskReview(taskId);
+      set({ activeTask: updated });
+      get().pollTaskProgress(taskId);
+    } catch (e) {
+      set({ error: errorMessage(e) });
+      throw e;
+    }
   },
 
   cancelTask: async (taskId: string) => {

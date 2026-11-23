@@ -1,6 +1,7 @@
 """One upload worker, with durable task state and no demo fallbacks."""
 from concurrent.futures import ThreadPoolExecutor
 import json
+from pathlib import Path
 import threading
 from sqlalchemy import update
 from src.backend.app.models.database import IngestionTask, DocumentRecord, FileArtifact
@@ -48,7 +49,7 @@ class IngestionService:
     def recover_interrupted(self):
         if self.database.available:
             with self.database.session() as db:
-                db.execute(update(IngestionTask).where(IngestionTask.status.notin_(["completed", "failed", "cancelled"]))
+                db.execute(update(IngestionTask).where(IngestionTask.status.notin_(["completed", "failed", "cancelled", "awaiting_review"]))
                     .values(status="failed", current_step="Backend đã khởi động lại; cần nạp lại file.",
                             error_message="interrupted_by_restart"))
                 db.commit()
@@ -69,23 +70,26 @@ class IngestionService:
                 return None
             if task.status in {"completed", "failed", "cancelled"}:
                 return task
-            if task.status == "pending":
+            if task.status in {"pending", "awaiting_review"}:
                 task.status = "cancelled"
                 task.current_step = "Đã hủy nạp tài liệu theo yêu cầu người dùng."
+                with self._cancel_lock:
+                    self._cancel_events.pop(task_id, None)
             else:
                 task.current_step = "Đang hủy tiến trình theo yêu cầu..."
             db.commit()
             db.refresh(task)
             return task
 
-    def submit(self, task_id, file_path, document_type, de_muc_id=None, domain="lao_dong"):
+    def submit(self, task_id, file_path, document_type, de_muc_id=None, domain="lao_dong", pause_for_review=True):
         # Reserve a config snapshot for both queued and running uploads.
+        target = self._run_extract_phase if (document_type == "pdf" and pause_for_review) else self._run
         with self._cancel_lock:
             self._cancel_events[task_id] = threading.Event()
         with self.runtime.lock:
             self.runtime.active += 1
         try:
-            self.executor.submit(self._run, task_id, file_path, document_type, de_muc_id, domain)
+            self.executor.submit(target, task_id, file_path, document_type, de_muc_id, domain)
         except Exception:
             with self._cancel_lock:
                 self._cancel_events.pop(task_id, None)
@@ -237,9 +241,227 @@ class IngestionService:
                 }
         return None
 
+    def _resolve_task_pdf_path(self, task_id: str, task: IngestionTask | None = None) -> Path | None:
+        upload_root = self.runtime.settings.UPLOAD_DIR.resolve()
+        candidate: Path | None = None
+        if task and isinstance(task.result, dict) and task.result.get("file_path"):
+            p = Path(task.result["file_path"]).resolve()
+            if p.is_relative_to(upload_root) and p.exists():
+                candidate = p
+        if candidate is None:
+            task_dir = (upload_root / task_id).resolve()
+            if task_dir.is_relative_to(upload_root) and task_dir.exists():
+                pdfs = sorted(task_dir.glob("*.pdf"))
+                if pdfs:
+                    candidate = pdfs[0]
+        return candidate
+
+    def get_pdf_page_image(self, task_id: str, page_number: int) -> bytes | None:
+        if page_number < 1:
+            return None
+        cache_dir = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "page_images"
+        cache_file = cache_dir / f"page_{page_number}.png"
+        if cache_file.exists():
+            return cache_file.read_bytes()
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None or task.document_type != "pdf":
+                return None
+            pdf_path = self._resolve_task_pdf_path(task_id, task)
+        if pdf_path is None:
+            return None
+        import pymupdf
+        with pymupdf.open(pdf_path) as doc:
+            if page_number > doc.page_count:
+                return None
+            pixmap = doc[page_number - 1].get_pixmap(dpi=150)
+            png_bytes = pixmap.tobytes("png")
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_file.write_bytes(png_bytes)
+        return png_bytes
+
+    def update_ocr_page_text(self, task_id: str, page_number: int, text: str) -> dict | None:
+        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
+        if not pages_file.exists():
+            return None
+        lines = [line for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+        updated_entry: dict | None = None
+        new_lines: list[str] = []
+        for raw in lines:
+            entry = json.loads(raw)
+            if int(entry.get("page_number") or 0) == page_number:
+                entry["text"] = text
+                entry["char_count"] = len(text)
+                updated_entry = {
+                    "page_number": page_number,
+                    "method": str(entry.get("method") or "unknown"),
+                    "confidence": entry.get("confidence"),
+                    "char_count": len(text),
+                    "text": text,
+                }
+            new_lines.append(json.dumps(entry, ensure_ascii=False))
+        if updated_entry is None:
+            return None
+        pages_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        with self._ocr_lock:
+            state = self._ocr_previews.get(task_id)
+            if state is not None:
+                for item in state.get("recent_pages", []):
+                    if item.get("page_number") == page_number:
+                        item["char_count"] = len(text)
+                        item["preview_text"] = text[:600].strip()
+                        break
+        return updated_entry
+
+    def confirm_review(self, task_id: str):
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None, "not_found"
+            if task.status != "awaiting_review":
+                return task, "invalid_state"
+            meta = task.result if isinstance(task.result, dict) else {}
+            pdf_path = self._resolve_task_pdf_path(task_id, task)
+            if pdf_path is None:
+                return task, "missing_file"
+            document_type = str(meta.get("document_type") or task.document_type or "pdf")
+            domain = str(meta.get("domain") or "lao_dong")
+            de_muc_id = meta.get("de_muc_id")
+            task.status = "chunking"
+            task.progress = 30.0
+            task.current_step = "Đã xác nhận nội dung OCR, đang chuẩn bị lập chỉ mục..."
+            task.error_message = None
+            db.commit()
+            db.refresh(task)
+
+        with self._cancel_lock:
+            self._cancel_events[task_id] = threading.Event()
+        with self.runtime.lock:
+            self.runtime.active += 1
+        try:
+            self.executor.submit(self._run_index_phase, task_id, pdf_path, document_type, de_muc_id, domain)
+        except Exception:
+            with self._cancel_lock:
+                self._cancel_events.pop(task_id, None)
+            with self.runtime.lock:
+                self.runtime.active -= 1
+            raise
+        return task, "ok"
+
+    def _save_completion(self, task_id: str, result: dict):
+        from src.backend.app.services.corpus import Corpus
+        with self.database.session() as db:
+            for record in result["documents"]:
+                existing = db.get(DocumentRecord, record["id"])
+                if existing:
+                    for key, value in record.items():
+                        setattr(existing, key, value)
+                else:
+                    db.add(DocumentRecord(**record))
+            for artifact in result["artifacts"]:
+                row = db.get(FileArtifact, artifact["artifact_id"])
+                if row:
+                    row.record = artifact
+                else:
+                    db.add(FileArtifact(id=artifact["artifact_id"], record=artifact))
+            task = db.get(IngestionTask, task_id)
+            task.result = {
+                "document_ids": result["document_ids"],
+                "artifact_ids": [a["artifact_id"] for a in result["artifacts"]],
+                "warnings": result["warnings"],
+                "config_version": self.runtime.version,
+                "reused_chunks": result.get("reused_chunks", 0),
+                "ocr_summary": result.get("ocr_summary"),
+            }
+            task.document_id = result["document_ids"][0] if len(result["document_ids"]) == 1 else None
+            task.status, task.progress, task.current_step = "completed", 100, "Hoàn tất! Văn bản đã sẵn sàng để xem và tra cứu."
+            task.total_chunks = result["total_chunks"]
+            task.embedded_chunks = result.get("embedded_chunks", result["total_chunks"])
+            db.commit()
+        Corpus.cache_clear()
+
+    def _handle_failure(self, task_id: str, exc: BaseException):
+        last_status = None
+        try:
+            with self.database.session() as db:
+                existing = db.get(IngestionTask, task_id)
+                if existing:
+                    last_status = existing.status
+        except Exception:
+            last_status = None
+        message = _describe_failure(exc, last_status)
+        self._progress(task_id, None, "failed", message, error_message=message)
+
+    def _cleanup_worker(self, task_id: str):
+        with self._cancel_lock:
+            self._cancel_events.pop(task_id, None)
+        with self.runtime.lock:
+            self.runtime.active -= 1
+
+    def _run_extract_phase(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
+        from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
+        try:
+            if self.is_cancelled(task_id):
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+            with self.runtime.operation():
+                pipeline = IngestionPipeline(self.runtime.settings, self.runtime.storage())
+                extracted = pipeline.extract_only(
+                    file_path,
+                    task_id,
+                    document_type,
+                    progress=lambda *args, **kwargs: self._progress(task_id, *args, **kwargs),
+                    cancel_check=lambda: self.is_cancelled(task_id),
+                    on_page=lambda page: self.record_ocr_page(task_id, page),
+                    on_ocr_summary=lambda summary: self.finalize_ocr_summary(task_id, summary),
+                )
+                with self.database.session() as db:
+                    task = db.get(IngestionTask, task_id)
+                    if task:
+                        task.result = {
+                            "file_path": str(file_path),
+                            "document_type": document_type,
+                            "domain": domain,
+                            "de_muc_id": de_muc_id,
+                            "ocr_summary": extracted.get("ocr_summary"),
+                        }
+                        task.status = "awaiting_review"
+                        task.progress = 30.0
+                        task.current_step = "Đã OCR xong! Hãy đối chiếu, chỉnh sửa (nếu cần) rồi bấm 'Xác nhận & Lập chỉ mục'."
+                        db.commit()
+        except IngestionCancelledError:
+            self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
+        except (Exception, SystemExit) as exc:
+            self._handle_failure(task_id, exc)
+        finally:
+            self._cleanup_worker(task_id)
+
+    def _run_index_phase(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
+        from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
+        try:
+            if self.is_cancelled(task_id):
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+            with self.runtime.operation():
+                pipeline = IngestionPipeline(self.runtime.settings, self.runtime.storage())
+                result = pipeline.finalize_extracted(
+                    file_path,
+                    task_id,
+                    document_type,
+                    domain=domain,
+                    de_muc_id=de_muc_id,
+                    progress=lambda *args, **kwargs: self._progress(task_id, *args, **kwargs),
+                    cancel_check=lambda: self.is_cancelled(task_id),
+                    on_ocr_summary=lambda summary: self.finalize_ocr_summary(task_id, summary),
+                )
+                self._save_completion(task_id, result)
+        except IngestionCancelledError:
+            self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
+        except (Exception, SystemExit) as exc:
+            self._handle_failure(task_id, exc)
+        finally:
+            self._cleanup_worker(task_id)
+
     def _run(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
         from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
-        from src.backend.app.services.corpus import Corpus
         try:
             if self.is_cancelled(task_id):
                 raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
@@ -250,50 +472,13 @@ class IngestionService:
                     cancel_check=lambda: self.is_cancelled(task_id),
                     on_page=lambda page: self.record_ocr_page(task_id, page),
                     on_ocr_summary=lambda summary: self.finalize_ocr_summary(task_id, summary))
-                with self.database.session() as db:
-                    for record in result["documents"]:
-                        existing = db.get(DocumentRecord, record["id"])
-                        if existing:
-                            for key, value in record.items():
-                                setattr(existing, key, value)
-                        else:
-                            db.add(DocumentRecord(**record))
-                    for artifact in result["artifacts"]:
-                        row = db.get(FileArtifact, artifact["artifact_id"])
-                        if row:
-                            row.record = artifact
-                        else:
-                            db.add(FileArtifact(id=artifact["artifact_id"], record=artifact))
-                    task = db.get(IngestionTask, task_id)
-                    task.result = {"document_ids": result["document_ids"],
-                        "artifact_ids": [a["artifact_id"] for a in result["artifacts"]],
-                        "warnings": result["warnings"], "config_version": self.runtime.version,
-                        "reused_chunks": result.get("reused_chunks", 0),
-                        "ocr_summary": result.get("ocr_summary")}
-                    task.document_id = result["document_ids"][0] if len(result["document_ids"]) == 1 else None
-                    task.status, task.progress, task.current_step = "completed", 100, "Hoàn tất! Văn bản đã sẵn sàng để xem và tra cứu."
-                    task.total_chunks = result["total_chunks"]
-                    task.embedded_chunks = result.get("embedded_chunks", result["total_chunks"])
-                    db.commit()
-                Corpus.cache_clear()
+                self._save_completion(task_id, result)
         except IngestionCancelledError:
             self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
         except (Exception, SystemExit) as exc:
-            last_status = None
-            try:
-                with self.database.session() as db:
-                    existing = db.get(IngestionTask, task_id)
-                    if existing:
-                        last_status = existing.status
-            except Exception:
-                last_status = None
-            message = _describe_failure(exc, last_status)
-            self._progress(task_id, None, "failed", message, error_message=message)
+            self._handle_failure(task_id, exc)
         finally:
-            with self._cancel_lock:
-                self._cancel_events.pop(task_id, None)
-            with self.runtime.lock:
-                self.runtime.active -= 1
+            self._cleanup_worker(task_id)
 
     def close(self):
         self.executor.shutdown(wait=True)

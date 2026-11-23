@@ -74,10 +74,52 @@ class IngestionPipeline:
         self.store = store
         self.embedder = embedder or EmbeddingProvider(settings)
 
-    def run(self, path, task_id, document_type, *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_page=None, on_ocr_summary=None):
-        from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
-        from labor_rag.ingest.chunk_schema import TokenCounter
-        from labor_rag.ingest.ontology_to_jsonl import project
+    def _summarize_ocr(self, extraction, document=None, ocr_quality=None) -> dict:
+        pages = getattr(extraction, "pages", []) if extraction else []
+        return {
+            "total_pages": getattr(extraction, "total_pages", 0) if extraction else 0,
+            "text_pages": sum(1 for p in pages if p.method == "text"),
+            "ocr_pages": len(getattr(extraction, "scanned_pages", [])) if extraction else 0,
+            "empty_pages": sum(1 for p in pages if p.method in {"empty", "skipped"}),
+            "avg_confidence": round(extraction.ocr_confidence, 4) if extraction and extraction.ocr_confidence is not None else None,
+            "heuristic_score": (ocr_quality or {}).get("heuristic_score"),
+            "articles_count": sum(1 for _ in document.iter_articles()) if document is not None else None,
+            "warnings": list(getattr(extraction, "warnings", []) or []) if extraction else [],
+        }
+
+    def _pdf_page_writer(self, ocr_pages_file: Path, on_page):
+        ocr_pages_file.write_text("", encoding="utf-8")
+
+        def handle_page(page_text, total_pages: int):
+            conf = round(page_text.confidence, 4) if page_text.confidence is not None else None
+            full_entry = {
+                "page_number": page_text.page_number + 1,
+                "total_pages": total_pages,
+                "method": page_text.method,
+                "confidence": conf,
+                "char_count": len(page_text.text),
+                "text": page_text.text,
+            }
+            with ocr_pages_file.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(full_entry, ensure_ascii=False) + "\n")
+            if on_page:
+                on_page({
+                    "page_number": full_entry["page_number"],
+                    "total_pages": total_pages,
+                    "method": page_text.method,
+                    "confidence": conf,
+                    "char_count": full_entry["char_count"],
+                    "preview_text": page_text.text[:600].strip(),
+                })
+
+        return handle_page
+
+    def extract_only(self, path, task_id, document_type="pdf", *, progress=None, cancel_check=None, on_page=None, on_ocr_summary=None):
+        """Phase 1: extract raw text/OCR page by page into ocr_pages.jsonl and pause before chunking/indexing."""
+        from labor_rag.ocr.pipeline import extract_document_pages
+
+        if document_type != "pdf":
+            raise IngestionInputError("Chỉ hỗ trợ tách pha kiểm tra OCR cho tài liệu PDF.")
         progress = progress or (lambda *args, **kwargs: None)
 
         def check_cancelled():
@@ -88,127 +130,138 @@ class IngestionPipeline:
         config = self.settings
         work = config.INTERIM_DIR / "ingestion" / task_id
         work.mkdir(parents=True, exist_ok=True)
+        progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
+
+        handle_page = self._pdf_page_writer(work / "ocr_pages.jsonl", on_page)
+
+        def ocr_progress(msg: str, pct: float):
+            check_cancelled()
+            progress(round(10 + 0.18 * pct, 1), "parsing", f"Đang nhận dạng văn bản ({msg})...")
+
+        extraction = extract_document_pages(path, settings=config, progress=ocr_progress, page_callback=handle_page)
+        check_cancelled()
+        summary = self._summarize_ocr(extraction)
+        if on_ocr_summary:
+            on_ocr_summary(summary)
+        return {"ocr_summary": summary, "work_dir": str(work)}
+
+    def finalize_extracted(self, path, task_id, document_type="pdf", *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_ocr_summary=None):
+        """Phase 2: rebuild ExtractionResult from (optionally edited) ocr_pages.jsonl and index the document."""
+        from labor_rag.ingest.pdf_to_chunks import KgIndex
+        from labor_rag.ocr.extract import ExtractionResult, PageText
+        from labor_rag.ocr.pipeline import build_processed_document
+
+        if document_type != "pdf":
+            raise IngestionInputError("Chỉ hỗ trợ xác nhận lập chỉ mục từ trang OCR cho tài liệu PDF.")
+        progress = progress or (lambda *args, **kwargs: None)
+
+        def check_cancelled():
+            if cancel_check and cancel_check():
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+
+        check_cancelled()
+        config = self.settings
+        work = config.INTERIM_DIR / "ingestion" / task_id
+        pages_file = work / "ocr_pages.jsonl"
+        if not pages_file.exists():
+            raise IngestionInputError("Không tìm thấy dữ liệu trang OCR đã tách; vui lòng nạp lại file PDF.")
+        entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+        entries.sort(key=lambda item: int(item.get("page_number") or 0))
+        pages = [
+            PageText(
+                page_number=max(0, int(item["page_number"]) - 1),
+                text=str(item.get("text") or ""),
+                method=str(item.get("method") or "text"),
+                confidence=item.get("confidence"),
+            )
+            for item in entries
+        ]
+        if not pages:
+            raise IngestionInputError("Dữ liệu trang OCR trống; vui lòng nạp lại file PDF.")
+        extraction = ExtractionResult(source_name=Path(path).name, pages=pages)
+        progress(30, "chunking", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm từ nội dung đã kiểm tra...")
+        processed = build_processed_document(extraction)
+        check_cancelled()
+
         kg = KgIndex.load(LAO_DONG_DIR) if domain == "lao_dong" and (LAO_DONG_DIR / "kg_nodes.jsonl").exists() else None
         abox_dir = work / "abox"
         abox_dir.mkdir(exist_ok=True)
-        progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
-        trees = {}
-        warnings = []
-        ocr_summary = None
-        if document_type == "pdf":
-            from labor_rag.ocr.export import export_hierarchical
-            from labor_rag.ocr.pipeline import process_document
-            from labor_rag.ingest.pdf_abox import document_abox
+        return self._finish_pdf_ingestion(
+            path,
+            work,
+            abox_dir,
+            processed,
+            task_id,
+            domain,
+            kg,
+            progress,
+            check_cancelled,
+            on_ocr_summary=on_ocr_summary,
+        )
 
-            ocr_pages_file = work / "ocr_pages.jsonl"
-            ocr_pages_file.write_text("", encoding="utf-8")
+    def _finish_pdf_ingestion(self, path, work, abox_dir, processed, task_id, domain, kg, progress, check_cancelled, on_ocr_summary=None):
+        from labor_rag.ingest.chunk_schema import TokenCounter
+        from labor_rag.ingest.pdf_abox import document_abox
+        from labor_rag.ingest.pdf_to_chunks import document_to_chunks
+        from labor_rag.ocr.export import export_hierarchical
 
-            def handle_page(page_text, total_pages: int):
-                conf = round(page_text.confidence, 4) if page_text.confidence is not None else None
-                full_entry = {
-                    "page_number": page_text.page_number + 1,
-                    "total_pages": total_pages,
-                    "method": page_text.method,
-                    "confidence": conf,
-                    "char_count": len(page_text.text),
-                    "text": page_text.text,
-                }
-                with ocr_pages_file.open("a", encoding="utf-8") as fh:
-                    fh.write(json.dumps(full_entry, ensure_ascii=False) + "\n")
-                if on_page:
-                    on_page({
-                        "page_number": full_entry["page_number"],
-                        "total_pages": total_pages,
-                        "method": page_text.method,
-                        "confidence": conf,
-                        "char_count": full_entry["char_count"],
-                        "preview_text": page_text.text[:600].strip(),
-                    })
+        config = self.settings
+        document = processed.document
+        extraction = getattr(processed, "extraction", None)
+        ocr_quality = getattr(processed, "ocr_quality", None) or {}
+        warnings = list(getattr(extraction, "warnings", []) or []) if extraction is not None else []
+        ocr_summary = self._summarize_ocr(extraction, document=document, ocr_quality=ocr_quality)
+        if on_ocr_summary:
+            on_ocr_summary(ocr_summary)
+        progress(31, "chunking", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm...")
+        if not document.metadata.so_hieu or not list(document.iter_articles()):
+            raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra lại tài liệu nguồn.")
+        chunks, chunk_warnings = document_to_chunks(document, kg=kg, count=TokenCounter(config.EMBEDDING_MODEL))
+        warnings.extend(chunk_warnings)
+        for chunk in chunks:
+            chunk["domain"] = domain
+        builder, _ = document_abox(document, kg)
+        if builder is None:
+            raise IngestionInputError("Không dựng được cấu trúc dữ liệu pháp lý cho PDF.")
+        abox_path = abox_dir / (document.document_id + ".ttl")
+        builder.serialize(abox_path)
+        trees = {document.document_id: document_tree(document)}
+        (work / "document.json").write_text(document.model_dump_json(indent=2), encoding="utf-8")
 
-            def ocr_progress(msg: str, pct: float):
-                check_cancelled()
-                progress(round(10 + 0.18 * pct, 1), "parsing", f"Đang nhận dạng văn bản ({msg})...")
-
-            ocr_kwargs = {"settings": config, "progress": ocr_progress}
-            params = inspect.signature(process_document).parameters
-            if "page_callback" in params or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
-                ocr_kwargs["page_callback"] = handle_page
-            processed = process_document(path, **ocr_kwargs)
-            document = processed.document
-            check_cancelled()
-            extraction = getattr(processed, "extraction", None)
-            ocr_quality = getattr(processed, "ocr_quality", None) or {}
-            if extraction is not None:
-                warnings.extend(getattr(extraction, "warnings", []) or [])
-            ocr_summary = {
-                "total_pages": getattr(extraction, "total_pages", 0) if extraction else 0,
-                "text_pages": sum(1 for p in getattr(extraction, "pages", []) if p.method == "text") if extraction else 0,
-                "ocr_pages": len(getattr(extraction, "scanned_pages", [])) if extraction else 0,
-                "empty_pages": sum(1 for p in getattr(extraction, "pages", []) if p.method in {"empty", "skipped"}) if extraction else 0,
-                "avg_confidence": round(extraction.ocr_confidence, 4) if extraction and extraction.ocr_confidence is not None else None,
-                "heuristic_score": ocr_quality.get("heuristic_score"),
-                "articles_count": sum(1 for _ in document.iter_articles()),
-                "warnings": list(getattr(extraction, "warnings", []) or []) if extraction else [],
-            }
-            if on_ocr_summary:
-                on_ocr_summary(ocr_summary)
-            progress(28, "parsing", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm...")
-            if not document.metadata.so_hieu or not list(document.iter_articles()):
-                raise IngestionInputError("PDF thiếu số hiệu hoặc cấu trúc Điều luật; cần kiểm tra lại tài liệu nguồn.")
-            chunks, warnings = document_to_chunks(document, kg=kg, count=TokenCounter(config.EMBEDDING_MODEL))
+        pdf_chunks_dir = config.INTERIM_DIR / "pdf_chunks"
+        pdf_chunks_dir.mkdir(parents=True, exist_ok=True)
+        export_hierarchical(document, pdf_chunks_dir / f"{document.document_id}_hierarchical.jsonl")
+        with (pdf_chunks_dir / f"{document.document_id}_chunks.jsonl").open("w", encoding="utf-8") as f:
             for chunk in chunks:
-                chunk["domain"] = domain
-            builder, _ = document_abox(document, kg)
-            if builder is None:
-                raise IngestionInputError("Không dựng được cấu trúc dữ liệu pháp lý cho PDF.")
-            abox_path = abox_dir / (document.document_id + ".ttl")
-            builder.serialize(abox_path)
-            trees[document.document_id] = document_tree(document)
-            (work / "document.json").write_text(document.model_dump_json(indent=2), encoding="utf-8")
+                f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
 
-            # Lưu kết quả OCR chuẩn vào thư mục interim gitignored để dùng lại và đồng bộ Corpus
-            pdf_chunks_dir = config.INTERIM_DIR / "pdf_chunks"
-            pdf_chunks_dir.mkdir(parents=True, exist_ok=True)
-            export_hierarchical(document, pdf_chunks_dir / f"{document.document_id}_hierarchical.jsonl")
-            with (pdf_chunks_dir / f"{document.document_id}_chunks.jsonl").open("w", encoding="utf-8") as f:
-                for chunk in chunks:
-                    f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
-
-            if domain == "lao_dong" and LAO_DONG_ABOX_PATH.exists():
-                projection_source = LAO_DONG_ABOX_PATH
-                pdf_abox_arg = abox_dir
-            else:
-                projection_source = abox_path
-                pdf_abox_arg = work / "empty_pdf_abox"
-        elif document_type == "phap_dien_html":
-            from labor_rag.ingest.parse_demuc_html import parse_demuc_nodes
-            from labor_rag.ingest.build_abox import AboxBuilder
-            from labor_rag.ingest.pdf_abox import graph_index
-            tree = parse_demuc_nodes(path)
-            # Resolve metadata from the versioned projection, so a fresh clone
-            # and Docker do not depend on ignored data/interim/*.json files.
-            source_nodes = jsonl(LAO_DONG_DIR / "kg_nodes.jsonl")
-            topics = [node for node in source_nodes if node.get("label") == "ChuDe"]
-            topic_name = topics[0].get("ten", "Lao động") if topics else "Lao động"
-            known = {"20." + str(node["ontology_vlpd__itemNumber"]): node
-                     for node in source_nodes if node.get("label") == "DeMuc"
-                     and node.get("ontology_vlpd__itemNumber") is not None}
-            code = de_muc_id or tree.get("de_muc_so")
-            item = known.get(code)
-            if item is None:
-                raise IngestionInputError("Cần mã đề mục Pháp điển Lao động hợp lệ, ví dụ 20.2.")
-            tree["de_muc_id"] = code
-            builder = AboxBuilder()
-            builder.index = graph_index(kg)
-            builder.index_de_muc(tree)
-            builder.add_de_muc(path, 20, topic_name, int(item["ontology_vlpd__itemNumber"]), item["ten"], tree)
-            abox_path = work / "phap_dien.ttl"
-            builder.serialize(abox_path)
-            projection_source = abox_path
+        if domain == "lao_dong" and LAO_DONG_ABOX_PATH.exists():
+            projection_source = LAO_DONG_ABOX_PATH
             pdf_abox_arg = abox_dir
-            chunks = []
         else:
-            raise IngestionInputError("Chỉ hỗ trợ PDF và HTML Pháp điển.")
+            projection_source = abox_path
+            pdf_abox_arg = work / "empty_pdf_abox"
+
+        return self._project_and_index(
+            path,
+            work,
+            "pdf",
+            domain,
+            abox_path,
+            projection_source,
+            pdf_abox_arg,
+            chunks,
+            trees,
+            warnings,
+            ocr_summary,
+            progress,
+            check_cancelled,
+        )
+
+    def _project_and_index(self, path, work, document_type, domain, abox_path, projection_source, pdf_abox_arg, chunks, trees, warnings, ocr_summary, progress, check_cancelled):
+        from labor_rag.ingest.ontology_to_jsonl import project
+
+        config = self.settings
         check_cancelled()
         progress(32, "chunking", "Đang chuẩn hóa cấu trúc dữ liệu và lưu trữ bản gốc...")
         projection = work / "projection"
@@ -259,6 +312,96 @@ class IngestionPipeline:
                 "embedded_chunks": indexed["embedded_chunks"],
                 "reused_chunks": len(chunks) - indexed["embedded_chunks"],
                 "ocr_summary": ocr_summary}
+
+    def run(self, path, task_id, document_type, *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_page=None, on_ocr_summary=None):
+        from labor_rag.ingest.pdf_to_chunks import KgIndex
+        progress = progress or (lambda *args, **kwargs: None)
+
+        def check_cancelled():
+            if cancel_check and cancel_check():
+                raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
+
+        check_cancelled()
+        config = self.settings
+        work = config.INTERIM_DIR / "ingestion" / task_id
+        work.mkdir(parents=True, exist_ok=True)
+        kg = KgIndex.load(LAO_DONG_DIR) if domain == "lao_dong" and (LAO_DONG_DIR / "kg_nodes.jsonl").exists() else None
+        abox_dir = work / "abox"
+        abox_dir.mkdir(exist_ok=True)
+        progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
+        trees = {}
+        warnings = []
+        if document_type == "pdf":
+            from labor_rag.ocr.pipeline import process_document
+
+            handle_page = self._pdf_page_writer(work / "ocr_pages.jsonl", on_page)
+
+            def ocr_progress(msg: str, pct: float):
+                check_cancelled()
+                progress(round(10 + 0.18 * pct, 1), "parsing", f"Đang nhận dạng văn bản ({msg})...")
+
+            ocr_kwargs = {"settings": config, "progress": ocr_progress}
+            params = inspect.signature(process_document).parameters
+            if "page_callback" in params or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
+                ocr_kwargs["page_callback"] = handle_page
+            processed = process_document(path, **ocr_kwargs)
+            check_cancelled()
+            return self._finish_pdf_ingestion(
+                path,
+                work,
+                abox_dir,
+                processed,
+                task_id,
+                domain,
+                kg,
+                progress,
+                check_cancelled,
+                on_ocr_summary=on_ocr_summary,
+            )
+        elif document_type == "phap_dien_html":
+            from labor_rag.ingest.parse_demuc_html import parse_demuc_nodes
+            from labor_rag.ingest.build_abox import AboxBuilder
+            from labor_rag.ingest.pdf_abox import graph_index
+            tree = parse_demuc_nodes(path)
+            # Resolve metadata from the versioned projection, so a fresh clone
+            # and Docker do not depend on ignored data/interim/*.json files.
+            source_nodes = jsonl(LAO_DONG_DIR / "kg_nodes.jsonl")
+            topics = [node for node in source_nodes if node.get("label") == "ChuDe"]
+            topic_name = topics[0].get("ten", "Lao động") if topics else "Lao động"
+            known = {"20." + str(node["ontology_vlpd__itemNumber"]): node
+                     for node in source_nodes if node.get("label") == "DeMuc"
+                     and node.get("ontology_vlpd__itemNumber") is not None}
+            code = de_muc_id or tree.get("de_muc_so")
+            item = known.get(code)
+            if item is None:
+                raise IngestionInputError("Cần mã đề mục Pháp điển Lao động hợp lệ, ví dụ 20.2.")
+            tree["de_muc_id"] = code
+            builder = AboxBuilder()
+            builder.index = graph_index(kg)
+            builder.index_de_muc(tree)
+            builder.add_de_muc(path, 20, topic_name, int(item["ontology_vlpd__itemNumber"]), item["ten"], tree)
+            abox_path = work / "phap_dien.ttl"
+            builder.serialize(abox_path)
+            projection_source = abox_path
+            pdf_abox_arg = abox_dir
+            chunks = []
+        else:
+            raise IngestionInputError("Chỉ hỗ trợ PDF và HTML Pháp điển.")
+        return self._project_and_index(
+            path,
+            work,
+            document_type,
+            domain,
+            abox_path,
+            projection_source,
+            pdf_abox_arg,
+            chunks,
+            trees,
+            warnings,
+            None,
+            progress,
+            check_cancelled,
+        )
 
     def index(self, chunks, projection, progress, cancel_check=None):
         from qdrant_client import QdrantClient

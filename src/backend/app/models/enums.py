@@ -12,6 +12,7 @@ class DocumentType(str, Enum):
 class TaskStatus(str, Enum):
     PENDING = "pending"
     PARSING = "parsing"
+    AWAITING_REVIEW = "awaiting_review"
     CHUNKING = "chunking"
     EMBEDDING = "embedding"
     INDEXING = "indexing"
