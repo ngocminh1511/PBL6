@@ -4,7 +4,7 @@ import { FolderTree } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 import { api, errorMessage } from '../../lib/api';
 import { locateEvidence } from '../../lib/locate';
-import { ASTTree } from '../documents/ASTTree';
+import { LegalTree } from './LegalTree';
 import type { ASTNode } from '../../lib/types';
 
 export function HierarchyTree() {
@@ -40,7 +40,7 @@ export function HierarchyTree() {
     {error && <p role="alert" className="rounded-xl border border-[#9A6B2F]/25 bg-[#FAF7F0] px-3 py-2 text-[12.5px] text-[#473822]">{error}</p>}
     {tree && selected?.meta_dieu && !focus && <p className="rounded-xl border border-[#9A6B2F]/25 bg-[#FAF7F0] px-3 py-2 text-[12.5px] text-[#473822]">Chưa tìm thấy Điều {selected.meta_dieu} trong cây của văn bản này.</p>}
     <div className="p-2.5 rounded-2xl bg-white border border-ink/10">
-      {tree ? (json ? <pre className="font-mono text-[11px] text-ink-2 overflow-auto">{JSON.stringify(tree, null, 2)}</pre> : <ASTTree node={tree} focus={focus ?? undefined} tick={focusTick} />) :
+      {tree ? (json ? <pre className="font-mono text-[11px] text-ink-2 overflow-auto">{JSON.stringify(tree, null, 2)}</pre> : <LegalTree node={tree} focus={focus ?? undefined} tick={focusTick} />) :
         <div className="flex flex-col items-center justify-center py-10 gap-2 text-center text-muted">
           <FolderTree className="w-7 h-7 text-navy/65" />
           <p className="text-[12.5px]">{id && !error ? 'Đang tải cấu trúc…' : 'Chọn chứng cứ trong câu trả lời để xem cây phân cấp.'}</p>
