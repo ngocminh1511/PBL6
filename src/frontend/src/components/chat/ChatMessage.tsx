@@ -8,12 +8,9 @@ import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
 import { TokenUsage } from './TokenUsage';
 
-export type ProseFont = 'sans' | 'serif';
-
 interface ChatMessageProps {
   message: ChatMessageType;
   index: number;
-  proseFont?: ProseFont;
 }
 
 const formatTime = (dateStr: string) => {
@@ -27,7 +24,7 @@ const formatTime = (dateStr: string) => {
   }
 };
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseFont = 'sans' }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(message.feedback ?? null);
   const [feedbackSaving, setFeedbackSaving] = useState(false);
@@ -53,7 +50,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseF
 
   const check = message.citation_check;
   const verified = !!check?.all_verified && check.verified.length > 0;
-  const proseClass = proseFont === 'serif' ? 'font-serif' : 'font-sans';
 
   const handleCopy = () => {
     navigator.clipboard?.writeText(message.content);
@@ -96,7 +92,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseF
       ))}
 
       {/* Legal answer prose */}
-      <div className={`${proseClass} text-[15.5px] leading-[1.7] text-[#262521] whitespace-pre-line`}>
+      <div className="text-[15.5px] leading-[1.7] text-[#262521] whitespace-pre-line">
         {message.content}
       </div>
 

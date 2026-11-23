@@ -5,8 +5,6 @@
 /* Shared design tokens (warm stone + navy legal palette) */
 :root {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'Lora', Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   --color-ink: #1c1b18;
   --color-ink-2: #3f3d37;

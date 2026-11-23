@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Info, PanelLeftOpen, PanelRightClose, PanelRightOpen, Scale, Share2, Sparkles } from 'lucide-react';
 import { SessionList } from '../../components/chat/SessionList';
-import { ChatMessage, type ProseFont } from '../../components/chat/ChatMessage';
+import { ChatMessage } from '../../components/chat/ChatMessage';
 import { TokenUsage } from '../../components/chat/TokenUsage';
 import { ChatInput } from '../../components/chat/ChatInput';
 import { ShareModal } from '../../components/chat/ShareModal';
@@ -17,7 +17,6 @@ import { exportSessionToPDF } from '../../lib/exportPdf';
 
 const LEFT_DEFAULT = 276;
 const RIGHT_DEFAULT = 400;
-const PROSE_FONT_KEY = 'lexgraph_prose_font';
 
 const SAMPLE_PROMPTS = [
   'Thời hạn báo trước khi đơn phương chấm dứt hợp đồng lao động không xác định thời hạn là bao nhiêu ngày?',
@@ -42,7 +41,6 @@ export default function ChatPage() {
   const [rightOpen, setRightOpen] = useState(true);
   const [leftWidth, setLeftWidth] = useState(LEFT_DEFAULT);
   const [rightWidth, setRightWidth] = useState(RIGHT_DEFAULT);
-  const [proseFont, setProseFont] = useState<ProseFont>('sans');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -63,20 +61,6 @@ export default function ChatPage() {
       }
     });
   }, [fetchSessions]);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(PROSE_FONT_KEY);
-      if (stored === 'serif' || stored === 'sans') setProseFont(stored);
-    } catch {}
-  }, []);
-
-  const changeProseFont = (font: ProseFont) => {
-    setProseFont(font);
-    try {
-      localStorage.setItem(PROSE_FONT_KEY, font);
-    } catch {}
-  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -177,22 +161,6 @@ export default function ChatPage() {
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden md:flex items-center bg-stone p-0.5 rounded-lg text-[11.5px]" title="Chuyển đổi phông chữ nội dung trả lời">
-              {(['serif', 'sans'] as const).map((font) => (
-                <button
-                  key={font}
-                  type="button"
-                  onClick={() => changeProseFont(font)}
-                  className={`px-2 py-1 rounded-md transition-colors ${font === 'serif' ? 'font-serif' : 'font-sans'} ${
-                    proseFont === font
-                      ? 'bg-white text-ink font-medium shadow-[0_1px_2px_rgba(28,27,24,0.06)]'
-                      : 'text-[#6E6B64] hover:text-ink'
-                  }`}
-                >
-                  {font === 'serif' ? 'Serif' : 'Sans'}
-                </button>
-              ))}
-            </div>
             <button type="button" onClick={handleExportPDF} title="Xuất báo cáo PDF phiên này" className={headerIconBtn}>
               <Download className="w-4 h-4" />
             </button>
@@ -233,7 +201,7 @@ export default function ChatPage() {
                   <div className="w-10 h-10 rounded-2xl bg-navy/8 text-navy flex items-center justify-center">
                     <Scale className="w-5 h-5" />
                   </div>
-                  <h2 className="font-serif text-[26px] font-semibold tracking-tight text-ink">
+                  <h2 className="text-[26px] font-semibold tracking-tight text-ink">
                     Tra cứu & lập luận pháp luật Việt Nam
                   </h2>
                   <p className="text-[14.5px] leading-relaxed text-ink-3 max-w-[56ch]">
@@ -256,7 +224,7 @@ export default function ChatPage() {
                 </div>
               </div>
             ) : (
-              messages.map((m, idx) => <ChatMessage key={m.id} message={m} index={idx} proseFont={proseFont} />)
+              messages.map((m, idx) => <ChatMessage key={m.id} message={m} index={idx} />)
             )}
 
             {isSending && (

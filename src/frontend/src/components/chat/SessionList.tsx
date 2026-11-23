@@ -331,7 +331,7 @@ export const SessionList: React.FC<SessionListProps> = ({
           <span className="w-7 h-7 rounded-lg bg-navy text-white flex items-center justify-center shrink-0">
             <Scale className="w-3.5 h-3.5" />
           </span>
-          <span className="font-serif text-[15.5px] font-semibold tracking-tight text-ink group-hover:text-navy truncate transition-colors">
+          <span className="text-[15.5px] font-semibold tracking-tight text-ink group-hover:text-navy truncate transition-colors">
             Pháp luật Việt Nam
           </span>
         </Link>

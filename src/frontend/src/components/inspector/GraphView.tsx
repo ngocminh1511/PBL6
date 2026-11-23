@@ -42,7 +42,7 @@ export function GraphView() {
         {nodes.map((node, index) => { const point = positions.get(node.id)!; return <g key={node.id}>
           <title>{(node.title || node.id) + ' · ' + node.id}</title>
           <circle cx={point.x} cy={point.y} r={nodes.length > 15 ? 7 : 18} fill={index === 0 ? '#1E3A5F' : node.document_id && node.document_id !== id ? '#9A6B2F' : '#FFFFFF'} stroke="#1E3A5F" strokeWidth="2" />
-          <text x={point.x} y={point.y + (nodes.length > 15 ? 18 : 30)} textAnchor="middle" fill="#3F3D37" fontSize="9" fontFamily="JetBrains Mono, monospace">{(node.title || node.id).slice(0, 24)}</text>
+          <text x={point.x} y={point.y + (nodes.length > 15 ? 18 : 30)} textAnchor="middle" fill="#3F3D37" fontSize="9" fontFamily="Plus Jakarta Sans, system-ui, sans-serif">{(node.title || node.id).slice(0, 24)}</text>
         </g>; })}
       </svg> : <div className="h-44 relative z-10 flex flex-col items-center justify-center text-muted gap-2">
         <Share2 className="w-7 h-7 text-navy/65" />
