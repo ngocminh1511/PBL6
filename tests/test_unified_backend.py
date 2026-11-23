@@ -14,6 +14,12 @@ from src.backend.app.models.schemas import EvidenceItem
 from src.backend.app.models.database import ChatMessage, IngestionTask
 
 
+@pytest.fixture(autouse=True)
+def mock_intent_llm(monkeypatch):
+    import labor_rag.generation.intent as intent
+    monkeypatch.setattr(intent, "complete", lambda *args, **kwargs: "LEGAL")
+
+
 def config(tmp_path, **changes):
     return Settings(_env_file=None, DATABASE_URL="sqlite://", REDIS_URL="", REDIS_ENABLED=False,
         UPLOAD_DIR=tmp_path / "uploads", INTERIM_DIR=tmp_path / "interim",
@@ -149,6 +155,34 @@ def test_pipeline_failure_never_saves_fake_success(tmp_path, monkeypatch):
             assert db.query(ChatMessage).count() == 0
 
 
+@pytest.mark.parametrize("status, message", [(429, "hạn mức"), (413, "vượt giới hạn"), (401, "xác thực")])
+def test_chat_reports_safe_provider_failure_without_saving_an_answer(tmp_path, monkeypatch, caplog, status, message):
+    from labor_rag.services.chat import ChatPipeline
+    import labor_rag.generation.answer as generation
+    import labor_rag.generation.intent as intent
+
+    cause = RuntimeError("private-provider-key-and-prompt")
+    cause.status_code = status
+
+    def fail_generation(*args, **kwargs):
+        raise cause
+
+    monkeypatch.setattr(intent, "is_legal_query", lambda *args: True)
+    monkeypatch.setattr(generation, "generate_answer", fail_generation)
+    app = create_app(settings=config(tmp_path))
+    retriever = SimpleNamespace(retrieve=lambda *args, **kwargs: [], graph_warning=None)
+    monkeypatch.setattr(app.state.runtime, "chat",
+        lambda: ChatPipeline(retriever, app.state.runtime.catalog, app.state.runtime.settings))
+
+    with TestClient(app) as client:
+        response = client.post("/api/chat/ask", json={"question": "Người dưới 15 tuổi không được làm gì?"})
+        assert response.status_code == 503
+        assert "generation" in response.json()["detail"] and message in response.json()["detail"]
+        assert "private-provider-key-and-prompt" not in response.text + caplog.text
+        with app.state.database.session() as db:
+            assert db.query(ChatMessage).count() == 0
+
+
 def test_config_persists_and_failed_or_busy_update_keeps_old_runtime(tmp_path, monkeypatch):
     database_url = "sqlite:///" + str(tmp_path / "application.db")
     settings = config(tmp_path).model_copy(update={"DATABASE_URL": database_url})
@@ -192,10 +226,26 @@ def test_versioned_migration_preserves_existing_content():
         connection.execute(text("INSERT INTO chat_messages VALUES ('old', 'keep me')"))
     upgrade(engine)
     upgrade(engine)
-    assert {"attachments", "warnings"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
+    assert {"attachments", "warnings", "token_usage"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
     with engine.connect() as connection:
         assert connection.execute(text("SELECT content FROM chat_messages WHERE id='old'")).scalar() == "keep me"
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 1
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
+
+
+def test_token_usage_migration_upgrades_an_already_versioned_database():
+    from src.backend.app.migrations import upgrade
+    engine = create_engine("sqlite://")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE app_schema_versions (revision VARCHAR(100) PRIMARY KEY)"))
+        connection.execute(text("INSERT INTO app_schema_versions VALUES ('001_unified_backend')"))
+        connection.execute(text("CREATE TABLE chat_messages (id VARCHAR(36) PRIMARY KEY, content TEXT)"))
+        connection.execute(text("INSERT INTO chat_messages VALUES ('old', 'keep me')"))
+    upgrade(engine)
+    upgrade(engine)
+    with engine.connect() as connection:
+        old = connection.execute(text("SELECT content, token_usage FROM chat_messages WHERE id='old'")).one()
+        assert old == ("keep me", None)
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
 
 
 @pytest.mark.parametrize("fail", [False, True])

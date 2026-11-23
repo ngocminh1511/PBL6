@@ -30,7 +30,7 @@ def rerank(query: str, evidences: list[Evidence], top_n: int = 5) -> list[Eviden
         "của các điều liên quan nhất, xếp theo độ liên quan giảm dần. "
         'Ví dụ: [0, 3, 1]. Không giải thích gì thêm.'
     )
-    raw = complete(SYSTEM, user, max_tokens=200)
+    raw = complete(SYSTEM, user, max_tokens=200, reasoning="off")
     match = re.search(r"\[[\d,\s]*\]", raw)
     if not match:
         return evidences[:top_n]

@@ -9,6 +9,7 @@ from uuid import uuid4
 class PipelineError(RuntimeError):
     def __init__(self, stage, cause):
         self.stage = stage
+        self.cause = cause
         self.error_type = type(cause).__name__
         super().__init__(f"{stage}: {self.error_type}")
 
@@ -31,6 +32,14 @@ class ChatPipeline:
         self.llm = llm
 
     def ask(self, question, *, history=None, top_k=8, rerank_top_n=5, mode="hybrid"):
+        from labor_rag.generation.usage import collect_usage
+        with collect_usage(reuse=True) as usage:
+            result = self._ask(question, history=history, top_k=top_k,
+                               rerank_top_n=rerank_top_n, mode=mode)
+            result["token_usage"] = usage.snapshot()
+            return result
+
+    def _ask(self, question, *, history=None, top_k=8, rerank_top_n=5, mode="hybrid"):
         # These imports are deliberately absent from the retrieval-only HTTP path.
         from labor_rag.generation.llm_client import use_settings
         from labor_rag.generation.answer import generate_answer
@@ -38,6 +47,7 @@ class ChatPipeline:
         from labor_rag.generation.intent import is_legal_query, generate_direct_answer
         from labor_rag.retrieval.query_rewrite import rewrite_query
         from labor_rag.retrieval.rerank import rerank
+        from labor_rag.generation.usage import usage_stage
         started = perf_counter()
         history = history or []
         timings = {}
@@ -45,14 +55,15 @@ class ChatPipeline:
         def run(stage, action):
             before = perf_counter()
             try:
-                return action()
+                with usage_stage(stage):
+                    return action()
             except Exception as exc:
                 raise PipelineError(stage, exc) from None
             finally:
                 timings[stage] = round((perf_counter() - before) * 1000, 2)
 
         with use_settings(self.settings, self.llm):
-            if not is_legal_query(question, history):
+            if not run("intent", lambda: is_legal_query(question, history)):
                 direct_ans = run("generation", lambda: generate_direct_answer(question, history))
                 elapsed = round((perf_counter() - started) * 1000)
                 return {

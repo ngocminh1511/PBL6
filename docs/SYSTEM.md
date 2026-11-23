@@ -568,6 +568,16 @@ lượt, và kiểm định thống kê giữa các cấu hình.
 - Thiếu PostgreSQL chỉ ảnh hưởng chức năng có persistence; công cụ phụ lục/retrieval không cần SQL/Redis/LLM.
   Redis lỗi làm bỏ cache. Lỗi Qdrant/Neo4j/R2 được báo theo giai đoạn; không sinh bằng chứng hoặc số liệu mẫu.
 - Frontend gọi `/api` qua proxy Next.js. `/appendices?appendix_id=...&chunk_id=...` mở đúng vị trí trích dẫn trong iframe.
+  Proxy chờ tối đa 300 giây cho pipeline cloud. Chat trả `503` khi pipeline thất bại, kèm giai đoạn và nguyên nhân
+  đã lọc (hạn mức, yêu cầu quá lớn, xác thực, timeout); không trả nguyên văn lỗi SDK hoặc lưu câu trả lời thành công.
+- `ChatMessageResponse.token_usage` lưu tổng input/output/total và từng lần gọi LLM (stage, provider, model,
+  trạng thái, token cache/suy luận nếu có). Collector dùng ContextVar theo từng lượt hỏi, bao gồm đặt tên phiên;
+  pipeline CLI dùng cùng cơ chế. Không cộng cache/suy luận lần hai vào tổng provider đã báo.
+  `status=complete|partial|unavailable` phân biệt số liệu đầy đủ và thiếu; null không được xem là 0.
+  `executed_stages` phân biệt bước không chạy với bước chạy nhưng không gọi LLM (ví dụ regex lời chào).
+  Lỗi chat 503 giữ `detail` dạng chuỗi và thêm `token_usage`; `requested_tokens` của lỗi Groq được lưu riêng,
+  không cộng vào tổng đã xử lý. Lượt thất bại không tạo câu trả lời thành công trong lịch sử.
+  Migration bổ sung `002_chat_token_usage` thêm cột JSON nullable; không hồi tính token cho dữ liệu cũ.
 - Trang `/admin` quản lý LLM cloud/local tương thích OpenAI, embedding, Qdrant, Neo4j, R2, Redis và OCR/upload.
   `GET/PUT /api/admin/config` giữ hợp đồng cũ và thêm metadata nguồn, secret đã thiết lập, khả năng lưu;
   PUT chỉ gửi trường thay đổi, `reset_fields` khôi phục cấu hình nền. `POST /api/admin/config/check` kiểm tra bản nhập

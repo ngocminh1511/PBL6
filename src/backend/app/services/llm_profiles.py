@@ -15,7 +15,7 @@ def profile_from_settings(settings, *, identity="environment", source="environme
             "provider": provider, "model": getattr(settings, model_field(provider).upper()),
             "base_url": getattr(settings, base_url_field(provider).upper()) if base_url_field(provider) else "", "local_runtime": "compatible",
             "api_key_source": source, "api_key": getattr(settings, secret_field(provider).upper()) if source == "custom" else None,
-            "verification": None}
+            "reasoning": settings.LLM_REASONING, "verification": None}
 
 
 def encode_profiles(profiles, key):
@@ -60,7 +60,7 @@ class LLMProfiles:
         return profile.get("api_key") or ""
 
     def public(self, profile):
-        return {k: v for k, v in profile.items() if k not in {"api_key", "encrypted_api_key"}} | {
+        return {"reasoning": "default"} | {k: v for k, v in profile.items() if k not in {"api_key", "encrypted_api_key"}} | {
             "key_configured": bool(self.key(profile)), "read_only": profile["id"] == "environment"}
 
     def listing(self):
@@ -102,7 +102,8 @@ class LLMProfiles:
         if profile["id"] == "environment":
             return self.runtime.make_settings(values), values
         provider = profile["provider"]
-        values.update(llm_provider=provider)
+        # Profiles saved before reasoning levels existed keep the model default.
+        values.update(llm_provider=provider, llm_reasoning=profile.get("reasoning") or "default")
         values[model_field(provider)] = profile["model"]
         # An environment-backed profile inherits only its provider's startup key.
         if profile["api_key_source"] != "environment":

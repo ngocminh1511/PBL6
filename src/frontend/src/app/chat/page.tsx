@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { SessionList } from '../../components/chat/SessionList';
 import { ChatMessage } from '../../components/chat/ChatMessage';
+import { TokenUsage } from '../../components/chat/TokenUsage';
 import { ChatInput } from '../../components/chat/ChatInput';
 import { ShareModal } from '../../components/chat/ShareModal';
 import { HierarchyTree } from '../../components/inspector/HierarchyTree';
@@ -63,6 +64,7 @@ export default function ChatPage() {
   };
 
   const error = useChatStore(state => state.error);
+  const errorUsage = useChatStore(state => state.errorTokenUsage);
   const evidenceCount = useChatStore(state => state.selectedEvidences.length);
 
   return (
@@ -145,7 +147,10 @@ export default function ChatPage() {
           </div>
         </header>
 
-        {error && <p role="alert" className="p-3 bg-red-50 text-red-800 text-sm">{error}</p>}
+        {error && <div className="p-3 bg-red-50 text-red-800 text-sm space-y-2">
+          <p role="alert">{error}</p>
+          {errorUsage && <TokenUsage usage={errorUsage} />}
+        </div>}
         {/* Scrollable Multi-turn Message Stream */}
         <div className="flex-1 overflow-y-auto px-space-lg py-space-md flex flex-col gap-space-lg">
           {isLoading && messages.length === 0 ? (

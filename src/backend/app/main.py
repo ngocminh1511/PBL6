@@ -16,6 +16,7 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
     from src.backend.app.routers.appendices import create_router
     from src.backend.app.routers.auth import router as auth_router
     from src.backend.app.routers.chat import router as chat_router, legacy_router
+    from src.backend.app.services.chat import ChatRequestError
     from src.backend.app.routers.documents import router as documents_router
     from src.backend.app.routers.admin import router as admin_router
     from src.backend.app.services.ingestion import IngestionService
@@ -48,6 +49,11 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
     app.state.database = database
     app.state.runtime = runtime
     app.state.ingestion = ingestion
+
+    @app.exception_handler(ChatRequestError)
+    async def chat_error(request, exc):
+        return JSONResponse(status_code=exc.status_code,
+                            content={"detail": exc.detail, "token_usage": exc.token_usage})
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request, exc):

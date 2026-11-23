@@ -30,6 +30,11 @@ npm --prefix src/frontend run dev
 Frontend: http://localhost:3000 · Phụ lục: http://localhost:3000/appendices · API: http://127.0.0.1:8000/docs.
 Frontend dev dùng `.next-dev`, build/start production dùng `.next`, nên chạy build không ghi đè cache của dev server đang mở.
 `BACKEND_ORIGIN` là biến phía server của Next.js, không có hậu tố `/api`; browser luôn gọi `/api` cùng origin.
+Proxy `/api` chờ tối đa 5 phút cho truy hồi cloud và các lượt gọi LLM. Lỗi hạn mức (429) hoặc yêu cầu quá lớn (413)
+được chat trả thành `503` kèm nguyên nhân an toàn; kiểm tra quota/model trên `/admin`, không coi đó là câu trả lời thành công.
+Mỗi phản hồi mới hiển thị token đầu vào/đầu ra/tổng do LLM báo cáo, kèm chi tiết từng bước (cả đặt tên phiên).
+Số liệu lưu cùng lịch sử; phản hồi cũ hoặc provider thiếu `usage` hiển thị chưa có số liệu, không ước tính từ ký tự.
+Tổng chưa đủ số liệu được ghi rõ; token yêu cầu trong lỗi 413/429 không cộng vào token đã xử lý.
 
 Mặc định dùng Qdrant/Neo4j cloud, Modal và R2 đã cấu hình trong `.env`. Bổ sung PostgreSQL và Redis cloud:
 
@@ -83,6 +88,7 @@ API không trả lại secret đã lưu; Redis URL được xem là secret vì c
 LLM local dùng `LLM_PROVIDER=local`, `LOCAL_LLM_BASE_URL` (ví dụ `http://127.0.0.1:11434/v1`), `LOCAL_LLM_MODEL`
 và API key tùy chọn. Server/model phải được chuẩn bị sẵn. Nút **Tải danh sách model** dùng thông tin đang nhập,
 vẫn cho nhập tên thủ công; danh sách không xác nhận quyền dùng miễn phí. Kiểm tra LLM sinh một phản hồi ngắn và dùng hạn mức API.
+Mỗi cấu hình LLM có **Mức suy luận** (`LLM_REASONING`: default/off/low/medium/high), được chuyển thành `thinking_level`/`thinking_budget` (Gemini) hoặc `reasoning_effort` (Groq, OpenAI-compatible). Token suy luận tính vào giới hạn đầu ra nên backend cộng thêm khoảng dự phòng theo mức; phân loại ý định, đặt tên phiên, viết lại truy vấn, rerank và kiểm tra kết nối luôn dùng mức thấp nhất. Model từ chối tham số sẽ được gọi lại một lần không kèm tham số.
 Các địa chỉ local được truy cập từ **máy chạy backend**. R2 kiểm tra bucket chỉ đọc; đổi bucket không di chuyển file cũ.
 Kiểm tra OCR cần dependency và file model đã có; đổi OCR chỉ áp dụng cho tài liệu xử lý tiếp theo.
 
@@ -104,6 +110,7 @@ trong môi trường tiến trình/container và khác giá trị trong `.env`, 
 Thông tin xác thực đã lưu không được trả lại qua API; ô nhập trống giữ thông tin hiện có cho cùng máy chủ/tài khoản.
 
 Khởi động có migration **bổ sung** theo revision trong `app_schema_versions`; dữ liệu cũ được giữ nguyên.
+Revision `002_chat_token_usage` thêm cột JSON nullable vào lịch sử chat; bản ghi cũ giữ giá trị null.
 Không tự nạp tài liệu mẫu, recreate collection hoặc xóa dataset. Upload dùng một worker; tác vụ gián đoạn do restart
 được đánh dấu thất bại để nạp lại. Chạy **một process backend** trong phiên bản này.
 
@@ -115,6 +122,7 @@ Compose giữ tên project `labor_rag` và các volume Neo4j/Qdrant cũ. Không 
 ```powershell
 python -m pytest tests/test_postgres_configuration.py tests/test_admin_configuration.py tests/test_unified_backend.py tests/test_retrieval_inspect.py tests/test_appendices.py tests/test_r2_storage.py -q
 npm --prefix src/frontend run test:config
+npm --prefix src/frontend run test:chat
 npm --prefix src/frontend run build
 ```
 

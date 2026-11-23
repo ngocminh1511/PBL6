@@ -170,7 +170,8 @@ class ChatRepository:
         legal_evidence: Optional[list] = None,
         citation_check: Optional[dict] = None,
         execution_time_ms: Optional[int] = None,
-        attachments: Optional[list] = None, warnings: Optional[list] = None
+        attachments: Optional[list] = None, warnings: Optional[list] = None,
+        token_usage: Optional[dict] = None
     ) -> ChatMessage:
         msg = ChatMessage(
             session_id=session_id,
@@ -180,7 +181,8 @@ class ChatRepository:
             pipeline_trace=pipeline_trace,
             legal_evidence=legal_evidence,
             citation_check=citation_check,
-            execution_time_ms=execution_time_ms, attachments=attachments or [], warnings=warnings or []
+            execution_time_ms=execution_time_ms, attachments=attachments or [], warnings=warnings or [],
+            token_usage=token_usage
         )
         self.db.add(msg)
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Cloud, HardDrive, Check, CheckCircle2, Circle, Copy, Pencil, Trash2, X, RefreshCw, Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { api, errorMessage } from '../../lib/api';
-import type { AdminConfig, AdminConfigValues, ConfigCheckResult, LLMProfile, LLMProfileInput, LLMProfilesResponse, LLMProvider } from '../../lib/types';
+import type { AdminConfig, AdminConfigValues, ConfigCheckResult, LLMProfile, LLMProfileInput, LLMProfilesResponse, LLMProvider, LLMReasoning } from '../../lib/types';
 import { adminButton, adminInput, adminPrimary } from './ui';
 
 const providers = { gemini: 'Google Gemini', openai: 'OpenAI', anthropic: 'Anthropic', openrouter: 'OpenRouter', groq: 'Groq', qwen: 'Qwen / Alibaba Cloud', local: 'Local' };
@@ -13,8 +13,9 @@ const providerDocs: Partial<Record<LLMProvider, string>> = {
   anthropic: 'https://docs.anthropic.com/en/api/rate-limits', openrouter: 'https://openrouter.ai/docs/quickstart',
   groq: 'https://console.groq.com/docs/rate-limits', qwen: 'https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope',
 };
+const reasoningLabels: Record<LLMReasoning, string> = { default: 'Mặc định của model', off: 'Tắt / tối thiểu', low: 'Thấp', medium: 'Trung bình', high: 'Cao' };
 type ProfileForm = Omit<LLMProfileInput, 'mode'> & { mode: 'cloud' | 'local' | null; api_key: string };
-const emptyForm = (): ProfileForm => ({ name: '', mode: null, provider: 'gemini', model: '', base_url: '', local_runtime: 'ollama', api_key_source: 'custom', api_key: '', activate: false });
+const emptyForm = (): ProfileForm => ({ name: '', mode: null, provider: 'gemini', model: '', base_url: '', local_runtime: 'ollama', api_key_source: 'custom', api_key: '', reasoning: 'default', activate: false });
 const needsEndpoint = (current: ProfileForm) => current.mode === 'local' || current.provider in cloudEndpoints;
 
 export function LLMProfilesManager({ config, onChanged, onVerificationChange }: { config: AdminConfig; onChanged: () => Promise<void>; onVerificationChange?: (verified: boolean) => void }) {
@@ -115,7 +116,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
     setCopySource(profile && duplicate && !profile.read_only ? profile : null);
     setForm(profile ? { name: duplicate || profile.read_only ? profile.name + ' · bản riêng' : profile.name,
       mode: profile.mode, provider: profile.provider, model: profile.model, base_url: profile.base_url,
-      local_runtime: profile.local_runtime, api_key_source: profile.api_key_source, api_key: '', activate: false }
+      local_runtime: profile.local_runtime, api_key_source: profile.api_key_source, api_key: '', reasoning: profile.reasoning ?? 'default', activate: false }
       : emptyForm());
   }
 
@@ -218,7 +219,7 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
             <div><p className="font-medium">{profile.name}</p><p className="text-xs text-slate-500 mt-0.5">{profile.mode === 'local' ? 'Local' : 'Cloud'} · {profile.mode === 'local' ? ({ ollama: 'Ollama', lmstudio: 'LM Studio', compatible: 'API tương thích' }[profile.local_runtime]) : providers[profile.provider]}</p></div>
           </div></td>
           <td className="px-3 py-4 max-w-[190px]"><p className="truncate" title={profile.model}>{profile.model || 'Chưa chọn model'}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{profile.api_key_source === 'none' ? 'Không dùng key' : profile.key_configured ? profile.api_key_source === 'environment' ? 'Key từ môi trường' : 'Key riêng' : 'Chưa có key'}</p></td>
+            <p className="text-xs text-slate-400 mt-0.5">{profile.api_key_source === 'none' ? 'Không dùng key' : profile.key_configured ? profile.api_key_source === 'environment' ? 'Key từ môi trường' : 'Key riêng' : 'Chưa có key'}{profile.reasoning && profile.reasoning !== 'default' && profile.provider !== 'anthropic' ? ' · Suy luận: ' + reasoningLabels[profile.reasoning].toLowerCase() : ''}</p></td>
           <td className="px-3 py-4 whitespace-nowrap"><div className="flex flex-col items-start gap-1.5">
             {active && <span className="inline-flex gap-1 items-center rounded-full px-2 py-0.5 bg-secondary/10 text-secondary text-[11px] font-medium"><Circle size={7} fill="currentColor" />Đang sử dụng</span>}
             <span title={verification?.checked_at ? verification.message + ' · ' + new Date(verification.checked_at).toLocaleString('vi-VN') : undefined}
@@ -290,6 +291,9 @@ export function LLMProfilesManager({ config, onChanged, onVerificationChange }: 
               <div className="flex justify-between items-start gap-3 mt-1.5"><span className="text-xs text-slate-400">{modelsError || (models.length ? `${models.length} model do máy chủ cung cấp` : form.mode === 'local' ? 'Chạy server local để xem các model có sẵn.' : 'Nhập key rồi tải danh sách model.')}</span>
                 <button type="button" className="text-xs text-secondary hover:underline shrink-0" onClick={() => setManualModel(!manualModel)}>{manualModel ? 'Chọn từ danh sách' : 'Nhập thủ công'}</button></div>
             </div>
+            {form.provider !== 'anthropic' && <label className="block text-sm font-medium">Mức suy luận (thinking)<select className={adminInput + ' mt-1.5'} value={form.reasoning} onChange={e => update({ reasoning: e.target.value as LLMReasoning })}>
+              {Object.entries(reasoningLabels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select>
+              <span className="block mt-1 text-xs font-normal text-slate-400">Token suy luận được tính vào giới hạn đầu ra. Mức cao trả lời kỹ hơn nhưng chậm và tốn quota hơn. Các bước ngắn (phân loại, đặt tên, viết lại truy vấn) luôn dùng mức thấp nhất.</span></label>}
             <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={!!form.activate} onChange={e => update({ activate: e.target.checked })} className="accent-secondary" />Sử dụng cấu hình này sau khi lưu</label>
             {form.mode === 'cloud' && <p className="text-xs text-slate-400">Model chạy trên cloud; không cần tải về máy. Kiểm tra sử dụng một lượt gọi API. <a className="text-secondary hover:underline" target="_blank" rel="noreferrer" href={providerDocs[form.provider]}>Hướng dẫn nhà cung cấp</a></p>}
           </fieldset>}

@@ -25,4 +25,4 @@ def rewrite_query(history: list[dict], current_question: str) -> str:
         f"Câu hỏi hiện tại (có thể phụ thuộc ngữ cảnh phía trên): {current_question}\n\n"
         "Viết lại câu hỏi hiện tại thành một câu hỏi độc lập, đầy đủ ngữ cảnh:"
     )
-    return complete(SYSTEM, user, max_tokens=256).strip()
+    return complete(SYSTEM, user, max_tokens=256, reasoning="off").strip()

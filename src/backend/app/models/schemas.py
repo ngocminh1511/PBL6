@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 from src.backend.app.models.enums import RetrievalMode, DocumentType, TaskStatus, EmbeddingBackend, LLMProvider
 
 T = TypeVar("T")
+LLMReasoning = Literal["default", "off", "low", "medium", "high"]
 
 # ================= AUTH SCHEMAS =================
 class UserRegister(BaseModel):
@@ -103,6 +104,35 @@ class CitationCheckResult(BaseModel):
     all_verified: bool = True
 
 # ================= CHAT SCHEMAS =================
+class LLMCallUsage(BaseModel):
+    stage: str
+    provider: str
+    model: str
+    status: Literal["succeeded", "failed"]
+    input_tokens: Optional[int] = Field(None, ge=0)
+    output_tokens: Optional[int] = Field(None, ge=0)
+    total_tokens: Optional[int] = Field(None, ge=0)
+    cached_input_tokens: Optional[int] = Field(None, ge=0)
+    reasoning_tokens: Optional[int] = Field(None, ge=0)
+    requested_tokens: Optional[int] = Field(None, ge=0)
+    error_type: Optional[str] = None
+    http_status: Optional[int] = None
+
+
+class TokenUsage(BaseModel):
+    status: Literal["complete", "partial", "unavailable"]
+    input_tokens: Optional[int] = Field(None, ge=0)
+    output_tokens: Optional[int] = Field(None, ge=0)
+    total_tokens: Optional[int] = Field(None, ge=0)
+    executed_stages: List[str] = Field(default_factory=list)
+    calls: List[LLMCallUsage] = Field(default_factory=list)
+
+
+class ChatAskErrorResponse(BaseModel):
+    detail: str
+    token_usage: Optional[TokenUsage] = None
+
+
 class ChatSessionCreate(BaseModel):
     title: Optional[str] = "Phiên tra cứu mới"
     domain: Literal["all", "lao_dong"] = "all"
@@ -133,6 +163,7 @@ class ChatMessageResponse(BaseModel):
     legal_evidence: Optional[List[EvidenceItem]] = None
     citation_check: Optional[CitationCheckResult] = None
     execution_time_ms: Optional[int] = None
+    token_usage: Optional[TokenUsage] = None
     attachments: List[Dict[str, Any]] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     created_at: datetime
@@ -263,6 +294,7 @@ class AdminConfigUpdate(BaseModel):
     qdrant_url: Optional[str] = None
     qdrant_collection: Optional[str] = None
     llm_provider: Optional[LLMProvider] = None
+    llm_reasoning: Optional[LLMReasoning] = None
     gemini_model: Optional[str] = None
     modal_app_name: Optional[str] = None
     gemini_api_key: Optional[str] = Field(default=None, repr=False)
@@ -326,6 +358,7 @@ class AdminConfigResponse(BaseModel):
     qdrant_url: str
     qdrant_collection: str
     llm_provider: str
+    llm_reasoning: str
     gemini_model: str
     modal_app_name: str
     neo4j_uri: str
@@ -402,6 +435,7 @@ class LLMProfileInput(BaseModel):
     local_runtime: Literal["ollama", "lmstudio", "compatible"] = "ollama"
     api_key_source: Literal["custom", "environment", "none"] = "custom"
     api_key: Optional[str] = Field(default=None, repr=False)
+    reasoning: LLMReasoning = "default"
     profile_id: Optional[str] = None
     copy_key_from: Optional[str] = None
     activate: bool = False
@@ -416,6 +450,7 @@ class LLMProfileResponse(BaseModel):
     base_url: str
     local_runtime: str
     api_key_source: str
+    reasoning: str = "default"
     key_configured: bool
     read_only: bool = False
     verification: Optional[ConfigCheckResponse] = None

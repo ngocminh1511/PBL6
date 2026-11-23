@@ -54,6 +54,7 @@ class ChatMessage(Base):
     attachments = Column(JSON, nullable=True)
     warnings = Column(JSON, nullable=True)
     execution_time_ms = Column(Integer, nullable=True)
+    token_usage = Column(JSON, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 

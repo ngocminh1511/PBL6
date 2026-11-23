@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { ChatSession, ChatMessage, EvidenceItem, RetrievalMode } from '../lib/types';
-import { api, errorMessage } from '../lib/api';
+import { ChatSession, ChatMessage, EvidenceItem, RetrievalMode, TokenUsage } from '../lib/types';
+import { api, errorMessage, errorTokenUsage } from '../lib/api';
 
 interface ChatState {
   sessions: ChatSession[];
   error: string | null;
+  errorTokenUsage: TokenUsage | null;
   activeSessionId: string | null;
   messages: ChatMessage[];
   isLoading: boolean;
@@ -52,6 +53,7 @@ const getStoredPinned = (): string[] => {
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
   error: null,
+  errorTokenUsage: null,
   activeSessionId: null,
   messages: [],
   isLoading: false,
@@ -70,7 +72,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   selectedEvidences: [],
 
   fetchSessions: async (cursor) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, errorTokenUsage: null });
     try {
       const data = await api.listSessions(cursor);
       set((state) => ({
@@ -87,7 +89,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to fetch sessions:', e);
-      set({ isLoading: false, error: errorMessage(e) });
+      set({ isLoading: false, error: errorMessage(e), errorTokenUsage: null });
     }
   },
 
@@ -98,12 +100,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       selectedEvidences: [],
       selectedCitation: null,
       error: null,
+      errorTokenUsage: null,
     });
     return '';
   },
 
   selectSession: async (sessionId: string) => {
-    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedCitation: null, error: null });
+    set({ activeSessionId: sessionId, isLoading: true, selectedEvidences: [], selectedCitation: null, error: null, errorTokenUsage: null });
     try {
       const data = await api.getSession(sessionId);
       set({
@@ -118,7 +121,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to select session:', e);
-      set({ isLoading: false, error: errorMessage(e) });
+      set({ isLoading: false, error: errorMessage(e), errorTokenUsage: null });
     }
   },
 
@@ -139,6 +142,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       messages: [...messages, tempUserMsg],
       isSending: true,
       error: null,
+      errorTokenUsage: null,
     });
 
     try {
@@ -164,7 +168,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       get().fetchSessions();
     } catch (e) {
       console.error('Failed to send message:', e);
-      set(state => ({ isSending: false, error: errorMessage(e), messages: state.messages.filter(message => message.id !== tempUserMsg.id) }));
+      set(state => ({ isSending: false, error: errorMessage(e), errorTokenUsage: errorTokenUsage(e), messages: state.messages.filter(message => message.id !== tempUserMsg.id) }));
     }
   },
 
@@ -182,7 +186,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }));
     } catch (e) {
       console.error('Failed to rename session:', e);
-      set({ error: errorMessage(e) });
+      set({ error: errorMessage(e), errorTokenUsage: null });
     }
   },
 
@@ -214,7 +218,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to delete session:', e);
-      set({ error: errorMessage(e) });
+      set({ error: errorMessage(e), errorTokenUsage: null });
     }
   },
 

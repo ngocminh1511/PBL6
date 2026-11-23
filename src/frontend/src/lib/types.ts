@@ -93,9 +93,39 @@ export interface ChatMessage {
   legal_evidence?: EvidenceItem[];
   citation_check?: CitationCheckResult;
   execution_time_ms?: number;
+  token_usage?: TokenUsage | null;
   created_at: string;
   attachments?: AppendixItem[];
   warnings?: string[];
+}
+
+export interface LLMCallUsage {
+  stage: string;
+  provider: string;
+  model: string;
+  status: 'succeeded' | 'failed';
+  input_tokens: number | null;
+  output_tokens: number | null;
+  total_tokens: number | null;
+  cached_input_tokens?: number | null;
+  reasoning_tokens?: number | null;
+  requested_tokens?: number | null;
+  error_type?: string | null;
+  http_status?: number | null;
+}
+
+export interface TokenUsage {
+  status: 'complete' | 'partial' | 'unavailable';
+  input_tokens: number | null;
+  output_tokens: number | null;
+  total_tokens: number | null;
+  executed_stages: string[];
+  calls: LLMCallUsage[];
+}
+
+export interface ChatAskErrorResponse {
+  detail: string;
+  token_usage?: TokenUsage | null;
 }
 
 export interface ChatSession {
@@ -197,6 +227,7 @@ export interface AdminConfigValues {
   qdrant_url: string;
   qdrant_collection: string;
   llm_provider: LLMProvider;
+  llm_reasoning: LLMReasoning;
   gemini_model: string;
   openrouter_model: string;
   openrouter_base_url: string;
@@ -286,6 +317,7 @@ export interface ConfigCheckResult {
 }
 
 export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'groq' | 'qwen' | 'local';
+export type LLMReasoning = 'default' | 'off' | 'low' | 'medium' | 'high';
 export interface LLMProfileInput {
   name: string;
   mode: 'cloud' | 'local';
@@ -295,6 +327,7 @@ export interface LLMProfileInput {
   local_runtime: 'ollama' | 'lmstudio' | 'compatible';
   api_key_source: 'custom' | 'environment' | 'none';
   api_key?: string;
+  reasoning: LLMReasoning;
   profile_id?: string;
   copy_key_from?: string;
   config_version?: number;

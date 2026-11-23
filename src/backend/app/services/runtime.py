@@ -256,8 +256,11 @@ class Runtime:
 
     def check_write(self, expected_version=None):
         self.ensure_ready()
-        if self.active or (expected_version is not None and expected_version != self.version):
-            raise HTTPException(409, "Có tác vụ đang chạy hoặc cấu hình đã thay đổi; tải lại và thử sau.")
+        if self.active:
+            raise HTTPException(409, f"Đang có {self.active} tác vụ chạy (hỏi đáp, tải tài liệu hoặc kiểm tra dịch vụ); "
+                                     "chờ tác vụ hoàn tất rồi lưu lại.")
+        if expected_version is not None and expected_version != self.version:
+            raise HTTPException(409, "Cấu hình đã được thay đổi ở nơi khác; tải lại trang rồi thử lại.")
         if not self.database.available:
             raise HTTPException(503, "Cần cấu hình DATABASE_URL PostgreSQL trong môi trường và khởi động lại backend để lưu.")
 
