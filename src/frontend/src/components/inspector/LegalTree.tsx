@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { BookOpen, Bookmark, ChevronRight, FileText, Library } from 'lucide-react';
 import type { ASTNode } from '../../lib/types';
 import type { TreeFocus } from '../../lib/locate';
@@ -58,7 +58,6 @@ const titleClass: Record<Level, string> = {
 export function LegalTree({ node, level = 0, focus, tick = 0 }: { node: ASTNode; level?: number; focus?: TreeFocus; tick?: number }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const row = useRef<HTMLElement>(null);
-  const [full, setFull] = useState(false);
   const inPath = !!focus?.path.has(node.id);
   const active = !!focus?.active.has(node.id);
   const first = focus?.first === node.id;
@@ -68,7 +67,7 @@ export function LegalTree({ node, level = 0, focus, tick = 0 }: { node: ASTNode;
   const text = node.text?.trim() ?? '';
   const extra = text && text !== node.title?.trim() ? text : '';
 
-  useLayoutEffect(() => { if (inPath && ref.current) ref.current.open = true; }, [inPath, focus, tick]);
+  useLayoutEffect(() => { if ((inPath || active) && ref.current) ref.current.open = true; }, [inPath, active, focus, tick]);
   useEffect(() => { if (first) row.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, [first, focus, tick]);
 
   const rowClass = 'flex items-start gap-2 px-2 py-1.5 rounded-lg transition-colors '
@@ -76,25 +75,34 @@ export function LegalTree({ node, level = 0, focus, tick = 0 }: { node: ASTNode;
   const label = <span className={'block min-w-0 break-words leading-snug ' + titleClass[kind]}>{node.title || ''}</span>;
   const count = showCount && <span className="ml-auto pl-2 shrink-0 text-[11px] text-muted tabular-nums">{children.length}</span>;
 
-  if (!children.length) {
+  const chevron = <ChevronRight className="w-3.5 h-3.5 mt-1 shrink-0 text-muted transition-transform [details[open]>summary>&]:rotate-90" />;
+
+  // A provision without children and without its own text has nothing to expand.
+  if (!children.length && !extra) {
     return <div className="py-0.5">
       <div ref={row as React.RefObject<HTMLDivElement>} className={rowClass}>
         <span className="w-3.5 shrink-0" aria-hidden="true" />
         <Marker node={node} level={kind} />
-        <div className="min-w-0 flex-1">
-          {label}
-          {extra && <button type="button" onClick={() => setFull(v => !v)} title={full ? 'Thu gọn' : 'Xem đầy đủ'}
-            className={'mt-0.5 block text-left text-[12px] leading-relaxed text-ink-3 whitespace-pre-wrap ' + (full ? '' : 'line-clamp-2')}>
-            {extra}
-          </button>}
-        </div>
+        {label}
       </div>
     </div>;
   }
 
+  // A provision with text only: collapsed to its title, opened when cited.
+  if (!children.length) {
+    return <details ref={ref} open={inPath || active} className="py-0.5">
+      <summary ref={row as React.RefObject<HTMLElement>} className={rowClass + ' cursor-pointer list-none [&::-webkit-details-marker]:hidden'}>
+        {chevron}
+        <Marker node={node} level={kind} />
+        {label}
+      </summary>
+      <p className="ml-[34px] mr-2 mt-0.5 mb-1 text-[12px] leading-relaxed text-ink-3 whitespace-pre-wrap">{extra}</p>
+    </details>;
+  }
+
   return <details ref={ref} open={level < 1 || inPath} className="py-0.5">
     <summary ref={row as React.RefObject<HTMLElement>} className={rowClass + ' cursor-pointer list-none [&::-webkit-details-marker]:hidden'}>
-      <ChevronRight className="w-3.5 h-3.5 mt-1 shrink-0 text-muted transition-transform [details[open]>summary>&]:rotate-90" />
+      {chevron}
       <Marker node={node} level={kind} />
       {label}
       {count}

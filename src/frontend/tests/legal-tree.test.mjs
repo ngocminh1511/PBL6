@@ -38,3 +38,16 @@ test('each level has its own marker and the cited provision is opened and highli
   assert.equal(article.closest('details').hasAttribute('open'), true);
   assert.match(summaries.find(item => item.textContent.includes('Chương III')).textContent, /1$/, 'containers show child counts');
 });
+
+test('provisions with only text stay collapsed to their title unless cited', () => {
+  const doc = { id: 'doc', type: 'document', title: 'Bộ luật', children: [
+    { id: 'd1', type: 'Dieu', article_number: '1', title: 'Phạm vi điều chỉnh', text: 'Bộ luật Lao động quy định tiêu chuẩn lao động.' },
+    { id: 'd2', type: 'Dieu', article_number: '2', title: 'Đối tượng áp dụng', text: 'Người lao động, người học nghề.' }] };
+  const focus = { path: new Set(['doc', 'd2']), active: new Set(['d2']), first: 'd2' };
+  const page = new JSDOM(renderToStaticMarkup(React.createElement(LegalTree, { node: doc, focus }))).window.document;
+  const item = title => Array.from(page.querySelectorAll('summary')).find(s => s.textContent.includes(title)).closest('details');
+  assert.equal(item('Phạm vi điều chỉnh').hasAttribute('open'), false);
+  assert.match(item('Phạm vi điều chỉnh').textContent, /tiêu chuẩn lao động/, 'the text is inside the collapsed item');
+  assert.equal(item('Đối tượng áp dụng').hasAttribute('open'), true);
+});
+
