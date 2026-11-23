@@ -97,6 +97,13 @@ export interface ChatMessage {
   created_at: string;
   attachments?: AppendixItem[];
   warnings?: string[];
+  feedback?: MessageFeedback | null;
+}
+
+export type MessageFeedback = 'up' | 'down';
+
+export interface MessageFeedbackRequest {
+  feedback: MessageFeedback | null;
 }
 
 export interface LLMCallUsage {

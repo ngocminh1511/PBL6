@@ -203,6 +203,22 @@ class ChatRepository:
             .all()
         )
 
+    def set_message_feedback(self, message_id: str, user_id: str, feedback: Optional[str]) -> Optional[ChatMessage]:
+        """Rate an assistant answer in one of the user's own sessions; None clears it."""
+        message = (
+            self.db.query(ChatMessage)
+            .join(ChatSession, ChatMessage.session_id == ChatSession.id)
+            .filter(ChatMessage.id == message_id, ChatSession.user_id == user_id,
+                    ChatMessage.role == "assistant")
+            .first()
+        )
+        if not message:
+            return None
+        message.feedback = feedback
+        self.db.commit()
+        self.db.refresh(message)
+        return message
+
     def update_session(self, session_id: str, user_id: str, title: Optional[str] = None) -> Optional[ChatSession]:
         session = self.get_session(session_id, user_id=user_id)
         if not session:

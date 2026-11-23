@@ -3,6 +3,7 @@ from sqlalchemy import inspect, text
 
 REVISION = "001_unified_backend"
 TOKEN_USAGE_REVISION = "002_chat_token_usage"
+FEEDBACK_REVISION = "003_chat_message_feedback"
 
 
 def upgrade(engine):
@@ -36,3 +37,12 @@ def upgrade(engine):
             connection.execute(text(
                 "INSERT INTO app_schema_versions (revision) VALUES (:revision)"
             ), {"revision": TOKEN_USAGE_REVISION})
+        applied = connection.execute(text(
+            "SELECT revision FROM app_schema_versions WHERE revision=:revision"
+        ), {"revision": FEEDBACK_REVISION}).first()
+        if not applied:
+            if "feedback" not in {c["name"] for c in inspect(connection).get_columns("chat_messages")}:
+                connection.execute(text("ALTER TABLE chat_messages ADD COLUMN feedback VARCHAR(10)"))
+            connection.execute(text(
+                "INSERT INTO app_schema_versions (revision) VALUES (:revision)"
+            ), {"revision": FEEDBACK_REVISION})

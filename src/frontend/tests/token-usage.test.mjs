@@ -18,12 +18,12 @@ function compile(path, overrides = {}) {
   return context.exports;
 }
 const tokenComponent = compile('../src/components/chat/TokenUsage.tsx');
+const apiModule = compile('../src/lib/api.ts');
 const { ChatMessage } = compile('../src/components/chat/ChatMessage.tsx', {
   './TokenUsage': tokenComponent, './PipelineTrace': { PipelineTrace: () => null },
-  './CitationChip': { CitationChip: () => null },
+  './CitationChip': { CitationChip: () => null }, '../../lib/api': apiModule,
 });
 const { TokenUsage } = tokenComponent;
-const apiModule = compile('../src/lib/api.ts');
 const call = { stage: 'generation', provider: 'groq', model: 'test-model', status: 'succeeded',
   input_tokens: 51, output_tokens: 9, total_tokens: 60 };
 const usage = { status: 'complete', input_tokens: 152, output_tokens: 16, total_tokens: 168,

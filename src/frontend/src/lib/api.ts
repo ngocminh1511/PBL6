@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TokenUsage } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TokenUsage, MessageFeedbackRequest } from './types';
 
 export function errorTokenUsage(error: unknown): TokenUsage | null {
   if (!axios.isAxiosError(error)) return null;
@@ -79,6 +79,11 @@ export const api = {
 
   async updateSession(sessionId: string, data: { title?: string }): Promise<ChatSession> {
     const res = await apiClient.patch(`/chat/sessions/${sessionId}`, data);
+    return res.data;
+  },
+
+  async setMessageFeedback(messageId: string, data: MessageFeedbackRequest): Promise<ChatMessage> {
+    const res = await apiClient.put(`/chat/messages/${encodeURIComponent(messageId)}/feedback`, data);
     return res.data;
   },
 

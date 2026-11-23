@@ -140,6 +140,18 @@ def test_chat_preserves_appendices_amendments_and_history(tmp_path, monkeypatch)
         client.post("/api/chat/ask", json={"question": "Phiên riêng"})
         assert len(seen_history) == 1  # new session has no history to rewrite
 
+        answer_id = message["id"]
+        assert message["feedback"] is None
+        rated = client.put(f"/api/chat/messages/{answer_id}/feedback", json={"feedback": "up"})
+        assert rated.status_code == 200 and rated.json()["feedback"] == "up"
+        stored = client.get("/api/chat/sessions/" + first["session_id"]).json()["messages"]
+        assert stored[1]["feedback"] == "up"
+        assert client.put(f"/api/chat/messages/{answer_id}/feedback", json={"feedback": None}).json()["feedback"] is None
+        assert client.put(f"/api/chat/messages/{answer_id}/feedback", json={"feedback": "maybe"}).status_code == 422
+        question_id = stored[0]["id"]
+        assert client.put(f"/api/chat/messages/{question_id}/feedback", json={"feedback": "up"}).status_code == 404
+        assert client.put("/api/chat/messages/missing/feedback", json={"feedback": "down"}).status_code == 404
+
 
 def test_pipeline_failure_never_saves_fake_success(tmp_path, monkeypatch):
     app = create_app(settings=config(tmp_path))
@@ -226,10 +238,10 @@ def test_versioned_migration_preserves_existing_content():
         connection.execute(text("INSERT INTO chat_messages VALUES ('old', 'keep me')"))
     upgrade(engine)
     upgrade(engine)
-    assert {"attachments", "warnings", "token_usage"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
+    assert {"attachments", "warnings", "token_usage", "feedback"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
     with engine.connect() as connection:
         assert connection.execute(text("SELECT content FROM chat_messages WHERE id='old'")).scalar() == "keep me"
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 3
 
 
 def test_token_usage_migration_upgrades_an_already_versioned_database():
@@ -245,7 +257,7 @@ def test_token_usage_migration_upgrades_an_already_versioned_database():
     with engine.connect() as connection:
         old = connection.execute(text("SELECT content, token_usage FROM chat_messages WHERE id='old'")).one()
         assert old == ("keep me", None)
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 2
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 3
 
 
 @pytest.mark.parametrize("fail", [False, True])

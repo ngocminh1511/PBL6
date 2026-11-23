@@ -166,6 +166,7 @@ class ChatMessageResponse(BaseModel):
     token_usage: Optional[TokenUsage] = None
     attachments: List[Dict[str, Any]] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
+    feedback: Optional[Literal["up", "down"]] = None
     created_at: datetime
 
     @field_validator("attachments", "warnings", mode="before")
@@ -174,6 +175,10 @@ class ChatMessageResponse(BaseModel):
         return value or []
 
     model_config = ConfigDict(from_attributes=True)
+
+class MessageFeedbackRequest(BaseModel):
+    """`null` clears the reader's rating of an assistant answer."""
+    feedback: Optional[Literal["up", "down"]] = None
 
 class SessionDetailResponse(BaseModel):
     session: ChatSessionResponse

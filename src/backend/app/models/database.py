@@ -55,6 +55,7 @@ class ChatMessage(Base):
     warnings = Column(JSON, nullable=True)
     execution_time_ms = Column(Integer, nullable=True)
     token_usage = Column(JSON, nullable=True)
+    feedback = Column(String(10), nullable=True)  # up, down; set by the session owner
 
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 

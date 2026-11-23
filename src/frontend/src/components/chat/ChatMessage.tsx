@@ -2,40 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { BookOpen, Check, CheckCircle2, Copy, FileText, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { ChatMessage as ChatMessageType } from '../../lib/types';
+import { ChatMessage as ChatMessageType, MessageFeedback as Feedback } from '../../lib/types';
+import { api } from '../../lib/api';
 import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
 import { TokenUsage } from './TokenUsage';
 
 export type ProseFont = 'sans' | 'serif';
-type Feedback = 'up' | 'down';
 
 interface ChatMessageProps {
   message: ChatMessageType;
   index: number;
   proseFont?: ProseFont;
 }
-
-/** Answer feedback is kept in this browser only; there is no feedback API yet. */
-const FEEDBACK_KEY = 'lexgraph_feedback';
-
-const readFeedback = (id: string): Feedback | null => {
-  try {
-    const value = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '{}')[id];
-    return value === 'up' || value === 'down' ? value : null;
-  } catch {
-    return null;
-  }
-};
-
-const writeFeedback = (id: string, value: Feedback | null) => {
-  try {
-    const all = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '{}');
-    if (value) all[id] = value;
-    else delete all[id];
-    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(all));
-  } catch {}
-};
 
 const formatTime = (dateStr: string) => {
   try {
@@ -50,11 +29,13 @@ const formatTime = (dateStr: string) => {
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseFont = 'sans' }) => {
   const [copied, setCopied] = useState(false);
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(message.feedback ?? null);
+  const [feedbackSaving, setFeedbackSaving] = useState(false);
+  const [feedbackError, setFeedbackError] = useState(false);
 
   useEffect(() => {
-    setFeedback(readFeedback(message.id));
-  }, [message.id]);
+    setFeedback(message.feedback ?? null);
+  }, [message.id, message.feedback]);
 
   if (message.role === 'user') {
     const time = formatTime(message.created_at);
@@ -80,10 +61,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseF
     setTimeout(() => setCopied(false), 1800);
   };
 
-  const toggleFeedback = (value: Feedback) => {
+  // Shown only after the server stored it; a failed save keeps the previous rating.
+  const toggleFeedback = async (value: Feedback) => {
+    if (feedbackSaving) return;
     const next = feedback === value ? null : value;
-    setFeedback(next);
-    writeFeedback(message.id, next);
+    setFeedbackSaving(true);
+    setFeedbackError(false);
+    try {
+      const saved = await api.setMessageFeedback(message.id, { feedback: next });
+      setFeedback(saved.feedback ?? null);
+    } catch {
+      setFeedbackError(true);
+    } finally {
+      setFeedbackSaving(false);
+    }
   };
 
   return (
@@ -184,8 +175,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseF
         </button>
 
         <div className="flex items-center gap-1">
+          {feedbackError && <span role="alert" className="text-[11.5px] text-[#B91C1C] mr-1">Chưa lưu được đánh giá</span>}
           <button
             type="button"
+            disabled={feedbackSaving}
             title="Câu trả lời chính xác"
             aria-pressed={feedback === 'up'}
             onClick={() => toggleFeedback('up')}
@@ -197,6 +190,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index, proseF
           </button>
           <button
             type="button"
+            disabled={feedbackSaving}
             title="Cần kiểm tra lại trích dẫn"
             aria-pressed={feedback === 'down'}
             onClick={() => toggleFeedback('down')}

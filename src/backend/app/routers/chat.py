@@ -9,7 +9,7 @@ from src.backend.app.models.database import User, ChatSession, ChatMessage
 from src.backend.app.models.schemas import (
     ChatSessionCreate, ChatSessionUpdate, ChatSessionResponse, ChatMessageResponse,
     SessionDetailResponse, ChatAskRequest, ChatAskResponse,
-    CursorPage, PipelineTrace, ChatAskErrorResponse
+    CursorPage, PipelineTrace, ChatAskErrorResponse, MessageFeedbackRequest
 )
 from src.backend.app.repositories.postgres import ChatRepository
 from fastapi import Request
@@ -102,6 +102,18 @@ def delete_session(
     if not success:
         raise HTTPException(status_code=404, detail="Phiên hỏi đáp không tồn tại")
     return {"ok": True, "session_id": session_id}
+
+@router.put("/messages/{message_id}/feedback", response_model=ChatMessageResponse)
+def set_message_feedback(
+    message_id: str,
+    req: MessageFeedbackRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    message = ChatRepository(db).set_message_feedback(message_id, current_user.id, req.feedback)
+    if not message:
+        raise HTTPException(status_code=404, detail="Câu trả lời không tồn tại")
+    return ChatMessageResponse.model_validate(message)
 
 @router.post("/ask", response_model=ChatAskResponse, responses={503: {"model": ChatAskErrorResponse}})
 def ask_legal_question(req: ChatAskRequest, request: Request,
