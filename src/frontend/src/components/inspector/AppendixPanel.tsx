@@ -12,6 +12,15 @@ interface AppendixRef {
   chunkId?: string;
 }
 
+/**
+ * The chunk to highlight in the preview, only when it is a piece of that appendix
+ * ("<appendix_id>" or "<appendix_id>:p3"). An article that merely links to an appendix
+ * keeps its own chunk id, which the preview endpoint rejects with 404.
+ */
+export function appendixChunk(appendixId: string, chunkId?: string): string | undefined {
+  return chunkId && (chunkId === appendixId || chunkId.startsWith(appendixId + ':')) ? chunkId : undefined;
+}
+
 /** Appendices attached to or cited by the latest answer, without duplicates. */
 export function answerAppendices(messages: ChatMessage[]): AppendixRef[] {
   const last = [...messages].reverse().find((message) => message.role === 'assistant');
@@ -26,7 +35,7 @@ export function answerAppendices(messages: ChatMessage[]): AppendixRef[] {
     refs.set(evidence.appendix_id, {
       id: evidence.appendix_id,
       label: known?.label ?? evidence.citation,
-      chunkId: known?.chunkId ?? evidence.chunk_id,
+      chunkId: known?.chunkId ?? appendixChunk(evidence.appendix_id, evidence.chunk_id),
     });
   }
   return Array.from(refs.values());
@@ -135,7 +144,7 @@ export function AppendixPreview({ id, chunkId, onExpand, onClose }: {
           <iframe
             key={id + (form ?? '')}
             title="Xem trước phụ lục"
-            src={appendixViewUrl(id, { form, chunkId })}
+            src={appendixViewUrl(id, { form, chunkId: appendixChunk(id, chunkId) })}
             sandbox="allow-scripts"
             className="w-full h-full border-0 bg-white"
           />

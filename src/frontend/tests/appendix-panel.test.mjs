@@ -15,7 +15,7 @@ function compile(path, overrides = {}) {
   return context.exports;
 }
 const api = compile('../src/lib/api.ts');
-const { answerAppendices } = compile('../src/components/inspector/AppendixPanel.tsx', {
+const { answerAppendices, appendixChunk } = compile('../src/components/inspector/AppendixPanel.tsx', {
   '../../lib/api': api, '../../stores/chatStore': { useChatStore: () => ({}) },
 });
 
@@ -26,11 +26,11 @@ test('appendices of the latest answer are merged from attachments and cited evid
     { role: 'user', content: 'Mẫu hợp đồng giúp việc?' },
     { role: 'assistant',
       attachments: [{ appendix_id: '145:pl5', number: 'V', document_number: '145/2020/NĐ-CP' }],
-      legal_evidence: [{ citation: 'Điều 35' }, evidence('145:pl5', 'c5'), evidence('145:pl3', 'c3'), evidence('145:pl3', 'c4')] },
+      legal_evidence: [{ citation: 'Điều 35' }, evidence('145:pl5', '145:pl5:p2'), evidence('145:pl3', '145:d7'), evidence('145:pl3', '145:pl3:p1')] },
   ];
   assert.deepEqual(JSON.parse(JSON.stringify(answerAppendices(messages))), [
-    { id: '145:pl5', label: 'Phụ lục V · 145/2020/NĐ-CP', chunkId: 'c5' },
-    { id: '145:pl3', label: 'Phụ lục 145:pl3', chunkId: 'c3' },
+    { id: '145:pl5', label: 'Phụ lục V · 145/2020/NĐ-CP', chunkId: '145:pl5:p2' },
+    { id: '145:pl3', label: 'Phụ lục 145:pl3', chunkId: '145:pl3:p1' },
   ]);
   assert.equal(answerAppendices([{ role: 'user', content: 'hi' }]).length, 0);
 });
@@ -39,3 +39,12 @@ test('preview and Word links encode the appendix and form', () => {
   assert.equal(api.appendixViewUrl('145:pl5', { form: '01/PLV', chunkId: 'c5' }), '/api/appendices/145%3Apl5/view?form=01%2FPLV&chunk_id=c5');
   assert.equal(api.appendixDocxUrl('145:pl5'), '/api/appendices/145%3Apl5/docx');
 });
+
+test('only chunks of the appendix itself are highlighted in the preview', () => {
+  assert.equal(appendixChunk('145:pl5', '145:pl5:p3'), '145:pl5:p3');
+  assert.equal(appendixChunk('145:pl5', '145:pl5'), '145:pl5');
+  assert.equal(appendixChunk('145:pl5', '145:d7'), undefined, 'an article linking to the appendix');
+  assert.equal(appendixChunk('145:pl5', '145:pl50:p1'), undefined);
+  assert.equal(appendixChunk('145:pl5', undefined), undefined);
+});
+
