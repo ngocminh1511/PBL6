@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
-import { Header } from '../components/layout/Header';
+import { AppShell } from '../components/layout/AppShell';
 
 export const metadata: Metadata = {
   title: 'Pháp luật Việt Nam - Hệ thống Hỏi đáp & Tra cứu Pháp luật Đa lượt',
@@ -28,8 +28,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-surface font-body-md text-on-surface antialiased">
-        <Header />
-        <div className="pt-14 min-h-[calc(100vh-3.5rem)]">{children}</div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
