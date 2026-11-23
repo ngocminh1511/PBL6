@@ -28,8 +28,8 @@ def setup(tmp_path, monkeypatch):
         NEO4J_URI="neo4j+s://graph.example", REDIS_ENABLED=False,
         UPLOAD_DIR=tmp_path / "uploads", INTERIM_DIR=tmp_path / "interim")
     calls = []
-    def fake(service, candidate):
-        calls.append((service, candidate))
+    def fake(service, candidate, backends=None):
+        calls.append((service, candidate, backends))
         return {"dimensions": 3, "points": 7}
     monkeypatch.setattr(configuration, "_check", fake)
     return settings, calls, tmp_path
@@ -116,7 +116,7 @@ def test_group_save_does_not_probe_unrelated_unconfigured_services(setup):
     with TestClient(app) as client:
         response = client.put("/api/admin/config", json={"qdrant_timeout": 30})
         assert response.status_code == 200
-    assert [service for service, _ in setup[1]] == ["qdrant"]
+    assert [service for service, *_ in setup[1]] == ["qdrant"]
 
 
 def test_checks_use_unsaved_settings_without_writes(setup):
@@ -157,7 +157,7 @@ def test_embedding_requires_registered_compatible_collection(setup, monkeypatch)
     with TestClient(app) as client:
         unknown = client.put("/api/admin/config", json={"embedding_model": "new-model"})
         assert unknown.status_code == 422
-        def wrong_size(service, config):
+        def wrong_size(service, config, backends=None):
             return {"dimensions": 3 if service == "embedding" else 4}
         monkeypatch.setattr(configuration, "_check", wrong_size)
         mismatch = client.put("/api/admin/config", json={"embedding_model": "new-model",
@@ -201,6 +201,21 @@ def test_query_backend_keeps_inheritance_after_environment_reset(setup):
         reset = client.put("/api/admin/config", json={"reset_fields": ["query_embedding_backend"], "embedding_backend": "local"})
         assert reset.status_code == 200
         assert reset.json()["query_embedding_inherits"] and reset.json()["query_embedding_backend"] == "local"
+
+
+def test_embedding_check_covers_only_changed_sources(setup):
+    app = application(setup, QUERY_EMBEDDING_BACKEND=None, EMBEDDING_BACKEND="modal")
+    with TestClient(app) as client:
+        checked = client.post("/api/admin/config/check", json={"service": "embedding",
+            "overrides": {"query_embedding_backend": "local"}})
+        assert checked.json()["status"] == "passed"
+        assert setup[1][-1][0] == "embedding" and setup[1][-1][2] == ["local"]
+        saved = client.put("/api/admin/config", json={"query_embedding_backend": "local"})
+        assert saved.status_code == 200
+        assert all(backends == ["local"] for service, _, backends in setup[1] if service == "embedding")
+        client.put("/api/admin/config", json={"embedding_model": "new-model",
+            "collection_models": {"legal_ld_v5_bge": "new-model"}})
+        assert setup[1][-2][0] == "embedding" and setup[1][-2][2] is None
 
 
 @pytest.mark.parametrize("status,expected", [(401, "authentication"), (403, "authentication"), (429, "quota"), (404, "not_found")])

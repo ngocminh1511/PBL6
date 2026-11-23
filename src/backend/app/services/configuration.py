@@ -133,7 +133,8 @@ def failure_message(exc):
     return "unavailable", "Dịch vụ chưa hoàn tất thao tác; kiểm tra địa chỉ, cấu hình và trạng thái dịch vụ."
 
 
-def check_service(service, config):
+def check_service(service, config, backends=None):
+    """`backends` limits an embedding check to the sources being changed."""
     started = perf_counter()
     result = {"service": service, "status": "passed", "message": "Kiểm tra thành công.", "details": {}}
     llm_required = [model_field(config.LLM_PROVIDER).upper()]
@@ -155,7 +156,8 @@ def check_service(service, config):
             result.update(status="not_configured", message="Chưa điền đủ thông tin.", details={"missing_fields": missing})
         else:
             validate_urls(config, GROUP_FIELDS[service])
-            result["details"] = _check(service, config)
+            result["details"] = (_check(service, config, backends) if service == "embedding" and backends
+                                 else _check(service, config))
             if service == "redis" and not config.REDIS_ENABLED:
                 result.update(status="disabled", message="Redis đang tắt.")
     except Exception as exc:
@@ -165,7 +167,7 @@ def check_service(service, config):
     return result
 
 
-def _check(service, config):
+def _check(service, config, backends=None):
     if service == "llm":
         from labor_rag.generation.llm_client import LLMClient
         with closing(LLMClient(config)) as client:
@@ -174,7 +176,7 @@ def _check(service, config):
     if service == "embedding":
         from labor_rag.services.embedding import EmbeddingProvider
         vectors = {}
-        for backend in dict.fromkeys([config.EMBEDDING_BACKEND, config.query_backend]):
+        for backend in dict.fromkeys(backends or [config.EMBEDDING_BACKEND, config.query_backend]):
             with closing(EmbeddingProvider(config, backend=backend)) as provider:
                 vector = provider.encode("Kiểm tra kết nối embedding")
                 if len(vector) == 0:

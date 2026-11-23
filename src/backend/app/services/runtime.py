@@ -177,9 +177,26 @@ class Runtime:
                          "cors_origins": self.base.CORS_ORIGINS, "api_prefix": self.base.API_V1_PREFIX})
             return result
 
-    def check_group(self, group, config):
+    def embedding_backends(self, candidate):
+        """Embedding sources whose effective setup differs from the active one.
+
+        None means both sources: the model changed, or nothing changed.
+        """
+        current = self.settings
+        if candidate.EMBEDDING_MODEL != current.EMBEDDING_MODEL:
+            return None
+        roles = [(candidate.EMBEDDING_BACKEND, current.EMBEDDING_BACKEND),
+                 (candidate.query_backend, current.query_backend)]
+        changed = [new for new, old in roles if new != old]
+        if candidate.MODAL_APP_NAME != current.MODAL_APP_NAME:
+            changed += [new for new, _ in roles if new == "modal"]
+        if candidate.HF_TOKEN != current.HF_TOKEN:
+            changed += [new for new, _ in roles if new == "local"]
+        return list(dict.fromkeys(changed)) or None
+
+    def check_group(self, group, config, backends=None):
         timeout = 60 if group in {"llm", "embedding", "ocr"} else 10
-        future = self._checks.submit(check_service, group, config)
+        future = self._checks.submit(check_service, group, config, backends)
         try:
             return future.result(timeout=timeout)
         except FutureTimeout:
@@ -191,7 +208,8 @@ class Runtime:
     def check(self, group, changes, reset_fields=()):
         with self.lock:
             config, _ = self.candidate(changes, reset_fields)
-        return self.check_group(group, config)
+            backends = self.embedding_backends(config) if group == "embedding" else None
+        return self.check_group(group, config, backends)
 
     def models(self, changes, reset_fields=()):
         with self.lock:
@@ -215,9 +233,14 @@ class Runtime:
     def validate_candidate(self, candidate):
         changed = {k for k in EDITABLE if getattr(candidate, k.upper()) != getattr(self.settings, k.upper())}
         checks = {}
+        # Only the embedding sources being changed are verified; a collection
+        # change needs one source to compare dimensions, so it uses the query one.
+        backends = self.embedding_backends(candidate) or [candidate.query_backend]
+        if "embedding_model" in changed:
+            backends = None
         for group, fields in GROUP_FIELDS.items():
             if fields & changed:
-                checks[group] = self.check_group(group, candidate)
+                checks[group] = self.check_group(group, candidate, backends if group == "embedding" else None)
                 if checks[group]["status"] not in {"passed", "disabled"}:
                     raise HTTPException(503, f"{group}: {checks[group]['message']}")
         if changed & {"embedding_model", "embedding_backend", "query_embedding_backend", "qdrant_collection", "collection_models", "qdrant_url"}:
@@ -225,7 +248,7 @@ class Runtime:
                 raise HTTPException(422, "Collection chưa được đăng ký cho model đã chọn.")
             for group in ("embedding", "qdrant"):
                 if group not in checks:
-                    checks[group] = self.check_group(group, candidate)
+                    checks[group] = self.check_group(group, candidate, backends if group == "embedding" else None)
                 if checks[group]["status"] != "passed":
                     raise HTTPException(503, f"{group}: {checks[group]['message']}")
             if checks["embedding"]["details"]["dimensions"] != checks["qdrant"]["details"]["dimensions"]:
