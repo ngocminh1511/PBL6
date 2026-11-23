@@ -2,7 +2,7 @@
 from time import perf_counter
 from urllib.parse import quote
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
 class RetrievalRequest(BaseModel):
@@ -49,15 +49,31 @@ def create_router(runtime):
     def detail(appendix_id: str):
         return catalog.public_item(item_or_404(appendix_id), detail=True)
 
-    @router.get("/appendices/{appendix_id}/view", response_class=HTMLResponse)
-    def view(appendix_id: str, chunk_id: str | None = None, download: bool = False):
+    def form_or_404(appendix_id, form):
+        try:
+            catalog.form_blocks(appendix_id, form)
+        except KeyError:
+            raise HTTPException(404,"Không tìm thấy biểu mẫu này trong phụ lục.")
+
+    @router.get("/appendices/{appendix_id}/docx")
+    def docx(appendix_id: str, form: str | None = None):
+        """One form (or the whole appendix) as an editable Word file."""
         item_or_404(appendix_id)
+        form_or_404(appendix_id, form)
+        data, name = catalog.export_docx(appendix_id, form)
+        return Response(data, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        headers={"Content-Disposition": "attachment; filename*=UTF-8''" + quote(name)})
+
+    @router.get("/appendices/{appendix_id}/view", response_class=HTMLResponse)
+    def view(appendix_id: str, chunk_id: str | None = None, download: bool = False, form: str | None = None):
+        item_or_404(appendix_id)
+        form_or_404(appendix_id, form)
         if chunk_id and (chunk_id not in catalog.chunks or catalog.chunks[chunk_id]["appendix_id"] != appendix_id):
             raise HTTPException(404,"Chunk không thuộc phụ lục này.")
         headers={"X-Content-Type-Options":"nosniff","Content-Security-Policy":"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'self'"}
         if download:
             headers["Content-Disposition"] = "attachment; filename*=UTF-8''" + quote(appendix_id+".html")
-        return HTMLResponse(catalog.render(appendix_id,chunk_id),headers=headers)
+        return HTMLResponse(catalog.render(appendix_id,chunk_id,form),headers=headers)
 
     @router.get("/files/{artifact_id}")
     def file(artifact_id: str, download: bool = False):

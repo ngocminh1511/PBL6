@@ -44,6 +44,20 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+const query = (values: Record<string, string | undefined>) => {
+  const params = new URLSearchParams(Object.entries(values).filter((entry): entry is [string, string] => !!entry[1]));
+  const text = params.toString();
+  return text ? '?' + text : '';
+};
+
+/** Preview of one form (or the whole appendix); the chunk is highlighted when given. */
+export const appendixViewUrl = (id: string, options: { form?: string; chunkId?: string } = {}) =>
+  `/api/appendices/${encodeURIComponent(id)}/view` + query({ form: options.form, chunk_id: options.chunkId });
+
+/** Editable Word file of one form, or of the whole appendix without a form. */
+export const appendixDocxUrl = (id: string, form?: string) =>
+  `/api/appendices/${encodeURIComponent(id)}/docx` + query({ form });
+
 export const api = {
   async listAppendices(params: Record<string, string | number>): Promise<AppendixList> {
     return (await apiClient.get('/appendices', { params })).data;

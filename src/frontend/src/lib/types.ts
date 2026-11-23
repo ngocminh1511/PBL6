@@ -436,6 +436,15 @@ export interface AppendixItem {
   text?: string;
   files: FileReference[];
   article_ids?: { document_id: string; article_number: string }[];
+  /** Form codes listed in the appendix, e.g. "01/PLV". */
+  forms?: string[];
+  /** Forms whose boundaries were found; only these can be previewed or downloaded alone (detail only). */
+  form_sections?: AppendixFormSection[];
+}
+export interface AppendixFormSection {
+  code: string;
+  /** Empty when the form has no recognizable name. */
+  title: string;
 }
 export interface AppendixList {
   total: number;

@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 from labor_rag.ingest.chunk_schema import ascii_fold, article_id
 from .catalog import PROCESSED_DIR, load_manifest, local_path, read_json
+from .forms import export_docx, form_blocks, form_sections, normalize_code
 from .graph import jsonl
 
 
@@ -69,6 +70,7 @@ class AppendixCatalog:
                     result["files"][-1]["available"] = remote
         if detail:
             result["text"]=item["text"]
+            result["form_sections"]=[{"code":f["code"],"title":f["title"]} for f in form_sections(item)]
         return result
 
     def find(self, query: str, *, kind: str | None = None) -> list[dict]:
@@ -158,12 +160,30 @@ class AppendixCatalog:
             raise FileNotFoundError(path.name)
         return path,artifact
 
-    def render(self, appendix_id: str, chunk_id: str | None = None) -> str:
+    def form_blocks(self, appendix_id: str, form: str | None = None) -> list[dict]:
+        """Blocks of one form of the appendix; KeyError when the form is not found in it."""
+        blocks=form_blocks(self.items[appendix_id],form)
+        if blocks is None:
+            raise KeyError(form)
+        return blocks
+
+    def export_docx(self, appendix_id: str, form: str | None = None) -> tuple[bytes, str]:
+        """An editable Word file of one form (or the whole appendix) and its download name."""
+        item=self.items[appendix_id]
+        blocks=self.form_blocks(appendix_id,form)
+        section=next((f for f in form_sections(item) if form and normalize_code(f["code"])==normalize_code(form)),None)
+        title=(f"Mẫu số {section['code']}"+(f" – {section['title']}" if section["title"] else "")) if section else item["title"]
+        subtitle=f"Phụ lục {item['number']} · {item['document_number']}"
+        stem="Mau-"+section["code"] if section else "Phu-luc-"+item["number"]+"-"+item["document_number"]
+        name=re.sub(r"[^0-9A-Za-z._-]+","-",ascii_fold(stem)).strip("-")+".docx"
+        return export_docx(title,subtitle,blocks),name
+
+    def render(self, appendix_id: str, chunk_id: str | None = None, form: str | None = None) -> str:
         import html
         item=self.items[appendix_id]
         chunk=self.chunks.get(chunk_id or "",{})
         highlights=set(chunk.get("locator",{}).get("block_ids",[])) if chunk.get("appendix_id")==appendix_id else set()
-        body="\n".join(block["html"] for block in item["blocks"])
+        body="\n".join(block["html"] for block in self.form_blocks(appendix_id,form))
         from bs4 import BeautifulSoup
         soup=BeautifulSoup(body,"lxml")
         for block_id in highlights:

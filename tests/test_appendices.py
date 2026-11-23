@@ -168,3 +168,57 @@ def test_baseline_benchmark_refuses_rebuild_with_appendices():
         def delete_collection(self,**kwargs):pytest.fail('Must never delete the extended corpus')
     with pytest.raises(ValueError,match='appendices'):
         ensure_collection_index(Client(),{'collection':'legal_test_bge'},[{'chunk_id':'doc:d1','text':'base'}],None,2,rebuild=True)
+
+
+FORMS_ITEM={"appendix_id":"doc:pl5","document_id":"doc","document_number":"145/2020/NĐ-CP","number":"V","key":"pl5",
+    "title":"Mẫu số 01/PLV Hợp đồng giúp việc Mẫu số 02/PLV Thông báo sử dụng","kind":"form","review_status":"reviewed",
+    "forms":["01/PLV","02/PLV","05a","05"],"artifact_ids":[],"article_ids":[],"text":"",
+    "blocks":[{"id":"b0","html":'<p id="b0">Phụ lục V</p>'},
+        {"id":"b1","html":'<p id="b1">Mẫu số 01/PLV Hợp đồng giúp việc Mẫu số 02/PLV Thông báo sử dụng</p>'},
+        {"id":"b2","html":'<p id="b2">Mẫu số 01/PLV</p>'},
+        {"id":"b3","html":'<p id="b3"><b>HỢP ĐỒNG</b> giữa hai bên</p>'},
+        {"id":"b4","html":'<table id="b4"><tr><td colspan="2">Bên A</td></tr><tr><td>Họ tên</td><td>......</td></tr></table>'},
+        {"id":"b5","html":'<p id="b5">Mẫu số 02 /PLV</p>'},
+        {"id":"b6","html":'<p id="b6">Nội dung thông báo năm 2015</p>'},
+        {"id":"b7","html":'<p id="b7">Mẫu số 05a</p>'},
+        {"id":"b8","html":'<p id="b8">Mẫu số 05: Ban hành kèm theo Thông tư</p>'},
+        {"id":"b9","html":'<p id="b9">ĐỀ NGHỊ</p>'}]}
+
+
+def test_forms_split_by_whole_codes_skipping_contents():
+    from labor_rag.appendices.forms import form_sections
+    sections={s["code"]:s for s in form_sections(FORMS_ITEM)}
+    assert set(sections)=={"01/PLV","02/PLV","05a","05"}
+    assert sections["01/PLV"]["block_ids"]==["b2","b3","b4"]  # the contents block b1 never starts a form
+    assert sections["02/PLV"]["block_ids"]==["b5","b6"]       # "02 /PLV" tolerated, "2015" is not a code
+    assert sections["05a"]["block_ids"]==["b7"] and sections["05"]["block_ids"]==["b8","b9"]
+    assert sections["01/PLV"]["title"]=="Hợp đồng giúp việc"
+    assert sections["05"]["title"]=="Đề nghị"                   # the issuing note is not a title
+
+
+@pytest.fixture
+def forms_catalog(tmp_path):
+    processed=tmp_path/"appendices"
+    storage.write_jsonl(processed/"appendices.jsonl",[FORMS_ITEM])
+    storage.write_jsonl(processed/"chunks.jsonl",[])
+    storage.write_json(processed/"artifacts.json",{})
+    return AppendixCatalog(processed)
+
+
+def test_form_preview_and_word_download(forms_catalog):
+    import io
+    from docx import Document
+    with TestClient(create_app(forms_catalog)) as client:
+        detail=client.get("/api/appendices/doc:pl5").json()
+        assert [f["code"] for f in detail["form_sections"]]==["01/PLV","02/PLV","05a","05"]
+        view=client.get("/api/appendices/doc:pl5/view",params={"form":"02/PLV"}).text
+        assert "Nội dung thông báo" in view and "HỢP ĐỒNG" not in view
+        word=client.get("/api/appendices/doc:pl5/docx",params={"form":"01/PLV"})
+        assert word.status_code==200 and "Mau-01-PLV.docx" in word.headers["content-disposition"]
+        document=Document(io.BytesIO(word.content))
+        text="\n".join(p.text for p in document.paragraphs)
+        assert "HỢP ĐỒNG giữa hai bên" in text and "Nội dung thông báo" not in text
+        assert document.tables[0].cell(1,1).text=="......"
+        assert client.get("/api/appendices/doc:pl5/docx").status_code==200
+        assert client.get("/api/appendices/doc:pl5/docx",params={"form":"99/PLV"}).status_code==404
+        assert client.get("/api/appendices/doc:pl5/view",params={"form":"99/PLV"}).status_code==404
