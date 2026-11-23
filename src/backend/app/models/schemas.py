@@ -342,6 +342,14 @@ class AdminConfigUpdate(BaseModel):
     ocr_semantic_model: Optional[str] = None
     max_upload_bytes: Optional[int] = None
 
+class EmbeddingModelOption(BaseModel):
+    """A benchmarked embedding model and the collection indexed with it."""
+    model: str
+    label: str
+    dimensions: int
+    max_tokens: int
+    collection: str
+
 class AdminConfigResponse(BaseModel):
     active_llm_profile_id: Optional[str] = None
     config_version: int
@@ -349,6 +357,7 @@ class AdminConfigResponse(BaseModel):
     dataset_id: str
     query_embedding_backend: str
     available_collections: Dict[str, str]
+    embedding_catalog: List[EmbeddingModelOption] = Field(default_factory=list)
     anthropic_model: str
     openai_model: str
     openrouter_model: str

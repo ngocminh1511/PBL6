@@ -353,3 +353,21 @@ def test_environment_profile_can_restore_fallback_without_losing_saved_profiles(
         assert result.status_code == 200 and result.json()["active_profile_id"] == "environment"
         assert len(result.json()["profiles"]) == 2
         assert app.state.runtime.settings.GEMINI_API_KEY == "environment-key"
+
+
+def test_benchmarked_embedding_models_are_offered_with_their_collections(setup):
+    with TestClient(application(setup)) as client:
+        config = client.get("/api/admin/config").json()
+        catalog = {item["model"]: item for item in config["embedding_catalog"]}
+        assert set(catalog) == {"BAAI/bge-m3", "bkai-foundation-models/vietnamese-bi-encoder",
+                                "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"}
+        bkai = catalog["bkai-foundation-models/vietnamese-bi-encoder"]
+        assert (bkai["collection"], bkai["dimensions"]) == ("legal_ld_v7_bkai", 768)
+        assert config["available_collections"]["legal_ld_v7_mpnet"].endswith("mpnet-base-v2")
+        assert config["available_collections"][config["qdrant_collection"]] == config["embedding_model"]
+        mismatch = client.put("/api/admin/config", json={"embedding_model": bkai["model"]})
+        assert mismatch.status_code == 422
+        saved = client.put("/api/admin/config", json={"embedding_model": bkai["model"], "qdrant_collection": "legal_ld_v7_bkai"})
+        assert saved.status_code == 200
+        assert (saved.json()["embedding_model"], saved.json()["qdrant_collection"]) == (bkai["model"], "legal_ld_v7_bkai")
+

@@ -138,7 +138,25 @@ export function SettingsPanel({ variant = 'page', initialSection = 'llm', onSect
     let control: React.ReactNode;
     if (field.kind === 'checkbox') control = <label className="flex items-center gap-2 h-10 text-sm text-slate-600"><input id={id} type="checkbox" className="accent-secondary w-4 h-4" checked={Boolean(raw)} disabled={!!saving} onChange={e => change(field.key, e.target.checked)} />{raw ? 'Đang bật' : 'Đang tắt'}</label>;
     else if (field.kind === 'select') control = <select id={id} className={adminInput} value={String(raw ?? '')} disabled={!!saving} onChange={e => change(field.key, e.target.value)}>{field.options?.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select>;
-    else if (field.kind === 'binding') {
+    else if (field.kind === 'model') {
+      const catalog = config.embedding_catalog ?? [];
+      const current = String(raw ?? '');
+      const collection = String(value('qdrant_collection') || '');
+      const registry = { ...config.available_collections, ...((value('collection_models') || {}) as Record<string, string>) };
+      const choose = (model: string) => {
+        change('embedding_model', model);
+        const option = catalog.find(item => item.model === model);
+        if (option && registry[collection] !== model) change('qdrant_collection', option.collection);
+      };
+      control = <div className="space-y-1">
+        <select id={id} className={adminInput} value={current} disabled={!!saving} onChange={e => choose(e.target.value)}>
+          {current && !catalog.some(item => item.model === current) && <option value={current}>{current} (tùy chỉnh)</option>}
+          {catalog.map(item => <option key={item.model} value={item.model}>{item.label} · {item.dimensions} chiều · {item.max_tokens.toLocaleString('vi-VN')} token</option>)}
+        </select>
+        <p className="text-xs text-muted break-all">{current} · Collection: {collection || 'Chưa chọn'}</p>
+        {own(draft, 'qdrant_collection') && own(draft, 'embedding_model') && <p className="text-xs text-secondary">Collection đổi theo model; dùng “Lưu tất cả thay đổi” để lưu cả hai.</p>}
+      </div>;
+    } else if (field.kind === 'binding') {
       const collection = String(value('qdrant_collection') || ''), registry = (value('collection_models') || {}) as Record<string, string>;
       control = <div><input id={id} className={adminInput} disabled={!!saving || !collection} value={registry[collection] ?? config.available_collections[collection] ?? ''} onChange={e => change('collection_models', { ...registry, [collection]: e.target.value })} placeholder="Tên model đã dùng khi index" />
         <p className="mt-1 text-xs text-slate-400">Collection: {collection || 'Chưa chọn'}</p></div>;

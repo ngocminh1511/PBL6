@@ -11,7 +11,7 @@ export function isConfigVerified(state: ConfigCheckState | undefined, connection
 export interface ConfigFieldSpec {
   key: ConfigField;
   label: string;
-  kind?: 'secret' | 'number' | 'checkbox' | 'select' | 'binding';
+  kind?: 'secret' | 'number' | 'checkbox' | 'select' | 'binding' | 'model';
   options?: [string, string][];
   advanced?: boolean;
   provider?: string;
@@ -59,7 +59,8 @@ export const configGroups: ConfigGroup[] = [
     ] },
   { id: 'embedding', title: 'Embedding và nguồn tính toán', icon: 'hub',
     hint: 'Model phải khớp với collection đã lập chỉ mục. Kiểm tra tạo vector thử; khi lưu sẽ đối chiếu collection liên quan.', fields: [
-      { key: 'embedding_model', label: 'Model embedding' },
+      { key: 'embedding_model', label: 'Model embedding', kind: 'model',
+        hint: 'Chọn model sẽ chuyển sang collection đã lập chỉ mục bằng model đó. Model khác collection cần nạp lại dữ liệu.' },
       { key: 'embedding_backend', label: 'Tính vector khi nạp dữ liệu', kind: 'select', options: backends },
       { key: 'query_embedding_backend', label: 'Tính vector khi truy vấn', kind: 'select', options: backends },
       { key: 'modal_app_name', label: 'Ứng dụng Modal đã triển khai' },

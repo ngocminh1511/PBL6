@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from threading import RLock
 
 from fastapi import HTTPException, Request
+from labor_rag.settings import EMBEDDING_CATALOG
 from .configuration import (EDITABLE, SECRETS, GROUP_FIELDS, check_service, cipher,
                             decode_overrides, encode_overrides, public_url, validate_urls)
 
@@ -25,7 +26,8 @@ class Runtime:
         self.collection_models = self.bindings(settings)
 
     def bindings(self, config):
-        return {self.base.QDRANT_COLLECTION: self.base.EMBEDDING_MODEL, **config.COLLECTION_MODELS}
+        catalog = {item["collection"]: item["model"] for item in EMBEDDING_CATALOG}
+        return {**catalog, self.base.QDRANT_COLLECTION: self.base.EMBEDDING_MODEL, **config.COLLECTION_MODELS}
 
     def ensure_ready(self):
         if self.configuration_error:
@@ -156,6 +158,7 @@ class Runtime:
                 dataset_id=self.settings.DATASET_ID, config_version=self.version, demo_mode=self.settings.DEMO_MODE,
                 active_llm_profile_id=self.active_llm_profile_id,
                 available_collections=self.collection_models,
+                embedding_catalog=[dict(item) for item in EMBEDDING_CATALOG],
                 sources={k: "saved" if k in self.overrides else
                     "environment" if k.upper() in self.base.model_fields_set else "default" for k in EDITABLE},
                 environment_values={k: public_url(getattr(self.base, k.upper())) if k in url_fields

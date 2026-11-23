@@ -32,7 +32,7 @@ Nguyên tắc chung:
 
 | Thành phần | Công nghệ |
 |---|---|
-| Embedding | `BAAI/bge-m3` (1.024 chiều, đọc tới 8.192 token), chạy local hoặc trên Modal |
+| Embedding | `BAAI/bge-m3` (1.024 chiều, đọc tới 8.192 token), chạy local hoặc trên Modal. Cấu hình → Embedding còn cho chọn hai model đã benchmark: `bkai-foundation-models/vietnamese-bi-encoder` (`legal_ld_v7_bkai`) và `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` (`legal_ld_v7_mpnet`), cùng 768 chiều; danh mục nằm ở `EMBEDDING_CATALOG` trong `labor_rag/settings.py` |
 | Vector DB | Qdrant (Cloud, strict mode), collection `legal_ld_v5_bge` |
 | Graph DB | Neo4j (Aura), dataset `lao_dong_v5` |
 | LLM | qua `labor_rag/generation/llm_client.py` (cấu hình trong `.env`) |

@@ -9,6 +9,19 @@ from labor_rag.llm_providers import DEFAULT_CLOUD_BASE_URLS
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
+# Embedding models compared in the retrieval benchmarks
+# (labor_rag/evaluation/results/retrieval_three_models_comparison_report.md),
+# each with the Qdrant collection that was indexed with it.
+EMBEDDING_CATALOG: tuple[dict, ...] = (
+    {"model": "BAAI/bge-m3", "label": "BGE-M3", "dimensions": 1024, "max_tokens": 8192,
+     "collection": "legal_ld_v7_bge"},
+    {"model": "bkai-foundation-models/vietnamese-bi-encoder", "label": "BKAI Vietnamese bi-encoder",
+     "dimensions": 768, "max_tokens": 256, "collection": "legal_ld_v7_bkai"},
+    {"model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2", "label": "Multilingual MPNet",
+     "dimensions": 768, "max_tokens": 128, "collection": "legal_ld_v7_mpnet"},
+)
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT_DIR / ".env", extra="ignore", frozen=True)
     PROJECT_NAME: str = "LexGraph VN - Legal RAG API"

@@ -225,6 +225,14 @@ export interface DocumentAST {
   ast_tree: ASTNode;
 }
 
+export interface EmbeddingModelOption {
+  model: string;
+  label: string;
+  dimensions: number;
+  max_tokens: number;
+  collection: string;
+}
+
 export interface AdminConfigValues {
   query_embedding_backend: 'local' | 'modal';
   anthropic_model: string;
@@ -298,6 +306,8 @@ export interface AdminConfig extends AdminConfigValues {
   dataset_id: string;
   vector_db: string;
   available_collections: Record<string, string>;
+  /** Benchmarked embedding models, each with the collection indexed by it. */
+  embedding_catalog?: EmbeddingModelOption[];
   sources: Record<ConfigField, ConfigSource>;
   environment_values: Partial<AdminConfigValues>;
   environment_sources: Record<ConfigField, 'environment' | 'default'>;

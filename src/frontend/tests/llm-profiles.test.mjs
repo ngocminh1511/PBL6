@@ -233,7 +233,11 @@ async function mountAdmin(overrides = {}) {
     neo4j_uri: 'neo4j+s://graph.example', neo4j_user: 'user', neo4j_database: 'database',
     ocr_model: 'vgg_transformer', ocr_device: '', ocr_dpi: 300, max_upload_bytes: 50 * 1024 * 1024,
     ocr_beamsearch: false, ocr_semantic_chunking: false,
-    redis_enabled: true, startup: { cors_origins: [] } };
+    redis_enabled: true, startup: { cors_origins: [] },
+    embedding_catalog: [
+      { model: 'test-model', label: 'Test', dimensions: 1024, max_tokens: 8192, collection: 'legal' },
+      { model: 'bkai-foundation-models/vietnamese-bi-encoder', label: 'BKAI', dimensions: 768, max_tokens: 256, collection: 'legal_ld_v7_bkai' },
+    ] };
   const postgres = { configured: true, saved: true, pending_apply: true, can_apply: true, pending_restart: false,
     connection_status: 'unavailable', host: 'db.example', port: 5432, database: 'app', username: 'user',
     sslmode: 'require', password_configured: true, environment_override: false };
@@ -334,4 +338,18 @@ test('checking an inactive LLM profile does not verify the active LLM connection
   assert.equal(verified('Mô hình LLM'), false);
   const row = Array.from(document.querySelectorAll('tbody tr')).find(item => item.textContent.includes('Other LLM'));
   assert.ok(row.querySelector('td:first-child [aria-label="Đã kiểm tra thành công"]'));
+});
+
+test('choosing a benchmarked embedding model switches to the collection indexed with it', async () => {
+  await mountAdmin();
+  await click(navButton('Embedding'));
+  const select = document.getElementById('config-embedding_model');
+  assert.deepEqual(Array.from(select.options).map(item => item.value), ['test-model', 'bkai-foundation-models/vietnamese-bi-encoder']);
+  await fill(select, 'bkai-foundation-models/vietnamese-bi-encoder');
+  await click(navButton('Qdrant'));
+  assert.equal(document.getElementById('config-qdrant_collection').value, 'legal_ld_v7_bkai');
+  await click(navButton('Embedding'));
+  await fill(document.getElementById('config-embedding_model'), 'test-model');
+  await click(navButton('Qdrant'));
+  assert.equal(document.getElementById('config-qdrant_collection').value, 'legal', 'the collection follows the model back');
 });
