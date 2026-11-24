@@ -238,7 +238,9 @@ class IngestionService:
 
     def _ensure_revisions(self, db, task: IngestionTask) -> None:
         """Tasks from before revisions existed: import ocr_pages.jsonl once."""
-        if task.document_type != "pdf" or ocr_revisions.revisions(db, task.id):
+        # While OCR runs the page file is partial; revisions are made when it ends.
+        if task.document_type != "pdf" or task.status in {"pending", "parsing", "chunking", "embedding", "indexing"} \
+                or ocr_revisions.revisions(db, task.id):
             return
         entries = self._pages_file_entries(task.id)
         if entries:
@@ -314,6 +316,14 @@ class IngestionService:
             if task.status in {"pending", "parsing", "chunking", "embedding", "indexing"}:
                 return task, "busy"
             self._ensure_revisions(db, task)
+            existing = ocr_revisions.by_status(db, task_id, "draft")
+            if existing is not None and task.status in {"failed", "cancelled"} and from_revision_id is None:
+                # A failed or cancelled indexing left its draft: resume the review where it stopped.
+                task.status, task.progress = "awaiting_review", 30.0
+                task.current_step = "Đang rà soát lại; xác nhận lập chỉ mục khi xong."
+                db.commit()
+                db.refresh(task)
+                return task, "ok"
             try:
                 draft = ocr_revisions.new_draft(db, task_id, from_revision_id)
             except ocr_revisions.DraftExists:
@@ -651,6 +661,25 @@ class IngestionService:
         message = _describe_failure(exc, last_status)
         self._progress(task_id, None, "failed", message, error_message=message)
 
+    def _back_to_review(self, task_id: str, revision_id: str, exc: BaseException | None) -> bool:
+        """Indexing a reviewed draft failed (exc) or was stopped (None): keep the draft open instead of
+        ending the upload, so it can be corrected and confirmed again without OCR. False when the draft is gone."""
+        try:
+            with self.database.session() as db:
+                revision = db.get(ocr_revisions.OcrRevision, revision_id)
+                if revision is None or revision.status != "draft":
+                    return False
+        except Exception:
+            return False
+        if exc is None:
+            self._progress(task_id, 30.0, "awaiting_review",
+                           "Đã dừng lập chỉ mục; tiếp tục rà soát rồi xác nhận lại khi sẵn sàng.", error_message=None)
+            return True
+        message = _describe_failure(exc, "indexing")
+        self._progress(task_id, 30.0, "awaiting_review",
+                       "Chưa lập chỉ mục; bản rà soát vẫn được giữ, sửa rồi xác nhận lại.", error_message=message)
+        return True
+
     def _cleanup_worker(self, task_id: str):
         with self._cancel_lock:
             self._cancel_events.pop(task_id, None)
@@ -689,7 +718,7 @@ class IngestionService:
                             "warnings": ([f"Chưa sao lưu được PDF lên R2 ({extracted['source_backup_error']}); "
                                           "sẽ thử lại khi lập chỉ mục."] if extracted.get("source_backup_error") else []),
                         }
-                        ocr_revisions.import_pages(db, task_id, self._pages_file_entries(task_id))
+                        ocr_revisions.reimport_pages(db, task_id, self._pages_file_entries(task_id))
                         task.status = "awaiting_review"
                         task.progress = 30.0
                         task.current_step = "Đã OCR xong! Hãy đối chiếu, chỉnh sửa (nếu cần) rồi bấm 'Xác nhận & Lập chỉ mục'."
@@ -724,9 +753,11 @@ class IngestionService:
                 self._save_completion(task_id, result, revision_id, (reindex or {}).get("previous_document_id"))
                 self._snapshot_revision(task_id, revision_id)
         except IngestionCancelledError:
-            self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
+            if not (revision_id and self._back_to_review(task_id, revision_id, None)):
+                self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
         except (Exception, SystemExit) as exc:
-            self._handle_failure(task_id, exc)
+            if not (revision_id and self._back_to_review(task_id, revision_id, exc)):
+                self._handle_failure(task_id, exc)
         finally:
             self._cleanup_worker(task_id)
 

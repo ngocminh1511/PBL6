@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { api, errorMessage } from '../../lib/api';
 import { IngestionTask, OcrRevision } from '../../lib/types';
 import { defaultRevision, isEditable, revisionLabel, revisionStatusLabel } from '../../lib/ingestionTasks';
-import { ingestionSteps, stepStates, type TaskStatus } from '../../lib/ingestionSteps';
+import { ingestionSteps, stepBack, stepStates, type StepBack, type TaskStatus } from '../../lib/ingestionSteps';
 import { useDocumentStore } from '../../stores/documentStore';
 import { OcrEditor } from './OcrEditor';
 import { ChangeReview } from './ChangeReview';
@@ -33,6 +33,47 @@ const ZOOM_STEPS = [50, 75, 100, 125, 150, 200, 300];
 const PANE_HEIGHT = 'h-[calc(100vh-260px)] min-h-[520px]';
 
 type ReviewTab = 'ocr' | 'changes';
+
+const STEP_BACK_TEXT: Record<StepBack['kind'], string> = {
+  tab: '',
+  stop: 'Quá trình lập chỉ mục sẽ dừng lại và quay về bước rà soát. Bản rà soát giữ nguyên; xác nhận lại khi đã sẵn sàng.',
+  resume: 'Lượt nạp quay về bước rà soát với bản nháp đang có, không phải OCR lại.',
+  reopen: 'Một bản nháp mới được tạo từ bản đang dùng để sửa. Văn bản trong kho giữ nguyên cho tới khi bạn nạp lại.',
+};
+
+/** Asks before leaving a later step for an earlier one. */
+function StepBackDialog({ label, action, busy, onConfirm, onClose }: {
+  label: string; action: StepBack; busy: boolean; onConfirm: () => void; onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="step-back-title" onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-[2px] p-4">
+      <div onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-2xl border border-ink/10 overflow-hidden">
+        <div className="flex items-center gap-2 p-4 border-b border-outline-variant/20 bg-surface-container-low">
+          <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-secondary/10 text-secondary">
+            <span className="material-symbols-outlined text-[20px]">undo</span>
+          </span>
+          <h2 id="step-back-title" className="text-[14px] font-semibold text-ink">Quay lại bước &quot;{label}&quot;?</h2>
+        </div>
+        <p className="p-4 text-[13px] text-ink-2">{STEP_BACK_TEXT[action.kind]}</p>
+        <div className="flex justify-end gap-2 p-4 pt-0">
+          <button type="button" onClick={onClose} disabled={busy}
+            className="px-3 py-1.5 rounded-lg text-[13px] bg-surface-container text-ink hover:bg-surface-container-high disabled:opacity-50">Ở lại</button>
+          <button type="button" onClick={onConfirm} disabled={busy}
+            className="px-3 py-1.5 rounded-lg text-[13px] font-medium bg-secondary text-white hover:opacity-90 disabled:opacity-60">
+            {busy ? 'Đang chuyển…' : 'Quay lại'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOpenDocument, onUploadAnother }) => {
   const cancelTask = useDocumentStore((s) => s.cancelTask);
@@ -84,9 +125,15 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
   // Before revisions are listed (or for a task without them) the server edits its draft.
   const editableRevision = revisions.length === 0 || isEditable(revision);
   const canReopen = task.document_type === 'pdf' && !hasDraft && hasIndexed && TERMINAL.includes(task.status);
-
   const steps = ingestionSteps(task.document_type);
-  const states = stepStates(steps, task.status, lastActive.current);
+  // After a reload the last running status is unknown; a task with a draft stopped after OCR.
+  const states = stepStates(steps, task.status, lastActive.current ?? (hasDraft ? 'awaiting_review' : null),
+    isAwaitingReview ? reviewTab : undefined);
+  const backTo = (index: number) => stepBack(steps[index], index, states,
+    { status: task.status, documentType: task.document_type, hasDraft, hasIndexed });
+  // A step clicked to go back to, waiting for the user to confirm.
+  const [goBack, setGoBack] = useState<{ index: number; action: StepBack } | null>(null);
+  const [goingBack, setGoingBack] = useState(false);
 
   const ocrPreview = task.ocr_preview;
   const recentPages = ocrPreview?.recent_pages ?? [];
@@ -328,6 +375,30 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     } catch (e) {
       setDeleteError(errorMessage(e));
       setDeleteStep('idle');
+    }
+  };
+
+  const requestStep = (index: number) => {
+    const action = backTo(index);
+    if (!action) return;
+    if (action.kind === 'tab') { setReviewTab(action.tab); return; }  // nothing is lost between the review tabs
+    setGoBack({ index, action });
+  };
+
+  const runGoBack = async () => {
+    if (!goBack || goingBack) return;
+    setGoingBack(true);
+    setPageLoadError(null);
+    try {
+      if (goBack.action.kind === 'stop') await cancelTask(task.id);  // the server returns the task to review
+      else await reopenTask(task.id);
+      setReviewTab(goBack.action.tab);
+      setGoBack(null);
+    } catch (e) {
+      setPageLoadError(errorMessage(e));
+      setGoBack(null);
+    } finally {
+      setGoingBack(false);
     }
   };
 
@@ -604,13 +675,23 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
         </div>
       </div>
 
+      {isAwaitingReview && task.error_message && (
+        <p role="alert" className="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-[12px] text-amber-900">
+          Lần lập chỉ mục trước chưa thành công: {task.error_message}
+        </p>
+      )}
       {deleteError && (
         <p role="alert" className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-[12px] text-red-700">{deleteError}</p>
       )}
 
       {/* Stepper and current work */}
       <div className="flex flex-col gap-3 rounded-xl bg-surface-container-low/60 border border-outline-variant/20 px-3 pt-4 pb-3">
-        <IngestionStepper steps={steps} states={states} progress={task.progress} paused={isAwaitingReview} />
+        <IngestionStepper steps={steps} states={states} progress={task.progress} paused={isAwaitingReview}
+          canGoTo={(index) => backTo(index) !== null} onGoTo={requestStep} />
+        {goBack && (
+          <StepBackDialog label={steps[goBack.index].label} action={goBack.action} busy={goingBack}
+            onConfirm={() => void runGoBack()} onClose={() => { if (!goingBack) setGoBack(null); }} />
+        )}
         <div className="flex items-center gap-2 text-[12px] pt-2 border-t border-outline-variant/20">
           <span className={`material-symbols-outlined text-[16px] shrink-0 ${
             isFailed ? 'text-red-600' : isCompleted ? 'text-emerald-600' : isCancelled ? 'text-amber-600' : isAwaitingReview ? 'text-indigo-600' : 'text-secondary animate-spin'

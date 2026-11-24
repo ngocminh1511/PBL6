@@ -6,7 +6,8 @@ document and runs the same merge decision (ingest/merge.py), per Dieu:
 
 - new: only in the PDF; replaced: the PDF wins and its text differs;
 - metadata: same text, only payload fields change; unchanged: identical;
-- kept: the indexed version is newer, so indexing will refuse the PDF;
+- kept: the indexed version is newer, or the same version from Phap dien,
+  so indexing keeps it and skips the PDF's Dieu;
 - missing: indexed but not found in the PDF (often an OCR miss), kept as is
   unless the user deletes it when re-indexing a corrected review
   ("deletable": only parts a PDF wrote; Phap dien parts never go).
@@ -151,6 +152,7 @@ def preview_changes(settings, task_id: str, path, domain: str = "lao_dong", *, c
             "old_text": _text(old_parts) if old_parts else None,
             "old_source": old_parts[0].get("source") if old_parts else None,
             "old_version_date": old_parts[0].get("version_date") if old_parts else None,
+            "new_version_date": new_parts[0].get("version_date") if new_parts else None,
             # Re-indexing may delete a Dieu missing from the review, but only what a PDF wrote.
             "deletable": bool(old_parts) and not new_parts and all(p.get("source") == "pdf" for p in old_parts),
         })

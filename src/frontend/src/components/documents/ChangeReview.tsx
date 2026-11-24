@@ -10,12 +10,30 @@ const STATUS: Record<ArticleChangeStatus, { label: string; tone: string; hint: s
   replaced: { label: 'Thay thế', tone: 'bg-amber-100 text-amber-900', hint: 'Nội dung khác bản trong kho; bản PDF sẽ thay thế.' },
   metadata: { label: 'Cập nhật thông tin', tone: 'bg-sky-100 text-sky-900', hint: 'Cùng nội dung, chỉ đổi thông tin hiệu lực/phiên bản.' },
   unchanged: { label: 'Không đổi', tone: 'bg-slate-100 text-ink-2', hint: 'Giống hệt bản trong kho.' },
-  kept: { label: 'Kho có bản mới hơn', tone: 'bg-red-100 text-red-900', hint: 'Bản trong kho mới hơn; hệ thống sẽ từ chối lập chỉ mục PDF này.' },
+  kept: { label: 'Kho được ưu tiên', tone: 'bg-red-100 text-red-900', hint: 'Bản trong kho được ưu tiên; hệ thống sẽ từ chối lập chỉ mục PDF này.' },
   missing: { label: 'Thiếu trong PDF', tone: 'bg-orange-100 text-orange-900', hint: 'Có trong kho nhưng không có trong bản này (OCR sót, hoặc đã sửa đi); bản cũ được giữ trừ khi chọn xóa.' },
 };
 const ORDER: ArticleChangeStatus[] = ['kept', 'replaced', 'new', 'missing', 'metadata', 'unchanged'];
 
 type Filter = 'changed' | 'all' | ArticleChangeStatus;
+
+/** Why a "kept" Dieu stays: the store's version is later, or the same version where Phap dien wins (ingest/merge.py). */
+function keptReason(item: ArticleChange): 'newer' | 'same' {
+  const stored = item.old_version_date || '';
+  const incoming = item.new_version_date || '';
+  return stored > incoming ? 'newer' : 'same';
+}
+
+function statusMeta(item: ArticleChange) {
+  if (item.status !== 'kept') return item.status ? STATUS[item.status] : null;
+  if (keptReason(item) === 'newer') {
+    return { label: 'Kho có bản mới hơn', tone: 'bg-red-100 text-red-900',
+      hint: 'Bản trong kho có phiên bản mới hơn PDF này; hệ thống sẽ từ chối lập chỉ mục PDF này.' };
+  }
+  const source = item.old_source === 'phap_dien' ? 'Pháp điển' : 'bản đang có';
+  return { label: `Cùng phiên bản · ưu tiên ${item.old_source === 'phap_dien' ? 'Pháp điển' : 'kho'}`, tone: 'bg-orange-100 text-orange-900',
+    hint: `Kho đã có bản cùng phiên bản${item.old_version_date ? ` (${item.old_version_date})` : ''} và ${source} được ưu tiên; hệ thống sẽ từ chối lập chỉ mục PDF này.` };
+}
 
 function SideBySide({ before, after, beforeTitle, afterTitle }: { before: string | null; after: string | null; beforeTitle: string; afterTitle: string }) {
   const parts = useMemo(() => diffWords(before ?? '', after ?? ''), [before, after]);
@@ -41,7 +59,7 @@ function SideBySide({ before, after, beforeTitle, afterTitle }: { before: string
 
 function ArticleRow({ item, prune }: { item: ArticleChange; prune?: { checked: boolean; toggle: () => void } }) {
   const [open, setOpen] = useState(item.status === 'replaced' || item.status === 'kept');
-  const meta = item.status ? STATUS[item.status] : null;
+  const meta = statusMeta(item);
   return (
     <li className="border border-outline-variant/25 rounded-lg bg-surface-container-lowest">
       {prune && (
@@ -135,6 +153,8 @@ export const ChangeReview: React.FC<{
     for (const item of changes?.articles ?? []) if (item.status) result[item.status] += 1;
     return result;
   }, [changes]);
+  const keptNewer = (changes?.articles ?? []).filter((a) => a.status === 'kept' && keptReason(a) === 'newer').length;
+  const keptSame = counts.kept - keptNewer;
 
   const visible = (changes?.articles ?? []).filter((item) =>
     filter === 'all' || item.status === null ? true
@@ -181,9 +201,15 @@ export const ChangeReview: React.FC<{
                 {changes.store_error ? ` (${changes.store_error})` : ''}
               </p>
             )}
-            {counts.kept > 0 && (
+            {keptNewer > 0 && (
               <p className="text-[12px] p-2 rounded bg-red-50 border border-red-200 text-red-800">
-                {counts.kept} Điều trong kho có phiên bản mới hơn PDF này; hệ thống sẽ từ chối lập chỉ mục nếu xác nhận.
+                {keptNewer} Điều trong kho có phiên bản mới hơn PDF này; hệ thống sẽ từ chối lập chỉ mục nếu xác nhận.
+              </p>
+            )}
+            {keptSame > 0 && (
+              <p className="text-[12px] p-2 rounded bg-orange-50 border border-orange-200 text-orange-900">
+                {keptSame} Điều đã có trong kho với cùng phiên bản và bản Pháp điển được ưu tiên; hệ thống sẽ từ chối
+                lập chỉ mục PDF này nếu xác nhận, vì nó không mang lại nội dung mới hơn kho.
               </p>
             )}
 

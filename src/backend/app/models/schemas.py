@@ -259,6 +259,7 @@ class ArticleChange(BaseModel):
     old_text: str | None = None
     old_source: str | None = None
     old_version_date: str | None = None
+    new_version_date: str | None = None
     # A missing Dieu whose indexed parts all came from a PDF: re-indexing may delete it.
     deletable: bool = False
 

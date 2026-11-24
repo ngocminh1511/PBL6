@@ -591,7 +591,11 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
     })
     indexed_chunks, reindexes = [], []
+    interrupts = [ingestion.IngestionInputError("Cloud đã có phiên bản mới hơn; không cập nhật tài liệu cũ."),
+                  ingestion.IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")]
     def fake_index(self, chunks, proj_dir, progress, cancel_check=None, reindex=None):
+        if interrupts:
+            raise interrupts.pop()
         indexed_chunks.extend(chunks)
         reindexes.append(reindex)
         return {"warnings": [], "embedded_chunks": len(chunks)}
@@ -654,6 +658,25 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         first = next(a for a in body["articles"] if a["label"] == "Điều 1")
         assert first["status"] is None and "Nội dung đã sửa chính tả chuẩn." in first["new_text"]
         assert indexed_chunks == []
+
+        # Stopping the indexing (a click on an earlier step) returns to review, not to a cancelled upload.
+        assert client.post(f"/api/documents/tasks/{task_id}/confirm").status_code == 200
+        for _ in range(80):
+            back = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+            if back["status"] in {"awaiting_review", "cancelled"}:
+                break
+            time.sleep(0.05)
+        assert back["status"] == "awaiting_review" and not back.get("error_message"), back
+
+        # A refused indexing goes back to review with its reason; the draft and its edits stay.
+        assert client.post(f"/api/documents/tasks/{task_id}/confirm").status_code == 200
+        for _ in range(80):
+            back = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+            if back["status"] in {"awaiting_review", "failed"} and back.get("error_message"):
+                break
+            time.sleep(0.05)
+        assert back["status"] == "awaiting_review" and "phiên bản mới hơn" in back["error_message"], back
+        assert client.get(f"/api/documents/tasks/{task_id}/ocr-page/1").json()["text"] == edited_text
 
         # Confirm -> triggers Phase 2 with the edited text
         conf_res = client.post(f"/api/documents/tasks/{task_id}/confirm")

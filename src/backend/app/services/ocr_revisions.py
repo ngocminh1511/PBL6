@@ -59,6 +59,22 @@ def import_pages(db: Session, task_id: str, entries: list[dict], *, indexed: boo
     return [ocr, draft]
 
 
+def reimport_pages(db: Session, task_id: str, entries: list[dict]) -> list[OcrRevision]:
+    """import_pages for an OCR that just finished: revisions made earlier from a partial page file
+    (a page opened while OCR ran) are replaced when nobody edited them; edited ones stay."""
+    existing = revisions(db, task_id)
+    if existing and entries:
+        ids = [r.id for r in existing]
+        edited = db.query(OcrPage).filter(OcrPage.revision_id.in_(ids), OcrPage.edited.is_(True)).first()
+        pages = db.query(func.count()).select_from(OcrPage).filter(OcrPage.revision_id == existing[0].id).scalar()
+        if edited is None and pages < len(entries):
+            db.query(OcrPage).filter(OcrPage.revision_id.in_(ids)).delete(synchronize_session=False)
+            db.query(OcrRevision).filter(OcrRevision.task_id == task_id).delete(synchronize_session=False)
+            db.flush()
+            db.expire_all()
+    return import_pages(db, task_id, entries)
+
+
 def by_status(db: Session, task_id: str, status: str) -> OcrRevision | None:
     return (db.query(OcrRevision).filter(OcrRevision.task_id == task_id, OcrRevision.status == status)
             .order_by(OcrRevision.number.desc()).first())

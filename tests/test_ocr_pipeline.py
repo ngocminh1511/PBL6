@@ -538,3 +538,10 @@ b) Đủ 20 năm đóng bảo hiểm xã hội trở lên." """
     doc = parse_structure(text)
     assert [a.article_number for a in doc.iter_articles()] == ["Điều 197", "Điều 198"]
     assert [c.clause_number for c in next(doc.iter_articles()).clauses] == ["Khoản 1", "Khoản 2"]
+
+
+def test_document_number_issuer_misread_by_ocr():
+    from labor_rag.ocr.structure import extract_metadata
+    assert extract_metadata("QUỐC HỘI\nLuật số: 74/2025/OH15\nLUẬT VIỆC LÀM").so_hieu == "74/2025/QH15"
+    assert extract_metadata("Luật số: 74/2025/0H15").so_hieu == "74/2025/QH15"
+    assert extract_metadata("Số: 145/2020/NĐ-CP").so_hieu == "145/2020/NĐ-CP"

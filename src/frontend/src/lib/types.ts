@@ -193,6 +193,7 @@ export interface ArticleChange {
   old_text: string | null;
   old_source: string | null;
   old_version_date: string | null;
+  new_version_date?: string | null;
   /** Missing from the review and written by a PDF only: re-indexing may delete it. */
   deletable: boolean;
 }

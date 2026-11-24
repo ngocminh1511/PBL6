@@ -398,6 +398,11 @@ def parse_structure(text: str, document_id: str = "") -> LegalDocument:
 # Metadata from the first page
 # ============================================================
 
+def _fix_issuer(number: str) -> str:
+    """OCR reads the Q of "QH" (Quốc hội) as O or 0: "74/2025/OH15" -> "74/2025/QH15"."""
+    return re.sub(r"(?<=/)[O0](?=H\d{2}$)", "Q", number)
+
+
 def extract_metadata(text: str, title: str = "", source_file: str = "", total_pages: int = 0) -> DocumentMetadata:
     metadata = DocumentMetadata(source_file=source_file, total_pages=total_pages)
     head = text[:3000]
@@ -409,7 +414,7 @@ def extract_metadata(text: str, title: str = "", source_file: str = "", total_pa
     amended_by = _AMENDED_BY.search(head)
     m = re.search(_SO + r"\s*:?\s*" + _SO_HIEU, head[: amended_by.start()] if amended_by else head, re.IGNORECASE)
     if m:
-        metadata.so_hieu = m.group(1)
+        metadata.so_hieu = _fix_issuer(m.group(1))
 
     # Prefer the title: the body of a Nghị định cites "Căn cứ Luật ...".
     title_upper = title.upper()
