@@ -88,11 +88,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         totalSessions: data.total_count || 0,
         isLoading: false,
       }));
-
-      // Auto-select first session if none selected
-      if (!get().activeSessionId && data.items.length > 0) {
-        get().selectSession(data.items[0].id);
-      }
     } catch (e) {
       console.error('Failed to fetch sessions:', e);
       set({ isLoading: false, error: errorMessage(e), errorTokenUsage: null });
