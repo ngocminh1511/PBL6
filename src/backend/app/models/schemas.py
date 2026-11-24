@@ -654,3 +654,4 @@ class SystemStatsResponse(BaseModel):
     graph_db_status: str
     redis_status: str
     active_sessions_count: Optional[int] = None
+    refreshing: bool = False

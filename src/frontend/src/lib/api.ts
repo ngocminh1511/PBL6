@@ -257,7 +257,7 @@ export const api = {
   },
   async saveLLMProfile(profile: LLMProfileInput, id?: string): Promise<LLMProfilesResponse> {
     return (await apiClient.request({ method: id ? 'PUT' : 'POST',
-      url: '/admin/llm/profiles' + (id ? '/' + encodeURIComponent(id) : ''), data: profile, timeout: 65000 })).data;
+      url: '/admin/llm/profiles' + (id ? '/' + encodeURIComponent(id) : ''), data: profile, timeout: 80000 })).data;
   },
   async checkLLMProfile(profile: LLMProfileInput): Promise<ConfigCheckResult> {
     return (await apiClient.post('/admin/llm/profiles/check', profile, { timeout: 65000 })).data;
@@ -266,14 +266,14 @@ export const api = {
     return (await apiClient.post('/admin/llm/profiles/models', profile, { timeout: 65000 })).data;
   },
   async activateLLMProfile(id: string, config_version: number): Promise<LLMProfilesResponse> {
-    return (await apiClient.post('/admin/llm/profiles/' + encodeURIComponent(id) + '/activate', { config_version }, { timeout: 65000 })).data;
+    return (await apiClient.post('/admin/llm/profiles/' + encodeURIComponent(id) + '/activate', { config_version }, { timeout: 80000 })).data;
   },
   async deleteLLMProfile(id: string, config_version: number): Promise<LLMProfilesResponse> {
     return (await apiClient.delete('/admin/llm/profiles/' + encodeURIComponent(id), { data: { config_version } })).data;
   },
 
-  async getSystemStats(): Promise<SystemStats> {
-    const res = await apiClient.get('/admin/system-stats');
+  async getSystemStats(refresh: boolean = false): Promise<SystemStats> {
+    const res = await apiClient.get('/admin/system-stats', { params: refresh ? { refresh } : undefined });
     return res.data;
   },
 

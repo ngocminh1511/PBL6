@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     VERSION: str = "3.0.0"
     API_V1_PREFIX: str = "/api"
     DEMO_MODE: bool = True
+    HEALTH_PROBE_ON_STARTUP: bool = True
     JWT_SECRET: str = Field(default="", repr=False)
     CONFIG_ENCRYPTION_KEY: str = Field(default="", repr=False)
     JWT_ALGORITHM: str = "HS256"

@@ -1,8 +1,65 @@
 """Read-only service diagnostics, with sanitized errors and real counters."""
+import logging
+import time
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from datetime import datetime, timezone
+from threading import Lock
 from labor_rag.appendices.catalog import read_json
 from labor_rag.appendices.runtime import usable
+
+
+logger = logging.getLogger(__name__)
+
+
+class HealthMonitor:
+    """The last service probe, shared by every page.
+
+    Probes run on their own thread, outside runtime operations, so they never delay
+    a configuration save. A result belongs to one configuration version and is
+    dropped once the configuration changes.
+    """
+    MAX_AGE_SECONDS = 300
+
+    def __init__(self, runtime):
+        self.runtime = runtime
+        self.lock = Lock()
+        self.result = None  # (config version, monotonic time, probe result)
+        self.pending = None
+        self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="health-probe")
+
+    def refresh(self):
+        with self.lock:
+            if self.pending is None or self.pending.done():
+                self.pending = self.executor.submit(self._probe)
+            return self.pending
+
+    def _probe(self):
+        version = self.runtime.version
+        try:
+            result = health_status(self.runtime, probe=True)
+        except Exception as exc:
+            logger.warning("Service probe failed (%s)", type(exc).__name__)
+            return None
+        with self.lock:
+            if self.runtime.version == version:
+                self.result = (version, time.monotonic(), result)
+        return result
+
+    def snapshot(self, *, force=False):
+        """The cached probe for the current configuration; a missing or stale one is refreshed in the background."""
+        version = self.runtime.version
+        with self.lock:
+            cached = self.result if self.result and self.result[0] == version else None
+            refreshing = self.pending is not None and not self.pending.done()
+        if force or cached is None or time.monotonic() - cached[1] >= self.MAX_AGE_SECONDS:
+            self.refresh()
+            refreshing = True
+        current = cached[2] if cached else health_status(self.runtime, probe=False)
+        return {**current, "refreshing": refreshing}
+
+    def close(self):
+        self.executor.shutdown(wait=False, cancel_futures=True)
 
 
 def health_status(runtime, *, probe=False):

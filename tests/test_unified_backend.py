@@ -1,6 +1,6 @@
 """Contracts spanning the unified API, configuration, persistence and core."""
 from dataclasses import fields
-from threading import Event, Thread
+from threading import Event, Thread, Timer
 from types import SimpleNamespace
 
 import pytest
@@ -212,6 +212,7 @@ def test_config_persists_and_failed_or_busy_update_keeps_old_runtime(tmp_path, m
         monkeypatch.setattr(runtime, "validate_candidate", fail)
         assert client.put("/api/admin/config", json={"embedding_backend": "modal"}).status_code == 503
         assert runtime.settings.EMBEDDING_BACKEND == "local" and runtime.version == 2
+        runtime.WRITE_WAIT_SECONDS = 0.2
         ready, release = Event(), Event()
         def work():
             with runtime.operation():
@@ -225,9 +226,23 @@ def test_config_persists_and_failed_or_busy_update_keeps_old_runtime(tmp_path, m
         finally:
             release.set()
             thread.join()
+        # A short operation (e.g. the settings statistics probe) delays the save instead of failing it.
+        runtime.WRITE_WAIT_SECONDS = 5
+        monkeypatch.setattr(runtime, "validate_candidate", lambda candidate: None)
+        ready.clear()
+        release.clear()
+        thread = Thread(target=work)
+        thread.start()
+        assert ready.wait(2)
+        Timer(0.3, release.set).start()
+        try:
+            assert client.put("/api/admin/config", json={"config_version": 2, "embedding_backend": "local"}).status_code == 200
+        finally:
+            release.set()
+            thread.join()
     with TestClient(create_app(settings=settings)) as client:
         loaded = client.get("/api/admin/config").json()
-        assert loaded["embedding_backend"] == "local" and loaded["config_version"] == 2
+        assert loaded["embedding_backend"] == "local" and loaded["config_version"] == 3
 
 
 def test_versioned_migration_preserves_existing_content():

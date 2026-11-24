@@ -505,6 +505,8 @@ export interface SystemStats {
   graph_db_status: string;
   redis_status: string;
   active_sessions_count: number | null;
+  /** A service probe is running in the background; the statuses update when it ends. */
+  refreshing?: boolean;
 }
 
 

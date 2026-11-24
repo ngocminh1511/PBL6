@@ -466,7 +466,8 @@ giữ hành vi của Neo4j driver.
 | `POST /api/chat` | Adapter định dạng cũ gọi cùng pipeline và phiên PostgreSQL |
 | `GET /api/documents/{id}/ast`, `/{id}/graph` | Cây dữ liệu thật và đồ thị một bước Neo4j |
 | `POST /api/documents/upload`, `/api/documents/tasks/{id}/progress` | Pipeline nạp chung, nguồn R2 và tiến độ PostgreSQL |
-| `GET/PUT /api/admin/config` | Kiểm tra/lưu cấu hình; từ chối thay đổi khi có tác vụ đang chạy |
+| `GET/PUT /api/admin/config` | Kiểm tra/lưu cấu hình; chờ tối đa 15 giây cho tác vụ đang chạy, quá hạn thì trả 409 |
+| `GET /api/admin/system-stats[?refresh=true]` | Số liệu kho và kết quả kiểm tra kết nối gần nhất (kèm `checked_at`); kiểm tra chạy nền khi khởi động, khi kết quả cũ hơn 5 phút hoặc khi cấu hình đổi |
 | `GET /api/health[?probe=true]` | Trạng thái, kiểm tra lại kết nối cloud |
 
 Đường dẫn file được giải quyết từ ID trong manifest phụ lục hoặc registry upload PostgreSQL. Khi Neo4j lỗi, kết quả vector vẫn trả về và báo thiếu liên kết.
@@ -600,7 +601,9 @@ lượt, và kiểm định thống kê giữa các cấu hình.
 - Migration `001_unified_backend` bổ sung cột JSON và bảng registry còn thiếu, ghi revision để chạy idempotent.
 - Khởi động bằng cloud trong `.env`; admin overrides được nạp sau cấu hình môi trường. Credential không trả ra UI.
   `COLLECTION_MODELS` khai báo các cặp model/collection đã index. Đổi cấu hình kiểm tra kết nối và số chiều,
-  lưu thành công rồi đóng client cũ; tác vụ đang chạy hoặc version cấu hình cũ trả 409.
+  lưu thành công rồi đóng client cũ; tác vụ đang chạy quá 15 giây hoặc version cấu hình cũ trả 409.
+- `HEALTH_PROBE_ON_STARTUP=true` (mặc định) kiểm tra Qdrant, Neo4j, R2 và Redis ngầm khi backend khởi động. Kiểm tra này
+  không tính là tác vụ đang chạy và không gọi LLM.
 - `DEMO_MODE=true` cho phép dùng demo và quản trị không có màn hình đăng nhập. Tắt demo thì API kiểm tra JWT/quyền;
   cung cấp `JWT_SECRET` qua môi trường. Trang phụ lục, file và retrieval là công cụ đọc công khai.
 - Thiếu PostgreSQL chỉ ảnh hưởng chức năng có persistence; công cụ phụ lục/retrieval không cần SQL/Redis/LLM.

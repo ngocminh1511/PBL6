@@ -6,7 +6,6 @@ from src.backend.app.models.schemas import LLMProfileInput, LLMProfilesResponse,
 from src.backend.app.models.schemas import PostgresConfigInput, PostgresConfigResponse, PostgresCheckResponse
 from src.backend.app.services.llm_profiles import LLMProfiles
 from src.backend.app.services.runtime import get_runtime
-from src.backend.app.services.health import health_status
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -91,11 +90,11 @@ def delete_profile(profile_id: str, body: LLMProfileAction, runtime=Depends(get_
     return LLMProfiles(runtime).mutate("delete", identity=profile_id, expected_version=body.config_version)
 
 @router.get("/system-stats", response_model=SystemStatsResponse)
-def statistics(runtime=Depends(get_runtime)):
+def statistics(refresh: bool = False, runtime=Depends(get_runtime)):
     from src.backend.app.services.corpus import Corpus
     from src.backend.app.models.database import ChatSession, DocumentRecord
-    with runtime.operation(serialized=False):
-        h = health_status(runtime, probe=True)
+    # The last probe is served from memory; a missing, stale or requested one runs in the background.
+    h = runtime.health.snapshot(force=refresh)
     c = Corpus()
     total_demuc = c.total_demuc
     pdf_ids = {k for k, v in c.documents.items() if v.get("document_type") == "pdf"}
@@ -112,7 +111,7 @@ def statistics(runtime=Depends(get_runtime)):
         total_articles=c.total_articles, total_clauses=c.total_clauses, total_points=c.total_points,
         total_demuc=total_demuc, total_pdf_docs=total_pdf_docs,
         vector_db_status=h["qdrant"]["connection"], graph_db_status=h["neo4j"]["connection"],
-        redis_status=h["redis"]["connection"], active_sessions_count=sessions)
+        redis_status=h["redis"]["connection"], active_sessions_count=sessions, refreshing=h["refreshing"])
 
 @router.post("/cache/flush")
 def flush(runtime=Depends(get_runtime), _=Depends(get_current_admin)):

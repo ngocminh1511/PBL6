@@ -386,3 +386,29 @@ def test_benchmarked_embedding_models_are_offered_with_their_collections(setup):
         assert saved.status_code == 200
         assert (saved.json()["embedding_model"], saved.json()["qdrant_collection"]) == (bkai["model"], "legal_ld_v7_bkai")
 
+
+
+def test_health_monitor_serves_last_probe_and_drops_it_after_a_configuration_change(monkeypatch):
+    from types import SimpleNamespace
+    from src.backend.app.services import health
+    calls = []
+    def status(runtime, *, probe=False):
+        calls.append(probe)
+        return {"checked_at": "now" if probe else None, "version": runtime.version}
+    monkeypatch.setattr(health, "health_status", status)
+    runtime = SimpleNamespace(version=1)
+    monitor = health.HealthMonitor(runtime)
+    try:
+        first = monitor.snapshot()
+        assert first["refreshing"] and first["checked_at"] is None
+        monitor.pending.result(timeout=5)
+        cached = monitor.snapshot()
+        assert cached == {"checked_at": "now", "version": 1, "refreshing": False}
+        assert calls.count(True) == 1
+        runtime.version = 2
+        changed = monitor.snapshot()
+        assert changed["checked_at"] is None and changed["refreshing"]
+        monitor.pending.result(timeout=5)
+        assert monitor.snapshot()["version"] == 2 and calls.count(True) == 2
+    finally:
+        monitor.close()

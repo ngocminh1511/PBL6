@@ -2,7 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from contextlib import contextmanager, nullcontext, closing
 from datetime import datetime, timezone
-from threading import RLock
+from threading import Condition, RLock
 
 from fastapi import HTTPException, Request
 from labor_rag.settings import EMBEDDING_CATALOG
@@ -16,6 +16,9 @@ class Runtime:
         self.database, self.catalog = database, catalog
         self.storage_factory, self.retrieval_factory = storage_factory, retrieval_factory
         self.lock, self.operation_lock = RLock(), RLock()
+        # Notified when the last operation ends, so a configuration save can wait for
+        # short reads such as the settings statistics probe instead of failing at once.
+        self.idle = Condition(self.lock)
         self.active, self.version = 0, 1
         self._retriever = self._inspector = self._storage = self._cache = self._llm = None
         self.overrides = {}
@@ -33,6 +36,18 @@ class Runtime:
         if self.configuration_error:
             raise HTTPException(503, self.configuration_error)
 
+    WRITE_WAIT_SECONDS = 15
+
+    def reserve(self):
+        with self.lock:
+            self.active += 1
+
+    def release(self):
+        with self.lock:
+            self.active -= 1
+            if not self.active:
+                self.idle.notify_all()
+
     @contextmanager
     def operation(self, *, serialized=True):
         with self.lock:
@@ -42,8 +57,7 @@ class Runtime:
             with self.operation_lock if serialized else nullcontext():
                 yield self
         finally:
-            with self.lock:
-                self.active -= 1
+            self.release()
 
     def load_config(self):
         if not self.database.available:
@@ -281,8 +295,9 @@ class Runtime:
             self.lock.release()
 
     def check_write(self, expected_version=None):
+        """Called with ``self.lock`` held; waiting releases it so running operations can finish."""
         self.ensure_ready()
-        if self.active:
+        if not self.idle.wait_for(lambda: not self.active, timeout=self.WRITE_WAIT_SECONDS):
             raise HTTPException(409, f"Đang có {self.active} tác vụ chạy (hỏi đáp, tải tài liệu hoặc kiểm tra dịch vụ); "
                                      "chờ tác vụ hoàn tất rồi lưu lại.")
         if expected_version is not None and expected_version != self.version:

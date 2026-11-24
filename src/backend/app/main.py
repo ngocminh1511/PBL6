@@ -28,6 +28,8 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
     from labor_rag.settings import ROOT_DIR
     runtime.postgres_config = PostgresConfiguration(runtime, bootstrap_env_file or ROOT_DIR / ".env")
     ingestion = IngestionService(runtime, database)
+    from src.backend.app.services.health import HealthMonitor
+    runtime.health = HealthMonitor(runtime)
 
     @asynccontextmanager
     async def lifespan(app):
@@ -39,8 +41,11 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
             except Exception as exc:
                 database.available = False
                 database.error_type = type(exc).__name__
+            if config.HEALTH_PROBE_ON_STARTUP:
+                runtime.health.refresh()
             yield
         finally:
+            runtime.health.close()
             ingestion.close()
             runtime.close_resources(shutdown=True)
             database.close()

@@ -46,8 +46,7 @@ export function SettingsPanel({ variant = 'page', initialSection = 'llm', onSect
   useEffect(() => {
     let alive = true;
     api.getAdminConfig().then(value => { if (alive) setConfig(value); }).catch(e => { if (alive) setError(errorMessage(e)); });
-    const revision = ++statsRevision.current;
-    api.getSystemStats().then(value => { if (alive && revision === statsRevision.current) setStats(value); }).catch(() => {});
+    loadStats();
     return () => { alive = false; statsRevision.current++; requests.current.invalidateAll(); };
   }, []);
 
@@ -61,8 +60,19 @@ export function SettingsPanel({ variant = 'page', initialSection = 'llm', onSect
   async function refreshConfig() {
     setConfig(await api.getAdminConfig());
     setStats(null);
+    loadStats();
+  }
+
+  /** Shows the backend's last service probe at once and follows a background probe until it ends. */
+  function loadStats(refresh = false) {
     const revision = ++statsRevision.current;
-    api.getSystemStats().then(value => { if (revision === statsRevision.current) setStats(value); }).catch(() => {});
+    let polls = 0;
+    const fetchStats = (force: boolean) => api.getSystemStats(force).then(value => {
+      if (revision !== statsRevision.current) return;
+      setStats(value);
+      if (value.refreshing && ++polls < 30) window.setTimeout(() => { if (revision === statsRevision.current) void fetchStats(false); }, 2000);
+    }).catch(() => {});
+    void fetchStats(refresh);
   }
 
   function invalidate(field: ConfigField) {
@@ -118,8 +128,7 @@ export function SettingsPanel({ variant = 'page', initialSection = 'llm', onSect
       setResets(previous => previous.filter(key => !submitted.includes(key)));
       setMessage('Đã lưu và áp dụng thay đổi.');
       setStats(null);
-      const revision = ++statsRevision.current;
-      api.getSystemStats().then(value => { if (revision === statsRevision.current) setStats(value); }).catch(() => {});
+      loadStats();
     } catch (e) { setError(errorMessage(e)); }
     finally { setSaving(null); }
   }
@@ -256,7 +265,9 @@ export function SettingsPanel({ variant = 'page', initialSection = 'llm', onSect
         <div className="min-w-0">
           <h2 id="settings-group-heading" className="text-[17px] font-semibold tracking-tight">{sectionTitle}</h2>
           {sectionHint && <p className="mt-1 text-[12.5px] leading-5 text-ink-3 max-w-[70ch]">{sectionHint}</p>}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5 text-[11.5px] text-ink-3">{statuses.map(([name, status]) => <span key={name} title={status || 'Chưa kiểm tra'} className="inline-flex items-center gap-1.5"><span className={'w-1.5 h-1.5 rounded-full ' + (status === 'connected' ? 'bg-emerald-500' : status === 'unavailable' ? 'bg-red-400' : 'bg-stone-3')} />{name} <span className="text-muted">{status === 'connected' ? 'Đã kết nối' : status === 'unavailable' ? 'Không kết nối' : status === 'disabled' ? 'Đang tắt' : 'Chưa kiểm tra'}</span></span>)}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5 text-[11.5px] text-ink-3">{statuses.map(([name, status]) => <span key={name} title={status || 'Chưa kiểm tra'} className="inline-flex items-center gap-1.5"><span className={'w-1.5 h-1.5 rounded-full ' + (status === 'connected' ? 'bg-emerald-500' : status === 'unavailable' ? 'bg-red-400' : 'bg-stone-3')} />{name} <span className="text-muted">{status === 'connected' ? 'Đã kết nối' : status === 'unavailable' ? 'Không kết nối' : status === 'disabled' ? 'Đang tắt' : stats?.refreshing || (!stats && name !== 'PostgreSQL') ? 'Đang kiểm tra…' : 'Chưa kiểm tra'}</span></span>)}
+            {stats?.checked_at && <span className="text-muted">Kiểm tra lúc {new Date(stats.checked_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>}
+            <button type="button" onClick={() => loadStats(true)} disabled={stats?.refreshing} className="text-secondary hover:underline disabled:text-muted disabled:no-underline">{stats?.refreshing ? 'Đang kiểm tra…' : 'Kiểm tra lại'}</button></div>
         </div>
         {onClose && <button type="button" onClick={onClose} aria-label="Đóng cấu hình" className="p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-stone shrink-0"><X size={18} /></button>}
       </header>

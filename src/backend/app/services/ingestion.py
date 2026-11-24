@@ -94,15 +94,13 @@ class IngestionService:
         target = self._run_extract_phase if (document_type == "pdf" and pause_for_review) else self._run
         with self._cancel_lock:
             self._cancel_events[task_id] = threading.Event()
-        with self.runtime.lock:
-            self.runtime.active += 1
+        self.runtime.reserve()
         try:
             self.executor.submit(target, task_id, file_path, document_type, de_muc_id, domain)
         except Exception:
             with self._cancel_lock:
                 self._cancel_events.pop(task_id, None)
-            with self.runtime.lock:
-                self.runtime.active -= 1
+            self.runtime.release()
             raise
 
     def _progress(self, task_id, value, status, step, **fields):
@@ -590,15 +588,13 @@ class IngestionService:
 
         with self._cancel_lock:
             self._cancel_events[task_id] = threading.Event()
-        with self.runtime.lock:
-            self.runtime.active += 1
+        self.runtime.reserve()
         try:
             self.executor.submit(self._run_index_phase, task_id, pdf_path, document_type, de_muc_id, domain, revision_id, reindex)
         except Exception:
             with self._cancel_lock:
                 self._cancel_events.pop(task_id, None)
-            with self.runtime.lock:
-                self.runtime.active -= 1
+            self.runtime.release()
             raise
         return task, "ok"
 
@@ -683,8 +679,7 @@ class IngestionService:
     def _cleanup_worker(self, task_id: str):
         with self._cancel_lock:
             self._cancel_events.pop(task_id, None)
-        with self.runtime.lock:
-            self.runtime.active -= 1
+        self.runtime.release()
 
     def _run_extract_phase(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
         from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
