@@ -13,7 +13,10 @@ page is therefore segmented first:
    VietOCR resizes every crop to 32 px high and clamps the width at
    image_max_width (512 px), so a full-width line would otherwise be
    squeezed 2-3x horizontally and misread
-5. pieces are recognised in one batch per page, on the original
+5. page numbers and specks are dropped by layout (_margin_lines,
+   _side_specks): VietOCR returns characters for any crop, so dust next to
+   "40" comes out as "4U e" and no text filter can catch it
+6. pieces are recognised in one batch per page, on the original
    (non-binarised) crop with a white margin, and reassembled
    top-to-bottom, left-to-right
 
@@ -57,6 +60,11 @@ _CROP_PAD = 4
 _WHITE_BORDER = (8, 4)
 _MIN_PIECE_WIDTH = 6
 _MIN_PIECE_INK = 15  # ink pixels; below this a piece is noise and VietOCR would hallucinate
+# Page numbers and specks in the margins (see _margin_lines), as shares of the page.
+_BODY_LINE_RATIO = 0.25  # a line whose pieces cover this much of the width is body text
+_MARGIN_PIECE_RATIO = 0.06  # pieces narrower than this can be a page number ("82" is ~3%)
+_MARGIN_ZONE_RATIO = 0.15  # top / bottom band searched for them
+_SIDE_MARGIN_RATIO = 0.02  # pieces this far outside the text block's left / right edge are specks
 
 _predictor = None
 _predictor_key = None
@@ -320,6 +328,94 @@ def _line_pieces(ink_line: np.ndarray, page_width: int, max_width: int) -> list[
 # Recognition
 # ============================================================
 
+def _margin_lines(lines: list[tuple[int, int]], pieces: list[list[tuple[int, int]]],
+                  width: int, height: int) -> set[int]:
+    """Indexes of page-number / speck lines above the first or below the last body line.
+
+    VietOCR always returns characters, so a page number with dust next to it
+    comes out as "4U e" or "rn" and no text filter can recognise it. Such
+    lines are told apart by layout instead: they sit in the top or bottom
+    margin, every piece is narrow, and a gap of at least one line height
+    separates them from the body. A heading at the top of a page ("Chương II",
+    "Điều 5.") is wider than a page number or close to the next line.
+    """
+    # Width actually covered by text: a speck far right of a page number must
+    # not make that line look as wide as a body line.
+    def covered(index: int) -> int:
+        return sum(x1 - x0 for x0, x1 in pieces[index])
+
+    body = [i for i in range(len(lines)) if covered(i) >= _BODY_LINE_RATIO * width]
+    if not body:
+        return set()
+    heights = sorted(lines[i][1] - lines[i][0] for i in body)
+    line_height = heights[len(heights) // 2]
+
+    def narrow(index: int) -> bool:
+        return all(x1 - x0 < _MARGIN_PIECE_RATIO * width for x0, x1 in pieces[index])
+
+    # Walk outwards from the body: a narrow line is margin when a gap of a line
+    # height separates it from the nearest line kept on the body side (specks
+    # next to a dropped page number therefore go too); anything else is kept
+    # and becomes the new reference.
+    dropped: set[int] = set()
+    edge = lines[body[0]][0]
+    for i in range(body[0] - 1, -1, -1):
+        if lines[i][1] > _MARGIN_ZONE_RATIO * height:
+            edge = lines[i][0]
+        elif narrow(i) and edge - lines[i][1] >= line_height:
+            dropped.add(i)
+        else:
+            edge = lines[i][0]
+    edge = lines[body[-1]][1]
+    for i in range(body[-1] + 1, len(lines)):
+        if lines[i][0] < (1 - _MARGIN_ZONE_RATIO) * height:
+            edge = lines[i][1]
+        elif narrow(i) and lines[i][0] - edge >= line_height:
+            dropped.add(i)
+        else:
+            edge = lines[i][1]
+    return dropped
+
+
+def _side_specks(pieces: list[list[tuple[int, int]]], width: int) -> list[list[tuple[int, int]]]:
+    """Pieces with narrow pieces in the left / right page margin removed.
+
+    Dust beside a line ("· ·" left of a heading) is read as "1" or "e" and
+    glued to the line. The text block's edges are taken from the body lines;
+    a narrow piece lying wholly outside them is a speck.
+    """
+    def wide(piece: tuple[int, int]) -> bool:
+        return piece[1] - piece[0] >= _MARGIN_PIECE_RATIO * width
+
+    # Edges come from the wide pieces of body lines only, so a speck on a body
+    # line cannot widen the block; an outdented heading still counts.
+    body = [[p for p in line if wide(p)] for line in pieces
+            if sum(x1 - x0 for x0, x1 in line) >= _BODY_LINE_RATIO * width]
+    body = [line for line in body if line]
+    if len(body) < 3:
+        return pieces
+    margin = _SIDE_MARGIN_RATIO * width
+    left = min(line[0][0] for line in body) - margin
+    right = max(line[-1][1] for line in body) + margin
+
+    def speck(x0: int, x1: int) -> bool:
+        return not wide((x0, x1)) and (x1 < left or x0 > right)
+
+    return [[(x0, x1) for x0, x1 in line if not speck(x0, x1)] for line in pieces]
+
+
+# VietOCR has no curly quotes in its vocabulary and reads them as "?":
+# “Điều 32. ...” comes out as ?Điều 32. ...? . A "?" opening a line before a
+# letter or closing one after punctuation is such a quote; a real question
+# mark follows a word.
+_OPEN_QUOTE_RE = re.compile(r"^\?(?=[^\W\d_])", re.UNICODE)
+_CLOSE_QUOTE_RE = re.compile(r"(?<=[.;:,!])\?(?=[.;,]?(?:\s|$))")  # "...giải quyết.?;" too
+
+
+def _restore_quotes(line: str) -> str:
+    return _CLOSE_QUOTE_RE.sub('"', _OPEN_QUOTE_RE.sub('"', line))
+
+
 def _clean_ocr_piece(text: str) -> str:
     """Collapse Transformer repetition loops (e.g. 'thời thời thời thời thời')."""
     return _REPEAT_WORD_RE.sub(r"\1", text.strip())
@@ -338,9 +434,13 @@ def ocr_image(image: Image.Image) -> OCRPage:
     crops: list[Image.Image] = []
     owners: list[int] = []  # line index of each crop
     lines = _find_lines(ink)
+    pieces = _side_specks([_line_pieces(ink[y0:y1], image.width, int((y1 - y0) * max_ratio)) for y0, y1 in lines],
+                          image.width)
+    margin = _margin_lines(lines, pieces, image.width, image.height)
     for line_idx, (y0, y1) in enumerate(lines):
-        max_width = int((y1 - y0) * max_ratio)
-        for x0, x1 in _line_pieces(ink[y0:y1], image.width, max_width):
+        if line_idx in margin:
+            continue
+        for x0, x1 in pieces[line_idx]:
             crop = image.crop((max(0, x0 - _CROP_PAD), y0, min(image.width, x1 + _CROP_PAD), y1))
             crops.append(ImageOps.expand(crop, border=_WHITE_BORDER, fill=(255, 255, 255)))
             owners.append(line_idx)
@@ -360,7 +460,7 @@ def ocr_image(image: Image.Image) -> OCRPage:
             line_texts[line_idx].append(text)
             if not math.isnan(prob):
                 kept_probs.append(prob)
-    page_lines = [" ".join(parts) for parts in line_texts if parts]
+    page_lines = [_restore_quotes(" ".join(parts)) for parts in line_texts if parts]
     return OCRPage(
         text="\n".join(page_lines),
         line_count=len(page_lines),

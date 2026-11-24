@@ -27,7 +27,9 @@ from labor_rag.ocr.cleaner import (
     remove_page_numbers,
     split_footnotes,
 )
-from labor_rag.ocr.engine import _clean_ocr_piece, _cut_wide, _deskew_image, _find_lines, _ink_mask, _line_pieces
+from labor_rag.ocr.engine import (
+    _clean_ocr_piece, _cut_wide, _deskew_image, _find_lines, _ink_mask, _line_pieces, _margin_lines, _restore_quotes, _side_specks,
+)
 from labor_rag.ocr.export import export_document
 from labor_rag.ocr.normalize import full_normalize, replace_special_chars
 from labor_rag.ocr.quality import cer, quality_report, wer
@@ -461,3 +463,78 @@ if __name__ == "__main__":
             print(f"FAIL {name}: {type(e).__name__}: {e}")
     print(f"\n{len(tests) - failed}/{len(tests)} passed")
     sys.exit(1 if failed else 0)
+
+
+def test_page_number_and_specks_in_the_margin_are_not_recognised():
+    """Boxes measured on page 82 of a scanned Labour Code (2488 x 3492 px at 300 DPI)."""
+    W, H = 2488, 3492
+    lines = [(192, 202), (220, 231), (334, 396), (423, 482), (3300, 3340)]
+    pieces = [[(1263, 1306)], [(1263, 1309)], [(459, 1022), (1022, 1620), (1620, 2218)],
+              [(457, 922), (922, 1517)], [(1220, 1270)]]
+    assert _margin_lines(lines, pieces, W, H) == {0, 1, 4}  # number, speck above it, footer number
+    # Page 40: a speck far right on the number's line does not make it a body line.
+    lines = [(176, 190), (301, 350), (397, 457)]
+    pieces = [[(1259, 1307), (2343, 2360)], [(456, 1140), (1140, 1249), (1968, 2012)], [(461, 1355), (1355, 2177)]]
+    assert _margin_lines(lines, pieces, W, H) == {0}
+
+
+def test_a_short_heading_at_the_top_of_a_page_is_kept():
+    W, H = 2488, 3492
+    # "Chương II" (13% wide) right above the body, and a narrow "Điều 5." close to the next line.
+    lines = [(200, 260), (300, 350), (380, 440)]
+    pieces = [[(1080, 1400)], [(456, 600)], [(456, 2100)]]
+    assert _margin_lines(lines, pieces, W, H) == set()
+
+
+def test_curly_quotes_read_as_question_marks_are_restored():
+    assert _restore_quotes("?Điều 32. Những tranh chấp về lao động") == '"Điều 32. Những tranh chấp về lao động'
+    assert _restore_quotes("b) Đủ 20 năm đóng bảo hiểm xã hội trở lên.?") == 'b) Đủ 20 năm đóng bảo hiểm xã hội trở lên."'
+    assert _restore_quotes("Có được hưởng không?") == "Có được hưởng không?"
+
+
+def test_specks_beside_the_text_block_are_dropped_but_indented_text_is_kept():
+    """Page 82: dust left of the bold title line was read as "1 lao động ..."."""
+    W = 2488
+    body = [[(459, 1022), (1022, 1620), (1620, 2218)], [(342, 1260), (1260, 1791), (1791, 2230)],
+            [(466, 1017), (1017, 1569), (1569, 2225)], [(460, 1576), (1576, 2262)]]
+    title = [(87, 168), (342, 863), (863, 1651)]
+    clause = [(460, 520), (530, 1800)]  # "1." at the indent stays
+    kept = _side_specks(body + [title, clause, [(2343, 2360)]], W)
+    assert kept[4] == title[1:] and kept[5] == clause and kept[6] == []
+
+
+AMENDING = """Điều 219. Sửa đổi, bổ sung một số điều của luật có liên quan
+1. Sửa đổi, bổ sung Điều 32 của Bộ luật Tố tụng dân sự như sau:
+a) Sửa đổi, bổ sung tên điều, khoản 1 như sau:
+"
+Điều 32. Những tranh chấp về lao động thuộc thẩm quyền của Tòa án
+1. Tranh chấp lao động cá nhân phải thông qua thủ tục hòa giải:
+a) Về xử lý kỷ luật lao động theo hình thức sa thải;
+1b. Tranh chấp lao động tập thể về quyền.";
+b) Bãi bỏ khoản 2 Điều 32.
+Điều 220. Hiệu lực thi hành
+1. Bộ luật này có hiệu lực từ ngày 01 tháng 01 năm 2021."""
+
+
+def test_quoted_wording_of_an_amended_document_opens_no_khoan_or_diem():
+    doc = parse_structure(AMENDING)
+    articles = list(doc.iter_articles())
+    assert [a.article_number for a in articles] == ["Điều 219", "Điều 220"]
+    clause = articles[0].clauses
+    assert [c.clause_number for c in clause] == ["Khoản 1"]
+    assert [p.point_label for p in clause[0].points] == ["a", "b"]
+    quoted = clause[0].points[0].text
+    assert "Điều 32. Những tranh chấp" in quoted and "\n1b. Tranh chấp lao động tập thể" in quoted
+    assert clause[0].points[1].text == "Bãi bỏ khoản 2 Điều 32."
+
+
+def test_stray_quote_marks_from_ocr_do_not_swallow_articles():
+    text = """Điều 197. Giải quyết tranh chấp
+1. Các bên có quyền yêu cầu hội đồng trọng tài lao động giải quyết FA "Ng""
+2. Hội đồng trọng tài ra quyết định.
+Điều 198. Quyền đình công
+1. Người lao động có quyền đình công.
+b) Đủ 20 năm đóng bảo hiểm xã hội trở lên." """
+    doc = parse_structure(text)
+    assert [a.article_number for a in doc.iter_articles()] == ["Điều 197", "Điều 198"]
+    assert [c.clause_number for c in next(doc.iter_articles()).clauses] == ["Khoản 1", "Khoản 2"]

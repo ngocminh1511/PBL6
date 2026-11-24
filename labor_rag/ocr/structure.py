@@ -196,18 +196,18 @@ def _flush_part(state: _State) -> None:
     state.part = None
 
 
-def _append_text(state: _State, text: str) -> None:
-    """Attach a continuation line to the innermost open unit."""
+def _append_text(state: _State, text: str, sep: str = " ") -> None:
+    """Attach a continuation line to the innermost open unit (a newline sep keeps quoted lines apart)."""
     if not text.strip():
         return
     if state.clause:
         if state.clause.points:
             point = state.clause.points[-1]
-            point.text = f"{point.text} {text}".strip()
+            point.text = f"{point.text}{sep}{text}".strip()
         else:
-            state.clause.text = f"{state.clause.text} {text}".strip()
+            state.clause.text = f"{state.clause.text}{sep}{text}".strip()
     elif state.article:
-        state.article.full_text = f"{state.article.full_text} {text}".strip()
+        state.article.full_text = f"{state.article.full_text}{sep}{text}".strip()
     elif state.in_appendix:
         state.appendix_lines.append(text)
     elif state.in_preamble:
@@ -227,13 +227,76 @@ def _find_title(lines: list[str]) -> str:
     return ""
 
 
+# A quotation longer than this many lines is taken as an opening quote whose
+# closing one OCR lost, so it does not swallow the rest of the document.
+MAX_QUOTED_LINES = 150
+
+_QUOTE_CHARS = '"“”'
+_AMENDING_TITLE = re.compile(r"sửa\s+đ[oổ]i|b[oổ]\s+sung|bãi\s+bỏ", re.IGNORECASE)
+
+
+def _opens_quote(line: str, previous: str) -> bool:
+    """An amendment quotation starts a line right after a lead ending in ":" ("... như sau:")."""
+    return line.lstrip()[:1] in _QUOTE_CHARS and previous.rstrip().endswith(":")
+
+
+def _closes_quote(line: str) -> bool:
+    """A line ending in a quote mark; a lone mark (split off "\\"Điều 32") only opens."""
+    text = line.strip().rstrip(".;,").rstrip()
+    return len(text) > 1 and text[-1] in _QUOTE_CHARS
+
+
+def quoted_lines(lines: list[str]) -> set[int]:
+    """Indexes of the lines inside a quotation that spans several lines.
+
+    An amending article quotes the new wording of another document:
+        2. Sửa đổi, bổ sung Điều 32 của Bộ luật Tố tụng dân sự như sau:
+        "Điều 32. Những tranh chấp về lao động ...
+        1. Tranh chấp lao động cá nhân ...
+        a) Về xử lý kỷ luật lao động ..."
+    The "1." and "a)" there belong to the quoted text, not to this document,
+    so they must not open a Khoản or Điểm. Quote marks in OCR text are
+    unreliable (lost, or "FA \"Ng\"\"" from a smudge), so counting them is
+    not enough: a quotation opens only at the start of a line that follows a
+    lead ending in ":", and closes at the first line ending in a quote mark.
+    Another opening before that means the closing mark was lost; a quotation
+    not closed within MAX_QUOTED_LINES lines is ignored. The opening line is
+    parsed as usual; the lines after it, up to the closing one, are text.
+    """
+    content = [(i, line) for i, line in enumerate(lines) if line.strip()]
+    quoted: set[int] = set()
+    k = 1
+    while k < len(content):
+        start, line = content[k]
+        if not _opens_quote(line, content[k - 1][1]) or _closes_quote(line):
+            k += 1
+            continue
+        end = None
+        for m in range(k + 1, min(len(content), k + 1 + MAX_QUOTED_LINES)):
+            if _opens_quote(content[m][1], content[m - 1][1]):
+                break
+            if _closes_quote(content[m][1]):
+                end = m
+                break
+        if end is None:
+            k += 1
+            continue
+        quoted.update(i for i, _ in content[k + 1:end + 1])
+        k = end + 1
+    return quoted
+
+
 def parse_structure(text: str, document_id: str = "") -> LegalDocument:
     lines = text.split("\n")
     state = _State()
+    quoted = quoted_lines(lines)
 
-    for raw in lines:
+    for index, raw in enumerate(lines):
         stripped = raw.strip()
         if not stripped:
+            continue
+        if index in quoted and state.article and _AMENDING_TITLE.search(state.article.article_title):
+            _append_text(state, stripped, "\n")
             continue
 
         if _APPENDIX.match(stripped):

@@ -232,6 +232,12 @@ python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc
 
 - Thân Điều được dựng lại thành dòng (`"1. …"`, `"a) …"`) rồi cắt như mục 4.5. Phụ lục trong PDF gộp thành `:pl1`.
 - **VBHN**: nhận qua số `xx/VBHN-…` hoặc câu "được sửa đổi, bổ sung bởi:"; `document_id` là số hiệu văn bản gốc.
+- **Số trang, vết bẩn** (`ocr/engine.py`): VietOCR luôn trả ký tự cho mọi vùng ("40" kèm vết bẩn thành "4U e"), nên
+  dòng hẹp ở lề trên/dưới cách nội dung ≥ 1 dòng và mảnh hẹp nằm ngoài mép khối chữ bị bỏ trước khi nhận dạng.
+  VietOCR không có “ ” và đọc thành `?`; `?` đầu dòng trước chữ hoặc sau dấu câu cuối dòng được trả lại thành `"`.
+- **Đoạn trích trong Điều sửa đổi** (`ocr/structure.py::quoted_lines`): từ dòng mở đầu bằng ngoặc kép ngay sau dòng
+  kết thúc bằng ":" tới dòng kết thúc bằng ngoặc kép, các dòng "1.", "a)" là lời văn của văn bản được sửa, gắn vào khoản
+  hiện tại chứ không mở Khoản/Điểm mới. Thiếu ngoặc đóng trong 150 dòng thì bỏ qua (OCR hay mất dấu ngoặc).
 - **Chú thích cuối trang** được cắt khỏi nội dung, ghi ra `{document_id}_footnotes.jsonl`; chưa đọc thành sửa đổi.
 - **Văn bản sửa đổi**: Điều có tên "Sửa đổi / Bổ sung / Bãi bỏ / Thay cụm từ" cắt theo từng khoản, mỗi phần có dòng ngữ
   cảnh "Sửa đổi, bổ sung khoản 2 Điều 3 Nghị định số …"; ABox ghi một `AmendmentEvent` cho mỗi Điều đích. Chỉ nạp văn bản
