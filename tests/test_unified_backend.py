@@ -820,3 +820,15 @@ def test_uploads_from_before_revisions_are_imported_from_their_page_file(tmp_pat
         draft = client.get("/api/documents/tasks/old-review/revisions").json()[-1]
         assert draft["status"] == "draft"
         assert client.put("/api/documents/tasks/old-review/ocr-page/1", json={"text": "Điều 1. Phạm vi điều chỉnh"}).status_code == 200
+
+
+def test_document_list_ignores_pdf_chunk_files_without_a_record(tmp_path, monkeypatch):
+    import src.backend.app.routers.documents as documents
+    stray = {"id": "74-2025-oh15", "title": "Bản nạp dở", "document_type": "pdf", "domain": "lao_dong",
+             "status": "completed", "created_at": "1970-01-01T00:00:00", "updated_at": "1970-01-01T00:00:00"}
+    monkeypatch.setattr(documents, "Corpus", lambda: SimpleNamespace(documents={"74-2025-oh15": stray}))
+    app = create_app(settings=config(tmp_path), storage_factory=lambda: SimpleNamespace(close=lambda: None))
+    with TestClient(app) as client:
+        listing = client.get("/api/documents/list?document_type=pdf")
+        assert listing.status_code == 200, listing.text
+        assert listing.json()["items"] == []

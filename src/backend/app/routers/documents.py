@@ -63,6 +63,9 @@ def list_documents(domain: Literal["all", "lao_dong", "khac"] = "all",
     search: str = "", cursor: str | None = None, limit: int = Query(10, ge=1, le=50), runtime=Depends(get_runtime)):
     records = dict(Corpus().documents)
     if runtime.database.available:
+        # A loaded PDF is one with a record; chunk files left by an indexing that never
+        # finished (cancelled, refused, interrupted) are not documents of the corpus.
+        records = {key: value for key, value in records.items() if value.get("document_type") != "pdf"}
         with runtime.database.session() as db:
             for row in db.query(DocumentRecord).filter(DocumentRecord.document_type == "pdf").all():
                 item = DocumentResponse.model_validate(row).model_dump()
