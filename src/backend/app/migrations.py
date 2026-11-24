@@ -4,6 +4,7 @@ from sqlalchemy import inspect, text
 REVISION = "001_unified_backend"
 TOKEN_USAGE_REVISION = "002_chat_token_usage"
 FEEDBACK_REVISION = "003_chat_message_feedback"
+OCR_REVISIONS_REVISION = "004_ocr_revisions"
 
 
 def upgrade(engine):
@@ -46,3 +47,13 @@ def upgrade(engine):
             connection.execute(text(
                 "INSERT INTO app_schema_versions (revision) VALUES (:revision)"
             ), {"revision": FEEDBACK_REVISION})
+        applied = connection.execute(text(
+            "SELECT revision FROM app_schema_versions WHERE revision=:revision"
+        ), {"revision": OCR_REVISIONS_REVISION}).first()
+        if not applied:
+            from src.backend.app.models.database import OcrPage, OcrRevision
+            # New tables only; existing OCR text stays in ocr_pages.jsonl and is imported on first access.
+            Base.metadata.create_all(connection, tables=[OcrRevision.__table__, OcrPage.__table__])
+            connection.execute(text(
+                "INSERT INTO app_schema_versions (revision) VALUES (:revision)"
+            ), {"revision": OCR_REVISIONS_REVISION})

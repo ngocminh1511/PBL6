@@ -256,7 +256,24 @@ python -m labor_rag.ingest.embed_and_index --chunks data/interim/pdf_chunks/<doc
   khi mồ côi), xóa cạnh không có trong Pháp điển, trả thuộc tính Pháp điển cho nút dùng chung; (2) Qdrant: embedding
   trước các chunk Pháp điển cùng `document_id` mà PDF đã ghi đè, rồi xóa chunk `source = "pdf"` và ghi lại chúng;
   `effective_to_date` theo `VanBan.valid_to` đã khôi phục; (3) xóa `pdf_chunks/{id}_*.jsonl` và bản ghi PostgreSQL.
-  Thư mục tác vụ và artifact R2 (định danh theo nội dung) được giữ.
+  Thư mục tác vụ, bản OCR/rà soát và artifact R2 (định danh theo nội dung) được giữ, nên nạp lại không cần OCR.
+- **Lượt nạp và bản rà soát** (`src/backend/app/services/ocr_revisions.py`, bảng `ocr_revisions`, `ocr_pages`, migration
+  `004_ocr_revisions`). OCR xong tạo bản 1 (`ocr`, chỉ đọc) và bản 2 (`review`, `draft`); sửa trang chỉ vào bản nháp.
+  Xác nhận lập chỉ mục chuyển bản nháp thành `indexed` (bản `indexed` trước đó thành `locked`); giữ mọi bản.
+  `ocr_pages.jsonl` vẫn được ghi trong lúc OCR để xem tiến độ; lượt nạp cũ chỉ có file này được nhập ở lần đọc đầu
+  (đã `completed` thì bản 2 là `indexed`). PDF gốc lên R2 ngay khi tải lên (`result.source_artifact_id`); máy không còn
+  file thì tải lại từ R2 (`R2Store.download_verified`, kiểm SHA-256). Mỗi lần lập chỉ mục, các trang của bản đó được
+  chụp lên R2 (`ocr_revisions.snapshot_artifact_id`).
+  - `GET /api/documents/tasks` (danh sách, `state`: `running`, `awaiting_review`, `indexed`, `editing`, `removed`,
+    `failed`, `cancelled`), `GET /tasks/{id}/revisions`, `GET|PUT /tasks/{id}/ocr-page/{n}?revision=`.
+  - `POST /tasks/{id}/revisions`: bản nháp mới sao từ bản đang dùng; lượt nạp về `awaiting_review`, kho giữ nguyên.
+    Hủy lúc đó chỉ bỏ bản nháp. Mỗi lượt có tối đa một bản nháp.
+  - **Nạp lại** (`POST /tasks/{id}/confirm` với `{prune: [...]}` khi lượt đã có bản `indexed`): `plan_upsert` như mục 4.7
+    (Điều không đổi không embedding lại); Điều thiếu trong bản mới mà người dùng giữ tick (mặc định tick những Điều
+    `deletable`, chỉ phần `source = "pdf"`) bị xóa; đồ thị của bản trước được gỡ bằng `removal.remove_graph` rồi nạp
+    projection mới; số hiệu đổi thì văn bản cũ bị gỡ (`remove_pdf_document`).
+  - `DELETE /tasks/{id}`: xóa lượt nạp, các bản và thư mục cục bộ; từ chối khi đang chạy hoặc khi văn bản của lượt
+    này còn trong kho (phải gỡ trước). Object R2 được giữ.
 
 Trạng thái: `docs/Luat_lao_dong.pdf` đã OCR thành `45-2019-qh14` (216/220 Điều, 594 khoản, `version_date = 2026-07-01`),
 ABox ở `ontology/abox/pdf/45-2019-qh14.ttl`. **Chưa ghép** vào `lao_dong_v5` / Neo4j / Qdrant. Thiếu Điều 76–79 do bản

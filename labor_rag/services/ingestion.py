@@ -67,14 +67,22 @@ def store_artifact(path, store, role):
             "storage_backend": "r2", "r2": remote}
 
 
-def reviewed_extraction(work: Path, path):
-    """The PDF pages as reviewed: ocr_pages.jsonl, including the user's edits."""
-    from labor_rag.ocr.extract import ExtractionResult, PageText
-
+def read_pages_file(work: Path) -> list[dict]:
+    """The page entries of ocr_pages.jsonl ({page_number, total_pages, method, confidence, char_count, text})."""
     pages_file = work / "ocr_pages.jsonl"
     if not pages_file.exists():
+        return []
+    return [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def reviewed_extraction(work: Path, path, pages: list[dict] | None = None):
+    """The PDF pages as reviewed, including the user's edits: the given page
+    entries (the application keeps them per revision), else ocr_pages.jsonl."""
+    from labor_rag.ocr.extract import ExtractionResult, PageText
+
+    entries = list(pages) if pages is not None else read_pages_file(work)
+    if pages is None and not (work / "ocr_pages.jsonl").exists():
         raise IngestionInputError("Không tìm thấy dữ liệu trang OCR đã tách; vui lòng nạp lại file PDF.")
-    entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
     entries.sort(key=lambda item: int(item.get("page_number") or 0))
     pages = [
         PageText(
@@ -155,6 +163,11 @@ class IngestionPipeline:
         work.mkdir(parents=True, exist_ok=True)
         progress(10, "parsing", "Đang khởi tạo bộ đọc và phân tích tài liệu...")
 
+        # Back the source up before the long OCR, so a review can be reopened on another machine.
+        try:
+            source_artifact, backup_error = store_artifact(Path(path), self.store, "source"), None
+        except Exception as exc:  # retried when indexing; the upload itself goes on
+            source_artifact, backup_error = None, f"{type(exc).__name__}: {exc}"
         handle_page = self._pdf_page_writer(work / "ocr_pages.jsonl", on_page)
 
         def ocr_progress(msg: str, pct: float):
@@ -166,9 +179,10 @@ class IngestionPipeline:
         summary = self._summarize_ocr(extraction)
         if on_ocr_summary:
             on_ocr_summary(summary)
-        return {"ocr_summary": summary, "work_dir": str(work)}
+        return {"ocr_summary": summary, "work_dir": str(work), "source_artifact": source_artifact,
+                "source_backup_error": backup_error}
 
-    def finalize_extracted(self, path, task_id, document_type="pdf", *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_ocr_summary=None):
+    def finalize_extracted(self, path, task_id, document_type="pdf", *, domain="lao_dong", de_muc_id=None, progress=None, cancel_check=None, on_ocr_summary=None, pages=None, reindex=None):
         """Phase 2: rebuild ExtractionResult from (optionally edited) ocr_pages.jsonl and index the document."""
         from labor_rag.ingest.pdf_to_chunks import KgIndex
         from labor_rag.ocr.pipeline import build_processed_document
@@ -184,7 +198,7 @@ class IngestionPipeline:
         check_cancelled()
         config = self.settings
         work = config.INTERIM_DIR / "ingestion" / task_id
-        extraction = reviewed_extraction(work, path)
+        extraction = reviewed_extraction(work, path, pages)
         progress(30, "chunking", "Đang tách cấu trúc Chương, Mục, Điều, Khoản, Điểm từ nội dung đã kiểm tra...")
         processed = build_processed_document(extraction)
         check_cancelled()
@@ -203,9 +217,10 @@ class IngestionPipeline:
             progress,
             check_cancelled,
             on_ocr_summary=on_ocr_summary,
+            reindex=reindex,
         )
 
-    def _finish_pdf_ingestion(self, path, work, abox_dir, processed, task_id, domain, kg, progress, check_cancelled, on_ocr_summary=None):
+    def _finish_pdf_ingestion(self, path, work, abox_dir, processed, task_id, domain, kg, progress, check_cancelled, on_ocr_summary=None, reindex=None):
         from labor_rag.ingest.chunk_schema import TokenCounter
         from labor_rag.ingest.pdf_abox import document_abox
         from labor_rag.ingest.pdf_to_chunks import document_to_chunks
@@ -262,9 +277,10 @@ class IngestionPipeline:
             ocr_summary,
             progress,
             check_cancelled,
+            reindex=reindex,
         )
 
-    def _project_and_index(self, path, work, document_type, domain, abox_path, projection_source, pdf_abox_arg, chunks, trees, warnings, ocr_summary, progress, check_cancelled):
+    def _project_and_index(self, path, work, document_type, domain, abox_path, projection_source, pdf_abox_arg, chunks, trees, warnings, ocr_summary, progress, check_cancelled, reindex=None):
         from labor_rag.ingest.ontology_to_jsonl import project
 
         config = self.settings
@@ -291,7 +307,14 @@ class IngestionPipeline:
         check_cancelled()
         progress(45, "embedding", "Đang xử lý ngữ nghĩa văn bản phục vụ tìm kiếm...", total_chunks=len(chunks))
         # check_cancelled raises when cancelled, so the index loop stops there.
-        indexed = self.index(chunks, projection, progress, cancel_check=lambda: bool(check_cancelled()))
+        previous = (reindex or {}).get("previous_document_id")
+        if previous and previous not in ids:
+            # The corrected review changed the document number: the old document leaves the corpus.
+            from labor_rag.services.removal import remove_pdf_document
+            progress(44, "indexing", f"Đang gỡ văn bản cũ {previous} do số hiệu đã sửa...")
+            remove_pdf_document(config, previous, embedder=self.embedder)
+        indexed = self.index(chunks, projection, progress, cancel_check=lambda: bool(check_cancelled()),
+                             reindex=reindex if previous in ids or not previous else None)
         warnings.extend(indexed["warnings"])
         documents = []
         for document_id in ids:
@@ -410,13 +433,22 @@ class IngestionPipeline:
             check_cancelled,
         )
 
-    def index(self, chunks, projection, progress, cancel_check=None):
+    def index(self, chunks, projection, progress, cancel_check=None, reindex=None):
+        """Embed and write the chunks the merge plan selects, then the graph.
+
+        reindex (a corrected review of a PDF already in the corpus):
+        prune lists article keys missing from the new review that the user
+        confirmed for deletion (PDF parts only; Phap dien parts never go);
+        the graph writes of the previous review are undone before the new
+        projection is loaded (services/removal.py::remove_graph).
+        """
         from qdrant_client import QdrantClient
         from qdrant_client.models import PointStruct, PointIdsList
         from labor_rag.ingest.chunk_schema import point_id
         from labor_rag.ingest.embed_and_index import indexed_chunks, PAYLOAD_INDEXES, sync_validity
-        from labor_rag.ingest.merge import plan_upsert
+        from labor_rag.ingest.merge import group_by_article, plan_upsert
         from labor_rag.ingest.load_neo4j import load_projection
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
         config = self.settings
         with closing(QdrantClient(url=config.QDRANT_URL, api_key=config.QDRANT_API_KEY or None,
                           timeout=config.QDRANT_TIMEOUT)) as client:
@@ -424,6 +456,9 @@ class IngestionPipeline:
             info = client.get_collection(config.QDRANT_COLLECTION)
             existing = indexed_chunks(client, config.QDRANT_COLLECTION, sorted({c["document_id"] for c in chunks}))
             plan = plan_upsert(existing, chunks)
+            prune = set((reindex or {}).get("prune") or [])
+            pruned = [c["chunk_id"] for key, parts in group_by_article(existing).items() if key in prune
+                      for c in parts if c.get("source") == "pdf"]
             if plan.kept:
                 raise IngestionInputError("Cloud đã có phiên bản mới hơn; không cập nhật tài liệu cũ.")
             points = []
@@ -442,6 +477,15 @@ class IngestionPipeline:
             if cancel_check and cancel_check():
                 raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
             progress(80, "indexing", "Đang cập nhật liên kết điều khoản vào kho dữ liệu...")
+            validity = {}
+            if reindex is not None:
+                from labor_rag.services.neo4j import create_neo4j_driver
+                from labor_rag.services.removal import PhapDienBase, remove_graph
+                base = PhapDienBase()
+                with create_neo4j_driver(config.NEO4J_URI, auth=(config.NEO4J_USER, config.NEO4J_PASSWORD)) as driver:
+                    with driver.session(database=config.NEO4J_DATABASE) as session:
+                        for document_id in sorted({c["document_id"] for c in chunks}):
+                            validity.update(remove_graph(session, config.DATASET_ID, document_id, base)["validity"])
             load_projection(SimpleNamespace(data_dir=projection, uri=config.NEO4J_URI,
                 user=config.NEO4J_USER, password=config.NEO4J_PASSWORD, database=config.NEO4J_DATABASE,
                 dataset_id=config.DATASET_ID, replace_dataset=False))
@@ -450,15 +494,18 @@ class IngestionPipeline:
             for start in range(0, len(points), 64):
                 client.upsert(config.QDRANT_COLLECTION, points=points[start:start + 64], wait=True)
             written = {c["chunk_id"] for c in plan.upsert}
-            stale = [point_id(cid) for cid in plan.delete if cid not in written]
+            stale = [point_id(cid) for cid in [*plan.delete, *pruned] if cid not in written]
             if stale:
                 client.delete(config.QDRANT_COLLECTION, points_selector=PointIdsList(points=stale), wait=True)
             for chunk in plan.refresh:
                 client.set_payload(config.QDRANT_COLLECTION,
                     payload={**chunk, "dataset_id": config.DATASET_ID}, points=[point_id(chunk["chunk_id"])], wait=True)
+            for document_id, valid_to in validity.items():  # validity the previous review had set
+                client.set_payload(config.QDRANT_COLLECTION, payload={"effective_to_date": valid_to}, wait=True,
+                    points=Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))]))
             sync_validity(client, config.QDRANT_COLLECTION, projection)
         progress(95, "indexing", "Đang hoàn tất đồng bộ kho dữ liệu tra cứu...")
-        return {"warnings": plan.warnings, "embedded_chunks": len(plan.upsert)}
+        return {"warnings": plan.warnings, "embedded_chunks": len(plan.upsert), "pruned_chunks": len(pruned)}
 
 
 def update_document_domain(settings, document_id: str, domain: str) -> bool:

@@ -140,6 +140,26 @@ class R2Store:
         return {"bucket":self.config.bucket,"key":key,"sha256":digest,"bytes":len(payload),
                 "etag":head.get("ETag"),"verified_at":now(),"status":"uploaded" if uploaded else "already_present"}
 
+    def download_verified(self, artifact: dict, dest: Path) -> Path:
+        """Fetch a verified artifact into dest; the bytes must hash to its SHA-256 or nothing is written."""
+        record = artifact.get("r2") or {}
+        if artifact.get("storage_backend") != "r2" or record.get("sha256") != artifact.get("sha256") \
+                or record.get("key") != self.key(artifact["sha256"], "artifacts"):
+            raise ObjectIntegrityError("Artifact does not have a verified R2 location in the configured bucket")
+        response = self.client.get_object(Bucket=self.config.bucket, Key=record["key"])
+        body = response["Body"]
+        try:
+            payload = body.read()
+        finally:
+            body.close()
+        if sha256(payload) != artifact["sha256"]:
+            raise ObjectIntegrityError("R2 download hash differs from the artifact")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        partial = dest.with_name(dest.name + ".part")
+        partial.write_bytes(payload)
+        partial.replace(dest)
+        return dest
+
     def download_url(self, artifact: dict, *, inline=False, expires=300) -> str:
         record=artifact.get("r2") or {}
         if (artifact.get("storage_backend")!="r2" or not record.get("verified_at")

@@ -65,6 +65,8 @@ def create_app(catalog=None, *, settings=None, storage_factory=None, retrieval_f
 
     @app.exception_handler(SQLAlchemyError)
     async def database_error(request, exc):
+        import logging
+        logging.getLogger(__name__).error("Database error on %s %s", request.method, request.url.path, exc_info=exc)
         return JSONResponse(status_code=503, content={"detail": "Database ứng dụng chưa hoàn tất thao tác."})
     app.add_middleware(CORSMiddleware, allow_origins=config.CORS_ORIGINS,
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"])

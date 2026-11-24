@@ -7,7 +7,9 @@ document and runs the same merge decision (ingest/merge.py), per Dieu:
 - new: only in the PDF; replaced: the PDF wins and its text differs;
 - metadata: same text, only payload fields change; unchanged: identical;
 - kept: the indexed version is newer, so indexing will refuse the PDF;
-- missing: indexed but not found in the PDF (often an OCR miss), kept as is.
+- missing: indexed but not found in the PDF (often an OCR miss), kept as is
+  unless the user deletes it when re-indexing a corrected review
+  ("deletable": only parts a PDF wrote; Phap dien parts never go).
 
 An amending document also lists, per khoan, the Dieu of other documents it
 amends (ingest/amending.py), with the current indexed text of each target.
@@ -47,14 +49,14 @@ def _article_status(key, new_groups, old_groups, plan) -> str:
     return "replaced"
 
 
-def build_reviewed_chunks(settings, task_id: str, path, domain: str):
+def build_reviewed_chunks(settings, task_id: str, path, domain: str, pages: list[dict] | None = None):
     """(document, chunks) of the reviewed pages, as finalize_extracted builds them."""
     from labor_rag.ingest.chunk_schema import TokenCounter
     from labor_rag.ingest.pdf_to_chunks import KgIndex, document_to_chunks
     from labor_rag.ocr.pipeline import build_processed_document
 
     work = settings.INTERIM_DIR / "ingestion" / task_id
-    document = build_processed_document(reviewed_extraction(work, path)).document
+    document = build_processed_document(reviewed_extraction(work, path, pages)).document
     if not document.metadata.so_hieu or not list(document.iter_articles()):
         raise IngestionInputError("Chưa nhận diện được số hiệu hoặc Điều luật nào từ nội dung đã rà soát.")
     kg = KgIndex.load(LAO_DONG_DIR) if domain == "lao_dong" and (LAO_DONG_DIR / "kg_nodes.jsonl").exists() else None
@@ -93,7 +95,8 @@ def amendments_of(document) -> tuple[list[dict], list[dict]]:
     return amendments, replaced
 
 
-def preview_changes(settings, task_id: str, path, domain: str = "lao_dong", *, client=None) -> dict:
+def preview_changes(settings, task_id: str, path, domain: str = "lao_dong", *, client=None,
+                    pages: list[dict] | None = None) -> dict:
     """The per-Dieu change list of a task awaiting review; the store is only read.
 
     ``store`` is "connected" when the indexed side was read, "unavailable"
@@ -102,7 +105,7 @@ def preview_changes(settings, task_id: str, path, domain: str = "lao_dong", *, c
     from labor_rag.ingest.embed_and_index import indexed_chunks
     from labor_rag.ingest.merge import group_by_article, plan_upsert
 
-    document, chunks = build_reviewed_chunks(settings, task_id, path, domain)
+    document, chunks = build_reviewed_chunks(settings, task_id, path, domain, pages)
     amendments, replaced = amendments_of(document)
     result = {
         "document_id": document.document_id,
@@ -148,6 +151,8 @@ def preview_changes(settings, task_id: str, path, domain: str = "lao_dong", *, c
             "old_text": _text(old_parts) if old_parts else None,
             "old_source": old_parts[0].get("source") if old_parts else None,
             "old_version_date": old_parts[0].get("version_date") if old_parts else None,
+            # Re-indexing may delete a Dieu missing from the review, but only what a PDF wrote.
+            "deletable": bool(old_parts) and not new_parts and all(p.get("source") == "pdf" for p in old_parts),
         })
 
     indexed_targets = group_by_article(others or [])

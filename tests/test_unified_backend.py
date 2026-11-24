@@ -241,7 +241,8 @@ def test_versioned_migration_preserves_existing_content():
     assert {"attachments", "warnings", "token_usage", "feedback"} <= {c["name"] for c in inspect(engine).get_columns("chat_messages")}
     with engine.connect() as connection:
         assert connection.execute(text("SELECT content FROM chat_messages WHERE id='old'")).scalar() == "keep me"
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 3
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 4
+    assert {"ocr_revisions", "ocr_pages"} <= set(inspect(engine).get_table_names())
 
 
 def test_token_usage_migration_upgrades_an_already_versioned_database():
@@ -257,7 +258,9 @@ def test_token_usage_migration_upgrades_an_already_versioned_database():
     with engine.connect() as connection:
         old = connection.execute(text("SELECT content, token_usage FROM chat_messages WHERE id='old'")).one()
         assert old == ("keep me", None)
-        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 3
+        assert connection.execute(text("SELECT count(*) FROM app_schema_versions")).scalar() == 4
+    # An already versioned database gets the OCR revision tables from 004 alone.
+    assert {"ocr_revisions", "ocr_pages"} <= set(inspect(engine).get_table_names())
 
 
 @pytest.mark.parametrize("fail", [False, True])
@@ -334,7 +337,7 @@ def test_upload_pdf_other_domain_ocr_storage_and_listing(tmp_path, monkeypatch):
     monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
         "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
     })
-    def fake_index(self, chunks, projection, progress, cancel_check=None):
+    def fake_index(self, chunks, projection, progress, cancel_check=None, reindex=None):
         seen_progress.append(len(chunks))
         assert chunks[0]["domain"] == "khac"
         return {"warnings": [], "embedded_chunks": len(chunks)}
@@ -587,9 +590,10 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
     monkeypatch.setattr(ingestion, "store_artifact", lambda p, store, role: {
         "artifact_id": f"art-{role}", "file_name": p.name, "format": p.suffix.lstrip("."),
     })
-    indexed_chunks = []
-    def fake_index(self, chunks, proj_dir, progress, cancel_check=None):
+    indexed_chunks, reindexes = [], []
+    def fake_index(self, chunks, proj_dir, progress, cancel_check=None, reindex=None):
         indexed_chunks.extend(chunks)
+        reindexes.append(reindex)
         return {"warnings": [], "embedded_chunks": len(chunks)}
     monkeypatch.setattr(ingestion.IngestionPipeline, "index", fake_index)
 
@@ -669,6 +673,68 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         ast = client.get("/api/documents/88-2026-qh15/ast").json()
         assert "Nội dung đã sửa chính tả chuẩn." in str(ast["ast_tree"])
 
+        # Revisions: the OCR output stays as it was, the confirmed review is indexed and read-only.
+        revisions = client.get(f"/api/documents/tasks/{task_id}/revisions").json()
+        assert [(r["number"], r["kind"], r["status"]) for r in revisions] == [(1, "ocr", "locked"), (2, "review", "indexed")]
+        assert revisions[1]["edited_pages"] == 1 and revisions[1]["document_id"] == "88-2026-qh15"
+        original = client.get(f"/api/documents/tasks/{task_id}/ocr-page/1?revision={revisions[0]['id']}").json()
+        assert "sai chinh ta" in original["text"]
+        listing = client.get("/api/documents/tasks").json()
+        row = next(item for item in listing["items"] if item["id"] == task_id)
+        assert (row["state"], row["in_corpus"], row["total_pages"], row["edited_pages"]) == ("indexed", True, 2, 1)
+        assert row["domain"] == "khac"  # kept through completion for re-indexing
+
+        # Reopen: a new draft from the indexed review; edits go there, the indexed one stays.
+        assert client.put(f"/api/documents/tasks/{task_id}/ocr-page/1?revision={revisions[1]['id']}",
+                          json={"text": "x"}).status_code == 409
+        reopened = client.post(f"/api/documents/tasks/{task_id}/revisions", json={})
+        assert reopened.status_code == 200 and reopened.json()["status"] == "awaiting_review"
+        assert client.post(f"/api/documents/tasks/{task_id}/revisions", json={}).status_code == 409
+        assert client.put(f"/api/documents/tasks/{task_id}/ocr-page/2",
+                          json={"text": "Điều 2. Hiệu lực thi hành\nCó hiệu lực từ 01/7/2027."}).status_code == 200
+        revisions = client.get(f"/api/documents/tasks/{task_id}/revisions").json()
+        assert [(r["number"], r["status"]) for r in revisions] == [(1, "locked"), (2, "indexed"), (3, "draft")]
+        assert revisions[2]["edited_pages"] == 2
+        row = next(item for item in client.get("/api/documents/tasks").json()["items"] if item["id"] == task_id)
+        assert row["state"] == "editing"
+
+        # Re-index the draft: the indexing step is told it replaces the indexed review and what to prune.
+        indexed_chunks.clear()
+        conf = client.post(f"/api/documents/tasks/{task_id}/confirm", json={"prune": ["88-2026-qh15:d7"]})
+        assert conf.status_code == 200
+        for _ in range(80):
+            done = client.get(f"/api/documents/tasks/{task_id}/progress").json()
+            if done["status"] in {"completed", "failed"}:
+                break
+            time.sleep(0.05)
+        assert done["status"] == "completed", done
+        assert reindexes[-1] == {"prune": ["88-2026-qh15:d7"], "previous_document_id": "88-2026-qh15"}
+        assert reindexes[0] is None  # the first indexing replaced nothing
+        assert any("01/7/2027" in c["text"] for c in indexed_chunks)
+        revisions = client.get(f"/api/documents/tasks/{task_id}/revisions").json()
+        assert [(r["number"], r["status"]) for r in revisions] == [(1, "locked"), (2, "locked"), (3, "indexed")]
+
+        # Reopen then cancel: only the draft goes, the indexed review and the corpus stay.
+        assert client.post(f"/api/documents/tasks/{task_id}/revisions", json={}).status_code == 200
+        cancelled = client.post(f"/api/documents/tasks/{task_id}/cancel").json()
+        assert cancelled["status"] == "completed"
+        revisions = client.get(f"/api/documents/tasks/{task_id}/revisions").json()
+        assert [(r["number"], r["status"]) for r in revisions] == [(1, "locked"), (2, "locked"), (3, "indexed")]
+
+        # Deleting the upload waits until its document has left the corpus; R2 copies stay.
+        assert client.delete(f"/api/documents/tasks/{task_id}").status_code == 409
+        import labor_rag.services.removal as removal
+        monkeypatch.setattr(removal, "remove_pdf_document", lambda settings, document_id: {
+            "document_id": document_id, "graph": {"deleted_nodes": 0, "deleted_edges": 0, "reset_nodes": 0},
+            "deleted_chunks": 0, "restored_chunks": 0, "removed_files": [], "warnings": []})
+        assert client.delete("/api/documents/88-2026-qh15").status_code == 200
+        row = next(item for item in client.get("/api/documents/tasks").json()["items"] if item["id"] == task_id)
+        assert row["state"] == "removed" and row["in_corpus"] is False  # still reopenable without OCR
+        assert client.delete(f"/api/documents/tasks/{task_id}").status_code == 204
+        assert client.get(f"/api/documents/tasks/{task_id}/revisions").status_code == 404
+        assert not (tmp_path / "interim" / "ingestion" / task_id).exists()
+        assert not (tmp_path / "uploads" / task_id).exists()
+
         # Task 2: cancel cleanly while awaiting_review
         up2 = client.post(
             "/api/documents/upload",
@@ -685,3 +751,34 @@ def test_two_phase_ocr_review_edit_confirm_and_pdf_image(tmp_path, monkeypatch):
         assert cancel_res.json()["status"] == "cancelled"
 
 
+
+
+def test_uploads_from_before_revisions_are_imported_from_their_page_file(tmp_path):
+    """Tasks that only have ocr_pages.jsonl appear in the list and open read-only, then reopen."""
+    import json as _json
+    from src.backend.app.models.database import IngestionTask
+    app = create_app(settings=config(tmp_path), storage_factory=lambda: SimpleNamespace(close=lambda: None))
+    with TestClient(app) as client:
+        with app.state.runtime.database.session() as db:
+            db.add(IngestionTask(id="old-indexed", file_name="luat.pdf", document_type="pdf", status="completed",
+                                 document_id="45-2019-qh14", progress=100, current_step="Hoàn tất",
+                                 result={"domain": "lao_dong"}))
+            db.add(IngestionTask(id="old-review", file_name="nd.pdf", document_type="pdf", status="awaiting_review",
+                                 progress=30, current_step="Chờ rà soát"))
+            db.commit()
+        for task_id, text in [("old-indexed", "4U e\nĐiều 106. Giờ làm việc ban đêm"), ("old-review", "Điều 1. Phạm vi")]:
+            work = tmp_path / "interim" / "ingestion" / task_id
+            work.mkdir(parents=True)
+            (work / "ocr_pages.jsonl").write_text(_json.dumps({"page_number": 1, "total_pages": 1, "method": "ocr",
+                                                                "confidence": 0.9, "text": text}) + "\n", encoding="utf-8")
+
+        rows = {row["id"]: row for row in client.get("/api/documents/tasks").json()["items"]}
+        assert rows["old-indexed"]["state"] == "removed"  # indexed once, not in this (empty) corpus
+        assert rows["old-review"]["state"] == "awaiting_review" and rows["old-review"]["total_pages"] == 1
+        revisions = client.get("/api/documents/tasks/old-indexed/revisions").json()
+        assert [(r["kind"], r["status"]) for r in revisions] == [("ocr", "locked"), ("review", "indexed")]
+        assert client.get("/api/documents/tasks/old-indexed/ocr-page/1").json()["text"].startswith("4U e")
+        assert client.post("/api/documents/tasks/old-indexed/revisions", json={}).status_code == 200
+        draft = client.get("/api/documents/tasks/old-review/revisions").json()[-1]
+        assert draft["status"] == "draft"
+        assert client.put("/api/documents/tasks/old-review/ocr-page/1", json={"text": "Điều 1. Phạm vi điều chỉnh"}).status_code == 200

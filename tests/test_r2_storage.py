@@ -136,3 +136,22 @@ def test_storage_config_accepts_existing_object_storage_names(tmp_path,monkeypat
     for key,value in values.items():monkeypatch.setenv(key,value)
     config=StorageConfig.from_env()
     assert config.bucket=='test-bucket' and 'test-secret' not in repr(config) and 'test-key' not in repr(config)
+
+
+def test_a_source_pdf_comes_back_from_r2_only_when_its_hash_matches(tmp_path):
+    """Reopening a review on another machine fetches the source PDF from R2."""
+    import hashlib
+    s3 = S3()
+    r2 = store(s3)
+    source = tmp_path / "luat.pdf"
+    source.write_bytes(b"%PDF-1.4 scanned law")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    artifact = {"artifact_id": "upload-" + digest, "sha256": digest, "file_name": "luat.pdf", "storage_backend": "r2",
+                "r2": r2.upload_verified(source, digest, filename="luat.pdf")}
+    restored = r2.download_verified(artifact, tmp_path / "other" / "luat.pdf")
+    assert restored.read_bytes() == source.read_bytes()
+
+    s3.corrupt = True
+    with pytest.raises(ObjectIntegrityError):
+        r2.download_verified(artifact, tmp_path / "bad" / "luat.pdf")
+    assert not (tmp_path / "bad" / "luat.pdf").exists()

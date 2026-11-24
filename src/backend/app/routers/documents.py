@@ -13,6 +13,10 @@ from src.backend.app.dependencies import get_current_user, get_db
 from src.backend.app.models.database import IngestionTask, DocumentRecord, User
 from src.backend.app.models.schemas import (
     DocumentRemovalResponse,
+    IngestionTaskSummary,
+    OcrRevisionResponse,
+    ReopenRequest,
+    ConfirmRequest,
     DocumentResponse,
     DocumentASTResponse,
     IngestionTaskResponse,
@@ -273,24 +277,77 @@ def task_progress(task_id: str, request: Request, db: Session = Depends(get_db))
         raise HTTPException(404, "Tác vụ không tồn tại.")
     return _task_response(request.app.state.ingestion, task)
 
+@router.get("/tasks", response_model=CursorPage[IngestionTaskSummary])
+def list_tasks(request: Request, state: str | None = Query(None, max_length=30),
+               document_id: str | None = Query(None, max_length=100),
+               cursor: str | None = None, limit: int = Query(20, ge=1, le=100)):
+    """Every upload, newest first, with what became of it (running, awaiting review, indexed, removed...)."""
+    decoded = decode_cursor(cursor)
+    rows, total, more = request.app.state.ingestion.list_tasks(
+        state=state, document_id=document_id, cursor=decoded, limit=limit)
+    return CursorPage(items=rows, total_count=total, has_more=more,
+                      next_cursor=encode_cursor(rows[-1]["created_at"], rows[-1]["id"]) if more and rows else None)
+
+@router.delete("/tasks/{task_id}", status_code=204)
+def delete_task(task_id: str, request: Request, current_user: User = Depends(get_current_user)):
+    """Delete an upload, its OCR text and revisions; the indexed document must be removed first."""
+    state = request.app.state.ingestion.delete_task(task_id)
+    if state == "not_found":
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    if state == "busy":
+        raise HTTPException(409, "Lượt nạp đang chạy; hủy hoặc chờ xong rồi xóa.")
+    if state == "in_corpus":
+        raise HTTPException(409, "Văn bản của lượt nạp này vẫn đang trong kho; gỡ văn bản khỏi kho trước khi xóa lượt nạp.")
+    return Response(status_code=204)
+
+@router.get("/tasks/{task_id}/revisions", response_model=list[OcrRevisionResponse])
+def task_revisions(task_id: str, request: Request):
+    revisions = request.app.state.ingestion.list_revisions(task_id)
+    if revisions is None:
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    return revisions
+
+@router.post("/tasks/{task_id}/revisions", response_model=IngestionTaskResponse)
+def reopen_task(task_id: str, request: Request, body: ReopenRequest | None = None,
+                current_user: User = Depends(get_current_user)):
+    """A new draft to correct an indexed (or removed) document; the corpus changes only on confirm."""
+    task, state = request.app.state.ingestion.reopen(task_id, body.from_revision_id if body else None)
+    if state == "not_found":
+        raise HTTPException(404, "Tác vụ không tồn tại.")
+    if state == "not_pdf":
+        raise HTTPException(422, "Chỉ mở lại được lượt nạp PDF.")
+    if state == "busy":
+        raise HTTPException(409, "Lượt nạp đang chạy; chờ xong rồi mở lại.")
+    if state == "draft_exists":
+        raise HTTPException(409, "Lượt nạp đã có một bản nháp đang sửa.")
+    if state == "no_revision":
+        raise HTTPException(404, "Không tìm thấy bản rà soát để sao chép.")
+    return _task_response(request.app.state.ingestion, task)
+
 @router.get("/tasks/{task_id}/ocr-page/{page_number}", response_model=OCRPageDetail)
-def task_ocr_page(task_id: str, page_number: int, request: Request, db: Session = Depends(get_db)):
+def task_ocr_page(task_id: str, page_number: int, request: Request, revision: str | None = Query(None, max_length=36),
+                  db: Session = Depends(get_db)):
     if db.get(IngestionTask, task_id) is None:
         raise HTTPException(404, "Tác vụ không tồn tại.")
-    page = request.app.state.ingestion.get_ocr_page_text(task_id, page_number)
+    page = request.app.state.ingestion.get_ocr_page_text(task_id, page_number, revision)
     if page is None:
         raise HTTPException(404, "Chưa có nội dung OCR cho trang này.")
     return OCRPageDetail.model_validate(page)
 
 @router.put("/tasks/{task_id}/ocr-page/{page_number}", response_model=OCRPageDetail)
 def update_task_ocr_page(task_id: str, page_number: int, body: OCRPageUpdateRequest, request: Request,
+                         revision: str | None = Query(None, max_length=36),
                          current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     task = db.get(IngestionTask, task_id)
     if task is None:
         raise HTTPException(404, "Tác vụ không tồn tại.")
     if task.status != "awaiting_review":
         raise HTTPException(409, "Chỉ có thể chỉnh sửa nội dung sau khi OCR hoàn tất và đang chờ kiểm tra.")
-    updated = request.app.state.ingestion.update_ocr_page_text(task_id, page_number, body.text)
+    from src.backend.app.services.ocr_revisions import RevisionLocked
+    try:
+        updated = request.app.state.ingestion.update_ocr_page_text(task_id, page_number, body.text, revision)
+    except RevisionLocked:
+        raise HTTPException(409, "Bản này chỉ đọc: chỉ sửa được bản nháp. Bấm 'Mở để sửa' để tạo bản nháp mới.") from None
     if updated is None:
         raise HTTPException(404, "Không tìm thấy trang OCR để cập nhật.")
     return OCRPageDetail.model_validate(updated)
@@ -321,8 +378,10 @@ async def task_changes(task_id: str, request: Request):
     return changes
 
 @router.post("/tasks/{task_id}/confirm", response_model=IngestionTaskResponse)
-def confirm_task_review(task_id: str, request: Request, current_user: User = Depends(get_current_user)):
-    task, state = request.app.state.ingestion.confirm_review(task_id)
+def confirm_task_review(task_id: str, request: Request, body: ConfirmRequest | None = None,
+                        current_user: User = Depends(get_current_user)):
+    """Index the draft; on a corrected review, body.prune lists the missing Dieu to delete."""
+    task, state = request.app.state.ingestion.confirm_review(task_id, body.prune if body else None)
     if state == "not_found":
         raise HTTPException(404, "Tác vụ không tồn tại.")
     if state == "invalid_state":

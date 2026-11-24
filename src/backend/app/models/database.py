@@ -109,6 +109,43 @@ class SystemConfig(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class OcrRevision(Base):
+    """One version of the OCR text of an ingestion task.
+
+    Number 1 is the OCR output (kind "ocr", never edited). Review revisions
+    are copies that the user edits; at most one per task is a "draft", the
+    one confirmed last is "indexed", older ones are "locked".
+    """
+    __tablename__ = "ocr_revisions"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    task_id = Column(String(36), ForeignKey("ingestion_tasks.id"), nullable=False, index=True)
+    number = Column(Integer, nullable=False)
+    kind = Column(String(20), nullable=False)  # ocr, review
+    status = Column(String(20), nullable=False)  # draft, indexed, locked
+    parent_id = Column(String(36), nullable=True)
+    document_id = Column(String(100), nullable=True, index=True)
+    snapshot_artifact_id = Column(String(100), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    indexed_at = Column(DateTime, nullable=True)
+
+
+class OcrPage(Base):
+    """The text of one PDF page in one OCR revision."""
+    __tablename__ = "ocr_pages"
+
+    revision_id = Column(String(36), ForeignKey("ocr_revisions.id"), primary_key=True)
+    page_number = Column(Integer, primary_key=True)
+    total_pages = Column(Integer, default=0)
+    method = Column(String(20), default="unknown")
+    confidence = Column(Float, nullable=True)
+    text = Column(Text, nullable=False, default="")
+    char_count = Column(Integer, default=0)
+    edited = Column(Boolean, default=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class FileArtifact(Base):
     __tablename__ = "file_artifacts"
     id = Column(String(100), primary_key=True)

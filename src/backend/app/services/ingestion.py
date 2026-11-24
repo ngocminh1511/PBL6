@@ -5,6 +5,7 @@ from pathlib import Path
 import threading
 from sqlalchemy import update
 from src.backend.app.models.database import IngestionTask, DocumentRecord, FileArtifact
+from src.backend.app.services import ocr_revisions
 
 def _describe_failure(exc: BaseException, last_status: str | None) -> str:
     from labor_rag.services.ingestion import IngestionInputError
@@ -69,6 +70,13 @@ class IngestionService:
             if task is None:
                 return None
             if task.status in {"completed", "failed", "cancelled"}:
+                return task
+            if task.status == "awaiting_review" and ocr_revisions.discard_draft(db, task_id):
+                # A reopened task: drop the draft, the indexed revision and the corpus stay as they were.
+                task.status, task.progress = "completed", 100.0
+                task.current_step = "Đã bỏ bản nháp; văn bản trong kho giữ nguyên bản đang dùng."
+                db.commit()
+                db.refresh(task)
                 return task
             if task.status in {"pending", "awaiting_review"}:
                 task.status = "cancelled"
@@ -197,10 +205,7 @@ class IngestionService:
                     "warnings": list(state["warnings"]),
                     "recent_pages": list(state["recent_pages"]),
                 }
-        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
-        if not pages_file.exists():
-            return None
-        entries = [json.loads(line) for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+        entries = self.revision_pages(task_id)
         if not entries:
             return None
         confs = [float(e["confidence"]) for e in entries if e.get("confidence") is not None]
@@ -223,25 +228,216 @@ class IngestionService:
             } for e in entries[-30:]],
         }
 
-    def get_ocr_page_text(self, task_id: str, page_number: int) -> dict | None:
-        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
-        if not pages_file.exists():
+    # ------------------------------------------------------------------
+    # OCR revisions (services/ocr_revisions.py)
+    # ------------------------------------------------------------------
+
+    def _pages_file_entries(self, task_id: str) -> list[dict]:
+        from labor_rag.services.ingestion import read_pages_file
+        return read_pages_file(self.runtime.settings.INTERIM_DIR / "ingestion" / task_id)
+
+    def _ensure_revisions(self, db, task: IngestionTask) -> None:
+        """Tasks from before revisions existed: import ocr_pages.jsonl once."""
+        if task.document_type != "pdf" or ocr_revisions.revisions(db, task.id):
+            return
+        entries = self._pages_file_entries(task.id)
+        if entries:
+            ocr_revisions.import_pages(db, task.id, entries, indexed=task.status == "completed",
+                                       document_id=task.document_id)
+            db.commit()
+
+    def revision_pages(self, task_id: str, revision_id: str | None = None) -> list[dict]:
+        """Page entries of a revision (default: the draft, else the indexed one); [] when unknown."""
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return []
+            self._ensure_revisions(db, task)
+            revision = ocr_revisions.get(db, task_id, revision_id)
+            return ocr_revisions.pages(db, revision) if revision else []
+
+    def list_revisions(self, task_id: str) -> list | None:
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None
+            self._ensure_revisions(db, task)
+            rows = ocr_revisions.revisions(db, task_id)
+            return [{"id": r.id, "number": r.number, "kind": r.kind, "status": r.status, "parent_id": r.parent_id,
+                     "document_id": r.document_id, "created_at": r.created_at, "updated_at": r.updated_at,
+                     "indexed_at": r.indexed_at, **ocr_revisions.summary(db, r)} for r in rows]
+
+    def list_tasks(self, *, state: str | None = None, document_id: str | None = None,
+                   cursor: tuple[str, str] | None = None, limit: int = 20) -> tuple[list[dict], int, bool]:
+        """(rows, total, has_more), newest first, with a state label per task (ocr_revisions.task_state)."""
+        with self.database.session() as db:
+            query = db.query(IngestionTask)
+            if document_id:
+                query = query.filter(IngestionTask.document_id == document_id)
+            tasks = query.order_by(IngestionTask.created_at.desc(), IngestionTask.id.desc()).all()
+            in_corpus = {row[0] for row in db.query(DocumentRecord.id).all()}
+            rows = []
+            for task in tasks:
+                self._ensure_revisions(db, task)
+                draft = ocr_revisions.by_status(db, task.id, "draft")
+                indexed = ocr_revisions.by_status(db, task.id, "indexed")
+                doc_id = task.document_id or (indexed.document_id if indexed else None)
+                label = ocr_revisions.task_state(task, draft, indexed, doc_id in in_corpus if doc_id else False)
+                if state and label != state:
+                    continue
+                record = db.get(DocumentRecord, doc_id) if doc_id else None
+                meta = task.result if isinstance(task.result, dict) else {}
+                rows.append({"id": task.id, "file_name": task.file_name, "document_type": task.document_type,
+                             "status": task.status, "state": label, "progress": task.progress,
+                             "current_step": task.current_step, "document_id": doc_id,
+                             "document_number": record.document_number if record else None,
+                             "domain": meta.get("domain"), "in_corpus": bool(record),
+                             "draft_revision_id": draft.id if draft else None,
+                             "indexed_revision_id": indexed.id if indexed else None,
+                             **ocr_revisions.summary(db, draft or indexed),
+                             "created_at": task.created_at, "updated_at": task.updated_at})
+        total = len(rows)
+        if cursor:
+            stamp, last_id = cursor
+            rows = [r for r in rows if (r["created_at"].isoformat(), r["id"]) < (stamp, last_id)]
+        return rows[:limit], total, len(rows) > limit
+
+    def reopen(self, task_id: str, from_revision_id: str | None = None):
+        """(task, state): a new draft copied from a revision, so an indexed or removed document can be
+        corrected and re-indexed without OCR. The corpus is untouched until the draft is confirmed."""
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None, "not_found"
+            if task.document_type != "pdf":
+                return task, "not_pdf"
+            if task.status in {"pending", "parsing", "chunking", "embedding", "indexing"}:
+                return task, "busy"
+            self._ensure_revisions(db, task)
+            try:
+                draft = ocr_revisions.new_draft(db, task_id, from_revision_id)
+            except ocr_revisions.DraftExists:
+                return task, "draft_exists"
+            except LookupError:
+                return task, "no_revision"
+            task.status, task.progress = "awaiting_review", 30.0
+            task.current_step = f"Đang sửa bản rà soát {draft.number}; bấm 'Nạp lại' khi xong."
+            task.error_message = None
+            db.commit()
+            db.refresh(task)
+            return task, "ok"
+
+    def get_ocr_page_text(self, task_id: str, page_number: int, revision_id: str | None = None) -> dict | None:
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None
+            self._ensure_revisions(db, task)
+            revision = ocr_revisions.get(db, task_id, revision_id)
+            entry = ocr_revisions.page(db, revision, page_number) if revision else None
+        if entry is None:
+            # Still running: the page is in the per-page file, revisions come when OCR ends.
+            entry = next((e for e in self._pages_file_entries(task_id) if int(e.get("page_number") or 0) == page_number), None)
+        if entry is None:
             return None
-        for line in pages_file.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            entry = json.loads(line)
-            if int(entry.get("page_number") or 0) == page_number:
-                return {
-                    "page_number": page_number,
-                    "method": str(entry.get("method") or "unknown"),
-                    "confidence": entry.get("confidence"),
-                    "char_count": int(entry.get("char_count") or 0),
-                    "text": str(entry.get("text") or ""),
-                }
-        return None
+        return {"page_number": page_number, "method": str(entry.get("method") or "unknown"),
+                "confidence": entry.get("confidence"), "char_count": int(entry.get("char_count") or 0),
+                "text": str(entry.get("text") or "")}
 
     def _resolve_task_pdf_path(self, task_id: str, task: IngestionTask | None = None) -> Path | None:
+        path = self._local_task_pdf(task_id, task)
+        if path is None and task is not None:
+            path = self._restore_task_pdf(task_id, task)
+        return path
+
+    def _snapshot_revision(self, task_id: str, revision_id: str | None) -> None:
+        """A fixed copy of the indexed review's pages on R2, in case the database is lost."""
+        if not revision_id:
+            return
+        from labor_rag.services.ingestion import store_artifact
+        pages = self.revision_pages(task_id, revision_id)
+        with self.database.session() as db:
+            revision = ocr_revisions.get(db, task_id, revision_id)
+            task = db.get(IngestionTask, task_id)
+            if revision is None or task is None or not pages:
+                return
+            path = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / f"revision-{revision.number}.jsonl"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("".join(json.dumps(page, ensure_ascii=False) + "\n" for page in pages), encoding="utf-8")
+            try:
+                artifact = store_artifact(path, self.runtime.storage(), "ocr_pages")
+            except Exception as exc:
+                meta = dict(task.result or {})
+                meta["warnings"] = [*meta.get("warnings", []), f"Chưa sao lưu được bản rà soát lên R2 ({type(exc).__name__})."]
+                task.result = meta
+                db.commit()
+                return
+            if db.get(FileArtifact, artifact["artifact_id"]) is None:
+                db.add(FileArtifact(id=artifact["artifact_id"], record=artifact))
+            revision.snapshot_artifact_id = artifact["artifact_id"]
+            db.commit()
+
+    def delete_task(self, task_id: str) -> str:
+        """Delete an upload with its OCR revisions and local files.
+
+        Refused while it runs, and while the document it indexed is still in the
+        corpus with this upload as its latest source (remove the document first).
+        R2 objects stay: they are content addressed and may be shared.
+        """
+        import shutil
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return "not_found"
+            if task.status in {"pending", "parsing", "chunking", "embedding", "indexing"}:
+                return "busy"
+            indexed = ocr_revisions.by_status(db, task_id, "indexed")
+            document_id = (indexed.document_id if indexed else None) or (task.document_id if task.status == "completed" else None)
+            if document_id and db.get(DocumentRecord, document_id) is not None:
+                newer = (db.query(IngestionTask).filter(IngestionTask.document_id == document_id,
+                                                        IngestionTask.id != task_id,
+                                                        IngestionTask.status == "completed",
+                                                        IngestionTask.created_at > task.created_at).first())
+                if newer is None:
+                    return "in_corpus"
+            # Children first, as plain statements, so the order never depends on the ORM.
+            revision_ids = [r.id for r in ocr_revisions.revisions(db, task_id)]
+            if revision_ids:
+                db.query(ocr_revisions.OcrPage).filter(ocr_revisions.OcrPage.revision_id.in_(revision_ids))                     .delete(synchronize_session=False)
+            db.query(ocr_revisions.OcrRevision).filter(ocr_revisions.OcrRevision.task_id == task_id)                 .delete(synchronize_session=False)
+            db.query(IngestionTask).filter(IngestionTask.id == task_id).delete(synchronize_session=False)
+            db.commit()
+        settings = self.runtime.settings
+        for base in (settings.INTERIM_DIR / "ingestion", settings.UPLOAD_DIR):
+            root = base.resolve()
+            target = (root / task_id).resolve()
+            if target != root and target.is_relative_to(root) and target.exists():
+                shutil.rmtree(target, ignore_errors=True)
+        with self._ocr_lock:
+            self._ocr_previews.pop(task_id, None)
+        return "ok"
+
+    def _restore_task_pdf(self, task_id: str, task: IngestionTask) -> Path | None:
+        """The source PDF from R2 when this machine no longer has it (another server, cleaned uploads)."""
+        meta = task.result if isinstance(task.result, dict) else {}
+        artifact_id = meta.get("source_artifact_id") or next(iter(meta.get("artifact_ids") or []), None)
+        if not artifact_id:
+            return None
+        with self.database.session() as db:
+            row = db.get(FileArtifact, artifact_id)
+            record = dict(row.record) if row else None
+        if not record or not str(record.get("file_name", "")).lower().endswith(".pdf"):
+            return None
+        upload_root = self.runtime.settings.UPLOAD_DIR.resolve()
+        dest = (upload_root / task_id / Path(record["file_name"]).name).resolve()
+        if not dest.is_relative_to(upload_root):
+            return None
+        try:
+            return self.runtime.storage().download_verified(record, dest)
+        except Exception:
+            return None
+
+    def _local_task_pdf(self, task_id: str, task: IngestionTask | None = None) -> Path | None:
         upload_root = self.runtime.settings.UPLOAD_DIR.resolve()
         candidate: Path | None = None
         if task and isinstance(task.result, dict) and task.result.get("file_path"):
@@ -280,29 +476,22 @@ class IngestionService:
         cache_file.write_bytes(png_bytes)
         return png_bytes
 
-    def update_ocr_page_text(self, task_id: str, page_number: int, text: str) -> dict | None:
-        pages_file = self.runtime.settings.INTERIM_DIR / "ingestion" / task_id / "ocr_pages.jsonl"
-        if not pages_file.exists():
+    def update_ocr_page_text(self, task_id: str, page_number: int, text: str, revision_id: str | None = None) -> dict | None:
+        """Edit a page of the draft; raises ocr_revisions.RevisionLocked for other revisions."""
+        with self.database.session() as db:
+            task = db.get(IngestionTask, task_id)
+            if task is None:
+                return None
+            self._ensure_revisions(db, task)
+            revision = ocr_revisions.get(db, task_id, revision_id)
+            if revision is None:
+                return None
+            entry = ocr_revisions.set_page_text(db, revision, page_number, text)
+            db.commit()
+        if entry is None:
             return None
-        lines = [line for line in pages_file.read_text(encoding="utf-8").splitlines() if line.strip()]
-        updated_entry: dict | None = None
-        new_lines: list[str] = []
-        for raw in lines:
-            entry = json.loads(raw)
-            if int(entry.get("page_number") or 0) == page_number:
-                entry["text"] = text
-                entry["char_count"] = len(text)
-                updated_entry = {
-                    "page_number": page_number,
-                    "method": str(entry.get("method") or "unknown"),
-                    "confidence": entry.get("confidence"),
-                    "char_count": len(text),
-                    "text": text,
-                }
-            new_lines.append(json.dumps(entry, ensure_ascii=False))
-        if updated_entry is None:
-            return None
-        pages_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        updated_entry = {"page_number": page_number, "method": str(entry.get("method") or "unknown"),
+                         "confidence": entry.get("confidence"), "char_count": len(text), "text": text}
         with self._ocr_lock:
             state = self._ocr_previews.get(task_id)
             if state is not None:
@@ -325,10 +514,13 @@ class IngestionService:
             meta = task.result if isinstance(task.result, dict) else {}
             pdf_path = self._resolve_task_pdf_path(task_id, task)
             domain = str(meta.get("domain") or "lao_dong")
+            self._ensure_revisions(db, task)
+            draft = ocr_revisions.by_status(db, task_id, "draft")
+            pages = ocr_revisions.pages(db, draft) if draft else None
         if pdf_path is None:
             return None, "missing_file"
         with self.runtime.operation(serialized=False):
-            return preview_changes(self.runtime.settings, task_id, pdf_path, domain), "ok"
+            return preview_changes(self.runtime.settings, task_id, pdf_path, domain, pages=pages), "ok"
 
     def remove_document(self, document_id: str):
         """(result, state): remove an indexed PDF document; Phap dien entries cannot be removed."""
@@ -357,7 +549,7 @@ class IngestionService:
         Corpus.cache_clear()
         return result, "ok"
 
-    def confirm_review(self, task_id: str):
+    def confirm_review(self, task_id: str, prune: list[str] | None = None):
         with self.database.session() as db:
             task = db.get(IngestionTask, task_id)
             if task is None:
@@ -371,6 +563,14 @@ class IngestionService:
             document_type = str(meta.get("document_type") or task.document_type or "pdf")
             domain = str(meta.get("domain") or "lao_dong")
             de_muc_id = meta.get("de_muc_id")
+            self._ensure_revisions(db, task)
+            draft = ocr_revisions.by_status(db, task_id, "draft")
+            revision_id = draft.id if draft else None
+            indexed = ocr_revisions.by_status(db, task_id, "indexed")
+            # Re-indexing a corrected review: delete what the user confirmed, redo the graph,
+            # and drop the old document if the number changed.
+            reindex = ({"prune": list(prune or []), "previous_document_id": indexed.document_id or task.document_id}
+                       if indexed is not None else None)
             task.status = "chunking"
             task.progress = 30.0
             task.current_step = "Đã xác nhận nội dung OCR, đang chuẩn bị lập chỉ mục..."
@@ -383,7 +583,7 @@ class IngestionService:
         with self.runtime.lock:
             self.runtime.active += 1
         try:
-            self.executor.submit(self._run_index_phase, task_id, pdf_path, document_type, de_muc_id, domain)
+            self.executor.submit(self._run_index_phase, task_id, pdf_path, document_type, de_muc_id, domain, revision_id, reindex)
         except Exception:
             with self._cancel_lock:
                 self._cancel_events.pop(task_id, None)
@@ -392,7 +592,8 @@ class IngestionService:
             raise
         return task, "ok"
 
-    def _save_completion(self, task_id: str, result: dict):
+    def _save_completion(self, task_id: str, result: dict, revision_id: str | None = None,
+                         previous_document_id: str | None = None):
         from src.backend.app.services.corpus import Corpus
         with self.database.session() as db:
             for record in result["documents"]:
@@ -402,6 +603,11 @@ class IngestionService:
                         setattr(existing, key, value)
                 else:
                     db.add(DocumentRecord(**record))
+            if previous_document_id and previous_document_id not in result["document_ids"]:
+                # The corrected number replaced the old document, which the pipeline removed.
+                old = db.get(DocumentRecord, previous_document_id)
+                if old is not None:
+                    db.delete(old)
             for artifact in result["artifacts"]:
                 row = db.get(FileArtifact, artifact["artifact_id"])
                 if row:
@@ -409,7 +615,9 @@ class IngestionService:
                 else:
                     db.add(FileArtifact(id=artifact["artifact_id"], record=artifact))
             task = db.get(IngestionTask, task_id)
+            # Keep file_path / domain / de_muc_id of the upload: reopening and re-indexing need them.
             task.result = {
+                **(task.result if isinstance(task.result, dict) else {}),
                 "document_ids": result["document_ids"],
                 "artifact_ids": [a["artifact_id"] for a in result["artifacts"]],
                 "warnings": result["warnings"],
@@ -421,6 +629,13 @@ class IngestionService:
             task.status, task.progress, task.current_step = "completed", 100, "Hoàn tất! Văn bản đã sẵn sàng để xem và tra cứu."
             task.total_chunks = result["total_chunks"]
             task.embedded_chunks = result.get("embedded_chunks", result["total_chunks"])
+            revision = ocr_revisions.get(db, task_id, revision_id) if revision_id else None
+            if revision is not None:
+                ocr_revisions.mark_indexed(db, revision, task.document_id)
+            elif task.document_type == "pdf":
+                # Indexed without a review pause: its OCR pages are what the corpus holds.
+                ocr_revisions.import_pages(db, task_id, self._pages_file_entries(task_id), indexed=True,
+                                           document_id=task.document_id)
             db.commit()
         Corpus.cache_clear()
 
@@ -461,13 +676,20 @@ class IngestionService:
                 with self.database.session() as db:
                     task = db.get(IngestionTask, task_id)
                     if task:
+                        source = extracted.get("source_artifact")
+                        if source and db.get(FileArtifact, source["artifact_id"]) is None:
+                            db.add(FileArtifact(id=source["artifact_id"], record=source))
                         task.result = {
                             "file_path": str(file_path),
                             "document_type": document_type,
                             "domain": domain,
                             "de_muc_id": de_muc_id,
                             "ocr_summary": extracted.get("ocr_summary"),
+                            "source_artifact_id": source["artifact_id"] if source else None,
+                            "warnings": ([f"Chưa sao lưu được PDF lên R2 ({extracted['source_backup_error']}); "
+                                          "sẽ thử lại khi lập chỉ mục."] if extracted.get("source_backup_error") else []),
                         }
+                        ocr_revisions.import_pages(db, task_id, self._pages_file_entries(task_id))
                         task.status = "awaiting_review"
                         task.progress = 30.0
                         task.current_step = "Đã OCR xong! Hãy đối chiếu, chỉnh sửa (nếu cần) rồi bấm 'Xác nhận & Lập chỉ mục'."
@@ -479,13 +701,14 @@ class IngestionService:
         finally:
             self._cleanup_worker(task_id)
 
-    def _run_index_phase(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong"):
+    def _run_index_phase(self, task_id, file_path, document_type, de_muc_id, domain="lao_dong", revision_id=None, reindex=None):
         from labor_rag.services.ingestion import IngestionCancelledError, IngestionPipeline
         try:
             if self.is_cancelled(task_id):
                 raise IngestionCancelledError("Đã hủy nạp tài liệu theo yêu cầu người dùng.")
             with self.runtime.operation():
                 pipeline = IngestionPipeline(self.runtime.settings, self.runtime.storage())
+                pages = self.revision_pages(task_id, revision_id) if revision_id else None
                 result = pipeline.finalize_extracted(
                     file_path,
                     task_id,
@@ -495,8 +718,11 @@ class IngestionService:
                     progress=lambda *args, **kwargs: self._progress(task_id, *args, **kwargs),
                     cancel_check=lambda: self.is_cancelled(task_id),
                     on_ocr_summary=lambda summary: self.finalize_ocr_summary(task_id, summary),
+                    pages=pages or None,
+                    reindex=reindex,
                 )
-                self._save_completion(task_id, result)
+                self._save_completion(task_id, result, revision_id, (reindex or {}).get("previous_document_id"))
+                self._snapshot_revision(task_id, revision_id)
         except IngestionCancelledError:
             self._progress(task_id, None, "cancelled", "Đã hủy nạp tài liệu theo yêu cầu người dùng.", error_message=None)
         except (Exception, SystemExit) as exc:

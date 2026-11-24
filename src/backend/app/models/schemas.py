@@ -259,6 +259,8 @@ class ArticleChange(BaseModel):
     old_text: str | None = None
     old_source: str | None = None
     old_version_date: str | None = None
+    # A missing Dieu whose indexed parts all came from a PDF: re-indexing may delete it.
+    deletable: bool = False
 
 class AmendmentChange(BaseModel):
     source_article: str
@@ -332,6 +334,49 @@ class IngestionTaskResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+TaskState = Literal["running", "awaiting_review", "indexed", "editing", "removed", "failed", "cancelled"]
+
+class IngestionTaskSummary(BaseModel):
+    """One row of the upload list; state combines the task status, its revisions and the corpus."""
+    id: str
+    file_name: str
+    document_type: str
+    status: TaskStatus
+    state: TaskState
+    progress: float = 0
+    current_step: Optional[str] = None
+    document_id: Optional[str] = None
+    document_number: Optional[str] = None
+    domain: Optional[str] = None
+    in_corpus: bool = False
+    draft_revision_id: Optional[str] = None
+    indexed_revision_id: Optional[str] = None
+    total_pages: int = 0
+    edited_pages: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+class OcrRevisionResponse(BaseModel):
+    """A version of a task's OCR text: number 1 is the OCR output, later ones are reviews."""
+    id: str
+    number: int
+    kind: Literal["ocr", "review"]
+    status: Literal["draft", "indexed", "locked"]
+    parent_id: Optional[str] = None
+    document_id: Optional[str] = None
+    total_pages: int = 0
+    edited_pages: int = 0
+    created_at: datetime
+    updated_at: datetime
+    indexed_at: Optional[datetime] = None
+
+class ReopenRequest(BaseModel):
+    from_revision_id: Optional[str] = None
+
+class ConfirmRequest(BaseModel):
+    """Article keys (ArticleChange.article_id) missing from the review that re-indexing deletes."""
+    prune: List[str] = []
 
 class UploadResponse(BaseModel):
     task_id: str
