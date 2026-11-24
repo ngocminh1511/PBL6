@@ -79,13 +79,15 @@ function Items({ items, open, toggle, selectedId, onSelect }: {
 }
 
 /** Header, counts and table of contents (containers and articles) of the selected document. */
-export function DocumentOutline({ doc, tree, loading, selectedId, onSelect, onRemove, picker }: {
+export function DocumentOutline({ doc, tree, loading, selectedId, onSelect, onRemove, onOpenReview, picker }: {
   doc: DocumentRecord | undefined;
   tree: ASTNode | null;
   loading: boolean;
   selectedId: string | null;
   onSelect: (node: ASTNode) => void;
   onRemove: () => void;
+  /** Open the upload that produced this PDF document, to reread or correct its review. */
+  onOpenReview?: () => void;
   picker?: React.ReactNode;
 }) {
   const [open, setOpen] = useState<Set<string>>(new Set());
@@ -130,11 +132,20 @@ export function DocumentOutline({ doc, tree, loading, selectedId, onSelect, onRe
             {summary.length > 0 && <span className="text-[12px] text-ink-3 tabular-nums">{summary.join(' · ')}</span>}
           </div>
           {doc?.document_type === 'pdf' && (
-            <button type="button" onClick={onRemove} title="Gỡ văn bản PDF này khỏi kho tra cứu"
-              className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] text-error border border-error/30 hover:bg-error-container/40 transition-colors">
-              <span className="material-symbols-outlined text-[16px]">delete</span>
-              Gỡ
-            </button>
+            <div className="shrink-0 flex flex-col items-end gap-1">
+              {onOpenReview && (
+                <button type="button" onClick={onOpenReview} title="Mở lượt nạp của văn bản này để xem hoặc sửa bản rà soát"
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors">
+                  <span className="material-symbols-outlined text-[16px]">edit_document</span>
+                  Bản rà soát
+                </button>
+              )}
+              <button type="button" onClick={onRemove} title="Gỡ văn bản PDF này khỏi kho tra cứu"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] text-error border border-error/30 hover:bg-error-container/40 transition-colors">
+                <span className="material-symbols-outlined text-[16px]">delete</span>
+                Gỡ
+              </button>
+            </div>
           )}
         </div>
         {articles.length > 0 && (

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { api, errorMessage } from '../../lib/api';
-import { IngestionTask } from '../../lib/types';
+import { IngestionTask, OcrRevision } from '../../lib/types';
+import { defaultRevision, isEditable, revisionLabel, revisionStatusLabel } from '../../lib/ingestionTasks';
 import { ingestionSteps, stepStates, type TaskStatus } from '../../lib/ingestionSteps';
 import { useDocumentStore } from '../../stores/documentStore';
 import { OcrEditor } from './OcrEditor';
@@ -36,6 +37,15 @@ type ReviewTab = 'ocr' | 'changes';
 export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOpenDocument, onUploadAnother }) => {
   const cancelTask = useDocumentStore((s) => s.cancelTask);
   const confirmTaskReview = useDocumentStore((s) => s.confirmTaskReview);
+  const reopenTask = useDocumentStore((s) => s.reopenTask);
+  const deleteTask = useDocumentStore((s) => s.deleteTask);
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm' | 'deleting'>('idle');
+  const [deleteError, setDeleteError] = useState('');
+  const [revisions, setRevisions] = useState<OcrRevision[]>([]);
+  const [revisionId, setRevisionId] = useState<string | null>(null);
+  const [reopening, setReopening] = useState(false);
+  // Missing Dieu to delete when re-indexing; null until the change analysis ran.
+  const [prune, setPrune] = useState<string[] | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [previewExpanded, setPreviewExpanded] = useState(true);
@@ -68,6 +78,12 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
   const isRunning = !TERMINAL.includes(task.status) && !isAwaitingReview;
   const canCancel = isRunning || isAwaitingReview;
   const statusText = STATUS_LABELS[task.status] || task.status;
+  const revision = revisions.find((r) => r.id === revisionId) ?? null;
+  const hasIndexed = revisions.some((r) => r.status === 'indexed');
+  const hasDraft = revisions.some((r) => r.status === 'draft');
+  // Before revisions are listed (or for a task without them) the server edits its draft.
+  const editableRevision = revisions.length === 0 || isEditable(revision);
+  const canReopen = task.document_type === 'pdf' && !hasDraft && hasIndexed && TERMINAL.includes(task.status);
 
   const steps = ingestionSteps(task.document_type);
   const states = stepStates(steps, task.status, lastActive.current);
@@ -83,6 +99,33 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
   useEffect(() => {
     if (!TERMINAL.includes(task.status)) lastActive.current = task.status;
   }, [task.status]);
+
+  // Revisions exist once OCR has ended; reload them when the task changes state (confirm, reopen, cancel).
+  useEffect(() => {
+    if (task.document_type !== 'pdf' || !(TERMINAL.includes(task.status) || task.status === 'awaiting_review')) {
+      setRevisions([]);
+      setRevisionId(null);
+      return;
+    }
+    let active = true;
+    api.listRevisions(task.id).then((rows) => {
+      if (!active) return;
+      setRevisions(rows);
+      setRevisionId(defaultRevision(rows)?.id ?? null);
+    }).catch(() => { if (active) setRevisions([]); });
+    return () => { active = false; };
+  }, [task.id, task.status, task.document_type]);
+
+  // Another revision has other texts: drop what was loaded for the previous one.
+  useEffect(() => {
+    setPrune(null);
+    setFullPageTexts({});
+    setPageMethods({});
+    setEditedPages({});
+    setDraftText('');
+    setDraftPage(null);
+    setSaveNotice(null);
+  }, [revisionId]);
 
   useEffect(() => {
     if (!canCancel) setCancelling(false);
@@ -123,7 +166,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     setLoadingPage(viewPage);
     setPageLoadError(null);
     void api
-      .getTaskOCRPage(task.id, viewPage)
+      .getTaskOCRPage(task.id, viewPage, revisionId)
       .then((detail) => {
         if (cancelled) return;
         setFullPageTexts((prev) => ({ ...prev, [viewPage]: detail.text }));
@@ -138,24 +181,24 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     return () => {
       cancelled = true;
     };
-  }, [task.id, task.document_type, viewPage, ocrPreview?.processed_pages, fullPageTexts]);
+  }, [task.id, task.document_type, viewPage, ocrPreview?.processed_pages, fullPageTexts, revisionId]);
 
   const recentMatch = recentPages.find((p) => p.page_number === viewPage);
   const isPageExtracted = viewPage <= processedPages;
   const currentPageText = fullPageTexts[viewPage] ?? recentMatch?.preview_text ?? '';
   const currentPageMethod = pageMethods[viewPage] ?? recentMatch?.method ?? '';
   const pageLoaded = fullPageTexts[viewPage] !== undefined;
-  const canEditPage = isAwaitingReview && isPageExtracted && pageLoaded && draftPage === viewPage;
+  const canEditPage = isAwaitingReview && editableRevision && isPageExtracted && pageLoaded && draftPage === viewPage;
   // Unsaved edits on the open page; page changes ask first and confirmation waits.
   const isEditing = canEditPage && draftText !== currentPageText;
 
   // Open the editor on the full text of each page once it is loaded.
   useEffect(() => {
-    if (!isAwaitingReview || !pageLoaded || draftPage === viewPage) return;
+    if (!isAwaitingReview || !editableRevision || !pageLoaded || draftPage === viewPage) return;
     setDraftText(fullPageTexts[viewPage] ?? '');
     setDraftPage(viewPage);
     setEditorKey((k) => k + 1);
-  }, [isAwaitingReview, pageLoaded, draftPage, viewPage, fullPageTexts]);
+  }, [isAwaitingReview, editableRevision, pageLoaded, draftPage, viewPage, fullPageTexts]);
 
   const methodOf = (page: number) => pageMethods[page] ?? recentPages.find((p) => p.page_number === page)?.method ?? '';
   const methodLabel = (method: string) =>
@@ -203,11 +246,12 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
     setPageLoadError(null);
     setSaveNotice(null);
     try {
-      const updated = await api.updateTaskOCRPage(task.id, viewPage, draftText);
+      const updated = await api.updateTaskOCRPage(task.id, viewPage, draftText, revisionId);
       setFullPageTexts((prev) => ({ ...prev, [viewPage]: updated.text }));
       setEditedPages((prev) => ({ ...prev, [viewPage]: true }));
       setDraftText(updated.text);
       setSaveNotice(`Đã lưu chỉnh sửa trang ${viewPage}.`);
+      setPrune(null); // the analysis no longer matches the saved text
       return true;
     } catch (e) {
       setPageLoadError(errorMessage(e));
@@ -246,13 +290,44 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
 
   const handleConfirm = async () => {
     if (!isAwaitingReview || confirming || isEditing) return;
+    if (hasIndexed && prune === null) {
+      // Re-indexing: show what will change, and which missing Dieu will be deleted, first.
+      setReviewTab('changes');
+      setPageLoadError('Hãy bấm "Phân tích thay đổi" để xem và chọn các Điều sẽ bị xóa trước khi nạp lại.');
+      return;
+    }
     setConfirming(true);
     setPageLoadError(null);
     try {
-      await confirmTaskReview(task.id);
+      await confirmTaskReview(task.id, prune ?? []);
     } catch (e) {
       setPageLoadError(errorMessage(e));
       setConfirming(false);
+    }
+  };
+
+  const handleReopen = async () => {
+    if (reopening) return;
+    setReopening(true);
+    setPageLoadError(null);
+    try {
+      await reopenTask(task.id);
+    } catch (e) {
+      setPageLoadError(errorMessage(e));
+    } finally {
+      setReopening(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deleteStep === 'idle') { setDeleteStep('confirm'); setDeleteError(''); return; }
+    if (deleteStep !== 'confirm') return;
+    setDeleteStep('deleting');
+    try {
+      await deleteTask(task.id);
+    } catch (e) {
+      setDeleteError(errorMessage(e));
+      setDeleteStep('idle');
     }
   };
 
@@ -482,8 +557,16 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
           {canCancel && (
             <button type="button" onClick={handleCancel} disabled={cancelling || confirming}
               className="px-3 py-1.5 rounded-lg border border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-[12px] font-semibold flex items-center gap-1 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-              <span className="material-symbols-outlined text-[15px]">stop_circle</span>
-              <span>{cancelling ? 'Đang hủy...' : 'Hủy xử lý'}</span>
+              <span className="material-symbols-outlined text-[15px]">{isAwaitingReview && hasIndexed ? 'delete' : 'stop_circle'}</span>
+              <span>{cancelling ? 'Đang hủy...' : isAwaitingReview && hasIndexed ? 'Bỏ bản nháp' : 'Hủy xử lý'}</span>
+            </button>
+          )}
+          {canReopen && (
+            <button type="button" onClick={() => void handleReopen()} disabled={reopening}
+              title="Tạo bản nháp từ bản đang dùng để sửa rồi nạp lại; kho giữ nguyên tới khi nạp lại"
+              className="px-3 py-1.5 rounded-lg border border-secondary/40 text-secondary hover:bg-secondary/10 text-[12px] font-semibold flex items-center gap-1 disabled:opacity-60">
+              <span className="material-symbols-outlined text-[15px]">edit_document</span>
+              <span>{reopening ? 'Đang mở...' : 'Mở để sửa'}</span>
             </button>
           )}
           {isAwaitingReview && (
@@ -491,7 +574,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
               title={isEditing ? 'Hãy lưu hoặc bỏ chỉnh sửa trước khi xác nhận lập chỉ mục' : undefined}
               className="px-3 py-1.5 rounded-lg bg-secondary hover:opacity-90 text-white text-[12px] font-semibold flex items-center gap-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-sm">
               <span className="material-symbols-outlined text-[15px]">check_circle</span>
-              <span>{confirming ? 'Đang bắt đầu...' : 'Xác nhận & Lập chỉ mục'}</span>
+              <span>{confirming ? 'Đang bắt đầu...' : hasIndexed ? 'Nạp lại' : 'Xác nhận & Lập chỉ mục'}</span>
             </button>
           )}
           {TERMINAL.includes(task.status) && onUploadAnother && (
@@ -499,6 +582,16 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
               className="px-3 py-1.5 rounded-lg border border-secondary/40 text-secondary hover:bg-secondary/10 text-[12px] font-semibold flex items-center gap-1">
               <span className="material-symbols-outlined text-[15px]">add</span>
               <span>Nạp văn bản khác</span>
+            </button>
+          )}
+          {(TERMINAL.includes(task.status) || (isAwaitingReview && !hasIndexed)) && (
+            <button type="button" onClick={() => void handleDelete()} onBlur={() => deleteStep === 'confirm' && setDeleteStep('idle')}
+              disabled={deleteStep === 'deleting'}
+              title="Xóa hẳn lượt nạp cùng bản OCR và các bản rà soát; văn bản phải được gỡ khỏi kho trước"
+              className={`px-3 py-1.5 rounded-lg border text-[12px] font-semibold flex items-center gap-1 transition-colors disabled:opacity-60 ${
+                deleteStep === 'confirm' ? 'border-red-500 bg-red-600 text-white' : 'border-outline-variant/40 text-ink-3 hover:text-red-700 hover:border-red-300'}`}>
+              <span className="material-symbols-outlined text-[15px]">delete_forever</span>
+              <span>{deleteStep === 'deleting' ? 'Đang xóa...' : deleteStep === 'confirm' ? 'Bấm lần nữa để xóa hẳn' : 'Xóa lượt nạp'}</span>
             </button>
           )}
           {isCompleted && onOpenDocument && (
@@ -510,6 +603,10 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
           )}
         </div>
       </div>
+
+      {deleteError && (
+        <p role="alert" className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-[12px] text-red-700">{deleteError}</p>
+      )}
 
       {/* Stepper and current work */}
       <div className="flex flex-col gap-3 rounded-xl bg-surface-container-low/60 border border-outline-variant/20 px-3 pt-4 pb-3">
@@ -531,7 +628,9 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
         )}
       </div>
 
-      {task.document_type === 'pdf' && ocrPreview && (
+      {task.document_type === 'pdf' && (ocrPreview || isAwaitingReview) && (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+      {ocrPreview && (
         <div className="flex flex-wrap items-center gap-2 text-[11.5px]">
           <span className="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant/25 text-ink">
             Trang đã xử lý: <strong>{processedPages}/{ocrPreview.total_pages || '?'}</strong>
@@ -554,7 +653,7 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
       )}
 
       {isAwaitingReview && task.document_type === 'pdf' && (
-        <div role="tablist" aria-label="Rà soát trước khi lập chỉ mục" className="flex items-center gap-1 p-1 rounded-lg bg-surface-container self-start">
+        <div role="tablist" aria-label="Rà soát trước khi lập chỉ mục" className="flex items-center gap-1 p-1 rounded-lg bg-surface-container ml-auto">
           {([['ocr', 'fact_check', 'Rà soát OCR'], ['changes', 'difference', 'So sánh thay đổi']] as const).map(([key, icon, label]) => (
             <button key={key} type="button" role="tab" aria-selected={reviewTab === key} onClick={() => setReviewTab(key)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12.5px] font-medium transition-all ${
@@ -567,6 +666,28 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
           ))}
         </div>
       )}
+      </div>
+      )}
+
+      {revisions.length > 0 && showOcrPanel && (
+        <div className="flex flex-wrap items-center gap-1.5 text-[12px]" aria-label="Các bản của nội dung OCR">
+          <span className="text-ink-3 mr-1">Bản:</span>
+          {revisions.map((r) => (
+            <button key={r.id} type="button" onClick={() => !isEditing && setRevisionId(r.id)} aria-pressed={r.id === revisionId}
+              disabled={isEditing && r.id !== revisionId}
+              title={isEditing && r.id !== revisionId ? 'Lưu hoặc bỏ thay đổi trước khi đổi bản' : undefined}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-50 ${
+                r.id === revisionId ? 'border-secondary bg-secondary/10 text-secondary font-semibold' : 'border-outline-variant/35 bg-surface-container-lowest text-ink hover:bg-surface-container'}`}>
+              {r.status === 'indexed' && <span className="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>}
+              {revisionLabel(r)}
+              <span className="text-ink-3 font-normal">· {revisionStatusLabel(r)}{r.edited_pages ? ` · ${r.edited_pages} trang sửa` : ''}</span>
+            </button>
+          ))}
+          {revision && !editableRevision && (
+            <span className="ml-1 text-ink-3">Bản này chỉ đọc{canReopen ? '; bấm "Mở để sửa" để tạo bản nháp mới.' : '.'}</span>
+          )}
+        </div>
+      )}
 
       {showOcrPanel && ocrPanel}
       {task.document_type === 'pdf' && ocrPreview && showOcrPanel && ocrPreview.warnings.map((warning, idx) => (
@@ -576,12 +697,14 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ task, onOp
       {/* Kept mounted so an analysis survives switching between the review tabs. */}
       {isAwaitingReview && task.document_type === 'pdf' && (
         <div className={reviewTab === 'changes' ? 'flex flex-col gap-2' : 'hidden'}>
+          {pageLoadError && <p role="alert" className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-[12px] text-red-700">{pageLoadError}</p>}
           {isEditing && (
             <p className="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-[12px] text-amber-900">
               Trang {viewPage} còn thay đổi chưa lưu ở tab Rà soát OCR; lưu trang trước khi phân tích để so sánh dùng nội dung mới nhất.
             </p>
           )}
-          <ChangeReview key={task.id} taskId={task.id} hasUnsavedEdits={isEditing} />
+          <ChangeReview key={`${task.id}-${revisionId}`} taskId={task.id} hasUnsavedEdits={isEditing}
+            reindex={hasIndexed} prune={prune} onPruneChange={setPrune} />
         </div>
       )}
 

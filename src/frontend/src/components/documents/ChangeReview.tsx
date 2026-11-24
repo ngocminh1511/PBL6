@@ -11,7 +11,7 @@ const STATUS: Record<ArticleChangeStatus, { label: string; tone: string; hint: s
   metadata: { label: 'Cập nhật thông tin', tone: 'bg-sky-100 text-sky-900', hint: 'Cùng nội dung, chỉ đổi thông tin hiệu lực/phiên bản.' },
   unchanged: { label: 'Không đổi', tone: 'bg-slate-100 text-ink-2', hint: 'Giống hệt bản trong kho.' },
   kept: { label: 'Kho có bản mới hơn', tone: 'bg-red-100 text-red-900', hint: 'Bản trong kho mới hơn; hệ thống sẽ từ chối lập chỉ mục PDF này.' },
-  missing: { label: 'Thiếu trong PDF', tone: 'bg-orange-100 text-orange-900', hint: 'Có trong kho nhưng không tách được từ PDF (thường do OCR); bản cũ được giữ.' },
+  missing: { label: 'Thiếu trong PDF', tone: 'bg-orange-100 text-orange-900', hint: 'Có trong kho nhưng không có trong bản này (OCR sót, hoặc đã sửa đi); bản cũ được giữ trừ khi chọn xóa.' },
 };
 const ORDER: ArticleChangeStatus[] = ['kept', 'replaced', 'new', 'missing', 'metadata', 'unchanged'];
 
@@ -39,11 +39,17 @@ function SideBySide({ before, after, beforeTitle, afterTitle }: { before: string
   );
 }
 
-function ArticleRow({ item }: { item: ArticleChange }) {
+function ArticleRow({ item, prune }: { item: ArticleChange; prune?: { checked: boolean; toggle: () => void } }) {
   const [open, setOpen] = useState(item.status === 'replaced' || item.status === 'kept');
   const meta = item.status ? STATUS[item.status] : null;
   return (
     <li className="border border-outline-variant/25 rounded-lg bg-surface-container-lowest">
+      {prune && (
+        <label className="flex items-center gap-2 px-3 pt-2 text-[12px] text-ink cursor-pointer">
+          <input type="checkbox" checked={prune.checked} onChange={prune.toggle} className="accent-red-600" />
+          <span>{prune.checked ? 'Xóa khỏi kho khi nạp lại' : 'Giữ trong kho'}</span>
+        </label>
+      )}
       <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open}
         className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-surface-container-low rounded-lg">
         <span className="material-symbols-outlined text-[16px] text-ink-3">{open ? 'expand_more' : 'chevron_right'}</span>
@@ -98,7 +104,15 @@ function AmendmentRow({ item }: { item: AmendmentChange }) {
 }
 
 /** Step 3 of a PDF upload: what confirming would add, replace or amend. */
-export const ChangeReview: React.FC<{ taskId: string; hasUnsavedEdits: boolean }> = ({ taskId, hasUnsavedEdits }) => {
+/** reindex: the task already has a review in the corpus; missing PDF Dieu then default to deletion,
+ *  reported through onPruneChange (null until an analysis ran). */
+export const ChangeReview: React.FC<{
+  taskId: string;
+  hasUnsavedEdits: boolean;
+  reindex?: boolean;
+  prune?: string[] | null;
+  onPruneChange?: (prune: string[] | null) => void;
+}> = ({ taskId, hasUnsavedEdits, reindex = false, prune = null, onPruneChange }) => {
   const [changes, setChanges] = useState<TaskChanges | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -106,8 +120,13 @@ export const ChangeReview: React.FC<{ taskId: string; hasUnsavedEdits: boolean }
 
   const analyze = async () => {
     setLoading(true); setError('');
-    try { setChanges(await api.getTaskChanges(taskId)); }
-    catch (e) { setError(errorMessage(e)); setChanges(null); }
+    try {
+      const result = await api.getTaskChanges(taskId);
+      setChanges(result);
+      // Re-indexing a corrected review: what the review no longer has goes, unless unticked.
+      onPruneChange?.(reindex ? result.articles.filter((a) => a.status === 'missing' && a.deletable).map((a) => a.article_id) : []);
+    }
+    catch (e) { setError(errorMessage(e)); setChanges(null); onPruneChange?.(null); }
     finally { setLoading(false); }
   };
 
@@ -168,6 +187,12 @@ export const ChangeReview: React.FC<{ taskId: string; hasUnsavedEdits: boolean }
               </p>
             )}
 
+            {reindex && prune && prune.length > 0 && (
+              <p className="text-[12px] p-2 rounded bg-orange-50 border border-orange-200 text-orange-900">
+                Nạp lại sẽ xóa {prune.length} Điều không còn trong bản này khỏi kho (xem nhóm "Thiếu trong PDF"; bỏ chọn để giữ).
+              </p>
+            )}
+
             {changes.store === 'connected' && (
               <div className="flex flex-wrap items-center gap-1.5">
                 {chip('changed', 'Có thay đổi', changes.articles.filter((a) => a.status !== 'unchanged').length)}
@@ -177,7 +202,14 @@ export const ChangeReview: React.FC<{ taskId: string; hasUnsavedEdits: boolean }
             )}
 
             {visible.length ? (
-              <ul className="flex flex-col gap-1.5">{visible.map((item) => <ArticleRow key={item.article_id} item={item} />)}</ul>
+              <ul className="flex flex-col gap-1.5">{visible.map((item) => (
+                <ArticleRow key={item.article_id} item={item}
+                  prune={reindex && item.status === 'missing' && item.deletable && prune && onPruneChange ? {
+                    checked: prune.includes(item.article_id),
+                    toggle: () => onPruneChange(prune.includes(item.article_id)
+                      ? prune.filter((id) => id !== item.article_id) : [...prune, item.article_id]),
+                  } : undefined} />
+              ))}</ul>
             ) : (
               <p className="text-[12px] text-ink-3">Không có Điều nào trong nhóm này.</p>
             )}

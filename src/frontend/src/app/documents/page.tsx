@@ -3,12 +3,11 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CorpusBrowser } from '../../components/documents/CorpusBrowser';
-import { IngestionProgress } from '../../components/documents/IngestionProgress';
+import { IngestionWorkspace } from '../../components/documents/IngestionWorkspace';
 import { UploadModal } from '../../components/documents/UploadModal';
-import { IngestionStepper } from '../../components/documents/IngestionStepper';
-import { ingestionSteps } from '../../lib/ingestionSteps';
 import { AppendixWorkspace } from '../../components/appendices/AppendixWorkspace';
 import { useDocumentStore } from '../../stores/documentStore';
+import { api, errorMessage } from '../../lib/api';
 import { RemoveDocumentModal } from '../../components/documents/RemoveDocumentModal';
 
 const TABS = [
@@ -18,7 +17,6 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]['key'];
 const RUNNING = ['pending', 'parsing', 'chunking', 'embedding', 'indexing'];
-const PDF_STEPS = ingestionSteps('pdf');
 
 export default function DocumentsPage() {
   return <Suspense fallback={<p className="p-6">Đang mở kho văn bản…</p>}><DocumentsWorkspace /></Suspense>;
@@ -30,7 +28,22 @@ function DocumentsWorkspace() {
   const requested = params.get('tab');
   const tab: TabKey = TABS.some((t) => t.key === requested) ? (requested as TabKey) : 'van-ban';
   const selectTab = (key: TabKey) => router.replace('/documents?tab=' + key, { scroll: false });
+  const taskId = params.get('task');
+  const selectTask = (id: string) => router.replace('/documents?tab=nap-pdf&task=' + encodeURIComponent(id), { scroll: false });
   const { fetchDocuments, activeTask, selectedDocId, documents, selectDocument, removeDocument, error } = useDocumentStore();
+  const [reviewNotice, setReviewNotice] = useState('');
+
+  /** The newest upload of a PDF document, opened in the upload tab. */
+  async function openReview(documentId: string) {
+    setReviewNotice('');
+    try {
+      const page = await api.listTasks({ document_id: documentId, limit: 1 });
+      if (page.items[0]) selectTask(page.items[0].id);
+      else setReviewNotice('Không tìm thấy lượt nạp của văn bản này (có thể được nạp bằng dòng lệnh).');
+    } catch (e) {
+      setReviewNotice(errorMessage(e));
+    }
+  }
   const [removeTarget, setRemoveTarget] = useState<{ id: string; title: string } | null>(null);
   const [removedCount, setRemovedCount] = useState(0);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -69,37 +82,14 @@ function DocumentsWorkspace() {
 
       <div className="p-gutter flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto">
         {error && <p role="alert" className="p-space-md rounded-xl bg-error-container text-on-error-container text-[12.5px]">{error}</p>}
+        {reviewNotice && <p role="status" className="p-space-sm rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[12.5px]">{reviewNotice}</p>}
 
         {tab === 'nap-pdf' && (
-          <div className="flex flex-col gap-space-md">
-            <div className="flex flex-col">
-              <h1 className="text-[18px] font-semibold text-ink">Nạp văn bản</h1>
-              <p className="text-[12.5px] text-ink-3">Tải PDF hoặc HTML Pháp điển, rà soát nội dung rồi lập chỉ mục vào kho tra cứu.</p>
-            </div>
-
-            {activeTask ? (
-              <IngestionProgress task={activeTask} onOpenDocument={() => selectTab('van-ban')}
-                onUploadAnother={() => setUploadOpen(true)} />
-            ) : (
-              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm px-space-md py-12 flex flex-col items-center gap-5 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary">
-                  <span className="material-symbols-outlined text-[30px]">upload_file</span>
-                </div>
-                <div className="flex flex-col gap-1 max-w-md">
-                  <span className="text-[15px] font-semibold text-ink">Chưa có văn bản nào đang được nạp</span>
-                  <span className="text-[12.5px] text-ink-3">Tiến trình đọc, rà soát và lập chỉ mục sẽ hiển thị ở đây sau khi bạn tải tài liệu lên.</span>
-                </div>
-                <button type="button" onClick={() => setUploadOpen(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-secondary/40 text-secondary text-[13px] font-medium hover:bg-secondary/10">
-                  <span className="material-symbols-outlined text-[18px]">add</span>
-                  Nạp văn bản
-                </button>
-                <div className="w-full max-w-3xl pt-4 border-t border-outline-variant/20">
-                  <IngestionStepper steps={PDF_STEPS} states={PDF_STEPS.map(() => 'pending')} muted />
-                </div>
-              </div>
-            )}
-          </div>
+          <IngestionWorkspace taskId={taskId} onSelectTask={selectTask} onUpload={() => setUploadOpen(true)}
+            onOpenDocument={(documentId) => {
+              if (documentId) void selectDocument(documentId);
+              selectTab('van-ban');
+            }} />
         )}
 
         {uploadOpen && <UploadModal onClose={() => setUploadOpen(false)} />}
@@ -117,7 +107,7 @@ function DocumentsWorkspace() {
         {/* DOCUMENT WORKSPACE: corpus list / table of contents / article */}
         {tab === 'van-ban' && (
           <CorpusBrowser refreshKey={`${activeTask?.status === 'completed' ? activeTask.id : ''}:${removedCount}`}
-            onRemove={setRemoveTarget} />
+            onRemove={setRemoveTarget} onOpenReview={(documentId) => void openReview(documentId)} />
         )}
       </div>
     </div>

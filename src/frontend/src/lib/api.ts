@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TaskChanges, DocumentRemoval, TokenUsage, MessageFeedbackRequest } from './types';
+import type { AppendixItem, AppendixList, RetrievalResult, HealthResponse, GraphResponse, OCRPageDetail, TaskChanges, DocumentRemoval, IngestionTaskSummary, OcrRevision, TokenUsage, MessageFeedbackRequest } from './types';
 
 export function errorTokenUsage(error: unknown): TokenUsage | null {
   if (!axios.isAxiosError(error)) return null;
@@ -167,13 +167,37 @@ export const api = {
     return res.data;
   },
 
-  async getTaskOCRPage(taskId: string, pageNumber: number): Promise<OCRPageDetail> {
-    const res = await apiClient.get(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`);
+  async getTaskOCRPage(taskId: string, pageNumber: number, revisionId?: string | null): Promise<OCRPageDetail> {
+    const res = await apiClient.get(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`,
+      { params: revisionId ? { revision: revisionId } : undefined });
     return res.data;
   },
 
-  async updateTaskOCRPage(taskId: string, pageNumber: number, text: string): Promise<OCRPageDetail> {
-    const res = await apiClient.put(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`, { text });
+  async updateTaskOCRPage(taskId: string, pageNumber: number, text: string, revisionId?: string | null): Promise<OCRPageDetail> {
+    const res = await apiClient.put(`/documents/tasks/${taskId}/ocr-page/${pageNumber}`, { text },
+      { params: revisionId ? { revision: revisionId } : undefined });
+    return res.data;
+  },
+
+  async listTasks(params: { state?: string; document_id?: string; cursor?: string; limit?: number } = {}): Promise<CursorPage<IngestionTaskSummary>> {
+    const res = await apiClient.get('/documents/tasks', { params });
+    return res.data;
+  },
+
+  /** Refused (409) while the upload runs or while its document is still in the corpus. */
+  async deleteTask(taskId: string): Promise<void> {
+    await apiClient.delete(`/documents/tasks/${encodeURIComponent(taskId)}`);
+  },
+
+  async listRevisions(taskId: string): Promise<OcrRevision[]> {
+    const res = await apiClient.get(`/documents/tasks/${encodeURIComponent(taskId)}/revisions`);
+    return res.data;
+  },
+
+  /** A new draft copied from a revision (default: the indexed one), to correct and re-index. */
+  async reopenTask(taskId: string, fromRevisionId?: string): Promise<IngestionTask> {
+    const res = await apiClient.post(`/documents/tasks/${encodeURIComponent(taskId)}/revisions`,
+      { from_revision_id: fromRevisionId ?? null });
     return res.data;
   },
 
@@ -186,8 +210,9 @@ export const api = {
     return `/api/documents/tasks/${encodeURIComponent(taskId)}/pdf-page/${pageNumber}`;
   },
 
-  async confirmTaskReview(taskId: string): Promise<IngestionTask> {
-    const res = await apiClient.post(`/documents/tasks/${taskId}/confirm`);
+  /** prune: article keys missing from a corrected review that re-indexing deletes. */
+  async confirmTaskReview(taskId: string, prune: string[] = []): Promise<IngestionTask> {
+    const res = await apiClient.post(`/documents/tasks/${taskId}/confirm`, { prune });
     return res.data;
   },
 

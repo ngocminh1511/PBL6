@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DocumentRecord, DocumentRemoval, IngestionTask } from '../lib/types';
+import { DocumentRecord, DocumentRemoval, IngestionTask, IngestionTaskSummary } from '../lib/types';
 import { api, errorMessage } from '../lib/api';
 
 interface DocumentState {
@@ -16,6 +16,10 @@ interface DocumentState {
   selectedDocId: string;
   selectedDocAST: any | null;
   activeTask: IngestionTask | null;
+  tasks: IngestionTaskSummary[];
+  tasksTotal: number;
+  tasksLoading: boolean;
+  tasksError: string | null;
 
   fetchDocuments: (cursor?: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
@@ -26,8 +30,12 @@ interface DocumentState {
   removeDocument: (docId: string) => Promise<DocumentRemoval>;
   uploadDocument: (file: File, docType: string, domain: string, pauseForReview?: boolean) => Promise<string>;
   pollTaskProgress: (taskId: string) => void;
-  confirmTaskReview: (taskId: string) => Promise<void>;
+  confirmTaskReview: (taskId: string, prune?: string[]) => Promise<void>;
   cancelTask: (taskId: string) => Promise<void>;
+  fetchTasks: () => Promise<void>;
+  openTask: (taskId: string) => Promise<void>;
+  reopenTask: (taskId: string) => Promise<void>;
+  deleteTask: (taskId: string) => Promise<void>;
 }
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
@@ -44,6 +52,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   selectedDocId: '',
   selectedDocAST: null,
   activeTask: null,
+  tasks: [],
+  tasksTotal: 0,
+  tasksLoading: false,
+  tasksError: null,
 
   fetchDocuments: async (cursor) => {
     set({ isLoading: true, error: null });
@@ -119,7 +131,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   uploadDocument: async (file, docType, domain, pauseForReview = true) => {
     try {
       const res = await api.uploadDocument(file, docType, domain, undefined, pauseForReview);
+      set({ activeTask: null });
       get().pollTaskProgress(res.task_id);
+      void get().fetchTasks();
       return res.task_id;
     } catch (e) {
       console.error('Failed to upload document:', e);
@@ -131,7 +145,8 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     const check = async (interval?: ReturnType<typeof setInterval>) => {
       try {
         const task = await api.getTaskProgress(taskId);
-        set({ activeTask: task });
+        // Keep following it, but do not take the screen back from another upload the user opened.
+        set((state) => (state.activeTask && state.activeTask.id !== taskId ? {} : { activeTask: task }));
 
         if (
           task.status === 'completed' ||
@@ -140,6 +155,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           task.status === 'awaiting_review'
         ) {
           if (interval) clearInterval(interval);
+          void get().fetchTasks();
           if (task.status === 'completed') {
             await get().fetchDocuments();
             const newId = task.document_id || task.result?.document_ids?.[0];
@@ -168,10 +184,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     });
   },
 
-  confirmTaskReview: async (taskId: string) => {
+  confirmTaskReview: async (taskId: string, prune: string[] = []) => {
     set({ error: null });
     try {
-      const updated = await api.confirmTaskReview(taskId);
+      const updated = await api.confirmTaskReview(taskId, prune);
       set({ activeTask: updated });
       get().pollTaskProgress(taskId);
     } catch (e) {
@@ -185,9 +201,47 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     try {
       const updated = await api.cancelTask(taskId);
       set({ activeTask: updated });
+      void get().fetchTasks();
     } catch (e) {
       set({ error: errorMessage(e) });
     }
+  },
+
+  fetchTasks: async () => {
+    set({ tasksLoading: true, tasksError: null });
+    try {
+      const page = await api.listTasks({ limit: 100 });
+      set({ tasks: page.items, tasksTotal: page.total_count ?? page.items.length, tasksLoading: false });
+    } catch (e) {
+      set({ tasksLoading: false, tasksError: errorMessage(e) });
+    }
+  },
+
+  /** Show an upload from the list; a running one is followed until it settles. */
+  openTask: async (taskId: string) => {
+    set({ error: null });
+    try {
+      const task = await api.getTaskProgress(taskId);
+      set({ activeTask: task });
+      if (!['completed', 'failed', 'cancelled', 'awaiting_review'].includes(task.status)) get().pollTaskProgress(taskId);
+    } catch (e) {
+      set({ error: errorMessage(e) });
+    }
+  },
+
+  /** Delete an upload and its revisions; errors (still in the corpus, running) are thrown to the caller. */
+  deleteTask: async (taskId: string) => {
+    await api.deleteTask(taskId);
+    set((state) => (state.activeTask?.id === taskId ? { activeTask: null } : {}));
+    await get().fetchTasks();
+  },
+
+  /** A new draft of an indexed or removed upload; the corpus changes only when it is confirmed. */
+  reopenTask: async (taskId: string) => {
+    set({ error: null });
+    const task = await api.reopenTask(taskId);
+    set({ activeTask: task });
+    void get().fetchTasks();
   },
 
 }));

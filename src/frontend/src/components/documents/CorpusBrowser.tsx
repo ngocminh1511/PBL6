@@ -60,9 +60,10 @@ function Handle({ onDrag, onReset }: { onDrag: (dx: number) => void; onReset: ()
  * selected document and the selected article. Below xl the list becomes a
  * picker above the table of contents; below lg the columns stack.
  */
-export function CorpusBrowser({ refreshKey, onRemove }: {
+export function CorpusBrowser({ refreshKey, onRemove, onOpenReview }: {
   refreshKey?: unknown;
   onRemove: (doc: { id: string; title: string }) => void;
+  onOpenReview?: (documentId: string) => void;
 }) {
   const { documents, selectedDocId, selectedDocAST, selectDocument, error } = useDocumentStore();
   const doc = documents.find((d) => d.id === selectedDocId);
@@ -112,6 +113,7 @@ export function CorpusBrowser({ refreshKey, onRemove }: {
   const outline = (
     <DocumentOutline doc={doc} tree={tree} loading={!!doc && !tree && !error} selectedId={articleId}
       onSelect={(node) => setArticleId(node.id)} onRemove={() => doc && onRemove({ id: doc.id, title: doc.title })}
+      onOpenReview={doc && onOpenReview ? () => onOpenReview(doc.id) : undefined}
       picker={picker || undefined} />
   );
   const view = <ArticleView doc={doc} article={article} tree={tree} />;

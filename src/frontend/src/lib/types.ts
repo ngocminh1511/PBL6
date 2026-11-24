@@ -193,6 +193,8 @@ export interface ArticleChange {
   old_text: string | null;
   old_source: string | null;
   old_version_date: string | null;
+  /** Missing from the review and written by a PDF only: re-indexing may delete it. */
+  deletable: boolean;
 }
 
 export interface AmendmentChange {
@@ -247,6 +249,45 @@ export interface OCRPreviewSummary {
   articles_count?: number | null;
   warnings: string[];
   recent_pages: OCRPagePreview[];
+}
+
+/** What became of an upload, combining its status, its revisions and the corpus. */
+export type TaskState = 'running' | 'awaiting_review' | 'indexed' | 'editing' | 'removed' | 'failed' | 'cancelled';
+
+/** One row of GET /api/documents/tasks. */
+export interface IngestionTaskSummary {
+  id: string;
+  file_name: string;
+  document_type: string;
+  status: IngestionTask['status'];
+  state: TaskState;
+  progress: number;
+  current_step: string | null;
+  document_id: string | null;
+  document_number: string | null;
+  domain: string | null;
+  in_corpus: boolean;
+  draft_revision_id: string | null;
+  indexed_revision_id: string | null;
+  total_pages: number;
+  edited_pages: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** A version of a task's OCR text: number 1 is the OCR output, later ones are reviews. */
+export interface OcrRevision {
+  id: string;
+  number: number;
+  kind: 'ocr' | 'review';
+  status: 'draft' | 'indexed' | 'locked';
+  parent_id: string | null;
+  document_id: string | null;
+  total_pages: number;
+  edited_pages: number;
+  created_at: string;
+  updated_at: string;
+  indexed_at: string | null;
 }
 
 export interface IngestionTask {

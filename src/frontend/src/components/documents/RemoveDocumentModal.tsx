@@ -55,7 +55,8 @@ export function RemoveDocumentModal({ target, onRemove, onClose }: {
           {(state === 'confirm' || state === 'removing') && (
             <p>
               Văn bản sẽ bị gỡ khỏi kho tra cứu và đồ thị. Các Điều mà PDF này đã ghi đè sẽ được khôi phục từ Pháp điển
-              (nếu có). Không hoàn tác được; muốn dùng lại phải nạp lại PDF.
+              (nếu có). Bản OCR và các bản rà soát vẫn được giữ ở tab Nạp PDF, nên có thể nạp lại sau mà không
+              phải OCR lại.
             </p>
           )}
           {state === 'removing' && <p className="text-ink-3">Đang gỡ… có thể mất một lúc nếu cần khôi phục bản Pháp điển.</p>}
