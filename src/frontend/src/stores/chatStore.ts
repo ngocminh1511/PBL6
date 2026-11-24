@@ -43,6 +43,8 @@ interface ChatState {
   setInspectorTab: (tab: InspectorTab) => void;
   openAppendix: (id: string, chunkId?: string) => void;
   setSelectedCitation: (citation: string | null) => void;
+  /** Opens one answer's evidence in the hierarchy tree, also from an earlier answer. */
+  focusEvidence: (evidences: EvidenceItem[], citation: string) => void;
 }
 
 const getStoredPinned = (): string[] => {
@@ -179,6 +181,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setInspectorTab: (tab) => set({ inspectorTab: tab }),
   openAppendix: (id, chunkId) => set({ selectedAppendix: { id, chunkId }, inspectorTab: 'tab-appendix' }),
   setSelectedCitation: (citation) => set(state => ({ selectedCitation: citation, focusTick: state.focusTick + 1 })),
+  focusEvidence: (evidences, citation) => set(state => ({
+    selectedEvidences: evidences, selectedCitation: citation, inspectorTab: 'tab-hierarchy', focusTick: state.focusTick + 1,
+  })),
 
   renameSession: async (sessionId: string, newTitle: string) => {
     if (!newTitle.trim()) return;

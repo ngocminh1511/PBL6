@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BookOpen, Check, CheckCircle2, Copy, Download, FileText, MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { ChatMessage as ChatMessageType, MessageFeedback as Feedback } from '../../lib/types';
+import { ChatMessage as ChatMessageType, EvidenceItem, MessageFeedback as Feedback } from '../../lib/types';
+import { useChatStore } from '../../stores/chatStore';
 import { api, appendixDocxUrl, chunkFromViewUrl } from '../../lib/api';
 import { PipelineTrace } from './PipelineTrace';
 import { CitationChip } from './CitationChip';
 import { TokenUsage } from './TokenUsage';
+import { MarkdownAnswer } from './MarkdownAnswer';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -29,6 +31,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
   const [feedback, setFeedback] = useState<Feedback | null>(message.feedback ?? null);
   const [feedbackSaving, setFeedbackSaving] = useState(false);
   const [feedbackError, setFeedbackError] = useState(false);
+  const focusEvidence = useChatStore(state => state.focusEvidence);
+  const evidences = message.legal_evidence;
+  const openEvidence = useCallback(
+    (evidence: EvidenceItem) => evidences && focusEvidence(evidences, evidence.citation),
+    [evidences, focusEvidence],
+  );
 
   useEffect(() => {
     setFeedback(message.feedback ?? null);
@@ -92,9 +100,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, index }) => {
       ))}
 
       {/* Legal answer prose */}
-      <div className="text-[15.5px] leading-[1.7] text-[#262521] whitespace-pre-line">
-        {message.content}
-      </div>
+      <MarkdownAnswer content={message.content} evidences={message.legal_evidence} onCite={openEvidence} />
 
       {/* Citation strip from retrieved evidence */}
       {message.legal_evidence && message.legal_evidence.length > 0 && (

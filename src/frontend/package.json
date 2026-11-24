@@ -8,7 +8,7 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "test:config": "node --test tests/admin-config.test.mjs tests/next-config.test.mjs tests/llm-profiles.test.mjs",
-    "test:chat": "node --test tests/token-usage.test.mjs tests/appendix-panel.test.mjs tests/legal-tree.test.mjs",
+    "test:chat": "node --test tests/token-usage.test.mjs tests/markdown-answer.test.mjs tests/appendix-panel.test.mjs tests/legal-tree.test.mjs",
     "test:documents": "node --test tests/ocr-structure.test.mjs tests/text-diff.test.mjs tests/ingestion-steps.test.mjs tests/article-outline.test.mjs tests/ingestion-tasks.test.mjs"
   },
   "dependencies": {
@@ -21,6 +21,8 @@
     "next": "^14.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^9.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^2.2.2",
     "zustand": "^4.5.2"
   },

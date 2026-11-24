@@ -22,6 +22,10 @@ const apiModule = compile('../src/lib/api.ts');
 const { ChatMessage } = compile('../src/components/chat/ChatMessage.tsx', {
   './TokenUsage': tokenComponent, './PipelineTrace': { PipelineTrace: () => null },
   './CitationChip': { CitationChip: () => null }, '../../lib/api': apiModule,
+  './MarkdownAnswer': compile('../src/components/chat/MarkdownAnswer.tsx', {
+    '../../lib/citationLinks': compile('../src/lib/citationLinks.ts'),
+  }),
+  '../../stores/chatStore': { useChatStore: select => select({ focusEvidence: () => {} }) },
 });
 const { TokenUsage } = tokenComponent;
 const call = { stage: 'generation', provider: 'groq', model: 'test-model', status: 'succeeded',
