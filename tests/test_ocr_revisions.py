@@ -42,3 +42,17 @@ def test_edited_revisions_are_never_replaced():
     ocr_revisions.reimport_pages(db, "t", entries(26))
     db.commit()
     assert page_count(db) == 1
+
+
+def test_cancel_stops_a_task_whose_worker_is_gone():
+    """After a restart a 'parsing' task has no worker; cancelling must end it, not wait forever."""
+    import threading
+    from types import SimpleNamespace
+    from src.backend.app.services.ingestion import IngestionService
+    db = session()
+    db.query(IngestionTask).filter(IngestionTask.id == "t").update({"status": "parsing"})
+    db.commit()
+    service = object.__new__(IngestionService)
+    service._cancel_lock, service._cancel_events = threading.Lock(), {}
+    service.database = SimpleNamespace(session=lambda: Session(db.get_bind()))
+    assert service.cancel("t").status == "cancelled"

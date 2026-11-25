@@ -78,7 +78,8 @@ class IngestionService:
                 db.commit()
                 db.refresh(task)
                 return task
-            if task.status in {"pending", "awaiting_review"}:
+            # No worker of this process runs it (the backend restarted mid-task): nothing will stop it, so stop it here.
+            if task.status in {"pending", "awaiting_review"} or event is None:
                 task.status = "cancelled"
                 task.current_step = "Đã hủy nạp tài liệu theo yêu cầu người dùng."
                 with self._cancel_lock:
